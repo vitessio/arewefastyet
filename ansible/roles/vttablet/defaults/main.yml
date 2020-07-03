@@ -1,0 +1,31 @@
+---
+etcd_master_group: 'etcd'
+
+vitess_user: 'vitess'
+vitess_group: 'vitess'
+vitess_root: '/vt'
+vitess_cluster: 'main'
+vitess_cell: 'local'
+default_tablet_type: 'replica'
+vitess_monitoring_user: 'vt_dba'
+
+tablets:
+  - id: '1001'
+    shard: '0'
+    keyspace: 'main'
+    type: 'replica'
+
+vttablet_port: '16001'
+vttablet_grpc_port: '17001'
+vttablet_mysql_port: '18001'
+mysqld_exporter_port: '9104'
+
+enable_vttablet: True
+vitess_memory_ratio: 0.6
+vttablet_connection_pool_size: 300
+vttablet_transaction_cap: 300
+vttablet_stream_pool_size: 16
+vttablet_found_rows_pool_size: 16
+vttablet_query_cache_size: 0
+
+vttablet_max_goproc: 24

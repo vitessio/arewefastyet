@@ -1,0 +1,68 @@
+---
+- name: ensure vitess group
+  become: yes
+  become_user: root
+  group:
+    name: '{{ vitess_group }}'
+    state: present
+
+- name: ensure vitess user
+  become: yes
+  become_user: root
+  user:
+    name: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+    state: present
+
+- name: ensure vitess directories
+  become: yes
+  become_user: root
+  with_items:
+    - '{{ vitess_root }}'
+    - '{{vitess_root}}/socket'
+  file:
+    state: directory
+    path:   '{{ item }}'
+    owner:  '{{ vitess_user }}'
+    group:  '{{ vitess_group }}'
+    mode: 0755
+
+- name: ensure config directories
+  become: yes
+  become_user: root
+  with_items:
+    - '/etc/vitess/conf'
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+
+- name: install systemd units
+  become: yes
+  become_user: root
+  register: vtgate_service_modified
+  with_items:
+    - s: vtgate@.service
+      d: /etc/systemd/system/vtgate@.service
+  template:
+    src: '{{ item.s }}.j2'
+    dest: '{{ item.d }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+    mode: '0644'
+  notify:
+    - restart vtgate
+
+- name: systemctl daemon-reload
+  become: yes
+  become_user: root
+  when: vtgate_service_modified is changed
+  systemd:
+    daemon_reload: yes
+
+- name: install config files
+  include_tasks: vtgate.yml
+  loop: '{{ gateways }}'
+  loop_control:
+    loop_var: gateway

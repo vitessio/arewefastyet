@@ -1,0 +1,108 @@
+---
+- include: clean.yml
+  become: yes
+  become_user: root
+  
+- include: golang.yml
+  become: yes
+  become_user: root
+
+- include: mysql.yml
+  become: yes
+  become_user: root
+
+- include: mysqld_exporter.yml
+  become: yes
+  become_user: root
+- name: Set dependent packages for RedHat
+  set_fact:
+    vitess_dependencies:
+      - make
+      - unzip
+      - gcc-c++
+      - curl
+      - git
+      - wget
+      - ant
+      - maven
+      - zip
+      - gcc
+      - tmux
+      - htop
+  when: ansible_os_family == 'RedHat'
+
+- name: Set dependent packages for Debian
+  set_fact:
+    vitess_dependencies:
+      - make
+      - unzip
+      - g++
+      - curl
+      - git
+      - wget
+      - ant
+      - maven
+      - zip
+      - default-jdk
+      - tmux
+      - htop
+  when: ansible_os_family == 'Ubuntu'
+
+- name: Install Mysql
+  become: yes
+  become_user: root
+  package:
+    name: '{{ vitess_dependencies }}'
+    state: present
+    update_cache: true
+  register: task_result
+  until: task_result is succeeded
+
+- name: Disable SELinux
+  become: yes
+  become_user: root
+  selinux:
+    state: disabled
+  ignore_errors: yes
+  when: ansible_os_family == 'RedHat'
+  
+- name: Update Vitess
+  become: yes
+  become_user: root
+  block:
+    - name: Fetch Updated Vitess
+      git:
+        repo: "{{ vitess_git_repo }}"
+        dest: /go/src/vitess.io/vitess
+        version: "{{ vitess_git_version }}"
+        depth: 1
+        force: 1
+
+    - name: Build Vitess Binaries
+      make:
+        chdir: /go/src/vitess.io/vitess
+        target: build
+
+    - name: Install Vitess Binaries
+      shell:
+        chdir: /go/src/vitess.io/vitess
+        cmd: make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
+
+    - name: Install Vitess Other Binaries
+      shell:
+        chdir: /go/src/vitess.io/vitess
+        cmd: cp bin/vtctl /usr/local/bin/
+  when: vtroot is undefined
+
+- name: Copy Vitess Binaries
+  become: yes
+  become_user: root
+  block:
+    - name: File Glob the copy
+      copy:
+        src: '{{ item }}'
+        dest: /usr/local/bin
+        mode: '0755'
+      with_fileglob:
+        - '{{ vtroot }}/bin/*'
+  when: vtroot is defined

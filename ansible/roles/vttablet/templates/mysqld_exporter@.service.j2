@@ -1,0 +1,23 @@
+[Unit]
+Description=mysqld_exporter
+After=network.service
+StartLimitInterval=0
+StartLimitIntervalSec=0
+
+[Service]
+Environment="VTROOT={{vitess_root}}"
+Environment="USER={{vitess_user}}"
+Environment="MYSQLD_EXPORTER_PORT=:{{mysqld_exporter_port}}"
+
+EnvironmentFile=/etc/vitess/conf/vttablet-%i.conf
+Type=simple
+Restart=always
+User={{vitess_user}}
+ExecStart=/bin/bash -c '\
+    DATA_SOURCE_NAME="{{ vitess_monitoring_user }}@unix($VTROOT/socket/mysql%i.sock)/" \
+    /usr/local/bin/mysqld_exporter \
+    --web.listen-address=${MYSQLD_EXPORTER_PORT} \
+'
+
+[Install]
+WantedBy=vitess-cluster.target

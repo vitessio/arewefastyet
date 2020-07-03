@@ -1,0 +1,24 @@
+- name: Turn off everything
+  shell: |
+    systemctl stop mysqlctld@* || /bin/true
+    systemctl stop vttablet@* || /bin/true
+    systemctl stop vtctld@* || /bin/true
+    systemctl stop cell@* || /bin/true
+    systemctl stop vtgate@* || /bin/true
+  ignore_errors: yes
+
+- name: Find Elements to remove
+  find:
+    path: /vt
+    file_type: directory
+  register: directories
+
+- debug:
+    msg: '{{directories}}'
+    
+- name: Remove Elements
+  file:
+    state: absent
+    path: '{{item.path}}'
+  loop: '{{ directories.files }}'
+  when: clean is defined and ((directories.files | length) > 0)

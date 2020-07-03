@@ -1,0 +1,54 @@
+[Unit]
+Description=Vitess Tablet
+After=mysqlctld@%i.service
+
+[Service]
+Environment="USER={{vitess_user}}"
+Environment="VTROOT={{vitess_root}}"
+Environment="TABLET_TYPE={{ default_tablet_type }}"
+Environment="TABLET_PORT=16001"
+Environment="GRPC_PORT=17001"
+Environment="MYSQL_PORT=18001"
+Environment="EXTRA_VTTABLET_FLAGS=-alsologtostderr"
+
+EnvironmentFile=/etc/vitess/conf/vttablet-%i.conf
+Type=simple
+Restart=always
+LimitAS=infinity
+LimitRSS=infinity
+LimitNPROC=infinity
+LimitNOFILE=infinity
+LimitMEMLOCK=infinity
+WorkingDirectory={{vitess_root}}
+User={{vitess_user}}
+ExecStart=/bin/bash -c 'vttablet \
+    --tablet_hostname "$(hostname -I | cut -d \" \" -f 1)" \
+    --service_map "grpc-queryservice,grpc-tabletmanager,grpc-updatestream" \
+    --db-config-app-uname=vt_app \
+    --db-config-dba-uname=vt_dba \
+    --db-config-filtered-uname=vt_filtered \
+    --db-config-repl-uname=vt_repl \
+    --queryserver-config-passthrough-dmls \
+    --enable-autocommit \
+    --binlog_use_v3_resharding_mode \
+    --enable_replication_reporter \
+    --health_check_interval 5s \
+    --alsologtostderr \
+    --init_keyspace ${KEYSPACE} \
+    --init_shard ${SHARD} \
+    --init_db_name_override=${KEYSPACE} \
+    --init_tablet_type ${TABLET_TYPE} \
+    --mycnf_socket_file=${VTROOT}/socket/mysql%i.sock \
+    --mycnf_mysql_port=${MYSQL_PORT} \
+    --mysqlctl_socket=${VTROOT}/socket/mysqlctl%i.sock \
+    --port ${TABLET_PORT} \
+    --grpc_port ${GRPC_PORT} \
+    --tablet-path ${CELL}-%i \
+    --log_dir ${VTROOT}/tmp \
+    --topo_implementation ${TOPO_IMPLEMENTATION} \
+    --topo_global_root ${TOPO_GLOBAL_ROOT} \
+    --topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \
+    ${EXTRA_VTTABLET_FLAGS}'
+
+[Install]
+WantedBy=vitess-cluster.target

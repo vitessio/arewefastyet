@@ -1,0 +1,44 @@
+# [member]
+ETCD_NAME="{{ansible_fqdn}}"
+ETCD_DATA_DIR="{{etcd_data_dir}}"
+#ETCD_SNAPSHOT_COUNTER="10000"
+#ETCD_HEARTBEAT_INTERVAL="100"
+#ETCD_ELECTION_TIMEOUT="1000"
+{% if etcd_iface_public == 'all' %}
+{% set client_endpoints = [ etcd_listen_public ] %}
+{% else %}
+{% set client_endpoints = [ etcd_listen_public, '127.0.0.1' ] %}
+{% endif %}
+ETCD_LISTEN_CLIENT_URLS="{{ client_endpoints | map('regex_replace', '^(.+)$', etcd_scheme ~ '\\1' ~ ':' ~ etcd_port_client) | join(',') }}"
+ETCD_ENABLE_V2={{etcd_enable_v2}}
+#ETCD_MAX_SNAPSHOTS="5"
+#ETCD_MAX_WALS="5"
+#ETCD_CORS=""
+#
+# [cluster]
+{% if inventory_hostname in groups[etcd_master_group_name] %}
+ETCD_LISTEN_PEER_URLS="{{etcd_scheme}}{{etcd_listen_cluster}}:{{etcd_port_peer}}"
+ETCD_ADVERTISE_CLIENT_URLS="{{etcd_scheme}}{{etcd_address_public}}:{{etcd_port_client}}"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="{{etcd_scheme}}{{etcd_address_cluster}}:{{etcd_port_peer}}"
+{% endif %}
+ETCD_INITIAL_CLUSTER="{{etcd_cluster}}"
+ETCD_INITIAL_CLUSTER_STATE="new"
+ETCD_INITIAL_CLUSTER_TOKEN="{{etcd_initial_cluster_token}}"
+# if you use different ETCD_NAME (e.g. test), set ETCD_INITIAL_CLUSTER value for this name, i.e. "test=http://..."
+#ETCD_DISCOVERY=""
+#ETCD_DISCOVERY_SRV=""
+#ETCD_DISCOVERY_FALLBACK="proxy"
+#ETCD_DISCOVERY_PROXY=""
+#
+#[proxy]
+{% if inventory_hostname not in groups[etcd_master_group_name] %}
+ETCD_PROXY="on"
+{% endif %}
+#
+#[security]
+
+#
+#[logging]
+#ETCD_DEBUG="true"
+# examples for -log-package-levels etcdserver=WARNING,security=DEBUG
+#ETCD_LOG_PACKAGE_LEVELS="etcdserver=DEBUG"

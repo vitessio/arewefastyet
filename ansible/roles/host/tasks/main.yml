@@ -1,0 +1,56 @@
+- name: Turn on Jumbo Frames
+  become: true
+  become_user: root
+  shell: |
+    ip link set {{ device }} mtu 9000
+  when: device != 'lo'
+  ignore_errors: yes
+  loop: '{{ ansible_interfaces }}'
+  loop_control:
+    loop_var: device
+
+- name: Set sysctl paramaters
+  become: true
+  become_user: root
+  shell: |
+    sysctl -w fs.aio-max-nr=1048576
+- name: Handle Secondary Storage
+  become: true
+  become_user: root
+  block:
+    - name: Install Parted
+      package:
+        name: parted
+        state: present
+        update_cache: true
+    
+    - name: Partition the Drive
+      parted:
+        label: gpt
+        name: data
+        device: '/dev/{{ disk.key }}'
+        number: 1
+        state: present
+      loop: '{{ ansible_devices|dict2items }}'
+      when: disk.key.startswith(storage_device.device) and ((disk.value.partitions | length) == 0)
+      loop_control:
+        loop_var: disk
+
+    - name: Format the Drive
+      filesystem:
+        device: '/dev/{{storage_device.partition}}'
+        fstype: xfs
+        
+    - name: create folder for mount
+      file:
+        path: /vt
+        state: directory
+        recurse: yes
+    
+    - name: Mount the Drive
+      mount:
+        path: /vt
+        src: '/dev/{{ storage_device.partition }}'
+        fstype: xfs
+        state: mounted
+  when: storage_device is defined

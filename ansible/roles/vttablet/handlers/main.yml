@@ -1,0 +1,18 @@
+---
+- name: restart vttablet
+  become: yes
+  become_user: root
+  when:
+    - enable_vttablet | bool
+  service:
+    name: vttablet@{{ tablet_id }}
+    state: restarted
+
+- name: restart mysqlctld
+  become: yes
+  become_user: root
+  when:
+    - enable_vttablet | bool
+  service:
+    name: mysqlctld@{{ tablet_id }}
+    state: restarted

@@ -1,0 +1,31 @@
+---
+etcd_user: etcd
+etcd_group: etcd
+
+etcd_version: v3.4.7
+etcd_os: linux
+etcd_arch: amd64
+etcd_mirror: https://github.com/coreos/etcd/releases/download
+etcd_download_timeout_seconds: 900
+etcd_install_dir: /usr/local/bin
+etcd_data_dir: /var/lib/etcd
+
+etcd_checksums:
+  v3.4.7:
+    linux-amd64: sha256:4ad86e663b63feb4855e1f3a647e719d6d79cf6306410c52b7f280fa56f8eb6b
+
+etcd_master_group_name: etcd
+etcd_use_ips: True
+etcd_iface_public: '{{ etcd_network_iface | default("all") }}'
+etcd_iface_cluster: '{{ etcd_network_iface | default("default") }}'
+etcd_port_client: 2379
+etcd_port_peer: 2380
+
+etcd_secure: False
+etcd_cluster_name: test-cluster-name
+etcd_initial_cluster_token: d8bf8cc6-5158-11e6-8f13-3b32f4935bde
+
+etcd_init_system: systemd
+etcd_launch: True
+
+etcd_enable_v2: True # Accept etcd V2 client requests

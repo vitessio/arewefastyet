@@ -1,0 +1,1 @@
+mysql_repo: 'http://repo.mysql.com/yum/mysql-{{ mysql_version }}-community/el/8/$basearch/'

@@ -1,0 +1,24 @@
+---
+
+golang_gover: 1.14.3
+golang_hash_linux_amd64:
+  1.13.7: 'sha256:b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3'
+  1.13.11: 'sha256:a4d71ca9e02923fa96669a4b5faf78ee8331b18e7209b09dd87fe763b4838ada'
+  1.14.3: 'sha256:1c39eac4ae95781b066c144c58e45d6859652247f7515f0d2cba7be7d57d2226'
+
+
+vitess_git_repo: "https://github.com/vitessio/vitess.git"
+vitess_git_version: "master"
+
+mysql_daemon: mysqld
+
+mysql_apt_keyserver: pool.sks-keyservers.net
+mysql_apt_key_id: 5072E1F5
+
+mysql_version: 8.0
+mysql_repo_rpm: https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm
+mysql_repo_7_rpm: https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm
+mysql_gpgkey: http://repo.mysql.com/RPM-GPG-KEY-mysql
+
+mysqld_exporter_binary_local_dir: ""
+mysqld_exporter_version: 0.12.1

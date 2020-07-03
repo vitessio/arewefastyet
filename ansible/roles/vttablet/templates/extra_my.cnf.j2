@@ -1,0 +1,31 @@
+binlog_transaction_dependency_tracking=WRITESET
+
+innodb_buffer_pool_size = {{(ansible_memtotal_mb*(vitess_memory_ratio | default(0.6))*1024*1024/(tablets | length))|int}}
+innodb_buffer_pool_instances = 1
+innodb_flush_log_at_trx_commit = 1
+innodb_log_file_size = 134217728
+innodb_log_files_in_group = 1
+innodb_log_write_ahead_size = 32768
+innodb_io_capacity = 5000
+innodb_read_io_threads=64
+innodb_write_io_threads=64
+innodb_flush_method=O_DIRECT
+innodb_numa_interleave=1
+innodb_doublewrite=0
+innodb_flush_neighbors=0
+
+master_info_repository = TABLE
+max_connections = {{ (tablet.pool_size | default(vttablet_connection_pool_size))+(tablet.stream_pool_size | default(vttablet_stream_pool_size))+(tablet.found_rows_pool_size | default(vttablet_found_rows_pool_size))+(tablet.transaction_cap | default(vttablet_transaction_cap))+200 }}
+
+
+open_files_limit = 65535
+performance_schema = OFF
+relay_log_info_repository = TABLE
+relay_log_recovery = 1
+slave_parallel_type = LOGICAL_CLOCK
+slave_parallel_workers = 10
+slave_preserve_commit_order = ON
+sync_binlog = 0
+transaction_write_set_extraction = XXHASH64
+{{ tablet.extra_mysql_args | default("") }}
+{{extra_mysql_args|default("")}}

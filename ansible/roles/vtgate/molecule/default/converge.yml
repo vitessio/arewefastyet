@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include vtgate"
+      include_role:
+        name: "vtgate"

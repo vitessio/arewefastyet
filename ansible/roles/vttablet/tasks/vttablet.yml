@@ -1,0 +1,28 @@
+---
+- name: template out configs
+  become: yes
+  become_user: root
+  with_items:
+    - s: vttablet.conf
+      d: '/etc/vitess/conf/vttablet-{{ tablet.id }}.conf'
+    - s: extra_my.cnf
+      d: '/etc/vitess/extra_my{{ tablet.id }}.cnf'
+  template:
+    src: '{{ item.s }}.j2'
+    dest: '{{ item.d }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+    mode: '0644'
+- name: start vttablet
+  become: yes
+  become_user: root
+  when:
+    - enable_vttablet | bool
+  service:
+    name: '{{ item }}'
+    enabled: yes
+    state: started
+  with_items:
+    - 'mysqlctld@{{ tablet.id }}'
+    - 'vttablet@{{ tablet.id }}'
+    - 'mysqld_exporter@{{ tablet.id }}'

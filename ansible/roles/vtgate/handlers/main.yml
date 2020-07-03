@@ -1,0 +1,12 @@
+---
+- name: restart vtgate
+  become: yes
+  become_user: root
+  when:
+    - enable_vtgate | bool
+  service:
+    name: vtgate@{{ gateway.id }}
+    state: restarted
+  loop: '{{ gateways }}'
+  loop_control:
+    loop_var: gateway

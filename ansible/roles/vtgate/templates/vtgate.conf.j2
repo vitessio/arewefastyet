@@ -1,0 +1,25 @@
+GOMAXPROCS={{ (ansible_processor_vcpus > vtgate_max_goproc) | ternary(vtgate_max_goproc,ansible_processor_vcpus) }}
+
+TOPO_IMPLEMENTATION=etcd2
+TOPO_GLOBAL_ROOT=/vitess/{{vitess_cluster}}
+{% set all_etcd_endpoints = [] -%}
+{% for host in groups[etcd_master_group] -%}
+  {% set ip = hostvars[host]['ansible_default_ipv4']['address'] -%}
+  {% set _ = all_etcd_endpoints.append("%s:2379" % (ip)) -%}
+{% endfor -%}
+TOPO_GLOBAL_SERVER_ADDRESS={{ all_etcd_endpoints | join(',') }}
+CELL_ROOT=/vitess/{{vitess_cluster}}/{{ cell }}
+CELL_TOPO_SERVER={{ all_etcd_endpoints | join(',') }}
+
+VTGATE_PORT='{{gateway.port | default(vtgate_port)}}'
+MYSQL_PORT='{{gateway.mysql_port | default(vtgate_mysql_port)}}'
+GRPC_PORT='{{gateway.grpc_port | default(vtgate_grpc_port)}}'
+
+CELL={{ cell }}
+ADDITIONAL_CELLS=""
+EXTRA_VTGATE_FLAGS="-vschema_ddl_authorized_users \"%\" \
+    -vtgate-config-terse-errors \
+    -gate_query_cache_size {{ vtgate_query_cache_size }} \
+    {{gateway.extra_flags|default("")}} \
+    {{extra_vtgate_flags|default("")}} \
+"

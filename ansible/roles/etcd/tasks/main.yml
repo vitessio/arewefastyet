@@ -1,0 +1,19 @@
+---
+- name: Turn off etcd
+  become: yes
+  become_user: root
+  service:
+    name: etcd
+    state: stopped
+  ignore_errors: yes
+
+- name: remove storage
+  become: yes
+  become_user: root
+  file:
+    state: absent
+    path: /var/lib/etcd
+  when: clean is defined
+
+- include_tasks: install.yml
+- include_tasks: enable.yml

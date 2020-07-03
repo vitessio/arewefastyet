@@ -1,0 +1,9 @@
+---
+- name: restart vtctld
+  become: yes
+  become_user: root
+  when:
+    - enable_vtctld | bool
+  service:
+    name: vtctld@{{ vitess_cell }}
+    state: restarted

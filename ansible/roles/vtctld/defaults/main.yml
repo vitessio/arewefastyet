@@ -1,0 +1,11 @@
+---
+etcd_master_group: 'etcd'
+
+vitess_user: 'vitess'
+vitess_group: 'vitess'
+vitess_cluster: 'main'
+vitess_cell: 'local'
+vitess_root: '/vt'
+vtctld_port: '15000'
+vtctld_grpc_port: '15999'
+enable_vtctld: True

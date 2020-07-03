@@ -1,0 +1,52 @@
+---
+- name: Set sysbench dependencies
+  set_fact:
+    sysbench_dependencies:
+      - make
+      - automake
+      - libtool
+      - pkgconfig
+      - libaio-devel
+      - mysql-devel
+      - openssl-devel
+      - git
+  
+- name: Install sysbench dependencies
+  become: yes
+  become_user: root
+  package:
+    name: '{{ sysbench_dependencies }}'
+    state: present
+    update_cache: true
+  register: task_result
+  until: task_result is succeeded
+
+- name: Update Sysbench
+  become: yes
+  become_user: root
+  git:
+    repo: https://github.com/planetscale/sysbench
+    dest: /src/sysbench
+    version: HEAD
+    depth: 1
+    force: 1
+    
+- name: Build sysbench
+  become: yes
+  become_user: root
+  shell: |
+    cd /src/sysbench
+    ./autogen.sh
+    ./configure
+    make -j
+    make install
+
+- name: Get tpcc
+  become: yes
+  become_user: root
+  git:
+    repo: https://github.com/planetscale/sysbench-tpcc
+    dest: /src/sysbench-tpcc
+    version: HEAD
+    depth: 1
+    force: 1

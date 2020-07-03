@@ -1,0 +1,99 @@
+#+TITLE: Stats
+
+
+| Run Descriptor                | Shards | Cloud Provider | Cores | Ram(Gb) | Total Cores | Queries Performed |    tps |      qps | latency(min) | latency(avg) | latency(max) | latency(95th) | Machine       | Data Size | Test |
+| Packet Single Shard go1.13    |      1 | Packet         |    24 |      64 |          24 |          18535424 | 965.32 | 15545.09 |         7.28 |       103.59 |      3426.69 |         97.55 | c3.medium.x86 | 50Gb      | oltp_rw |
+| Packet Single Shard go1.14    |      1 | Packet         |    24 |      64 |          24 |           2446416 | 509.32 |  8149.20 |         7.01 |       196.27 |      3399.32 |        287.38 | c3.medium.x86 | 50Gb      | oltp_rw |
+| Packet Single Shard 4x vtgate |      1 | Packet         |    24 |      64 |          24 |           3534432 | 735.90 | 11774.39 |         7.04 |       271.67 |      3736.98 |        484.44 | c3.medium.x86 | 50Gb      | oltp_rw |
+| AWS i3en.metal 2 shards       |      2 | AWS            |    96 |     764 |          96 |                   |   3400 |          |         80.0 |              |              |               | i3en.metal    | 2Tb       | tpc-c   |
+
+
+* Raw Data
+** Direct To MySQL
+SQL statistics:
+    queries performed:
+        read:                            1583230
+        write:                           633292
+        other:                           316646
+        total:                           2533168
+    transactions:                        158323 (526.77 per sec.)
+    queries:                             2533168 (8428.31 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      526.7691
+    time elapsed:                        300.5548s
+    total number of events:              158323
+
+Latency (ms):
+         min:                                    7.14
+         avg:                                  227.50
+         max:                                 2536.25
+         95th percentile:                      411.96
+         sum:                             36017804.11
+
+Threads fairness:
+    events (avg/stddev):           1319.3583/16.06
+    execution time (avg/stddev):   300.1484/0.13
+
+** Through Vitess
+SQL statistics:
+    queries performed:
+        read:                            1027780
+        write:                           411112
+        other:                           205556
+        total:                           1644448
+    transactions:                        102778 (342.29 per sec.)
+    queries:                             1644448 (5476.59 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      342.2871
+    time elapsed:                        300.2684s
+    total number of events:              102778
+
+Latency (ms):
+         min:                                   17.40
+         avg:                                  175.19
+         max:                                  648.56
+         95th percentile:                      240.02
+         sum:                             18005214.74
+
+Threads fairness:
+    events (avg/stddev):           1712.9667/12.04
+    execution time (avg/stddev):   300.0869/0.06
+** 1.13 statistics:
+    queries performed:
+        read:                            11584640
+        write:                           4633856
+        other:                           2316928
+        total:                           18535424
+    transactions:                        1158464 (965.32 per sec.)
+    queries:                             18535424 (15445.09 per sec.)
+    ignored errors:                      0      (0.00 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Throughput:
+    events/s (eps):                      965.3184
+    time elapsed:                        1200.0849s
+    total number of events:              1158464
+
+Latency (ms):
+         min:                                    7.28
+         avg:                                  103.59
+         max:                                 3426.69
+         95th percentile:                       97.55
+         sum:                            120000227.19
+
+Threads fairness:
+    events (avg/stddev):           11584.6400/27.48
+    execution time (avg/stddev):   1200.0023/0.02
+
+* Twitter Test Runs
+| Run Descriptor      | Shards | Cloud Provider | Cores | Ram(Gb)         | Total Cores | Queries Performed |     tps |      qps | latency(min) | latency(avg) | latency(max) | latency(95th) | Machine   | Data Size |
+| Single Node GMP 48  |      1 | Packet         |    28 | 80 (System 376) |          28 |          13169072 | 2742.80 | 43884.77 |        24.99 |        54.67 |       138.01 |         63.32 | m2.xlarge | 128Gb     |
+| Single Node GMP 6   |      1 | Packet         |    28 | 80 (System 376) |          28 |          13258320 | 2761.33 | 44181.34 |        18.56 |        54.31 |        95.77 |         63.32 | m2.xlarge | 128Gb     |
+| Single Node GMP 6x2 |      1 | Packet         |    28 | 80 (System 376) |          28 |          14695024 | 3060.70 | 48971.16 |        25.48 |        49.00 |       124.04 |         55.82 | m2.xlarge | 128Gb     |
+|                     |        |                |       |                 |             |                   |         |          |              |              |              |               |           |           |

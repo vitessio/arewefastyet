@@ -1,0 +1,14 @@
+---
+# handlers file for etcd-cluster
+
+# Restart masters one-by-one to keep quorum
+- name: restart etcd masters
+  become: yes
+  become_user: root
+  when: etcd_launch | bool
+  service:
+    name: etcd
+    state: restarted
+  run_once: yes
+  loop: '{{ groups[etcd_master_group_name] }}'
+  delegate_to: '{{ item }}'

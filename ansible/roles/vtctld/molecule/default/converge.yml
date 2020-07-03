@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include vtctld"
+      include_role:
+        name: "vtctld"
