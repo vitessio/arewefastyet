@@ -6,9 +6,6 @@ all:
     keyspace: main
   hosts:
     localhost:
-      storage_device:
-        device: nvme0n1
-        partition: nvme0n1p1
   children:
     sysbench:
       hosts:
