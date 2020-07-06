@@ -5,26 +5,26 @@ all:
     cell: local
     keyspace: main
   hosts:
-    localhost:
+    127.0.0.1:
   children:
     sysbench:
       hosts:
-        localhost:
+        127.0.0.1:
     prometheus:
       hosts:
-        localhost:
+        127.0.0.1:
     etcd:
       hosts:
-        localhost:
+        127.0.0.1:
     vtctld:
       hosts:
-        localhost:
+        127.0.0.1:
     vtgate:
       vars:
         vtgate_query_cache_size: 1000
         vtgate_max_goproc: 6
       hosts:
-        localhost:
+        127.0.0.1:
           gateways:
             - id: 1
               port: 15001
@@ -56,7 +56,7 @@ all:
         vttablet_query_cache_size: 10000
         vttablet_max_goproc: 24
       hosts:
-        localhost:
+        127.0.0.1:
           tablets:
             - id: 1001
               keyspace: main
