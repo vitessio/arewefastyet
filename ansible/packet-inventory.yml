@@ -34,9 +34,25 @@ all:
               port: 15002
               mysql_port: 13307
               grpc_port: 15307
+            - id: 3
+              port: 15003
+              mysql_port: 13308
+              grpc_port: 15308
+            - id: 4
+              port: 15004
+              mysql_port: 13309
+              grpc_port: 15309
+            - id: 5
+              port: 15005
+              mysql_port: 13310
+              grpc_port: 15310
+            - id: 6
+              port: 15006
+              mysql_port: 13311
+              grpc_port: 15311
     vttablet:
       vars:
-        vitess_memory_ratio: 0.2
+        vitess_memory_ratio: 0.6
         vttablet_query_cache_size: 10000
         vttablet_max_goproc: 24
       hosts:
@@ -44,6 +60,19 @@ all:
           tablets:
             - id: 1001
               keyspace: main
-              shard: 0
+              shard: -80
               pool_size: 500
               transaction_cap: 2000
+              port: 16001
+              grpc_port: 17001
+              mysql_port: 18001
+              mysqld_exporter_port: 9104
+            - id: 2001
+              keyspace: main
+              shard: 80-
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16002
+              grpc_port: 17002
+              mysql_port: 18002
+              mysqld_exporter_port: 9105
