@@ -29,9 +29,9 @@
         done
     - name: Ensure VSchmea
       shell: |
-        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat ~/src/planetscale-benchmark/sysbench.json)" main
+        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat vitess-benchmark/sysbench.json)" main
       when: tpcc is not defined
     - name: Ensure VSchmea
       shell: |
-        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat ~/src/planetscale-benchmark/tpcc_vschema.json)" main
+        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat vitess-benchmark/tpcc_vschema.json)" main
       when: tpcc is defined
