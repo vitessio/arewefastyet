@@ -1,0 +1,52 @@
+---
+all:
+  vars:
+    vitess_git_version: "HEAD"
+    cell: local
+    keyspace: main
+  hosts:
+    147.75.81.35:
+      storage_device:
+        device: nvme0n1
+        partition: nvme0n1p1
+  children:
+    sysbench:
+      hosts:
+        147.75.81.35:
+    prometheus:
+      hosts:
+        147.75.81.35:
+    etcd:
+      hosts:
+        147.75.81.35:
+    vtctld:
+      hosts:
+        147.75.81.35:
+    vtgate:
+      vars:
+        vtgate_query_cache_size: 1000
+        vtgate_max_goproc: 6
+      hosts:
+        147.75.81.35:
+          gateways:
+            - id: 1
+              port: 15001
+              mysql_port: 13306
+              grpc_port: 15306
+            - id: 2
+              port: 15002
+              mysql_port: 13307
+              grpc_port: 15307
+    vttablet:
+      vars:
+        vitess_memory_ratio: 0.2
+        vttablet_query_cache_size: 10000
+        vttablet_max_goproc: 24
+      hosts:
+        147.75.81.35:
+          tablets:
+            - id: 1001
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
