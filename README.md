@@ -1,16 +1,16 @@
 # AreWeFastYet
-Uses sysbench to benchmark vitess and also includes a schduler runs once a day
+Uses sysbench to benchmark vitess and also includes a schduler runs once a day. If you are 
 
 # Installation steps
 
 ### Requirements :
-1. Ubuntu or CentOS 8 
+1. CentOS 8 or Ubuntu 
 2. Python 3
 3. Mysql Server 
 
 ### Install python libraries 
 ```
-pip3 install -r requirement.txt
+pip3 install -r requirements.txt
 ```
 ### Install Ansible 
 https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html

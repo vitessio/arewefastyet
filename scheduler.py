@@ -7,12 +7,12 @@ def job():
     print("--------------- Starting ansible partial ----------------")
 
     #TODO : Changed to the ansible bash script
-    os.system('./run ')
+    os.system('./run test-packet-inventory.yml')
 
     print("--------------- Adding reports to MySql -----------------")
 
     # Not calling method directly due to segmentation fault
-    os.system('python3 report.py')
+    #os.system('python3 report.py')
 
 
     print("---------------------------------------------------------")

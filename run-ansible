@@ -1,7 +1,0 @@
-#!/bin/bash
-
-#Directory of ansible files
-cd ansible/
-
-#Run ansible script
-ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --private-key=/root/.ssh/id_rsa -i packet-inventory.yml full.yml -u root -e provision=True -e clean=True
