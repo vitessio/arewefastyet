@@ -1,0 +1,4 @@
+mysql_host: <mysql hostname>
+mysql_username: <mysql username>
+mysql_password: <mysql password>
+inventory_file: <inventory filename>
