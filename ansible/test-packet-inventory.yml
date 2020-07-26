@@ -5,29 +5,29 @@ all:
     cell: local
     keyspace: main
   hosts:
-    147.75.81.249:	
+    147.75.102.233:	
       storage_device:
         device: nvme0n1
         partition: nvme0n1p1
   children:
     sysbench:
       hosts:
-        147.75.81.249:
+        147.75.102.233:
     prometheus:
       hosts:
-        147.75.81.249:
+        147.75.102.233:
     etcd:
       hosts:
-        147.75.81.249:
+        147.75.102.233:
     vtctld:
       hosts:
-        147.75.81.249:
+        147.75.102.233:
     vtgate:
       vars:
         vtgate_query_cache_size: 1000
         vtgate_max_goproc: 6
       hosts:
-        147.75.81.249:
+        147.75.102.233:
           gateways:
             - id: 1
               port: 15001
@@ -43,7 +43,7 @@ all:
         vttablet_query_cache_size: 10000
         vttablet_max_goproc: 24
       hosts:
-        147.75.81.249:
+        147.75.102.233:
           tablets:
             - id: 1001
               keyspace: main
