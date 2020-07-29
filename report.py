@@ -1,9 +1,13 @@
 import datetime
 from connection import connectdb
 from config import mysql_connect,vitess_git_version
+from remote_file import get_remote_oltp
 import json
 
 def add_oltp():
+
+    # Gets remote OLTP files and adds it to report directory
+    get_remote_oltp()
 
     # local variable db connection object
     conn = mysql_connect()
@@ -31,7 +35,8 @@ def add_oltp():
     test_no = result[0][0]
 
 
-    with open('report/sample/sample_oltp.json') as f:
+    ## TODO: replace with calling ssh server and get remote file
+    with open('report/oltp.json') as f:
       data = json.load(f)
 
     # Inserting for oltp

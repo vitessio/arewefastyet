@@ -5,7 +5,7 @@ all:
     cell: local
     keyspace: main
   hosts:
-    147.75.102.233:	
+    147.75.102.233:
       storage_device:
         device: nvme0n1
         partition: nvme0n1p1

@@ -1,0 +1,4 @@
+mysql_host: 139.178.83.15
+mysql_username: vitess
+mysql_password: vitess
+inventory_file: test-packet-inventory.yml

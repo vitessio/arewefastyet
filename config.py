@@ -14,4 +14,7 @@ def vitess_git_version():
 
     with open('ansible/'+data["inventory_file"]) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
+        print(data)
     return data["all"]["vars"]["vitess_git_version"]
+
+vitess_git_version()
