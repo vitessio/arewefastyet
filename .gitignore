@@ -143,6 +143,9 @@ cython_debug/
 #Config yaml
 config.yaml
 
+# hide config-lock.json
+config-lock.json
+
 #.out files 
 *.out
 
