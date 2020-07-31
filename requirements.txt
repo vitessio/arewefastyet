@@ -2,3 +2,4 @@ mysql-connector-python
 schedule
 pyyaml
 pysftp
+packet-python

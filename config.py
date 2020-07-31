@@ -17,4 +17,14 @@ def vitess_git_version():
         print(data)
     return data["all"]["vars"]["vitess_git_version"]
 
-vitess_git_version()
+def packet_token():
+    data = read_config()
+    return data["packet_token"]
+
+def packet_project_id():
+    data = read_config()
+    return data["packet_project_id"]
+
+def inventory_file():
+    data = read_config()
+    return data["inventory_file"]
