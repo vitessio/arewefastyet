@@ -3,17 +3,20 @@ from config import inventory_file
 import json
 import os
 import yaml
+import sys
 
 def doesFileExists(filePathAndName):
     return os.path.exists(filePathAndName)
 
 def init():
     vps = create_vps()
-    data = {} 
-    data['run'] = {
+    data = {}
+    data['run'] = [] 
+    data['run'].append({
+       'run_id':sys.argv[1],
        'vps_id':vps[0],
        'ip_address':vps[1]
-    }
+    })
      
     with open('config-lock.json', 'w') as outfile:
        json.dump(data, outfile)

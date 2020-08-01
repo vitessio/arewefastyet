@@ -3,8 +3,22 @@ from connection import connectdb
 from config import mysql_connect,vitess_git_version
 from remote_file import get_remote_oltp
 import json
+import sys
+
+def get_ip(run_id):
+  with open('config-lock.json') as json_file:
+    data = json.load(json_file)
+  
+  for i in data['run']:
+    if i['run_id'] == run_id:
+      return data['ip_address']
+  return None
 
 def add_oltp():
+    # Read the argument for the run id
+    run_id = sys.argv[1]
+
+    get_remote_oltp(get_ip(run_id))
 
     # Gets remote OLTP files and adds it to report directory
     get_remote_oltp()
@@ -54,4 +68,5 @@ def add_oltp():
     mycursor.execute(oltp_qps,(oltp_no,data[0]["qps"]["total"],data[0]["qps"]["reads"],data[0]["qps"]["writes"],data[0]["qps"]["other"]))
     conn.commit()
 
-add_oltp()
+#add_oltp()
+get_ip('324234')

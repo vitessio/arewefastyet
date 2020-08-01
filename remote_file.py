@@ -1,11 +1,11 @@
 import pysftp
 
 
-def get_remote_oltp():
-  myHostname = "147.75.80.149"
+def get_remote_oltp(hostname):
+  # Hardcoded root
   myUsername = "root"
 
-  with pysftp.Connection(host=myHostname, username=myUsername) as sftp:
+  with pysftp.Connection(host=hostname, username=myUsername) as sftp:
      print("Connection succesfully stablished ... ")
     
      # Define the file that you want to download from the remote directory
