@@ -3,3 +3,4 @@ schedule
 pyyaml
 pysftp
 packet-python
+ansible

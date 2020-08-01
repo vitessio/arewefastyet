@@ -2,19 +2,19 @@ all:
   children:
     etcd:
       hosts:
-        12.2.3.3: null
+        123.4.23.4: null
     prometheus:
       hosts:
-        12.2.3.3: null
+        123.4.23.4: null
     sysbench:
       hosts:
-        12.2.3.3: null
+        123.4.23.4: null
     vtctld:
       hosts:
-        12.2.3.3: null
+        123.4.23.4: null
     vtgate:
       hosts:
-        12.2.3.3:
+        123.4.23.4:
           gateways:
           - grpc_port: 15306
             id: 1
@@ -29,7 +29,7 @@ all:
         vtgate_query_cache_size: 1000
     vttablet:
       hosts:
-        12.2.3.3:
+        123.4.23.4:
           tablets:
           - id: 1001
             keyspace: main
@@ -41,7 +41,7 @@ all:
         vttablet_max_goproc: 24
         vttablet_query_cache_size: 10000
   hosts:
-    12.2.3.3:
+    123.4.23.4:
       storage_device:
         device: nvme0n1
         partition: nvme0n1p1
