@@ -47,5 +47,8 @@ def recursive_dict_ip(data,ip):
         data[ip] = data.pop(old_key)
     return data
 
+def test():
+    print(sys.argv[1])
+
 
 init()
