@@ -2,17 +2,26 @@ import schedule
 import time
 import subprocess
 import os
+import yaml
+import uuid 
 
 def job():
-    print("--------------- Starting ansible partial ----------------")
 
-    #TODO : Changed to the ansible bash script
-    os.system('./run test-packet-inventory.yml')
+    run_id = uuid.uuid4()
+    os.system('python initialize_benchmark.py '+ str(run_id))
 
-    print("--------------- Adding reports to MySql -----------------")
+    print("--------------- Starting ansible ----------------")
 
-    # Not calling method directly due to segmentation fault
-    #os.system('python3 report.py')
+    #To avoid segmentation fault 
+
+    with open('config.yaml') as f:
+      data = yaml.load(f, Loader=yaml.FullLoader)
+
+    os.system('./run '+ data["inventory_file"])
+
+    print('------------- Adding results to the database ------------------')
+    
+    os.system('python report.py ' + str(run_id))
 
 
     print("---------------------------------------------------------")
