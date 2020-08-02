@@ -68,5 +68,4 @@ def add_oltp():
     mycursor.execute(oltp_qps,(oltp_no,data[0]["qps"]["total"],data[0]["qps"]["reads"],data[0]["qps"]["writes"],data[0]["qps"]["other"]))
     conn.commit()
 
-#add_oltp()
-get_ip('324234')
+add_oltp()
