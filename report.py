@@ -11,7 +11,7 @@ def get_ip(run_id):
   
   for i in data['run']:
     if i['run_id'] == run_id:
-      return data['ip_address']
+      return i['ip_address']
   return None
 
 def add_oltp():
