@@ -8,10 +8,12 @@ import sys
 
 def job():
 
+    print("--------------- Init benchmark ----------------", end='\n')
+
     run_id = uuid.uuid4()
     os.system('python initialize_benchmark.py '+ str(run_id))
 
-    print("--------------- Starting ansible ----------------")
+    print("--------------- Starting ansible ----------------", end='\n')
 
     #To avoid segmentation fault 
 
@@ -20,12 +22,11 @@ def job():
 
     os.system('./run '+ data["inventory_file"])
 
-    print('------------- Adding results to the database ------------------')
+    print('------------- Adding results to the database ------------------', end='\n')
 
     os.system('python report.py ' + str(run_id))
 
-
-    print("---------------------------------------------------------")
+    print("---------------------------------------------------------", end='\n')
 
 
 # Runs everyday at <specified time>

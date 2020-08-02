@@ -1,16 +1,36 @@
 # AreWeFastYet
-Uses sysbench to benchmark vitess and also includes a schduler runs once a day. If you are 
+Uses sysbench to run a benchmark on vitess. 
+The following codebase:
+1. Creates a VPS
+2. Runs the ansibles on the VPS
+3. reads results from the VPS and stores in the database
+4. Kills the VPS
 
 # Installation steps
 
 ### Requirements :
 1. CentOS 8 or Ubuntu 
 2. Python 3
-3. Mysql Server 
+3. Mysql Server
+4. Packet API key
+
+### Install python 3.7.x and set up virtual environment
+Ubuntu: https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/
+CentOS: https://tecadmin.net/install-python-3-7-on-centos-8/
+
+#### Install virtual environment
+Ubuntu: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-on-ubuntu-18-04/
+CentOS: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-on-centos/
+
+```
+virtualenv -python=python3.7 benchmark
+// activate virtual environment
+source benchmark/bin/activate
+```
 
 ### Install python libraries 
 ```
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 ### Install Ansible 
 https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
@@ -29,6 +49,8 @@ mysql_host: localhost:3306
 mysql_username: vitess
 mysql_password: vitess123
 inventory_file: packet-inventory.yml
+packet_token: bgRy8otJVWUmtpDDadSdSDSfgsAtY1xnRNg
+packet_project_id: dba22084-f8c7-4aaf-9e0a-weSASFDd
 ```
 Inventory file from ansible directory
 
