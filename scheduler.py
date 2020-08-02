@@ -4,6 +4,7 @@ import subprocess
 import os
 import yaml
 import uuid 
+import sys
 
 def job():
 
@@ -20,7 +21,7 @@ def job():
     os.system('./run '+ data["inventory_file"])
 
     print('------------- Adding results to the database ------------------')
-    
+
     os.system('python report.py ' + str(run_id))
 
 
@@ -28,7 +29,7 @@ def job():
 
 
 # Runs everyday at <specified time>
-schedule.every().day.at("14:50").do(job)
+schedule.every().day.at(sys.argv[1]).do(job)
 
 while True:
     schedule.run_pending()
