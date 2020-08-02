@@ -20,9 +20,6 @@ def add_oltp():
 
     get_remote_oltp(get_ip(run_id))
 
-    # Gets remote OLTP files and adds it to report directory
-    get_remote_oltp()
-
     # local variable db connection object
     conn = mysql_connect()
 
