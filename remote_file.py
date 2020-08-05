@@ -1,9 +1,12 @@
 import pysftp
-
+import os
 
 def get_remote_oltp(hostname):
   # Hardcoded root
   myUsername = "root"
+  os.system('ssh-keygen -f "/root/.ssh/known_hosts" -R "'+hostname+'"')
+
+
 
   with pysftp.Connection(host=hostname, username=myUsername) as sftp:
      print("Connection succesfully stablished ... ")
