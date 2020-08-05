@@ -101,11 +101,13 @@ def all_results():
 @app.route('/filter_results')
 def filter_results():
     date = request.args.get('date')
-    commit = request.args.get('commit')
+    commit = request.args.getlist('commit')
     test_no = request.args.get('test_no') 
 
     conn = mysql_connect()
     mycursor = conn.cursor()
+    
+    commit = tuple(commit)
     
     if test_no != None:
         # Basic run info
@@ -113,18 +115,21 @@ def filter_results():
         adr = (test_no, )
     else:
        if date != None and commit != None:
-           sql = "SELECT * FROM benchmark where DateTime BETWEEN %s AND %s AND commit=%s;"
-           adr = (date + ' 00:00:00', date + ' 23:59:59', commit,)
+           sql = 'SELECT * FROM benchmark where DateTime BETWEEN %s AND %s AND commit IN ("' + '","'.join(map(str, commit)) + '")'
+           adr = (date + ' 00:00:00', date + ' 23:59:59',)
+           mycursor.execute(sql,adr)
        elif date != None:
            sql = "SELECT * FROM benchmark where DateTime BETWEEN %s AND %s;"
            adr = (date + ' 00:00:00', date + ' 23:59:59',)
+           mycursor.execute(sql,adr)
        elif commit != None:
-           sql = "SELECT * FROM benchmark where commit=%s;"
-           adr = (commit,)
+           sql = 'SELECT * FROM benchmark where commit IN ("' + '","'.join(map(str, commit)) + '")'
+           print(sql)
+           mycursor.execute(sql)
        else:
            return 'use /allresults to view all results'
     
-    mycursor.execute(sql,adr)
+    
         
     benchmark = mycursor.fetchall()
     data = {}
@@ -181,4 +186,4 @@ def filter_results():
     
 
     return jsonify(data)
-   
+
