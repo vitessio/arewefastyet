@@ -4,3 +4,4 @@ mysql_password: <mysql password>
 inventory_file: <inventory filename>
 packet_token : <packet token>
 packet_project_id : <packet project id>
+api_key: <api key you want for the flask server>

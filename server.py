@@ -3,17 +3,33 @@ import os
 import datetime
 from multiprocessing import Process
 from connection import connectdb
-from config import mysql_connect
+from config import mysql_connect,api_key
 
 app = Flask(__name__)
 
 @app.route('/')
 def run_benchmark():
+    key = request.headers.get('api-key')
+
+    if key == None:
+        return "please add api key in header"
+
+    if key != api_key():
+        return "wrong api key"
+
     os.system('python run-benchmark.py')
     return ''
 
 @app.route('/run_scheduler')
 def nightly_bechmark():
+    key = request.headers.get('api-key')
+
+    if key == None:
+        return "please add api key in header"
+
+    if key != api_key():
+        return "wrong api key"
+
     time = request.args.get('time')
     heavy_process = Process(  # Create a daemonic process with heavy scheduler
         target=scheduler(time),
@@ -23,6 +39,14 @@ def nightly_bechmark():
     return time
 
 def scheduler(time):
+    key = request.headers.get('api-key')
+
+    if key == None:
+        return "please add api key in header"
+
+    if key != api_key():
+        return "wrong api key"
+
     process = os.system('python scheduler.py ' + time)
     print("Process finished")
 
@@ -33,6 +57,15 @@ def server_time():
 # Returns all information in the database 
 @app.route('/allresults')
 def all_results():
+
+    key = request.headers.get('api-key')
+
+    if key == None:
+        return "please add api key in header"
+
+    if key != api_key():
+        return "wrong api key"
+
     conn = mysql_connect()
     mycursor = conn.cursor()
     
@@ -100,6 +133,15 @@ def all_results():
 # Returns all information in the database 
 @app.route('/filter_results')
 def filter_results():
+    
+    key = request.headers.get('api-key')
+
+    if key == None:
+        return "please add api key in header"
+
+    if key != api_key():
+        return "wrong api key"
+
     date = request.args.get('date')
     commit = request.args.getlist('commit')
     test_no = request.args.get('test_no') 

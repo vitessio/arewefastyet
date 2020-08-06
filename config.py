@@ -28,3 +28,7 @@ def packet_project_id():
 def inventory_file():
     data = read_config()
     return data["inventory_file"]
+
+def api_key():
+    data = read_config()
+    return data["api_key"]

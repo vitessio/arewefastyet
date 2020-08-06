@@ -43,6 +43,15 @@ https://docs.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-ke
 
 
 ### Create file config.yaml 
+```
+mysql_host: <mysql hostname>
+mysql_username: <mysql username>
+mysql_password: <mysql password>
+inventory_file: <inventory filename>
+packet_token : <packet token>
+packet_project_id : <packet project id>
+api_key: <api key you want for the flask server>
+```
 Ex : 
 ```
 mysql_host: localhost:3306
@@ -51,13 +60,19 @@ mysql_password: vitess123
 inventory_file: packet-inventory.yml
 packet_token: bgRy8otJVWUmtpDDadSdSDSfgsAtY1xnRNg
 packet_project_id: dba22084-f8c7-4aaf-9e0a-weSASFDd
+api_key: db084-f8c7-4aaf-9e0a-waeasSd
 ```
 Inventory file from ansible directory
 
 ### Run Scheduler
 ```
-python3 scheduler.py & > process.txt 
+python3 scheduler.py & 
 ```
+### Example run for API
+```
+curl -X GET 'http://127.0.0.1:5000/allresults' -H 'api-key:b084-f8c7-4aaf-9e0a-waeasSd'
+```
+
 
 
 
