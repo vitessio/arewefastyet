@@ -20,7 +20,7 @@ def run_benchmark():
         return "wrong api key"
     
     heavy_process = Process(  # Create a daemonic process with heavy scheduler
-        target=run_ansible(),
+        target=run_ansible,
         daemon=True
     )
     heavy_process.start()
