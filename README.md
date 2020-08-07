@@ -51,6 +51,8 @@ inventory_file: <inventory filename>
 packet_token : <packet token>
 packet_project_id : <packet project id>
 api_key: <api key you want for the flask server>
+slack_api_token: <slack_token>
+slack_channel: <channel name>
 ```
 Ex : 
 ```
@@ -61,6 +63,8 @@ inventory_file: packet-inventory.yml
 packet_token: bgRy8otJVWUmtpDDadSdSDSfgsAtY1xnRNg
 packet_project_id: dba22084-f8c7-4aaf-9e0a-weSASFDd
 api_key: db084-f8c7-4aaf-9e0a-waeasSd
+slack_api_token: xoxb-12862423802725-128sdffsddSD6946-lzieR3PQXsdfsd2TmmFlpcQeb
+slack_channel: benchmark
 ```
 Inventory file from ansible directory
 
