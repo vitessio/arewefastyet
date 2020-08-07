@@ -7,3 +7,5 @@ ansible
 jmespath
 flask
 slackclient
+supervisor
+gunicorn
