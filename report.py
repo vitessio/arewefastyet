@@ -1,10 +1,14 @@
 import datetime
 from connection import connectdb
-from config import mysql_connect,vitess_git_version
+from config import mysql_connect,vitess_git_version,slack_api_token,slack_channel
 from remote_file import get_remote_oltp
 from packet_vps import delete_vps
+from slack import WebClient
+from slack.errors import SlackApiError
+import os
 import json
 import sys
+import ssl
 
 def get_ip_and_project_id(run_id):
   with open('config-lock.json') as json_file:
@@ -14,6 +18,24 @@ def get_ip_and_project_id(run_id):
     if i['run_id'] == run_id:
       return [i['ip_address'],i['vps_id']]
   return None
+
+def send_slack_message():
+    ssl._create_default_https_context = ssl._create_unverified_context
+   
+    client = WebClient(slack_api_token())
+
+    try:
+       filepath="./report/oltp.json"
+       response = client.files_upload(
+         channels='#'+slack_channel(),
+         file=filepath)
+       assert response["file"]  # the uploaded file 
+    except SlackApiError as e:
+    # You will get a SlackApiError if "ok" is False
+       assert e.response["ok"] is False
+       assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+       print(f"Got an error: {e.response['error']}")
+    
 
 def add_oltp():
     # Read the argument for the run id
@@ -65,7 +87,12 @@ def add_oltp():
     oltp_qps = "INSERT INTO qps(OLTP_no,total_qps,reads_qps,writes_qps,other_qps) values(%s,%s,%s,%s,%s)"
     mycursor.execute(oltp_qps,(oltp_no,data[0]["qps"]["total"],data[0]["qps"]["reads"],data[0]["qps"]["writes"],data[0]["qps"]["other"]))
     conn.commit()
+    
+    # Send report file
+    send_slack_message()
 
+    #Delete vps instance 
     delete_vps(get_ip_and_project_id(run_id)[1])
 
 add_oltp()
+

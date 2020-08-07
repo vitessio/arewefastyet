@@ -7,7 +7,9 @@ from config import mysql_connect,api_key
 
 app = Flask(__name__)
 
-@app.route('/')
+# ---------------------------------------------------------------- runs benchmark -----------------------------------------------------------------------
+
+@app.route('/run')
 def run_benchmark():
     key = request.headers.get('api-key')
 
@@ -18,7 +20,11 @@ def run_benchmark():
         return "wrong api key"
 
     os.system('python run-benchmark.py')
-    return ''
+    return 'benchmark is running'
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------- runs benchmark based on time given ----------------------------------------------------------------
 
 @app.route('/run_scheduler')
 def nightly_bechmark():
@@ -39,22 +45,17 @@ def nightly_bechmark():
     return time
 
 def scheduler(time):
-    key = request.headers.get('api-key')
-
-    if key == None:
-        return "please add api key in header"
-
-    if key != api_key():
-        return "wrong api key"
-
     process = os.system('python scheduler.py ' + time)
     print("Process finished")
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 @app.route('/servertime')
 def server_time():
     return str(datetime.datetime.now())
 
-# Returns all information in the database 
+# ----------------------------------------------------- Returns all information in the database -----------------------------------------------------------------
+
 @app.route('/allresults')
 def all_results():
 
@@ -129,8 +130,10 @@ def all_results():
 
     return jsonify(data)
 
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Returns all information in the database 
+# ----------------------------------------------------------- Returns all information in the database ------------------------------------------------------------------
+
 @app.route('/filter_results')
 def filter_results():
     
@@ -229,3 +232,4 @@ def filter_results():
 
     return jsonify(data)
 
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------

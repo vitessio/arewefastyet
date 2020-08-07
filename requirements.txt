@@ -6,3 +6,4 @@ packet-python
 ansible
 jmespath
 flask
+slackclient

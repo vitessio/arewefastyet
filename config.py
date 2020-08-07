@@ -32,3 +32,11 @@ def inventory_file():
 def api_key():
     data = read_config()
     return data["api_key"]
+
+def slack_api_token():
+    data = read_config()
+    return data["slack_api_token"]
+
+def slack_channel():
+    data = read_config()
+    return data["slack_channel"]
