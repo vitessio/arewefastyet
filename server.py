@@ -19,7 +19,7 @@ def run_benchmark():
     if key != api_key():
         return "wrong api key"
     
-    os.spawnl(os.P_DETACH, 'python run-benchmark.py')
+    os.system('python run-benchmark.py ' + '&')
     
     return 'Result will be updated on mysql database and you will be notified on slack'
         
@@ -38,7 +38,7 @@ def nightly_bechmark():
         return "wrong api key"
 
     time = request.args.get('time')
-    os.spawnl(os.P_DETACH, 'python scheduler.py ' + time)
+    os.system('python scheduler.py ' + time + ' &')
     return 'benchmark will at server time ' + time + '. Result will be updated on mysql database and you will be notified on slack'
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------
