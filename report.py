@@ -25,7 +25,7 @@ def send_slack_message():
     client = WebClient(slack_api_token())
 
     try:
-       filepath="./report/oltp.json"
+       filepath="./report/sample/sample_oltp.json"
        response = client.files_upload(
          channels='#'+slack_channel(),
          file=filepath)
@@ -91,7 +91,7 @@ def add_oltp():
     # Send report file
     send_slack_message()
 
-    #Delete vps instance 
+    #Delete vps instance
     delete_vps(get_ip_and_project_id(run_id)[1])
 
 add_oltp()

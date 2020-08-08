@@ -19,15 +19,16 @@ def run_benchmark():
     if key != api_key():
         return "wrong api key"
     
-    heavy_process = Process(  # Create a daemonic process with heavy scheduler
-        target=run_ansible,
+    heavy_process1 = Process(  # Create a daemonic process with heavy scheduler
+        target=run_ansible(),
         daemon=True
     )
-    heavy_process.start()
+    heavy_process1.start()
 
-    return 'benchmark will at server time. Result will be updated on mysql database and you will be notified on slack'
+    return 'Result will be updated on mysql database and you will be notified on slack'
     
 def run_ansible():
+    print("here")
     os.system('python run-benchmark.py')
         
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
