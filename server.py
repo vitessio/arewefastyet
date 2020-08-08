@@ -19,16 +19,9 @@ def run_benchmark():
     if key != api_key():
         return "wrong api key"
     
-    heavy_process = Process(  # Create a daemonic process with heavy scheduler
-        target=run_ansible(),
-        daemon=True
-    )
-    heavy_process.start()
-    return 'Result will be updated on mysql database and you will be notified on slack'
+    os.spawnl(os.P_DETACH, 'python run-benchmark.py')
     
-def run_ansible():
-    print("here")
-    os.system('python run-benchmark.py')
+    return 'Result will be updated on mysql database and you will be notified on slack'
         
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -45,16 +38,8 @@ def nightly_bechmark():
         return "wrong api key"
 
     time = request.args.get('time')
-    heavy_process = Process(  # Create a daemonic process with heavy scheduler
-        target=scheduler(time),
-        daemon=True
-    )
-    heavy_process.start()
+    os.spawnl(os.P_DETACH, 'python scheduler.py ' + time)
     return 'benchmark will at server time ' + time + '. Result will be updated on mysql database and you will be notified on slack'
-
-def scheduler(time):
-    process = os.system('python scheduler.py ' + time)
-    print("Process finished")
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------------
 

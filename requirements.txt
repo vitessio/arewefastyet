@@ -9,3 +9,4 @@ flask
 slackclient
 supervisor
 gunicorn
+asyncio
