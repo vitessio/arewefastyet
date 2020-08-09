@@ -9,9 +9,11 @@ def doesFileExists(filePathAndName):
     return os.path.exists(filePathAndName)
 
 def init():
-    vps = create_vps()
-    data = {}
-    data['run'] = [] 
+    vps = create_vps(sys.argv[1])
+
+    with open('config-lock.json') as json_file:
+         data = json.load(json_file)
+         
     data['run'].append({
        'run_id':sys.argv[1],
        'vps_id':vps[0],

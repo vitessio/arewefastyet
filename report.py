@@ -16,7 +16,11 @@ def get_ip_and_project_id(run_id):
   
   for i in data['run']:
     if i['run_id'] == run_id:
-      return [i['ip_address'],i['vps_id']]
+      l = [i['ip_address'],i['vps_id']]
+      data['run'].remove(i)
+      with open('config-lock.json', 'w') as outfile:
+       json.dump(data, outfile)
+      return l
   return None
 
 def send_slack_message():
@@ -25,7 +29,7 @@ def send_slack_message():
     client = WebClient(slack_api_token())
 
     try:
-       filepath="./report/sample/sample_oltp.json"
+       filepath="./report/oltp.json"
        response = client.files_upload(
          channels='#'+slack_channel(),
          file=filepath)

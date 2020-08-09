@@ -7,12 +7,12 @@ def auth_packet():
     token = packet_token()
     return packet.Manager(auth_token=token)
 
-def create_vps():
+def create_vps(id):
     project_id = packet_project_id()
     manager = auth_packet()
 
     device = manager.create_device(project_id=project_id,
-                               hostname="benchmark-1",
+                               hostname="benchmark-" + id,
                                plan="m2.xlarge.x86", facility='ams1',
                                operating_system='centos_8')
     
