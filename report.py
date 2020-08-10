@@ -50,7 +50,9 @@ def add_oltp():
     # Read the argument for the run id
     run_id = sys.argv[1]
 
-    get_remote_oltp(get_ip_and_project_id(run_id)[0])
+    config_lock = get_ip_and_project_id(run_id)
+
+    get_remote_oltp(config_lock[0])
 
     # local variable db connection object
     conn = mysql_connect()
@@ -98,10 +100,10 @@ def add_oltp():
     conn.commit()
     
     # Send report file
-    send_slack_message()
+    #send_slack_message()
 
     # Delete vps instance
-    delete_vps(get_ip_and_project_id(run_id)[1])
+    delete_vps(config_lock[1])
     
     # remove inventory file
     remove_inventory_file(run_id)
