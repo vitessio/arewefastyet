@@ -15,6 +15,7 @@ def get_ip_and_project_id(run_id):
   with open('config-lock.json') as json_file:
     data = json.load(json_file)
   
+  print(data)
   for i in data['run']:
     if i['run_id'] == run_id:
       l = [i['ip_address'],i['vps_id']]
@@ -98,12 +99,13 @@ def add_oltp():
     
     # Send report file
     send_slack_message()
+
+    # Delete vps instance
+    delete_vps(get_ip_and_project_id(run_id)[1])
     
     # remove inventory file
     remove_inventory_file(run_id)
 
-    # Delete vps instance
-    delete_vps(get_ip_and_project_id(run_id)[1])
 
 add_oltp()
 
