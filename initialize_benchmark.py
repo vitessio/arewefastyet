@@ -10,19 +10,31 @@ def doesFileExists(filePathAndName):
 
 def init():
     vps = create_vps(sys.argv[1])
-
-    with open('config-lock.json') as json_file:
-         data = json.load(json_file)
-         
-    data['run'].append({
-       'run_id':sys.argv[1],
-       'vps_id':vps[0],
-       'ip_address':vps[1]
-    })
-     
-    with open('config-lock.json', 'w') as outfile:
-       json.dump(data, outfile)
     
+    if doesFileExists('config-lock.json'):
+      with open('config-lock.json') as json_file:
+          data = json.load(json_file)
+         
+      data['run'].append({
+        'run_id':sys.argv[1],
+        'vps_id':vps[0],
+        'ip_address':vps[1]
+      })
+     
+      with open('config-lock.json', 'w') as outfile:
+        json.dump(data, outfile)
+    
+    else:
+       data = {}
+       data['run'] = []
+       data['run'].append({
+        'run_id':sys.argv[1],
+        'vps_id':vps[0],
+        'ip_address':vps[1]
+       })
+       with open('config-lock.json', 'w') as outfile:
+        json.dump(data, outfile)
+
     with open('ansible/'+inventory_file()) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
     
