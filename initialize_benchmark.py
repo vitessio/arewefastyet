@@ -1,15 +1,22 @@
 from packet_vps import create_vps
 from config import inventory_file
+from pathlib import Path
 import json
 import os
 import yaml
 import sys
+import shutil
 
 def doesFileExists(filePathAndName):
     return os.path.exists(filePathAndName)
 
 def init():
+
+
     vps = create_vps(sys.argv[1])
+
+    # create copy of inventory file 
+    shutil.copy2('./ansible/'+inventory_file(), './ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + sys.argv[1] + '.yml')
     
     if doesFileExists('config-lock.json'):
       with open('config-lock.json') as json_file:
@@ -43,7 +50,7 @@ def init():
 
     print(data)
     
-    with open('ansible/'+inventory_file() , 'w') as f:
+    with open('ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + sys.argv[1] + '.yml' , 'w') as f:
       yaml.dump(data,f)
     
 

@@ -2,6 +2,7 @@ import time
 import subprocess
 import os
 from config import inventory_file
+from pathlib import Path
 import uuid 
 
 def tasks():

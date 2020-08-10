@@ -1,10 +1,11 @@
 import datetime
 from connection import connectdb
-from config import mysql_connect,vitess_git_version,slack_api_token,slack_channel
+from config import mysql_connect,vitess_git_version,slack_api_token,slack_channel,inventory_file
 from remote_file import get_remote_oltp
 from packet_vps import delete_vps
 from slack import WebClient
 from slack.errors import SlackApiError
+from pathlib import Path
 import os
 import json
 import sys
@@ -39,6 +40,9 @@ def send_slack_message():
        assert e.response["ok"] is False
        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
        print(f"Got an error: {e.response['error']}")
+
+def remove_inventory_file(id):
+    os.remove('./ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + id + '.yml')
     
 
 def add_oltp():
@@ -94,8 +98,11 @@ def add_oltp():
     
     # Send report file
     send_slack_message()
+    
+    # remove inventory file
+    remove_inventory_file(run_id)
 
-    #Delete vps instance
+    # Delete vps instance
     delete_vps(get_ip_and_project_id(run_id)[1])
 
 add_oltp()
