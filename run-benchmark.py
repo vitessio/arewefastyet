@@ -10,7 +10,7 @@ def tasks():
    run_id = uuid.uuid4()
    os.system('python initialize_benchmark.py '+ str(run_id))
    print('------------- Running Benchamrk ------------------')
-   os.system('./run '+ Path('./ansible/' + inventory_file()).stem + '-' + id + '.yml')
+   os.system('./run '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
    print('------------- Adding results to the database ------------------')
    os.system('python report.py ' + str(run_id))
 

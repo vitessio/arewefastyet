@@ -1,0 +1,16 @@
+[
+  {
+    "time":  300,
+    "threads": 0,
+    "tps": 3558.94,
+    "qps": {
+      "total": 56942.98,
+      "reads": 35589.36,
+      "writes": 14235.75,
+      "other": 7117.87
+    },
+    "latency": 57.87,
+    "errors": 0.00,
+    "reconnects": 0.00
+  }
+]
