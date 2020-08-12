@@ -20,13 +20,17 @@ import os
 from config import inventory_file
 from pathlib import Path
 import uuid 
+import sys
 
 # ------------------------------------------------------ Runs benchmark tasks ---------------------------------------------------------
 
 def tasks():
    print('------------- Initialize VPS ------------------')
+
    run_id = uuid.uuid4()
-   os.system('python initialize_benchmark.py '+ str(run_id))
+   commit = sys.argv[1]
+
+   os.system('python initialize_benchmark.py '+ str(run_id) + ' ' + commit)
    print('------------- Running Benchamrk ------------------')
    os.system('./run '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
    print('------------- Adding results to the database ------------------')

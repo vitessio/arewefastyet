@@ -12,7 +12,7 @@
 #
 # demonstrates to:
 #   - Run API server (must have api key in header eg: curl -X GET 'http://127.0.0.1:5000/allresults' -H 'api-key:b0wewer')
-#       - /run - run benchmark and notify result on slack channel
+#       - /run [GET] paramter [commit=<commit hash>] - run benchmark and notify result on slack channel
 #       - /run_scheduler [GET] paramter [time=<server time>] - run benchmark on specified time everyday and notify result
 #                                                              on slack channel
 #       - /servertime - returns server time
@@ -41,8 +41,10 @@ def run_benchmark():
 
     if key != api_key():
         return "wrong api key"
+
+    commit = request.args.get('commit')
     
-    os.system('python run-benchmark.py ' + '&')
+    os.system('python run-benchmark.py ' + commit + ' &')
     
     return 'Result will be updated on mysql database and you will be notified on slack'
         

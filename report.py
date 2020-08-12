@@ -50,23 +50,10 @@ def get_ip_and_project_id(run_id):
 # ----------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Send Slack Message ----------------------------------------------------------
 
-def send_slack_message(inventory):
+def send_slack_message():
     ssl._create_default_https_context = ssl._create_unverified_context
    
     client = WebClient(slack_api_token())
-    
-    # Upload inventory file to slack
-    try:
-       filepath="./ansible/" + inventory
-       response = client.files_upload(
-         channels='#'+slack_channel(),
-         file=filepath)
-       assert response["file"]  # the uploaded file 
-    except SlackApiError as e:
-    # You will get a SlackApiError if "ok" is False
-       assert e.response["ok"] is False
-       assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
-       print(f"Got an error: {e.response['error']}")
 
     # Upload OLTP file to slack
     try:
@@ -99,7 +86,7 @@ def add_oltp():
     get_remote_oltp(config_lock[0])
 
     # Send report file
-    send_slack_message(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
+    send_slack_message()
 
     # local variable db connection object
     conn = mysql_connect()

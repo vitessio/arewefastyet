@@ -15,7 +15,7 @@
 #   - calls create_vps to create packet server 
 #   - add run information to config-lock.json file 
 #   - changes the ip address in the copy of the inventory file 
-# Args : run_id
+# Args : run_id , commit_id
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 from packet_vps import create_vps
@@ -70,6 +70,8 @@ def init():
     
     # Changes ip address with new ip address
     data = recursive_dict(data,vps[1])
+
+    data["all"]["vars"]["vitess_git_version"] = sys.argv[2]
 
     print(data)
     
