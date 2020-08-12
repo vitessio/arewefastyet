@@ -76,7 +76,7 @@ python3 scheduler.py &
 ```
 curl -X GET 'http://127.0.0.1:5000/allresults' -H 'api-key:b084-f8c7-4aaf-9e0a-waeasSd'
 ```
-
+Api routes : https://github.com/vitessio/arewefastyet/blob/master/server.py
 
 
 

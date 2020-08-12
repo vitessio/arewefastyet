@@ -15,6 +15,7 @@
 #   - calls create_vps to create packet server 
 #   - add run information to config-lock.json file 
 #   - changes the ip address in the copy of the inventory file 
+# Args : run_id
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 from packet_vps import create_vps

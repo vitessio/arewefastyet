@@ -11,7 +11,7 @@
 # limitations under the License.
 #
 # demonstrates to:
-#   - Run API server to (must have api key in header eg: curl -X GET 'http://127.0.0.1:5000/allresults' -H 'api-key:b0wewer')
+#   - Run API server (must have api key in header eg: curl -X GET 'http://127.0.0.1:5000/allresults' -H 'api-key:b0wewer')
 #       - /run - run benchmark and notify result on slack channel
 #       - /run_scheduler [GET] paramter [time=<server time>] - run benchmark on specified time everyday and notify result
 #                                                              on slack channel
