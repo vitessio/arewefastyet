@@ -1,3 +1,26 @@
+# -------------------------------------------------------------------------------------------------------------------------------------------------
+# Copyright 2020 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# demonstrates to:
+#   - Run API server to (must have api key in header eg: curl -X GET 'http://127.0.0.1:5000/allresults' -H 'api-key:b0wewer')
+#       - /run - run benchmark and notify result on slack channel
+#       - /run_scheduler [GET] paramter [time=<server time>] - run benchmark on specified time everyday and notify result
+#                                                              on slack channel
+#       - /servertime - returns server time
+#       - /allresults - returns JSON of all benchmark results in the database
+#       - /filter_result [GET] paramters [date=<reverse order for mysql>,commit=<commit hash>&commit=<commit hash>&...n,test_no=<int>]
+#                     - filters and returns result based on argument given
+# -----------------------------------------------------------------------------------------------------------------------------------------------------
+
 from flask import Flask ,request ,jsonify
 import os
 import datetime
@@ -24,8 +47,7 @@ def run_benchmark():
     return 'Result will be updated on mysql database and you will be notified on slack'
         
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# ---------------------------------------------------- runs benchmark based on time given ----------------------------------------------------------------
+# ---------------------------------------------------------- runs benchmark based on time given ----------------------------------------------------------
 
 @app.route('/run_scheduler')
 def nightly_bechmark():
@@ -41,12 +63,10 @@ def nightly_bechmark():
     os.system('python scheduler.py ' + time + ' &')
     return 'benchmark will at server time ' + time + '. Result will be updated on mysql database and you will be notified on slack'
 
-# -------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 @app.route('/servertime')
 def server_time():
     return str(datetime.datetime.now())
-
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------- Returns all information in the database -----------------------------------------------------------------
 
 @app.route('/allresults')
@@ -124,7 +144,6 @@ def all_results():
     return jsonify(data)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # ----------------------------------------------------------- Returns all information in the database ------------------------------------------------------------------
 
 @app.route('/filter_results')

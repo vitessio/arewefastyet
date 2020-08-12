@@ -1,3 +1,21 @@
+# --------------------------------------------------------------------------------------------------------------------------------
+# Copyright 2020 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# demonstrates to:
+#   - OLTP results to a database 
+#   - Sends the inventory file used and oltp.json as a slack message
+#   - Deletes the packet baremetal server used to run the Ansibles 
+# --------------------------------------------------------------------------------------------------------------------------------
+
 import datetime
 from connection import connectdb
 from config import mysql_connect,vitess_git_version,slack_api_token,slack_channel,inventory_file
@@ -10,6 +28,9 @@ import os
 import json
 import sys
 import ssl
+
+
+# ------------------------------------------------------ IP and Project ID --------------------------------------------------------
 
 def get_ip_and_project_id(run_id):
   with open('config-lock.json') as json_file:
@@ -25,11 +46,28 @@ def get_ip_and_project_id(run_id):
       return l
   return None
 
-def send_slack_message():
+# ----------------------------------------------------------------------------------------------------------------------------------
+# ---------------------------------------------------- Send Slack Message ----------------------------------------------------------
+
+def send_slack_message(inventory):
     ssl._create_default_https_context = ssl._create_unverified_context
    
     client = WebClient(slack_api_token())
+    
+    # Upload inventory file to slack
+    try:
+       filepath="./ansible/" + inventory
+       response = client.files_upload(
+         channels='#'+slack_channel(),
+         file=filepath)
+       assert response["file"]  # the uploaded file 
+    except SlackApiError as e:
+    # You will get a SlackApiError if "ok" is False
+       assert e.response["ok"] is False
+       assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+       print(f"Got an error: {e.response['error']}")
 
+    # Upload OLTP file to slack
     try:
        filepath="./report/oltp.json"
        response = client.files_upload(
@@ -42,9 +80,14 @@ def send_slack_message():
        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
        print(f"Got an error: {e.response['error']}")
 
+# --------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------- Remove Inventory file -------------------------------------------------------------
+
 def remove_inventory_file(id):
     os.remove('./ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + id + '.yml')
-    
+
+# --------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------- Main function for report and add OLTP to database ---------------------------------------------
 
 def add_oltp():
     # Read the argument for the run id
@@ -53,6 +96,9 @@ def add_oltp():
     config_lock = get_ip_and_project_id(run_id)
 
     get_remote_oltp(config_lock[0])
+
+    # Send report file
+    send_slack_message(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
 
     # local variable db connection object
     conn = mysql_connect()
@@ -98,9 +144,6 @@ def add_oltp():
     oltp_qps = "INSERT INTO qps(OLTP_no,total_qps,reads_qps,writes_qps,other_qps) values(%s,%s,%s,%s,%s)"
     mycursor.execute(oltp_qps,(oltp_no,data[0]["qps"]["total"],data[0]["qps"]["reads"],data[0]["qps"]["writes"],data[0]["qps"]["other"]))
     conn.commit()
-    
-    # Send report file
-    #send_slack_message()
 
     # Delete vps instance
     delete_vps(config_lock[1])
@@ -108,6 +151,7 @@ def add_oltp():
     # remove inventory file
     remove_inventory_file(run_id)
 
+# -------------------------------------------------------------------------------------------------------------------------------------------------
 
 add_oltp()
 

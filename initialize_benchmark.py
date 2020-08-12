@@ -1,3 +1,22 @@
+# ------------------------------------------------------------------------------------------------------------------------------------
+# Copyright 2020 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# demonstrates to:
+#   - create a copy of inventory file for the run 
+#   - calls create_vps to create packet server 
+#   - add run information to config-lock.json file 
+#   - changes the ip address in the copy of the inventory file 
+# -------------------------------------------------------------------------------------------------------------------------------------
+
 from packet_vps import create_vps
 from config import inventory_file
 from pathlib import Path
@@ -7,12 +26,15 @@ import yaml
 import sys
 import shutil
 
+# ------------------------------------------------- Checks if file exists or not --------------------------------------------------------
+
 def doesFileExists(filePathAndName):
     return os.path.exists(filePathAndName)
 
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------- Initializes benchmark process --------------------------------------------------------
+
 def init():
-
-
     vps = create_vps(sys.argv[1])
 
     # create copy of inventory file 
@@ -53,6 +75,8 @@ def init():
     with open('ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + sys.argv[1] + '.yml' , 'w') as f:
       yaml.dump(data,f)
     
+# ----------------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------- Changes IP recursively ---------------------------------------------------------------
 
 def recursive_dict(data,ip):
      for k, v in data.items():
@@ -68,5 +92,6 @@ def recursive_dict_ip(data,ip):
         data[ip] = data.pop(old_key)
     return data
 
+# ----------------------------------------------------------------------------------------------------------------------------------------
 
 init()
