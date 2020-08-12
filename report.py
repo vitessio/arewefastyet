@@ -86,7 +86,7 @@ def add_oltp():
     get_remote_oltp(config_lock[0])
 
     # Send report file
-    send_slack_message()
+    #send_slack_message()
 
     # local variable db connection object
     conn = mysql_connect()
