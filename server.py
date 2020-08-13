@@ -24,6 +24,7 @@
 from flask import Flask ,request ,jsonify
 import os
 import datetime
+import uuid 
 from multiprocessing import Process
 from connection import connectdb
 from config import mysql_connect,api_key
@@ -43,10 +44,10 @@ def run_benchmark():
         return "wrong api key"
 
     commit = request.args.get('commit')
+    run_id = uuid.uuid4()
+    os.system('python run-benchmark.py ' + commit + ' ' + str(run_id) + ' api_call' + ' &')
     
-    os.system('python run-benchmark.py ' + commit + ' &')
-    
-    return 'Result will be updated on mysql database and you will be notified on slack'
+    return 'Result will be updated on mysql database and you will be notified on slack <br> Run_id: ' + str(run_id)
         
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------- runs benchmark based on time given ----------------------------------------------------------

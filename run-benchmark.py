@@ -27,14 +27,16 @@ import sys
 def tasks():
    print('------------- Initialize VPS ------------------')
 
-   run_id = uuid.uuid4()
+   #run_id = uuid.uuid4()
    commit = sys.argv[1]
+   run_id = sys.argv[2]
+   source = sys.argv[3]
 
    os.system('python initialize_benchmark.py '+ str(run_id) + ' ' + commit)
    print('------------- Running Benchamrk ------------------')
    os.system('./run '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
    print('------------- Adding results to the database ------------------')
-   os.system('python report.py ' + str(run_id))
+   os.system('python report.py ' + str(run_id) + ' ' + source)
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 

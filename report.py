@@ -68,6 +68,18 @@ def send_slack_message():
        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
        print(f"Got an error: {e.response['error']}")
 
+# -------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------- Adds run_id , vitess_version , source --------------------------------------------------
+
+def add_data_oltp_report(run_id,source):
+    with open('report/oltp.json') as f:
+        data = json.load(f)
+    data[0]["run_id"] = run_id
+    data[0]["source"] = source
+    data[0]["commit_id"] = vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
+    with open('report/oltp.json', 'w') as outfile:
+       json.dump(data, outfile)
+    
 # --------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------- Remove Inventory file -------------------------------------------------------------
 
@@ -80,10 +92,14 @@ def remove_inventory_file(id):
 def add_oltp():
     # Read the argument for the run id
     run_id = sys.argv[1]
+    source = sys.argv[2]
 
     config_lock = get_ip_and_project_id(run_id)
 
     get_remote_oltp(config_lock[0])
+    
+    # Add run_id , source , vitess_git_version to oltp.json
+    add_data_oltp_report(run_id,source)
 
     # Send report file
     #send_slack_message()
@@ -142,4 +158,3 @@ def add_oltp():
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
 add_oltp()
-
