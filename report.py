@@ -102,7 +102,7 @@ def add_oltp():
     add_data_oltp_report(run_id,source)
 
     # Send report file
-    #send_slack_message()
+    send_slack_message()
 
     # local variable db connection object
     conn = mysql_connect()

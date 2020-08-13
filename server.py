@@ -50,7 +50,7 @@ def run_benchmark():
     return 'Result will be updated on mysql database and you will be notified on slack <br> Run_id: ' + str(run_id)
         
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------- runs benchmark based on time given ----------------------------------------------------------
+# -------------------------------------------------------- runs benchmark based on time given ----------------------------------------------------------
 
 @app.route('/run_scheduler')
 def nightly_bechmark():
