@@ -33,10 +33,10 @@ def mysql_connect():
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------- Returns Vitess commit hash used in inventory file --------------------------------------------
 
-def vitess_git_version():
+def vitess_git_version(inventory_file):
     data = read_config()
 
-    with open('ansible/'+data["inventory_file"]) as f:
+    with open('ansible/'+inventory_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         print(data)
     return data["all"]["vars"]["vitess_git_version"]

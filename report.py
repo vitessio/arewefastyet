@@ -106,7 +106,7 @@ def add_oltp():
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime) values(%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version(),mysql_timestamp))
+    mycursor.execute(benchmark, (vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
