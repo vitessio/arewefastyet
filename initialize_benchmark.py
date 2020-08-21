@@ -15,7 +15,8 @@
 #   - calls create_vps to create packet server 
 #   - add run information to config-lock.json file 
 #   - changes the ip address in the copy of the inventory file 
-# Args : run_id , commit_id
+#
+# Arguments: python initialize_benchmark.py <run id> <commit hash>
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 from packet_vps import create_vps
@@ -26,6 +27,7 @@ import os
 import yaml
 import sys
 import shutil
+from get_head_hash import head_commit_hash
 
 # ------------------------------------------------- Checks if file exists or not --------------------------------------------------------
 
@@ -71,7 +73,12 @@ def init():
     # Changes ip address with new ip address
     data = recursive_dict(data,vps[1])
 
-    data["all"]["vars"]["vitess_git_version"] = sys.argv[2]
+    # if HEAD then get commit hash
+    commit_hash = sys.argv[2]
+    if commit_hash == 'HEAD':
+       commit_hash = head_commit_hash()
+
+    data["all"]["vars"]["vitess_git_version"] = commit_hash
 
     print(data)
     

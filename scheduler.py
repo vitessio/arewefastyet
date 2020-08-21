@@ -12,20 +12,22 @@
 #
 # demonstrates to:
 #   - to call 'python run-benchmark.py' at specified time of the day
+#
+# Arguments: python scheduler.py <time>
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 import schedule
 import time
-import subprocess
 import os
-import yaml
 import uuid 
 import sys
 
 # ---------------------------------------------------------------- Calls run benchmark ----------------------------------------------------------------
 
 def job():
-    os.system('python run-benchmark.py')
+    commit = 'HEAD'
+    run_id = uuid.uuid4()
+    os.system('python run-benchmark.py ' + commit + ' ' + str(run_id) + ' scheduler' + ' &')
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 

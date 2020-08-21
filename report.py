@@ -14,7 +14,8 @@
 #   - OLTP results to a database 
 #   - Sends the inventory file used and oltp.json as a slack message
 #   - Deletes the packet baremetal server used to run the Ansibles 
-#  Args : run_id
+#
+#  Arguments: python report.py <run id> <source>
 # --------------------------------------------------------------------------------------------------------------------------------
 
 import datetime

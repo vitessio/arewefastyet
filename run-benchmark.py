@@ -12,6 +12,8 @@
 #
 # demonstrates to:
 #   - Creates Run ID and runs Benchmark
+#
+# Arguments: python run-benchmark.py <commit hash> <run id> <source>
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 import time
