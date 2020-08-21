@@ -10,3 +10,4 @@ slackclient
 supervisor
 gunicorn
 asyncio
+gitpython
