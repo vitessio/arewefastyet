@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Vitess Benchmark</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/full-width-pics.css" rel="stylesheet">
+    <link href="css/search.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><img src="https://vitess.io/img/logos/vitess.png" style="height:2rem" />
+                Benchmark</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Search or Compare</a>
+                        <span class="sr-only">(current)</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="request_benchmark.html">Request Benchmark Run</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="main">
+                <!-- Another variation with a button -->
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search using Commit hash or Release version">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="button">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <h2>OLTP Results</h2>
+            <div class="form-group row">
+                <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS (Transactions pre
+                        second)</span></label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="search_TPS" placeholder="---" disabled>
+                </div>
+            </div>
+            <h3>QPS</h3>
+            <div class="container">
+                <div class="container">
+                    <div class="form-group row">
+                        <label for="total" class="col-sm-2 col-form-label">total</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="search_total" placeholder="---" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="reads" class="col-sm-2 col-form-label">reads</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="search_reads" placeholder="---" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="writes" class="col-sm-2 col-form-label">writes</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="search_writes" placeholder="---" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="others" class="col-sm-2 col-form-label">others</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="search_others" placeholder="---" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="latency" class="col-sm-2 col-form-label"><span
+                        style="font-weight:700">latency</span></label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="search_latency" placeholder="---" disabled>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="py-5">
+        <div class="container">
+            <h1>Compare</h1>
+            <div class="row">
+                <div class="card" style="width: 35rem;">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="main">
+                                <!-- Another variation with a button -->
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search using Commit hash or Release version">
+                                    <div class="input-group-append">
+                                    </div>
+                                </div>
+                            </div>
+                            <h2>OLTP Results</h2>
+                            <div class="form-group row">
+                                <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS </span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="search_TPS" placeholder="---" disabled>
+                                </div>
+                            </div>
+                            <h3>QPS</h3>
+                            <div class="container">
+                                <div class="container">
+                                    <div class="form-group row">
+                                        <label for="total" class="col-sm-2 col-form-label">total</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_total" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="reads" class="col-sm-2 col-form-label">reads</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_reads" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="writes" class="col-sm-2 col-form-label">writes</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_writes" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="others" class="col-sm-2 col-form-label">others</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_others" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="latency" class="col-sm-2 col-form-label"><span
+                                        style="font-weight:700">latency</span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="search_latency" placeholder="---" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="width: 35rem;">
+                    <div class="card-body">
+                        <div class="container">
+                            <div class="main">
+                                <!-- Another variation with a button -->
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search using Commit hash or Release version">
+                                </div>
+                            </div>
+                            <h2>OLTP Results</h2>
+                            <div class="form-group row">
+                                <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS</span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="search_TPS" placeholder="---" disabled>
+                                </div>
+                            </div>
+                            <h3>QPS</h3>
+                            <div class="container">
+                                <div class="container">
+                                    <div class="form-group row">
+                                        <label for="total" class="col-sm-2 col-form-label">total</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_total" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="reads" class="col-sm-2 col-form-label">reads</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_reads" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="writes" class="col-sm-2 col-form-label">writes</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_writes" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="others" class="col-sm-2 col-form-label">others</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" id="search_others" placeholder="---" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="latency" class="col-sm-2 col-form-label"><span
+                                        style="font-weight:700">latency</span></label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="search_latency" placeholder="---" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="container">
+                <center><button type="button" class="btn btn-dark"><h4>Compare</h4></button></center>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+        <div class="container">
+            <p class="m-0 text-center text-white">Copyright &copy; Vitess 2020</p>
+        </div>
+        <!-- /.container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+</body>
+
+</html>
