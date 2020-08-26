@@ -15,7 +15,7 @@
 #   - Sends the inventory file used and oltp.json as a slack message
 #   - Deletes the packet baremetal server used to run the Ansibles 
 #
-#  Arguments: python report.py <run id> <source>
+#  Arguments: python report.py <run id> <source> <oltp or tpcc>
 # --------------------------------------------------------------------------------------------------------------------------------
 
 import datetime
@@ -156,6 +156,9 @@ def add_oltp():
     # remove inventory file
     remove_inventory_file(run_id)
 
+    return test_no
+
 # -------------------------------------------------------------------------------------------------------------------------------------------------
 
-add_oltp()
+if sys.argv[3] == "OLTP":
+   add_oltp()

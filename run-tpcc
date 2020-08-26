@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#Directory of ansible files
+cd ansible/
+
+#Run ansible script (Runs for all except sysbench)
+ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook --private-key=/root/.ssh/id_rsa -i $1 full.yml -u root -e provision=True -e tpcc=true -e clean=True
