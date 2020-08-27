@@ -21,16 +21,73 @@
 #                     - filters and returns result based on argument given
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-from flask import Flask ,request ,jsonify
+from flask import Flask ,request ,jsonify, render_template
 import os
 import datetime
 import uuid 
 from multiprocessing import Process
 from connection import connectdb
-from config import mysql_connect,api_key
+from config import mysql_connect,api_key,slack_api_token,slack_channel
+from slack import WebClient
+from slack.errors import SlackApiError
 
 app = Flask(__name__)
 
+# ----------------------------------------------------------------- Render Home page -------------------------------------------------------------------
+
+@app.route('/')
+def home():
+    return render_template("index.html")
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------- Render Search_Compare -------------------------------------------------------------------
+
+@app.route('/search_compare')
+def search_compare():
+    return render_template("search_compare.html")
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------- Render request_benchmark ------------------------------------------------------------------
+
+@app.route('/request_benchmark')
+def request_benchmark():
+    name = request.args.get('name')
+    commit_hash = request.args.get('commit_hash')
+    email_id = request.args.get('email_id')
+    
+    Message = ""
+    status = ""
+    
+    # Check if all arguments have a value and then send a slack message
+    if name != None and commit_hash != None and email_id != None:
+        client = WebClient(token=slack_api_token())
+
+        try:
+          response = client.chat_postMessage(
+            channel='#' + slack_channel(),
+            text=""" Request Benchmark run 
+            Name: """ + name + """
+            Commit hash: """ + commit_hash + """
+            Email ID: """ + email_id + """ """)
+
+          assert response["message"]["text"] == """ Request Benchmark run 
+            Name: """ + name + """
+            Commit hash: """ + commit_hash + """
+            Email ID: """ + email_id + """ """
+          Message = "Sent Succesfully"
+          status = "success"
+
+        except SlackApiError as e:
+        # You will get a SlackApiError if "ok" is False
+             assert e.response["ok"] is False
+             assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+             Message = f"Got an error: {e.response['error']}"
+             status = "warning"
+
+    
+    return render_template("request_benchmark.html",message=Message,status=status)
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------------------- runs benchmark -----------------------------------------------------------------------
 
 @app.route('/run')
@@ -69,6 +126,7 @@ def nightly_bechmark():
 @app.route('/servertime')
 def server_time():
     return str(datetime.datetime.now())
+
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------- Returns all information in the database -----------------------------------------------------------------
 
