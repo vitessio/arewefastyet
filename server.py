@@ -19,6 +19,12 @@
 #       - /allresults - returns JSON of all benchmark results in the database
 #       - /filter_result [GET] paramters [date=<reverse order for mysql>,commit=<commit hash>&commit=<commit hash>&...n,test_no=<int>]
 #                     - filters and returns result based on argument given
+#    - Web App routes
+#       - / [GET] - returns home page
+#       - /search_compare [GET] - returns search page
+#       - /request_benchmark [GET] - returns request run for benchmark
+#
+#   Future code fix: Normalize code (Reduce Code duplication)
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 from flask import Flask ,request ,jsonify, render_template
@@ -44,7 +50,40 @@ def home():
 
 @app.route('/search_compare')
 def search_compare():
-    return render_template("search_compare.html")
+    searchcommit = request.args.get('search_commit')
+    compare_commit_1 = request.args.get('compare_commit_1')
+    compare_commit_2 = request.args.get('compare_commit_2')
+
+    search_result = []
+    compare_result_1 = []
+    compare_result_2 = []
+    
+    # flag for empty result
+    search_flag_empty = "No"
+    compare_1_flag_empty = "No"
+    compare_2_flag_empty = "No"
+
+    if searchcommit != None:
+       search_result = search_commit(searchcommit)
+       if search_result == None:
+           search_flag_empty = "Yes"
+           search_result = []
+    
+    if compare_commit_1 != None:
+       compare_result_1 = search_commit(compare_commit_1)
+       if compare_result_1 == None:
+           compare_1_flag_empty = "Yes"
+           compare_result_1 = []
+
+    if compare_commit_2 != None:
+       compare_result_2 = search_commit(compare_commit_2)
+       if compare_result_2 == None:
+           compare_2_flag_empty = "Yes"
+           compare_result_2 = []
+    
+    # returns: search result, search result flag, compare result 1, compare result 1 flag, compare result 2, compare result flag 2
+    return render_template("search_compare.html",search_result=search_result,search_flag_empty=search_flag_empty,compare_result_1=compare_result_1,
+    compare_1_flag_empty=compare_1_flag_empty,compare_result_2=compare_result_2,compare_2_flag_empty=compare_2_flag_empty)
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------- Render request_benchmark ------------------------------------------------------------------
@@ -231,6 +270,7 @@ def filter_results():
         # Basic run info
         sql = "SELECT * FROM benchmark where test_no=%s;"
         adr = (test_no, )
+        mycursor.execute(sql,adr)
     else:
        if date != None and commit != None:
            sql = 'SELECT * FROM benchmark where DateTime BETWEEN %s AND %s AND commit IN ("' + '","'.join(map(str, commit)) + '")'
@@ -304,5 +344,70 @@ def filter_results():
     
 
     return jsonify(data)
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------- Returns results based on commit hash ----------------------------------------------------------------
+
+def search_commit(commit):
+    conn = mysql_connect()
+    mycursor = conn.cursor()
+
+    sql = "SELECT * FROM benchmark where commit=%s;"
+    adr = (commit, )
+    mycursor.execute(sql,adr)
+        
+    benchmark = mycursor.fetchall()
+    data = {}
+    data['benchmark'] = [] 
+
+    for i in range(len(benchmark)):
+        oltp = []
+        # Oltp information 
+
+        sql = "SELECT * FROM OLTP where test_no = %s;"
+        adr = (benchmark[i][0], )
+        mycursor.execute(sql,adr)
+        
+        oltp_result = mycursor.fetchall()
+
+        for j in range(len(oltp_result)):
+           qps = []
+           sql = "SELECT * FROM qps where OLTP_no = %s;"
+           adr = (oltp_result[j][0], )
+           mycursor.execute(sql,adr)
+
+           qps_result = mycursor.fetchall()
+
+           for k in range(len(qps_result)):
+               qps.append({
+                   'qps_no': qps_result[k][0],
+                   'TPCC_no': qps_result[k][1],
+                   'total_qps': str(qps_result[k][2]),
+                   'reads_qps': str(qps_result[k][3]),
+                   'writes_qps':str(qps_result[k][4]),
+                   'other_qps': str(qps_result[k][5]),
+                   'OLTP_no': qps_result[k][6]
+               })
+
+           oltp.append({
+             'oltp_no': oltp_result[j][0],
+             'test_no': oltp_result[j][1],
+             'tps': str(oltp_result[j][2]),
+             'latency': str(oltp_result[j][3]),
+             'errors': str(oltp_result[j][4]),
+             'reconnects': str(oltp_result[j][5]),
+             'time': oltp_result[j][6],
+             'threads': oltp_result[j][7],
+             'qps': qps
+           })
+
+        data['benchmark'].append({
+        'id':benchmark[i][0],
+        'commit':benchmark[i][1],
+        'datetime':benchmark[i][2],
+        'oltp':oltp
+        })
+         
+        return data
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------

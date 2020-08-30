@@ -52,21 +52,26 @@
         <div class="container">
             <div class="main">
                 <!-- Another variation with a button -->
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search using Commit hash or Release version">
-                    <div class="input-group-append">
-                        <button class="btn btn-secondary" type="button">
-                            Search
-                        </button>
+                <form type="GET" action="/search_compare">
+                    <div class="input-group">
+                        <input type="text" class="form-control"
+                            placeholder="Search using Commit hash or Release version" name="search_commit">
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary" type="submit">
+                                Search
+                            </button>
+                        </div>
+
                     </div>
-                </div>
+                </form>
             </div>
+            {% if search_result|length != 0 %}
             <h2>OLTP Results</h2>
             <div class="form-group row">
-                <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS (Transactions per
-                        second)</span></label>
+                <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS </span></label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="search_TPS" placeholder="---" disabled>
+                    <input type="text" class="form-control" id="search_TPS"
+                        placeholder="{{ search_result['benchmark'][0]['oltp'][0]['tps'] }}" disabled>
                 </div>
             </div>
             <h3>QPS</h3>
@@ -75,25 +80,33 @@
                     <div class="form-group row">
                         <label for="total" class="col-sm-2 col-form-label">total</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="search_total" placeholder="---" disabled>
+                            <input type="text" class="form-control" id="search_total"
+                                placeholder="{{ search_result['benchmark'][0]['oltp'][0]['qps'][0]['total_qps'] }}"
+                                disabled>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="reads" class="col-sm-2 col-form-label">reads</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="search_reads" placeholder="---" disabled>
+                            <input type="text" class="form-control" id="search_reads"
+                                placeholder="{{ search_result['benchmark'][0]['oltp'][0]['qps'][0]['reads_qps'] }}"
+                                disabled>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="writes" class="col-sm-2 col-form-label">writes</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="search_writes" placeholder="---" disabled>
+                            <input type="text" class="form-control" id="search_writes"
+                                placeholder="{{ search_result['benchmark'][0]['oltp'][0]['qps'][0]['writes_qps'] }}"
+                                disabled>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="others" class="col-sm-2 col-form-label">others</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="search_others" placeholder="---" disabled>
+                            <input type="text" class="form-control" id="search_others"
+                                placeholder="{{ search_result['benchmark'][0]['oltp'][0]['qps'][0]['other_qps'] }}"
+                                disabled>
                         </div>
                     </div>
                 </div>
@@ -102,132 +115,190 @@
                 <label for="latency" class="col-sm-2 col-form-label"><span
                         style="font-weight:700">latency</span></label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="search_latency" placeholder="---" disabled>
+                    <input type="text" class="form-control" id="search_latency"
+                        placeholder="{{ search_result['benchmark'][0]['oltp'][0]['latency'] }}" disabled>
                 </div>
             </div>
-        </div>
+            {% endif %}
+            {% if search_flag_empty == "Yes" %}
+            <div class="alert alert-warning" role="alert">
+                Result does not exist in the database (Request Run: <a href="/request_benchmark">request run for
+                    hash</a>)
+            </div>
+            {% endif %}
     </section>
     <section class="py-5">
         <div class="container">
             <h1>Compare</h1>
-            <div class="row">
-                <div class="card" style="width: 35rem;">
-                    <div class="card-body">
-                        <div class="container">
-                            <div class="main">
-                                <!-- Another variation with a button -->
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search using Commit hash or Release version">
-                                    <div class="input-group-append">
-                                    </div>
-                                </div>
-                            </div>
-                            <h2>OLTP Results</h2>
-                            <div class="form-group row">
-                                <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS </span></label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="search_TPS" placeholder="---" disabled>
-                                </div>
-                            </div>
-                            <h3>QPS</h3>
+            <form type="GET" action="/search_compare">
+                <div class="row">
+                    <div class="card" style="width: 35rem;">
+                        <div class="card-body">
                             <div class="container">
+                                <div class="main">
+                                    <!-- Another variation with a button -->
+                                    <div class="input-group">
+                                        <input type="text" class="form-control"
+                                            placeholder="Search using Commit hash or Release version"
+                                            name="compare_commit_1">
+                                        <div class="input-group-append">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if compare_result_1|length != 0 %}
+                                <h2>OLTP Results</h2>
+                                <div class="form-group row">
+                                    <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS
+                                        </span></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="search_TPS"
+                                            placeholder="{{ compare_result_1['benchmark'][0]['oltp'][0]['tps'] }}"
+                                            disabled>
+                                    </div>
+                                </div>
+                                <h3>QPS</h3>
                                 <div class="container">
-                                    <div class="form-group row">
-                                        <label for="total" class="col-sm-2 col-form-label">total</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_total" placeholder="---" disabled>
+                                    <div class="container">
+                                        <div class="form-group row">
+                                            <label for="total" class="col-sm-2 col-form-label">total</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_total"
+                                                    placeholder="{{ compare_result_1['benchmark'][0]['oltp'][0]['qps'][0]['total_qps'] }}"
+                                                    disabled>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="reads" class="col-sm-2 col-form-label">reads</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_reads" placeholder="---" disabled>
+                                        <div class="form-group row">
+                                            <label for="reads" class="col-sm-2 col-form-label">reads</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_reads"
+                                                    placeholder="{{ compare_result_1['benchmark'][0]['oltp'][0]['qps'][0]['reads_qps'] }}"
+                                                    disabled>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="writes" class="col-sm-2 col-form-label">writes</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_writes" placeholder="---" disabled>
+                                        <div class="form-group row">
+                                            <label for="writes" class="col-sm-2 col-form-label">writes</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_writes"
+                                                    placeholder="{{ compare_result_1['benchmark'][0]['oltp'][0]['qps'][0]['writes_qps'] }}"
+                                                    disabled>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="others" class="col-sm-2 col-form-label">others</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_others" placeholder="---" disabled>
+                                        <div class="form-group row">
+                                            <label for="others" class="col-sm-2 col-form-label">others</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_others"
+                                                    placeholder="{{ compare_result_1['benchmark'][0]['oltp'][0]['qps'][0]['other_qps'] }}"
+                                                    disabled>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label for="latency" class="col-sm-2 col-form-label"><span
+                                            style="font-weight:700">latency</span></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="search_latency"
+                                            placeholder="{{ compare_result_1['benchmark'][0]['oltp'][0]['latency'] }}"
+                                            disabled>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if compare_1_flag_empty == "Yes" %}
+                                <div class="alert alert-warning" role="alert">
+                                    Result does not exist in the database (Request Run: <a
+                                        href="/request_benchmark">request run for hash</a>)
+                                </div>
+                                {% endif %}
                             </div>
-                            <div class="form-group row">
-                                <label for="latency" class="col-sm-2 col-form-label"><span
-                                        style="font-weight:700">latency</span></label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="search_latency" placeholder="---" disabled>
+                        </div>
+                    </div>
+                    <div class="card" style="width: 35rem;">
+                        <div class="card-body">
+                            <div class="container">
+                                <div class="main">
+                                    <!-- Another variation with a button -->
+                                    <div class="input-group">
+                                        <input type="text" class="form-control"
+                                            placeholder="Search using Commit hash or Release version"
+                                            name="compare_commit_2">
+                                    </div>
                                 </div>
+
+                                {% if compare_result_2|length != 0 %}
+                                <h2>OLTP Results</h2>
+                                <div class="form-group row">
+                                    <label for="tps" class="col-sm-2 col-form-label"><span
+                                            style="font-weight:700">TPS</span></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="search_TPS"
+                                            placeholder="{{ compare_result_2['benchmark'][0]['oltp'][0]['tps'] }}"
+                                            disabled>
+                                    </div>
+                                </div>
+                                <h3>QPS (Queries per second)</h3>
+                                <div class="container">
+                                    <div class="container">
+                                        <div class="form-group row">
+                                            <label for="total" class="col-sm-2 col-form-label">total</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_total"
+                                                    placeholder="{{ compare_result_2['benchmark'][0]['oltp'][0]['qps'][0]['total_qps'] }}"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="reads" class="col-sm-2 col-form-label">reads</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_reads"
+                                                    placeholder="{{ compare_result_2['benchmark'][0]['oltp'][0]['qps'][0]['reads_qps'] }}"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="writes" class="col-sm-2 col-form-label">writes</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_writes"
+                                                    placeholder="{{ compare_result_2['benchmark'][0]['oltp'][0]['qps'][0]['writes_qps'] }}"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="others" class="col-sm-2 col-form-label">others</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="search_others"
+                                                    placeholder="{{ compare_result_2['benchmark'][0]['oltp'][0]['qps'][0]['other_qps'] }}"
+                                                    disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="latency" class="col-sm-2 col-form-label"><span
+                                            style="font-weight:700">latency (Milliseconds)</span></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="search_latency"
+                                            placeholder="{{ compare_result_2['benchmark'][0]['oltp'][0]['latency'] }}"
+                                            disabled>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if compare_2_flag_empty == "Yes" %}
+                                <div class="alert alert-warning" role="alert">
+                                    Result does not exist in the database (Request Run: <a
+                                        href="/request_benchmark">request run for hash</a>)
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card" style="width: 35rem;">
-                    <div class="card-body">
-                        <div class="container">
-                            <div class="main">
-                                <!-- Another variation with a button -->
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search using Commit hash or Release version">
-                                </div>
-                            </div>
-                            <h2>OLTP Results</h2>
-                            <div class="form-group row">
-                                <label for="tps" class="col-sm-2 col-form-label"><span style="font-weight:700">TPS</span></label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="search_TPS" placeholder="---" disabled>
-                                </div>
-                            </div>
-                            <h3>QPS</h3>
-                            <div class="container">
-                                <div class="container">
-                                    <div class="form-group row">
-                                        <label for="total" class="col-sm-2 col-form-label">total</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_total" placeholder="---" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="reads" class="col-sm-2 col-form-label">reads</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_reads" placeholder="---" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="writes" class="col-sm-2 col-form-label">writes</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_writes" placeholder="---" disabled>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label for="others" class="col-sm-2 col-form-label">others</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="search_others" placeholder="---" disabled>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="latency" class="col-sm-2 col-form-label"><span
-                                        style="font-weight:700">latency</span></label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="search_latency" placeholder="---" disabled>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <br>
+                <div class="container">
+                    <center><button type="submit" class="btn btn-dark">
+                            <h4>Compare</h4>
+                        </button></center>
                 </div>
-            </div>
-            <br>
-            <div class="container">
-                <center><button type="button" class="btn btn-dark"><h4>Compare</h4></button></center>
-            </div>
+            </form>
         </div>
     </section>
 
