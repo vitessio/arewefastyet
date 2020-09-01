@@ -123,7 +123,7 @@ def add_oltp():
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp),source)
+    mycursor.execute(benchmark, (vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
@@ -158,7 +158,9 @@ def add_oltp():
 
     return test_no
 
-# -------------------------------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------- Checks argument and runs according method ------------------------------------------------------
 
 if sys.argv[3] == "oltp":
    add_oltp()
+
+# -------------------------------------------------------------------------------------------------------------------------------------------------
