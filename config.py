@@ -28,7 +28,7 @@ def read_config():
 
 def mysql_connect():
     data = read_config()
-    return connectdb(data["mysql_host"],data["mysql_username"],data["mysql_password"],"vitess_benchmark")
+    return connectdb(data["mysql_host"],data["mysql_username"],data["mysql_password"],data["mysql_database"])
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------- Returns Vitess commit hash used in inventory file --------------------------------------------

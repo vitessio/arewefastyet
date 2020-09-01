@@ -47,6 +47,7 @@ https://docs.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-ke
 mysql_host: <mysql hostname>
 mysql_username: <mysql username>
 mysql_password: <mysql password>
+mysql_database: <mysql database>
 inventory_file: <inventory filename>
 packet_token : <packet token>
 packet_project_id : <packet project id>
@@ -59,6 +60,7 @@ Ex :
 mysql_host: localhost:3306
 mysql_username: vitess
 mysql_password: vitess123
+mysql_database: vitess_benchmark
 inventory_file: packet-inventory.yml
 packet_token: bgRy8otJVWUmtpDDadSdSDSfgsAtY1xnRNg
 packet_project_id: dba22084-f8c7-4aaf-9e0a-weSASFDd
