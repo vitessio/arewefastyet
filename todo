@@ -1,0 +1,9 @@
+Tasks to do
+============
+
+1. Add field source to database 
+2. Query modification: to display stats from only scheduler runs 
+3. Deploy scheduler to run once a day 
+4. Migrate database to PlanetScale 
+5. Test all API calls 
+
