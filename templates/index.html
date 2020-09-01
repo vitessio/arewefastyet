@@ -120,6 +120,33 @@
 
 
     var ctx = document.getElementById('tps').getContext('2d');
+    
+    graph_data = {{ data|safe }}
+    label = []
+    data_tps = []
+    latency = []
+    total = []
+    reads = []
+    writes = []
+    others = []
+
+    for(var i = 0; i < graph_data.benchmark.length; i++){
+      label.push(graph_data.benchmark[i].commit);
+      
+      for(var j = 0; j < graph_data.benchmark[i].oltp.length; j++){
+        data_tps.push(graph_data.benchmark[i].oltp[j].tps);
+        latency.push(graph_data.benchmark[i].oltp[j].latency);
+
+        for(var k = 0;k < graph_data.benchmark[i].oltp[j].qps.length; k++){
+          total.push(graph_data.benchmark[i].oltp[j].qps[k].total_qps)
+          reads.push(graph_data.benchmark[i].oltp[j].qps[k].reads_qps)
+          writes.push(graph_data.benchmark[i].oltp[j].qps[k].writes_qps)
+          others.push(graph_data.benchmark[i].oltp[j].qps[k].other_qps)
+        }
+      }
+    }
+    console.log(graph_data)
+    console.log(label)
 
     var chart = new Chart(ctx, {
       // The type of chart we want to create
@@ -127,11 +154,11 @@
 
       // The data for our dataset
       data: {
-        labels: ['commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20'],
+        labels: label,
         datasets: [{
           label: 'TPS (Transactions per second)',
           borderColor: 'orange',
-          data: [20, 10, 5, 2, 20, 30, 45]
+          data: data_tps
         },
         ]
       },
@@ -160,26 +187,26 @@
 
       // The data for our dataset
       data: {
-        labels: ['commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20'],
+        labels: label,
         datasets: [{
           label: 'total',
           borderColor: 'red',
-          data: [2000, 1000, 5000, 2886, 2066, 3055, 4575]
+          data: total
         },
         {
           label: 'reads',
           borderColor: 'blue',
-          data: [200, 100, 500, 288, 206, 305, 457]
+          data: reads
         },
         {
           label: 'writes',
           borderColor: 'green',
-          data: [1000, 500, 4000, 1000, 1432, 2000, 3000]
+          data: writes
         },
         {
           label: 'others',
           borderColor: 'purple',
-          data: [500, 3423, 2342, 2344, 2344, 2343, 7567]
+          data: others
         }
         ]
       },
@@ -208,11 +235,11 @@
 
       // The data for our dataset
       data: {
-        labels: ['commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20', 'commit hash: 3230474435b51901c0c1b665f20cb118627bd83f | date: 20/3/20'],
+        labels: label,
         datasets: [{
           label: 'latency',
           borderColor: 'black',
-          data: [20, 10, 5, 2, 20, 30, 45]
+          data: latency
         },
         ]
       },
