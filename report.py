@@ -91,7 +91,7 @@ def remove_inventory_file(id):
 # -------------------------------------- Main function for report and add OLTP to database ---------------------------------------------
 
 def add_oltp():
-    # Read the argument for the run id
+    # Read the argument for the run id and source
     run_id = sys.argv[1]
     source = sys.argv[2]
 
@@ -122,8 +122,8 @@ def add_oltp():
     # Sets data varaible to null
     data = None
 
-    benchmark = "INSERT INTO benchmark(commit,Datetime) values(%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp))
+    benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
+    mycursor.execute(benchmark, (vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp),source)
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
