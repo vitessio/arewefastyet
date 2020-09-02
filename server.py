@@ -353,12 +353,14 @@ def graph_data():
     conn = mysql_connect()
     mycursor = conn.cursor()
 
-    sql = "SELECT * FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source='scheduler' ORDER BY DateTime DESC;"
+    sql = "SELECT * FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) ORDER BY DateTime DESC;"
     mycursor.execute(sql)
         
     benchmark = mycursor.fetchall()
     data = {}
     data['benchmark'] = [] 
+
+    print(len(benchmark))
 
     for i in range(len(benchmark)):
         oltp = []
@@ -381,7 +383,6 @@ def graph_data():
            for k in range(len(qps_result)):
                qps.append({
                    'qps_no': qps_result[k][0],
-                   #'TPCC_no': qps_result[k][1],
                    'total_qps': str(qps_result[k][2]),
                    'reads_qps': str(qps_result[k][3]),
                    'writes_qps':str(qps_result[k][4]), 
@@ -404,11 +405,10 @@ def graph_data():
         data['benchmark'].append({
         'id':benchmark[i][0],
         'commit':benchmark[i][1],
-        #'datetime':benchmark[i][2],
         'oltp':oltp
         })
          
-        return data
+    return data
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------ Returns results based on commit hash ---------------------------------------------------------------
@@ -473,6 +473,6 @@ def search_commit(commit):
         'oltp':oltp
         })
          
-        return data
+    return data
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------
