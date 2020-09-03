@@ -353,7 +353,7 @@ def graph_data():
     conn = mysql_connect()
     mycursor = conn.cursor()
 
-    sql = "SELECT * FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) ORDER BY DateTime DESC;"
+    sql = "SELECT * FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source='scheduler' ORDER BY DateTime DESC;"
     mycursor.execute(sql)
         
     benchmark = mycursor.fetchall()
