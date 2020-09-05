@@ -398,7 +398,7 @@ def graph_data():
              'errors': str(oltp_result[j][4]),
              'reconnects': str(oltp_result[j][5]),
              'time': oltp_result[j][6],
-             'threads': oltp_result[j][7],
+             'threads': str(oltp_result[j][7]),
              'qps': qps
            })
 
