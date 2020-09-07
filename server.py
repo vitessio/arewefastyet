@@ -36,6 +36,8 @@ from connection import connectdb
 from config import mysql_connect,api_key,slack_api_token,slack_channel
 from slack import WebClient
 from slack.errors import SlackApiError
+import ssl
+
 
 app = Flask(__name__)
 
@@ -100,7 +102,9 @@ def request_benchmark():
     
     # Check if all arguments have a value and then send a slack message
     if name != None and commit_hash != None and email_id != None:
-        client = WebClient(token=slack_api_token())
+        ssl._create_default_https_context = ssl._create_unverified_context
+
+        client = WebClient(slack_api_token())
 
         try:
           response = client.chat_postMessage(
@@ -110,10 +114,10 @@ def request_benchmark():
             Commit hash: """ + commit_hash + """
             Email ID: """ + email_id + """ """)
 
-          assert response["message"]["text"] == """ Request Benchmark run 
-            Name: """ + name + """
-            Commit hash: """ + commit_hash + """
-            Email ID: """ + email_id + """ """
+          #assert response["message"]["text"] == """ Request Benchmark run 
+          #  Name: """ + name + """
+          #  Commit hash: """ + commit_hash + """
+          #  Email ID: """ + email_id + """ """
           Message = "Sent Succesfully"
           status = "success"
 
