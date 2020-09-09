@@ -146,7 +146,9 @@ def run_benchmark():
 
     commit = request.args.get('commit')
     run_id = uuid.uuid4()
-    os.system('python run-benchmark.py ' + commit + ' ' + str(run_id) + ' api_call' + ' &')
+
+    os.system('./run-benchmark ' + commit + ' ' + str(run_id) + ' api_call &')
+    #os.system('python run-benchmark.py ' + commit + ' ' + str(run_id) + ' api_call' + ' &')
     
     return 'Result will be updated on mysql database and you will be notified on slack <br> Run_id: ' + str(run_id)
         

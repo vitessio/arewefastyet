@@ -1,0 +1,6 @@
+#! /bin/bash
+source benchmark/bin/activate
+# virtualenv is now active.
+#
+
+python run-benchmark.py $1 $2 $3
