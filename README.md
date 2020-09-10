@@ -41,7 +41,11 @@ https://github.com/vitessio/arewefastyet/blob/modify-ansible/ansible/README.md
 ### Create SSH key for ansible or use exsisting
 https://docs.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 
-
+### Change files to executables
+```
+chmod +x run-benchmark
+chmod +x scheduler
+```
 ### Create file config.yaml 
 ```
 mysql_host: <mysql hostname>

@@ -166,7 +166,8 @@ def nightly_bechmark():
         return "wrong api key"
 
     time = request.args.get('time')
-    os.system('python scheduler.py ' + time + ' &')
+    os.system('./scheduler ' + time + ' &')
+    #os.system('python scheduler.py ' + time + ' &')
     return 'benchmark will at server time ' + time + '. Result will be updated on mysql database and you will be notified on slack'
 
 @app.route('/servertime')
