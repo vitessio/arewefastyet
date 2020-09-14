@@ -243,7 +243,7 @@ def all_results():
         data['benchmark'].append({
         'id':benchmark[i][0],
         'commit':benchmark[i][1],
-        'datetime':benchmark[i][2],
+        'datetime':str(benchmark[i][2]),
         'oltp':oltp
         })
         
@@ -345,7 +345,7 @@ def filter_results():
         data['benchmark'].append({
         'id':benchmark[i][0],
         'commit':benchmark[i][1],
-        'datetime':benchmark[i][2],
+        'datetime':str(benchmark[i][2]),
         'oltp':oltp
         })
         
@@ -412,7 +412,8 @@ def graph_data():
         data['benchmark'].append({
         'id':benchmark[i][0],
         'commit':benchmark[i][1],
-        'oltp':oltp
+        'oltp':oltp,
+        'datetime':str(benchmark[i][2])
         })
          
     return data
@@ -476,7 +477,7 @@ def search_commit(commit):
         data['benchmark'].append({
         'id':benchmark[i][0],
         'commit':benchmark[i][1],
-        'datetime':benchmark[i][2],
+        'datetime':str(benchmark[i][2]),
         'oltp':oltp
         })
          

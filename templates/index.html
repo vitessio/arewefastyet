@@ -131,7 +131,7 @@
     others = []
 
     for(var i = 0; i < graph_data.benchmark.length; i++){
-      label.push(graph_data.benchmark[i].commit);
+      label.push(graph_data.benchmark[i].commit + " | " + graph_data.benchmark[i].datetime);
       
       for(var j = 0; j < graph_data.benchmark[i].oltp.length; j++){
         data_tps.push(graph_data.benchmark[i].oltp[j].tps);
