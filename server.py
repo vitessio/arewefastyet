@@ -41,6 +41,7 @@ import ssl
 
 
 app = Flask(__name__)
+webhook = Webhook(app) # Defines '/postreceive' endpoint
 
 # ----------------------------------------------------------------- Render Home page -------------------------------------------------------------------
 
