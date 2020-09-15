@@ -27,7 +27,7 @@
 #   Future code fix: Normalize code (Reduce Code duplication)
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-from flask import Flask ,request ,jsonify, render_template
+from flask import Flask ,request ,jsonify, render_template, Response
 import os
 import datetime
 import uuid 
@@ -488,6 +488,7 @@ def search_commit(commit):
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------ Triggers benchmark on every push ------------------------------------------------------------------
 
-@webhook.hook()      
-def on_push(data):
-    print("Got push with: {0}".format(data))
+@app.route('/webhook', methods=['POST'])
+def respond():
+    print(request.json)
+    return Response(status=200)
