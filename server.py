@@ -19,6 +19,7 @@
 #       - /allresults - returns JSON of all benchmark results in the database
 #       - /filter_result [GET] paramters [date=<reverse order for mysql>,commit=<commit hash>&commit=<commit hash>&...n,test_no=<int>]
 #                     - filters and returns result based on argument given
+#       - /webhook [POST] - triggers benchmark run on current HEAD (Called from github)        
 #    - Web App routes
 #       - / [GET] - returns home page
 #       - /search_compare [GET] - returns search page
@@ -36,12 +37,10 @@ from connection import connectdb
 from config import mysql_connect,api_key,slack_api_token,slack_channel
 from slack import WebClient
 from slack.errors import SlackApiError
-from github_webhook import Webhook
 import ssl
 
 
 app = Flask(__name__)
-webhook = Webhook(app) # Defines '/postreceive' endpoint
 
 # ----------------------------------------------------------------- Render Home page -------------------------------------------------------------------
 
@@ -362,7 +361,7 @@ def graph_data():
     conn = mysql_connect()
     mycursor = conn.cursor()
 
-    sql = "SELECT * FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source='scheduler' ORDER BY DateTime DESC;"
+    sql = "SELECT test_no,DISTINCT commit FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('scheduler','webhook') ORDER BY DateTime DESC;"
     mycursor.execute(sql)
         
     benchmark = mycursor.fetchall()
@@ -487,7 +486,7 @@ def search_commit(commit):
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------ Triggers benchmark on every push ------------------------------------------------------------------
-'''
+
 @app.route('/webhook', methods=['POST'])
 def respond():
     commit = 'HEAD'
@@ -495,5 +494,5 @@ def respond():
 
     os.system('./run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
     return Response(status=200)
-'''
+
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -11,4 +11,3 @@ supervisor
 gunicorn
 asyncio
 gitpython
-github_webhook
