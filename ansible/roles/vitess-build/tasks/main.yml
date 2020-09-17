@@ -75,7 +75,6 @@
         repo: "{{ vitess_git_repo }}"
         dest: /go/src/vitess.io/vitess
         version: "{{ vitess_git_version }}"
-        depth: 1
         force: 1
 
     - name: Build Vitess Binaries
