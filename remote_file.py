@@ -11,7 +11,7 @@
 # limitations under the License.
 #
 # demonstrates to:
-#   - Getting OLTP file from a remote server using a SSH server
+#   - Getting OLTP and TPCC file from a remote server using a SSH server
 # --------------------------------------------------------------------------------------------------------------------------------
 
 import pysftp
@@ -19,23 +19,34 @@ import os
 
 # ------------------------------------------------ get OLTP file from remote server -----------------------------------------------
 
-def get_remote_oltp(hostname):
+def get_remote_oltp(hostname,Type):
   # Hardcoded root
   myUsername = "root"
   #os.system('ssh-keygen -f "/root/.ssh/known_hosts" -R "'+hostname+'"')
   
   cnopts = pysftp.CnOpts()
   cnopts.hostkeys = None   
+  
 
   with pysftp.Connection(host=hostname, username=myUsername, cnopts=cnopts) as sftp:
      print("Connection succesfully stablished ... ")
     
-     # Define the file that you want to download from the remote directory
-     remoteFilePath = '/tmp/oltp.json'
+     if Type == "oltp":
+       # Define the file that you want to download from the remote directory
+       remoteFilePath = '/tmp/oltp.json'
 
-     # Define the local path where the file will be saved
-     localFilePath = './report/oltp.json'
+       # Define the local path where the file will be saved
+       localFilePath = './report/oltp.json'
 
-     sftp.get(remoteFilePath, localFilePath)
+       sftp.get(remoteFilePath, localFilePath)
+
+     elif Type == "tpcc":
+       # Define the file that you want to download from the remote directory
+       remoteFilePath = '/tmp/tpcc.json'
+
+       # Define the local path where the file will be saved
+       localFilePath = './report/tpcc.json'
+
+       sftp.get(remoteFilePath, localFilePath)
 
 # -----------------------------------------------------------------------------------------------------------------------------------

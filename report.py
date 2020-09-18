@@ -98,7 +98,7 @@ def add_oltp():
 
     config_lock = get_ip_and_project_id(run_id)
 
-    get_remote_oltp(config_lock[0])
+    get_remote_oltp(config_lock[0],'oltp')
     
     # Add run_id , source , vitess_git_version to oltp.json
     add_data_oltp_report(run_id,source)
@@ -169,7 +169,7 @@ def add_tpcc():
 
     config_lock = get_ip_and_project_id(run_id)
 
-    get_remote_oltp(config_lock[0])
+    get_remote_oltp(config_lock[0],'tpcc')
     
     # Add run_id , source , vitess_git_version to oltp.json
     add_data_oltp_report(run_id,source)
