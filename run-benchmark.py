@@ -42,6 +42,12 @@ def tasks():
 
    #TODO: Repitition of steps to run for TPCC.
 
+   os.system('python initialize_benchmark.py '+ str(run_id) + ' ' + commit)
+   print('------------- Running Benchamrk tpcc------------------')
+   os.system('./run-tpcc '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
+   print('------------- Adding results to the database tpcc------------------')
+   os.system('python report.py ' + str(run_id) + ' ' + source + ' tpcc')
+
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 tasks()
