@@ -361,7 +361,7 @@ def graph_data():
     conn = mysql_connect()
     mycursor = conn.cursor()
 
-    sql = "SELECT test_no,DISTINCT commit FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('scheduler','webhook') ORDER BY DateTime DESC;"
+    sql = "SELECT test_no,commit FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('scheduler','webhook') ORDER BY DateTime DESC;"
     mycursor.execute(sql)
         
     benchmark = mycursor.fetchall()

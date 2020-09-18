@@ -5,6 +5,8 @@ CREATE TABLE `OLTP` (
   `latency` decimal(8,2) DEFAULT NULL,
   `errors` decimal(8,2) DEFAULT NULL,
   `reconnects` decimal(8,2) DEFAULT NULL,
+  `time` int(11) DEFAULT NULL,
+  `threads` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`OLTP_no`),
   KEY `test_no` (`test_no`),
   CONSTRAINT `OLTP_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES `benchmark` (`test_no`)
@@ -17,6 +19,8 @@ CREATE TABLE `TPCC` (
   `latency` decimal(8,2) DEFAULT NULL,
   `errors` decimal(8,2) DEFAULT NULL,
   `reconnects` decimal(8,2) DEFAULT NULL,
+  `time` int(11) DEFAULT NULL,
+  `threads` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`TPCC_no`),
   KEY `test_no` (`test_no`),
   CONSTRAINT `TPCC_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES `benchmark` (`test_no`)

@@ -52,14 +52,18 @@ def get_ip_and_project_id(run_id):
 # ----------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Send Slack Message ----------------------------------------------------------
 
-def send_slack_message():
+def send_slack_message(Type):
     ssl._create_default_https_context = ssl._create_unverified_context
    
     client = WebClient(slack_api_token())
 
+    if Type == "oltp":
+      path = "./report/oltp.json"
+    elif Type == "tpcc":
+      path = "./report/tpcc.json"
     # Upload OLTP file to slack
     try:
-       filepath="./report/oltp.json"
+       filepath=path
        response = client.files_upload(
          channels='#'+slack_channel(),
          file=filepath)
@@ -73,8 +77,14 @@ def send_slack_message():
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------- Adds run_id , vitess_version , source --------------------------------------------------
 
-def add_data_oltp_report(run_id,source):
-    with open('report/oltp.json') as f:
+def add_data_report(run_id,source,Type):
+
+    if Type == "oltp":
+      path = "report/oltp.json"
+    elif Type == "tpcc":
+      path = "report/tpcc.json"
+
+    with open(path) as f:
         data = json.load(f)
     data[0]["run_id"] = run_id
     data[0]["source"] = source
@@ -101,10 +111,10 @@ def add_oltp():
     get_remote_oltp(config_lock[0],'oltp')
     
     # Add run_id , source , vitess_git_version to oltp.json
-    add_data_oltp_report(run_id,source)
+    add_data_report(run_id,source,'oltp')
 
     # Send report file
-    send_slack_message()
+    send_slack_message('oltp')
 
     # local variable db connection object
     conn = mysql_connect()
@@ -172,10 +182,10 @@ def add_tpcc():
     get_remote_oltp(config_lock[0],'tpcc')
     
     # Add run_id , source , vitess_git_version to oltp.json
-    add_data_oltp_report(run_id,source)
+    add_data_report(run_id,source,'tpcc')
 
     # Send report file
-    send_slack_message()
+    send_slack_message('tpcc')
 
     # local variable db connection object
     conn = mysql_connect()
