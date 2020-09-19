@@ -46,8 +46,9 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    data = graph_data()
-    return render_template("index.html",data=data)
+    data_oltp = graph_data('oltp')
+    data_tpcc = graph_data('tpcc')
+    return render_template("index.html", data_oltp=data_oltp, data_tpcc=data_tpcc)
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------- Render Search_Compare -------------------------------------------------------------------
@@ -59,35 +60,57 @@ def search_compare():
     compare_commit_2 = request.args.get('compare_commit_2')
 
     search_result = []
+    search_result_tpcc = []
     compare_result_1 = []
+    compare_result_tpcc_1 = []
     compare_result_2 = []
+    compare_result_tpcc_2 = []
     
     # flag for empty result
     search_flag_empty = "No"
+    search_flag_tpcc_empty = "No"
     compare_1_flag_empty = "No"
+    compare_1_flag_tpcc_empty = "No"
     compare_2_flag_empty = "No"
+    compare_2_flag_tpcc_empty = "No"
 
     if searchcommit != None:
-       search_result = search_commit(searchcommit)
+       search_result = search_commit(searchcommit,'oltp')
+       search_result_tpcc = search_commit(searchcommit,'tpcc')
        if search_result == None:
            search_flag_empty = "Yes"
            search_result = []
+        
+       if search_result_tpcc == None:
+           search_flag_tpcc_empty = "Yes"
+           search_result_tpcc = []
     
     if compare_commit_1 != None:
-       compare_result_1 = search_commit(compare_commit_1)
+       compare_result_1 = search_commit(compare_commit_1,'oltp')
+       compare_result_tpcc_1 = search_commit(compare_commit_1,'tpcc')
        if compare_result_1 == None:
            compare_1_flag_empty = "Yes"
            compare_result_1 = []
+       if compare_result_tpcc_1 == None:
+           compare_1_flag_tpcc_empty = "Yes"
+           compare_result_tpcc_1 = []
 
     if compare_commit_2 != None:
-       compare_result_2 = search_commit(compare_commit_2)
+       compare_result_2 = search_commit(compare_commit_2,'oltp')
+       compare_result_tpcc_2 = search_commit(compare_commit_2,'tpcc')
        if compare_result_2 == None:
            compare_2_flag_empty = "Yes"
            compare_result_2 = []
+       if compare_result_tpcc_2 == None:
+           compare_2_flag_tpcc_empty = "Yes"
+           compare_result_tpcc_2 = []
+
     
     # returns: search result, search result flag, compare result 1, compare result 1 flag, compare result 2, compare result flag 2
-    return render_template("search_compare.html",search_result=search_result,search_flag_empty=search_flag_empty,compare_result_1=compare_result_1,
-    compare_1_flag_empty=compare_1_flag_empty,compare_result_2=compare_result_2,compare_2_flag_empty=compare_2_flag_empty)
+    return render_template("search_compare.html",search_result=search_result,search_result_tpcc=search_result_tpcc,search_flag_empty=search_flag_empty,
+    search_flag_tpcc_empty=search_flag_tpcc_empty,compare_result_1=compare_result_1,compare_result_tpcc_1=compare_result_tpcc_1,
+    compare_1_flag_empty=compare_1_flag_empty,compare_1_flag_tpcc_empty=compare_1_flag_tpcc_empty,
+    compare_result_2=compare_result_2,compare_result_tpcc_2=compare_result_tpcc_2,compare_2_flag_empty=compare_2_flag_empty,compare_2_flag_tpcc_empty=compare_2_flag_empty)
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------- Render request_benchmark ------------------------------------------------------------------
@@ -357,7 +380,7 @@ def filter_results():
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------- Returns results for the last 7 days ----------------------------------------------------------------
 
-def graph_data():
+def graph_data(Type):
     conn = mysql_connect()
     mycursor = conn.cursor()
 
@@ -371,58 +394,99 @@ def graph_data():
     print(len(benchmark))
 
     for i in range(len(benchmark)):
-        oltp = []
+        oltp_tpcc = []
         # Oltp information 
+        if Type == 'oltp':
+          sql = "SELECT * FROM OLTP where test_no = %s;"
+        elif Type == 'tpcc':
+          sql = "SELECT * FROM TPCC where test_no = %s;"  
 
-        sql = "SELECT * FROM OLTP where test_no = %s;"
         adr = (benchmark[i][0], )
         mycursor.execute(sql,adr)
         
-        oltp_result = mycursor.fetchall()
+        oltp_tpcc_result = mycursor.fetchall()
 
-        for j in range(len(oltp_result)):
+        for j in range(len(oltp_tpcc_result)):
            qps = []
-           sql = "SELECT * FROM qps where OLTP_no = %s;"
-           adr = (oltp_result[j][0], )
+           if Type == 'oltp':
+              sql = "SELECT * FROM qps where OLTP_no = %s;"
+           elif Type == 'tpcc':
+              sql = "SELECT * FROM qps where TPCC_no = %s;"
+        
+           adr = (oltp_tpcc_result[j][0], )
            mycursor.execute(sql,adr)
 
            qps_result = mycursor.fetchall()
 
            for k in range(len(qps_result)):
-               qps.append({
-                   'qps_no': qps_result[k][0],
-                   'total_qps': str(qps_result[k][2]),
-                   'reads_qps': str(qps_result[k][3]),
-                   'writes_qps':str(qps_result[k][4]), 
-                   'other_qps': str(qps_result[k][5]),
-                   'OLTP_no': qps_result[k][6]
-               })
 
-           oltp.append({
-             'oltp_no': oltp_result[j][0],
-             'test_no': oltp_result[j][1],
-             'tps': str(oltp_result[j][2]),
-             'latency': str(oltp_result[j][3]),
-             'errors': str(oltp_result[j][4]),
-             'reconnects': str(oltp_result[j][5]),
-             'time': oltp_result[j][6],
-             'threads': str(oltp_result[j][7]),
-             'qps': qps
-           })
+               if Type == 'oltp':
+                qps.append({
+                    'qps_no': qps_result[k][0],
+                    'total_qps': str(qps_result[k][2]),
+                    'reads_qps': str(qps_result[k][3]),
+                    'writes_qps':str(qps_result[k][4]), 
+                    'other_qps': str(qps_result[k][5]),
+                    'OLTP_no': qps_result[k][6]
+                })
 
-        data['benchmark'].append({
-        'id':benchmark[i][0],
-        'commit':benchmark[i][1],
-        'oltp':oltp,
-        'datetime':str(benchmark[i][2])
-        })
+               elif Type == 'tpcc':
+                 qps.append({
+                     'qps_no': qps_result[k][0],
+                     'total_qps': str(qps_result[k][2]),
+                     'reads_qps': str(qps_result[k][3]),
+                     'writes_qps':str(qps_result[k][4]), 
+                     'other_qps': str(qps_result[k][5]),
+                     'TPCC_no': qps_result[k][6]
+                 })
+           if Type == 'oltp':
+             oltp_tpcc.append({
+               'oltp_no': oltp_tpcc_result[j][0],
+               'test_no': oltp_tpcc_result[j][1],
+               'tps': str(oltp_tpcc_result[j][2]),
+               'latency': str(oltp_tpcc_result[j][3]),
+               'errors': str(oltp_tpcc_result[j][4]),
+               'reconnects': str(oltp_tpcc_result[j][5]),
+               'time': oltp_tpcc_result[j][6],
+               'threads': str(oltp_tpcc_result[j][7]),
+               'qps': qps
+             })
+
+           elif Type == 'tpcc':
+              oltp_tpcc.append({
+               'tpcc_no': oltp_tpcc_result[j][0],
+               'test_no': oltp_tpcc_result[j][1],
+               'tps': str(oltp_tpcc_result[j][2]),
+               'latency': str(oltp_tpcc_result[j][3]),
+               'errors': str(oltp_tpcc_result[j][4]),
+               'reconnects': str(oltp_tpcc_result[j][5]),
+               'time': oltp_tpcc_result[j][6],
+               'threads': str(oltp_tpcc_result[j][7]),
+               'qps': qps
+             })
+
+        if Type == 'oltp':
+         data['benchmark'].append({
+         'id':benchmark[i][0],
+         'commit':benchmark[i][1],
+         'oltp':oltp_tpcc,
+         'datetime':str(benchmark[i][2])
+         })
+        
+        elif Type == 'tpcc':
+         data['benchmark'].append({
+         'id':benchmark[i][0],
+         'commit':benchmark[i][1],
+         'tpcc':oltp_tpcc,
+         'datetime':str(benchmark[i][2])
+         })
          
     return data
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------ Returns results based on commit hash ---------------------------------------------------------------
 
-def search_commit(commit):
+def search_commit(commit,Type):
     conn = mysql_connect()
     mycursor = conn.cursor()
 
@@ -435,52 +499,92 @@ def search_commit(commit):
     data['benchmark'] = [] 
 
     for i in range(len(benchmark)):
-        oltp = []
+        oltp_tpcc = []
         # Oltp information 
+        if Type == 'oltp':
+          sql = "SELECT * FROM OLTP where test_no = %s;"
+        elif Type == 'tpcc':
+          sql = "SELECT * FROM TPCC where test_no = %s;"  
 
-        sql = "SELECT * FROM OLTP where test_no = %s;"
         adr = (benchmark[i][0], )
         mycursor.execute(sql,adr)
         
-        oltp_result = mycursor.fetchall()
+        oltp_tpcc_result = mycursor.fetchall()
 
-        for j in range(len(oltp_result)):
+        for j in range(len(oltp_tpcc_result)):
            qps = []
-           sql = "SELECT * FROM qps where OLTP_no = %s;"
-           adr = (oltp_result[j][0], )
+           if Type == 'oltp':
+              sql = "SELECT * FROM qps where OLTP_no = %s;"
+           elif Type == 'tpcc':
+              sql = "SELECT * FROM qps where TPCC_no = %s;"
+        
+           adr = (oltp_tpcc_result[j][0], )
            mycursor.execute(sql,adr)
 
            qps_result = mycursor.fetchall()
 
            for k in range(len(qps_result)):
-               qps.append({
-                   'qps_no': qps_result[k][0],
-                   'TPCC_no': qps_result[k][1],
-                   'total_qps': str(qps_result[k][2]),
-                   'reads_qps': str(qps_result[k][3]),
-                   'writes_qps':str(qps_result[k][4]),
-                   'other_qps': str(qps_result[k][5]),
-                   'OLTP_no': qps_result[k][6]
-               })
 
-           oltp.append({
-             'oltp_no': oltp_result[j][0],
-             'test_no': oltp_result[j][1],
-             'tps': str(oltp_result[j][2]),
-             'latency': str(oltp_result[j][3]),
-             'errors': str(oltp_result[j][4]),
-             'reconnects': str(oltp_result[j][5]),
-             'time': oltp_result[j][6],
-             'threads': oltp_result[j][7],
-             'qps': qps
-           })
+               if Type == 'oltp':
+                qps.append({
+                    'qps_no': qps_result[k][0],
+                    'total_qps': str(qps_result[k][2]),
+                    'reads_qps': str(qps_result[k][3]),
+                    'writes_qps':str(qps_result[k][4]), 
+                    'other_qps': str(qps_result[k][5]),
+                    'OLTP_no': qps_result[k][6]
+                })
 
-        data['benchmark'].append({
-        'id':benchmark[i][0],
-        'commit':benchmark[i][1],
-        'datetime':str(benchmark[i][2]),
-        'oltp':oltp
-        })
+               elif Type == 'tpcc':
+                 qps.append({
+                     'qps_no': qps_result[k][0],
+                     'total_qps': str(qps_result[k][2]),
+                     'reads_qps': str(qps_result[k][3]),
+                     'writes_qps':str(qps_result[k][4]), 
+                     'other_qps': str(qps_result[k][5]),
+                     'TPCC_no': qps_result[k][6]
+                 })
+           if Type == 'oltp':
+             oltp_tpcc.append({
+               'oltp_no': oltp_tpcc_result[j][0],
+               'test_no': oltp_tpcc_result[j][1],
+               'tps': str(oltp_tpcc_result[j][2]),
+               'latency': str(oltp_tpcc_result[j][3]),
+               'errors': str(oltp_tpcc_result[j][4]),
+               'reconnects': str(oltp_tpcc_result[j][5]),
+               'time': oltp_tpcc_result[j][6],
+               'threads': str(oltp_tpcc_result[j][7]),
+               'qps': qps
+             })
+
+           elif Type == 'tpcc':
+              oltp_tpcc.append({
+               'tpcc_no': oltp_tpcc_result[j][0],
+               'test_no': oltp_tpcc_result[j][1],
+               'tps': str(oltp_tpcc_result[j][2]),
+               'latency': str(oltp_tpcc_result[j][3]),
+               'errors': str(oltp_tpcc_result[j][4]),
+               'reconnects': str(oltp_tpcc_result[j][5]),
+               'time': oltp_tpcc_result[j][6],
+               'threads': str(oltp_tpcc_result[j][7]),
+               'qps': qps
+             })
+
+        if Type == 'oltp':
+         data['benchmark'].append({
+         'id':benchmark[i][0],
+         'commit':benchmark[i][1],
+         'oltp':oltp_tpcc,
+         'datetime':str(benchmark[i][2])
+         })
+        
+        elif Type == 'tpcc':
+         data['benchmark'].append({
+         'id':benchmark[i][0],
+         'commit':benchmark[i][1],
+         'tpcc':oltp_tpcc,
+         'datetime':str(benchmark[i][2])
+         })
          
         return data
 
