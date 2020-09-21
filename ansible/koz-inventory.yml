@@ -6,6 +6,9 @@ all:
     keyspace: main
   hosts:
     52.250.110.51:
+      storage_device:
+        device: nvme0n1
+        partition: nvme0n1p1
   children:
     sysbench:
       hosts:
