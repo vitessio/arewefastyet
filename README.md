@@ -83,6 +83,9 @@ slack_channel: benchmark
 ```
 Inventory file from ansible directory
 
+### setup supervisord 
+https://www.nixknight.com/2020/03/setup-supervisor-with-python-pip-on-ubuntu-debian/
+
 ### Run Scheduler
 ```
 python3 scheduler.py <time> & 
