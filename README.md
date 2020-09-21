@@ -79,7 +79,7 @@ Inventory file from ansible directory
 
 ### Run Scheduler
 ```
-python3 scheduler.py & 
+python3 scheduler.py <time> & 
 ```
 ### Example run for API
 ```
