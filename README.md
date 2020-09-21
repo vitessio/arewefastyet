@@ -37,7 +37,7 @@ https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.ht
 
 ### Configure Ansible
 https://github.com/vitessio/arewefastyet/blob/modify-ansible/ansible/README.md
-#### ansible dependencies
+#### Ansible dependencies
 ```
 cd ansible
 ansible-galaxy install cloudalchemy.node-exporter
