@@ -1,1 +1,1 @@
-[{"time": 300, "threads": 0, "tps": 3558.94, "qps": {"total": 56942.98, "reads": 35589.36, "writes": 14235.75, "other": 7117.87}, "latency": 57.87, "errors": 0.0, "reconnects": 0.0, "run_id": "lol", "source": "api_call"}]
+[{"time": 300, "threads": 0, "tps": 2635.0, "qps": {"total": 73748.32, "reads": 33795.68, "writes": 34682.15, "other": 5270.49}, "latency": 130.13, "errors": 11.45, "reconnects": 0.0, "run_id": "newserverrun3", "source": "webhook", "commit_id": "4fa527e0f11fe3b298e8bef61f814cce9bc42102"}]

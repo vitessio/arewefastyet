@@ -3,7 +3,7 @@ schedule
 pyyaml
 pysftp
 packet-python
-ansible
+ansible==2.9.12
 jmespath
 flask
 slackclient
