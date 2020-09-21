@@ -38,11 +38,11 @@ https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.ht
 ### Configure Ansible
 https://github.com/vitessio/arewefastyet/blob/modify-ansible/ansible/README.md
 #### ansible dependencies
-'''
+```
 cd ansible
 ansible-galaxy install cloudalchemy.node-exporter
 
-'''
+```
 
 ### Create SSH key for ansible or use exsisting
 https://docs.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
