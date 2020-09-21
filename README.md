@@ -41,7 +41,7 @@ https://github.com/vitessio/arewefastyet/blob/modify-ansible/ansible/README.md
 ```
 cd ansible
 ansible-galaxy install cloudalchemy.node-exporter
-
+ansible-galaxy install cloudalchemy.prometheus
 ```
 
 ### Create SSH key for ansible or use exsisting
