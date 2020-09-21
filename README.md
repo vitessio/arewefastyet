@@ -37,9 +37,18 @@ https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.ht
 
 ### Configure Ansible
 https://github.com/vitessio/arewefastyet/blob/modify-ansible/ansible/README.md
+#### Ansible dependencies
+```
+cd ansible
+ansible-galaxy install cloudalchemy.node-exporter
+ansible-galaxy install cloudalchemy.prometheus
+```
 
 ### Create SSH key for ansible or use exsisting
 https://docs.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+
+### Build Vitess
+https://vitess.io/docs/contributing/build-on-ubuntu/
 
 ### Change files to executables
 ```
@@ -76,7 +85,7 @@ Inventory file from ansible directory
 
 ### Run Scheduler
 ```
-python3 scheduler.py & 
+python3 scheduler.py <time> & 
 ```
 ### Example run for API
 ```
