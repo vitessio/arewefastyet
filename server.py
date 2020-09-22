@@ -48,6 +48,7 @@ app = Flask(__name__)
 def home():
     data_oltp = graph_data('oltp')
     data_tpcc = graph_data('tpcc')
+    print(data_tpcc)
     return render_template("index.html", data_oltp=data_oltp, data_tpcc=data_tpcc)
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -437,7 +438,7 @@ def graph_data(Type):
                      'reads_qps': str(qps_result[k][3]),
                      'writes_qps':str(qps_result[k][4]), 
                      'other_qps': str(qps_result[k][5]),
-                     'TPCC_no': qps_result[k][6]
+                     'TPCC_no': qps_result[k][1]
                  })
            if Type == 'oltp':
              oltp_tpcc.append({
@@ -542,7 +543,7 @@ def search_commit(commit,Type):
                      'reads_qps': str(qps_result[k][3]),
                      'writes_qps':str(qps_result[k][4]), 
                      'other_qps': str(qps_result[k][5]),
-                     'TPCC_no': qps_result[k][6]
+                     'TPCC_no': qps_result[k][1]
                  })
            if Type == 'oltp':
              oltp_tpcc.append({
@@ -602,3 +603,6 @@ def respond():
     return Response(status=200)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    app.run(threaded=True)

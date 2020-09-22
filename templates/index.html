@@ -357,8 +357,11 @@
     others = []
 
     for(var i = 0; i < graph_tpcc.benchmark.length; i++){
+
+      if(graph_tpcc.benchmark[i].tpcc.length != 0){
+
       label_tpcc.push(graph_tpcc.benchmark[i].commit + " | " + graph_tpcc.benchmark[i].datetime);
-      
+
       for(var j = 0; j < graph_tpcc.benchmark[i].tpcc.length; j++){
         data_tps.push(graph_tpcc.benchmark[i].tpcc[j].tps);
         latency.push(graph_tpcc.benchmark[i].tpcc[j].latency);
@@ -370,6 +373,9 @@
           others.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].other_qps)
         }
       }
+      
+      }
+
     }
 
     //------------------------------------------------------------- TPCC TPS----------------------------------------------------------------------

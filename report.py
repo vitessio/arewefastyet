@@ -217,12 +217,12 @@ def add_tpcc():
     with open('report/oltp.json') as f:
       data = json.load(f)
 
-    # Inserting for oltp
+    # Inserting for tpcc
     tpcc = "INSERT INTO TPCC(time,threads,test_no,tps,latency,errors,reconnects) values(%s,%s,%s,%s,%s,%s,%s)"
     mycursor.execute(tpcc,(data[0]["time"],data[0]["threads"],test_no,data[0]["tps"],data[0]["latency"],data[0]["errors"],data[0]["reconnects"]))
     conn.commit()
 
-    #get oltp_no
+    #get tpcc_no
     mycursor.execute("select TPCC_no from TPCC where test_no = %s ORDER BY TPCC_no DESC LIMIT 1;",(test_no,))
     result = mycursor.fetchall()
     tpcc_no = result[0][0]
