@@ -23,7 +23,7 @@ Ubuntu: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-o
 CentOS: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-on-centos/
 
 ```
-virtualenv -python=python3.7 benchmark
+virtualenv --python=python3.7 benchmark
 // activate virtual environment
 source benchmark/bin/activate
 ```
