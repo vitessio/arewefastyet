@@ -23,7 +23,7 @@ Ubuntu: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-o
 CentOS: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-on-centos/
 
 ```
-virtualenv -python=python3.7 benchmark
+virtualenv --python=python3.7 benchmark
 // activate virtual environment
 source benchmark/bin/activate
 ```
@@ -82,6 +82,9 @@ slack_api_token: xoxb-12862423802725-128sdffsddSD6946-lzieR3PQXsdfsd2TmmFlpcQeb
 slack_channel: benchmark
 ```
 Inventory file from ansible directory
+
+### setup supervisord 
+https://www.nixknight.com/2020/03/setup-supervisor-with-python-pip-on-ubuntu-debian/
 
 ### Run Scheduler
 ```
