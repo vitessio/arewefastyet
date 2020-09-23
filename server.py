@@ -594,11 +594,12 @@ def search_commit(commit,Type):
 
 @app.route('/webhook', methods=['POST'])
 def respond():
-
-    if request.json["ref"] == "refs/heads/master":
-       commit = 'HEAD'
-       run_id = uuid.uuid4()
-       os.system('./run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
+    
+    print(request.json["ref"])
+    # if request.json["ref"] == "refs/heads/master":
+    commit = 'HEAD'
+    run_id = uuid.uuid4()
+    os.system('./run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
 
     return Response(status=200)
 
