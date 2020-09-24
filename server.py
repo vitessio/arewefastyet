@@ -596,10 +596,10 @@ def search_commit(commit,Type):
 def respond():
     
     print(request.json["ref"])
-    # if request.json["ref"] == "refs/heads/master":
-    commit = 'HEAD'
-    run_id = uuid.uuid4()
-    os.system('./run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
+    if request.json["ref"] == "refs/heads/master":
+      commit = 'HEAD'
+      run_id = uuid.uuid4()
+      os.system('python run-benchmark.py ' + commit + ' ' + str(run_id) + ' webhook &')
 
     return Response(status=200)
 
