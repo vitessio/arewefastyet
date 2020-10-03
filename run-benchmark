@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 #cd to directory (modify this according to your system folder destination)
 cd /root/arewefastyet/

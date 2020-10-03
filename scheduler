@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 source benchmark/bin/activate
 # virtualenv is now active.
 #
