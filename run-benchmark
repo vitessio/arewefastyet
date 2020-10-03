@@ -9,4 +9,4 @@ PYTHON_PATH=/root/arewefastyet/benchmark/bin/python
 
 #NEW_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
-python run-benchmark.py $1 $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) $3
+/root/arewefastyet/benchmark/bin/python run-benchmark.py $1 $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) $3
