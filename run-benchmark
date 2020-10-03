@@ -3,8 +3,7 @@
 #cd to directory (modify this according to your system folder destination)
 cd /root/arewefastyet/
 
-
-source benchmark/bin/activate
+PYTHON_PATH=/root/arewefastyet/benchmark/bin/python
 # virtualenv is now active.
 #
 
