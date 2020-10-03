@@ -1,12 +1,7 @@
 #!/bin/bash
 
-#cd to directory (modify this according to your system folder destination)
-cd /root/arewefastyet/
-
-PYTHON_PATH=/root/arewefastyet/benchmark/bin/python
-# virtualenv is now active.
-#
+#To be triggered within arewefastyet directory 
 
 #NEW_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
-/root/arewefastyet/benchmark/bin/python run-benchmark.py $1 $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) $3
+benchmark/bin/python run-benchmark.py $1 $2 $3
