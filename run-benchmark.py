@@ -28,7 +28,6 @@ import sys
 
 def tasks():
    print('------------- Initialize VPS ------------------')
-
    #run_id = uuid.uuid4()
    commit = sys.argv[1]
    run_id = sys.argv[2]
@@ -50,4 +49,6 @@ def tasks():
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 
+#Activate virtual environment
+os.system('source benchmark/bin/activate')
 tasks()

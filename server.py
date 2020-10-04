@@ -39,7 +39,7 @@ from slack import WebClient
 from slack.errors import SlackApiError
 import ssl
 
-
+os.system('source benchmark/bin/activate')
 app = Flask(__name__)
 
 # ----------------------------------------------------------------- Render Home page -------------------------------------------------------------------
@@ -614,4 +614,3 @@ def respond():
 
 if __name__ == "__main__":
     app.run(threaded=True)
-    os.system('source benchmark/bin/activate')
