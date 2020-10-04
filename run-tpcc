@@ -1,5 +1,7 @@
 #!/bin/bash
 
+alias activate="benchmark/bin/activate"
+
 #Directory of ansible files
 cd ansible/
 

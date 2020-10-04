@@ -2,6 +2,6 @@
 
 #To be triggered within arewefastyet directory 
 
-source benchmark/bin/activate
+alias activate="benchmark/bin/activate"
 
-gunicorn server:app -b 0.0.0.0:8000 --limit-request-line 0
+gunicorn server:app -b 0.0.0.0:80 --limit-request-line 0
