@@ -1,0 +1,7 @@
+#!/bin/bash
+
+#To be triggered within arewefastyet directory 
+
+source benchmark/bin/activate
+
+gunicorn server:app -b 0.0.0.0:8000 --limit-request-line 0
