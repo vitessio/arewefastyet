@@ -80,7 +80,7 @@
     - name: Build Vitess Binaries
       shell:
         chdir: /go/src/vitess.io/vitess
-        cmd: yes | yum install make && makebuild
+        cmd: makebuild
 
     - name: Install Vitess Binaries
       shell:
