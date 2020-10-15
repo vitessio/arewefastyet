@@ -80,7 +80,7 @@
     - name: Build Vitess Binaries
       shell:
         chdir: /go/src/vitess.io/vitess
-        cmd: makebuild
+        target: build
 
     - name: Install Vitess Binaries
       shell:
