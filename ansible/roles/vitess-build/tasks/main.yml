@@ -78,9 +78,9 @@
         force: 1
 
     - name: Build Vitess Binaries
-      make:
+      shell:
         chdir: /go/src/vitess.io/vitess
-        target: build
+        cmd: makebuild
 
     - name: Install Vitess Binaries
       shell:
