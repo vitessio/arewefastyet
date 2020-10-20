@@ -5,7 +5,7 @@
     warehouses: 1000
     load_threads: 25
     threads: 150
-    test_time: 300
+    test_time: 900
   tasks:
     - name: Prepare sysbench
       when: provision is defined

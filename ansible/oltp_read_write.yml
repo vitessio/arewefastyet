@@ -3,7 +3,7 @@
   vars:
     table_size: 10000000
     threads: 150
-    test_time: 300
+    test_time: 900
   tasks:
     - name: Prepare sysbench
       when: provision is defined
