@@ -1,9 +1,7 @@
-Tasks to do
-============
+Tasks to do and bug fixes
+===========================
 
-1. Add field source to database 
-2. Query modification: to display stats from only scheduler runs 
-3. Deploy scheduler to run once a day 
-4. Migrate database to PlanetScale 
-5. Test all API calls 
-
+1. Data to display decending 
+2. Display TPC-C data in the search area
+3. update the production branch 
+4. Optimize Query to display graph (To increase speed of loading home page)
