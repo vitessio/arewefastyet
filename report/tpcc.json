@@ -2,15 +2,15 @@
   {
     "time":  300,
     "threads": 0,
-    "tps": 2635.00,
+    "tps": 2610.20,
     "qps": {
-      "total": 73748.32,
-      "reads": 33795.68,
-      "writes": 34682.15,
-      "other": 5270.49
+      "total": 73017.23,
+      "reads": 33463.03,
+      "writes": 34333.29,
+      "other": 5220.91
     },
-    "latency": 130.13,
-    "errors": 11.45,
+    "latency": 132.49,
+    "errors": 11.69,
     "reconnects": 0.00
   }
 ]
