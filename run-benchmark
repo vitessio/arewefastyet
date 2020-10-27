@@ -2,7 +2,10 @@
 
 #To be triggered within arewefastyet directory 
 
-alias activate="benchmark/bin/activate"
+#alias activate="benchmark/bin/activate"
+
+# Vitess binaries
+export PATH=~/vitess/bin:${PATH}
 
 #NEW_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+cd /root/arewefastyet
+
+#To be triggered within arewefastyet directory 
+
+#alias activate="benchmark/bin/activate"
+
+NEW_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+
+benchmark/bin/python run-benchmark.py HEAD $NEW_UUID $1
