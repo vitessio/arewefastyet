@@ -16,189 +16,207 @@
   <!-- Custom styles for this template -->
   <link href="{{ url_for('static', filename='css/full-width-pics.css') }}" rel="stylesheet">
 
+
+  <!-- Pre loader for this template -->
+  <link href="{{ url_for('static', filename='css/loader.css') }}" rel="stylesheet">
+
 </head>
 
 <body>
-
-  <!-- Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-    <div class="container">
-      <a class="navbar-brand" href="/"><img src="https://vitess.io/img/logos/vitess.png" style="height:2rem" />
-        Benchmark</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Home
-              <span class="sr-only">(current)</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/information">Information</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/search_compare">Search or Compare</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/request_benchmark">Request Benchmark Run</a>
-          </li>
-        </ul>
+  <!-- Loader for home page only -->
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="/"><img src="https://vitess.io/img/logos/vitess.png" style="height:2rem" />
+          Benchmark</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+          aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/information">Information</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/search_compare">Search or Compare</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/request_benchmark">Request Benchmark Run</a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-<!--------------------------------------------------------------------------- OLTP ---------------------------------------------------------------------------------------------->
+    <!--------------------------------------------------------------------------- OLTP ---------------------------------------------------------------------------------------------->
 
-  <section class="py-5">
-    <div class="container">
-      <h1>SYSBENCH OLTP BENCHMARK</h1>
-      <p class="lead"></p>
-      <p>The Sysbench OLTP application benchmark runs on top of a MySQL database running the InnoDB storage engine. The
-        job of the storage engine is to manage the interface from the on-disk
-        database to the applications reading and writing data to and from the storage engine. The storage engine in turn
-        manages IO threads and logs, and it keeps an in-memory cache to minimize
-        disk access.</p>
-      <p>Sysbench is a system performance benchmark that includes an OnLine Transaction Processing (OLTP) test profile.
-        The OLTP test is not an approximation of an OLTP test, but is rather a
-        true database-backed benchmark that conducts transactional queries to an instance of MySQL in a CentOS
-        environment.</p>
-    </div>
-  </section>
+    <section class="py-5">
+      <div class="container">
+        <h1>SYSBENCH OLTP BENCHMARK</h1>
+        <p class="lead"></p>
+        <p>The Sysbench OLTP application benchmark runs on top of a MySQL database running the InnoDB storage engine.
+          The
+          job of the storage engine is to manage the interface from the on-disk
+          database to the applications reading and writing data to and from the storage engine. The storage engine in
+          turn
+          manages IO threads and logs, and it keeps an in-memory cache to minimize
+          disk access.</p>
+        <p>Sysbench is a system performance benchmark that includes an OnLine Transaction Processing (OLTP) test
+          profile.
+          The OLTP test is not an approximation of an OLTP test, but is rather a
+          true database-backed benchmark that conducts transactional queries to an instance of MySQL in a CentOS
+          environment.</p>
+      </div>
+    </section>
 
-  <!--------------------------------------------------------------------------- OLTP TPS ---------------------------------------------------------------------------------------------->
+    <!--------------------------------------------------------------------------- OLTP TPS ---------------------------------------------------------------------------------------------->
 
-  <section class="py-5">
-    <div class="container">
-      <h3>TPS (Transactions per second) - OLTP</h3>
-      <p class="lead"></p>
-      <p></p>
-    </div>
-  </section>
-  <!-- Header - set the background image for the header in the line below -->
-  <header class="py-5 bg-image-full" style="">
-    <canvas id="tps" height="100"></canvas>
-  </header>
+    <section class="py-5">
+      <div class="container">
+        <h3>TPS (Transactions per second) - OLTP</h3>
+        <p class="lead"></p>
+        <p></p>
+      </div>
+    </section>
+    <!-- Header - set the background image for the header in the line below -->
+    <header class="py-5 bg-image-full" style="">
+      <canvas id="tps" height="100"></canvas>
+    </header>
 
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <!--------------------------------------------------------------------------- OLTP QPS ------------------------------------------------------------------------------------------------>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--------------------------------------------------------------------------- OLTP QPS ------------------------------------------------------------------------------------------------>
 
-  <!-- Content section -->
-  <section class="py-5">
-    <div class="container">
-      <h3>QPS (Queries per second) - OLTP</h3>
-      <p class="lead"></p>
-      <p></p>
-    </div>
-  </section>
+    <!-- Content section -->
+    <section class="py-5">
+      <div class="container">
+        <h3>QPS (Queries per second) - OLTP</h3>
+        <p class="lead"></p>
+        <p></p>
+      </div>
+    </section>
 
-  <header class="py-5 bg-image-full" style="">
-    <canvas id="qps" height="100"></canvas>
-  </header>
+    <header class="py-5 bg-image-full" style="">
+      <canvas id="qps" height="100"></canvas>
+    </header>
 
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <!----------------------------------------------------------------------- OLTP LATENCY ------------------------------------------------------------------------------------------------>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------- OLTP LATENCY ------------------------------------------------------------------------------------------------>
 
-  <!-- Content section -->
-  <section class="py-5">
-    <div class="container">
-      <h3>Latency (Milliseconds) - OLTP</h3>
-      <p class="lead"></p>
-      <p></p>
-    </div>
-  </section>
+    <!-- Content section -->
+    <section class="py-5">
+      <div class="container">
+        <h3>Latency (Milliseconds) - OLTP</h3>
+        <p class="lead"></p>
+        <p></p>
+      </div>
+    </section>
 
-  <header class="py-5 bg-image-full" style="">
-    <canvas id="latency" height="100"></canvas>
-  </header>
+    <header class="py-5 bg-image-full" style="">
+      <canvas id="latency" height="100"></canvas>
+    </header>
 
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <!------------------------------------------------------------------------------- TPCC ------------------------------------------------------------------------------------------------>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!------------------------------------------------------------------------------- TPCC ------------------------------------------------------------------------------------------------>
 
-  <section class="py-5">
-    <div class="container">
-      <h1>TPC-C BENCHMARK</h1>
-      <p class="lead"></p>
-      <p>"Despite being 25 years old, the TPC-C benchmark can still provide an interesting intensive workload for a database in my opinion. It runs multi-statement transactions 
-        and is write-heavy. We also decided to use Sysbench 1.0, which allows much more flexible LUA scripting that allows us to implement TPCC-like workload."</p>
+    <section class="py-5">
+      <div class="container">
+        <h1>TPC-C BENCHMARK</h1>
+        <p class="lead"></p>
+        <p>"Despite being 25 years old, the TPC-C benchmark can still provide an interesting intensive workload for a
+          database in my opinion. It runs multi-statement transactions
+          and is write-heavy. We also decided to use Sysbench 1.0, which allows much more flexible LUA scripting that
+          allows us to implement TPCC-like workload."</p>
         <p><a href="https://www.percona.com/blog/2018/03/05/tpcc-like-workload-sysbench-1-0/">Precona blog</a></p>
-    </div>
-  </section>
-  
-  <!----------------------------------------------------------------------------- TPCC TPS ----------------------------------------------------------------------------------------------->
+      </div>
+    </section>
 
-  <section class="py-5">
-    <div class="container">
-      <h3>TPS (Transactions per second) - TPCC</h3>
-      <p class="lead"></p>
-      <p></p>
-    </div>
-  </section>
+    <!----------------------------------------------------------------------------- TPCC TPS ----------------------------------------------------------------------------------------------->
 
-  <!-- Header - set the background image for the header in the line below -->
-  <header class="py-5 bg-image-full" style="">
-    <canvas id="tps_tpcc" height="100"></canvas>
-  </header>
+    <section class="py-5">
+      <div class="container">
+        <h3>TPS (Transactions per second) - TPCC</h3>
+        <p class="lead"></p>
+        <p></p>
+      </div>
+    </section>
 
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <!----------------------------------------------------------------------------- TPCC QPS----------------------------------------------------------------------------------------------->
+    <!-- Header - set the background image for the header in the line below -->
+    <header class="py-5 bg-image-full" style="">
+      <canvas id="tps_tpcc" height="100"></canvas>
+    </header>
 
-  <!-- Content section -->
-  <section class="py-5">
-    <div class="container">
-      <h3>QPS (Queries per second)- TPCC</h3>
-      <p class="lead"></p>
-      <p></p>
-    </div>
-  </section>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------- TPCC QPS----------------------------------------------------------------------------------------------->
 
-  <header class="py-5 bg-image-full" style="">
-    <canvas id="qps_tpcc" height="100"></canvas>
-  </header>
+    <!-- Content section -->
+    <section class="py-5">
+      <div class="container">
+        <h3>QPS (Queries per second)- TPCC</h3>
+        <p class="lead"></p>
+        <p></p>
+      </div>
+    </section>
 
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <!----------------------------------------------------------------------------- TPCC LATENCY ------------------------------------------------------------------------------------------>
+    <header class="py-5 bg-image-full" style="">
+      <canvas id="qps_tpcc" height="100"></canvas>
+    </header>
 
-  <!-- Content section -->
-  <section class="py-5">
-    <div class="container">
-      <h3>Latency (Milliseconds) - TPCC</h3>
-      <p class="lead"></p>
-      <p></p>
-    </div>
-  </section>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!----------------------------------------------------------------------------- TPCC LATENCY ------------------------------------------------------------------------------------------>
 
-  <header class="py-5 bg-image-full" style="">
-    <canvas id="latency_tpcc" height="100"></canvas>
-  </header>
+    <!-- Content section -->
+    <section class="py-5">
+      <div class="container">
+        <h3>Latency (Milliseconds) - TPCC</h3>
+        <p class="lead"></p>
+        <p></p>
+      </div>
+    </section>
 
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
-  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <header class="py-5 bg-image-full" style="">
+      <canvas id="latency_tpcc" height="100"></canvas>
+    </header>
 
-  <!-- Footer -->
-  <footer class="py-5 bg-dark">
-    <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; Vitess 2020</p>
-    </div>
-    <!-- /.container -->
-  </footer>
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Vitess 2020</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
 
   <!-- Bootstrap core JavaScript -->
   <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
   <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 
+
+  <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+  <!----------------------------------------------------------------------------- PRE-LOADER JS SCRIPT ---------------------------------------------------------------------------------->
+
+  <script type="text/javascript">
+  //TODO 
+  </script>
+
   <!-- Chart JS code -->
 
   <script>
 
     //--------------------------------------------------------- OLTP GRAPH ----------------------------------------------------------------------------
-  
-    
-    graph_oltp = {{ data_oltp|safe }}
+
+
+    graph_oltp = {{ data_oltp | safe }}
     label_oltp = []
     data_tps = []
     latency = []
@@ -207,14 +225,14 @@
     writes = []
     others = []
 
-    for(var i = 0; i < graph_oltp.benchmark.length; i++){
+    for (var i = 0; i < graph_oltp.benchmark.length; i++) {
       label_oltp.push(graph_oltp.benchmark[i].commit + " | " + graph_oltp.benchmark[i].datetime);
-      
-      for(var j = 0; j < graph_oltp.benchmark[i].oltp.length; j++){
+
+      for (var j = 0; j < graph_oltp.benchmark[i].oltp.length; j++) {
         data_tps.push(graph_oltp.benchmark[i].oltp[j].tps);
         latency.push(graph_oltp.benchmark[i].oltp[j].latency);
 
-        for(var k = 0;k < graph_oltp.benchmark[i].oltp[j].qps.length; k++){
+        for (var k = 0; k < graph_oltp.benchmark[i].oltp[j].qps.length; k++) {
           total.push(graph_oltp.benchmark[i].oltp[j].qps[k].total_qps)
           reads.push(graph_oltp.benchmark[i].oltp[j].qps[k].reads_qps)
           writes.push(graph_oltp.benchmark[i].oltp[j].qps[k].writes_qps)
@@ -222,10 +240,10 @@
         }
       }
     }
-    
+
     //---------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------- OLTP TPS ----------------------------------------------------------------------
-    
+
     var ctx = document.getElementById('tps').getContext('2d');
 
     var chart = new Chart(ctx, {
@@ -258,7 +276,7 @@
         }
       }
     });
-    
+
     //---------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------- OLTP QPS ----------------------------------------------------------------------
 
@@ -309,7 +327,7 @@
         }
       }
     });
-    
+
     //------------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------- OLTP LATENCY----------------------------------------------------------------------
 
@@ -345,12 +363,12 @@
         }
       }
     });
-    
+
     //---------------------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------ TPC-C --------------------------------------------------------------------------
 
-    graph_tpcc = {{ data_tpcc|safe }}
+    graph_tpcc = {{ data_tpcc | safe }}
     label_tpcc = []
     data_tps = []
     latency = []
@@ -359,24 +377,24 @@
     writes = []
     others = []
 
-    for(var i = 0; i < graph_tpcc.benchmark.length; i++){
+    for (var i = 0; i < graph_tpcc.benchmark.length; i++) {
 
-      if(graph_tpcc.benchmark[i].tpcc.length != 0){
+      if (graph_tpcc.benchmark[i].tpcc.length != 0) {
 
-      label_tpcc.push(graph_tpcc.benchmark[i].commit + " | " + graph_tpcc.benchmark[i].datetime);
+        label_tpcc.push(graph_tpcc.benchmark[i].commit + " | " + graph_tpcc.benchmark[i].datetime);
 
-      for(var j = 0; j < graph_tpcc.benchmark[i].tpcc.length; j++){
-        data_tps.push(graph_tpcc.benchmark[i].tpcc[j].tps);
-        latency.push(graph_tpcc.benchmark[i].tpcc[j].latency);
+        for (var j = 0; j < graph_tpcc.benchmark[i].tpcc.length; j++) {
+          data_tps.push(graph_tpcc.benchmark[i].tpcc[j].tps);
+          latency.push(graph_tpcc.benchmark[i].tpcc[j].latency);
 
-        for(var k = 0;k < graph_tpcc.benchmark[i].tpcc[j].qps.length; k++){
-          total.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].total_qps)
-          reads.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].reads_qps)
-          writes.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].writes_qps)
-          others.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].other_qps)
+          for (var k = 0; k < graph_tpcc.benchmark[i].tpcc[j].qps.length; k++) {
+            total.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].total_qps)
+            reads.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].reads_qps)
+            writes.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].writes_qps)
+            others.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].other_qps)
+          }
         }
-      }
-      
+
       }
 
     }
