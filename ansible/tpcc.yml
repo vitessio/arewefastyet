@@ -4,7 +4,7 @@
   vars:
     warehouses: 1000
     load_threads: 25
-    threads: 150
+    threads: 300
     test_time: 900
   tasks:
     - name: Prepare sysbench
