@@ -392,7 +392,7 @@ def graph_data(Type):
     conn = mysql_connect()
     mycursor = conn.cursor()
 
-    sql = "SELECT test_no,commit,datetime FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('scheduler','webhook') ORDER BY DateTime DESC LIMIT 14;"
+    sql = "SELECT test_no,commit,datetime FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('scheduler','webhook') ORDER BY DateTime LIMIT 14;"
     mycursor.execute(sql)
         
     benchmark = mycursor.fetchall()
@@ -609,10 +609,10 @@ def respond():
 
       # Test run called 3 times 
       os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
-      run_id = uuid.uuid4()
-      os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
-      run_id = uuid.uuid4()
-      os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
+      #run_id = uuid.uuid4()
+      #os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
+      #run_id = uuid.uuid4()
+      #os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
 
     return Response(status=200)
 
