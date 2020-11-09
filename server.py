@@ -609,10 +609,10 @@ def respond():
 
       # Test run called 3 times 
       os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
-      run_id = uuid.uuid4()
-      os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
-      run_id = uuid.uuid4()
-      os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
+      #run_id = uuid.uuid4()
+      #os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
+      #run_id = uuid.uuid4()
+      #os.system('bash run-benchmark ' + commit + ' ' + str(run_id) + ' webhook &')
 
     return Response(status=200)
 
