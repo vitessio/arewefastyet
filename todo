@@ -1,8 +1,6 @@
 Tasks to do and bug fixes
 ===========================
-
-1. Data to display decending 
-2. Display TPC-C data in the search area
-3. Optimize Query to display graph (To increase speed of loading home page)
-4. Virtual Env (Custom script to deploy on production)
-5. Auto kill Baremetal server if test fails
+1. Display TPC-C data in the search area
+2. Optimize Query to display graph (To increase speed of loading home page)
+3. Virtual Env (Custom script to deploy on production)
+4. Auto kill Baremetal server if test fails
