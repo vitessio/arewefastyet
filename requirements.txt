@@ -12,3 +12,4 @@ gunicorn
 asyncio
 gitpython
 flask_sslify
+pyOpenSSL
