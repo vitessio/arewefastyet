@@ -38,11 +38,9 @@ from config import mysql_connect,api_key,slack_api_token,slack_channel
 from slack import WebClient
 from slack.errors import SlackApiError
 import ssl
-from flask_sslify import SSLify
 
 os.system('source benchmark/bin/activate')
 app = Flask(__name__)
-sslify = SSLify(app)
 
 # ----------------------------------------------------------------- Render Home page -------------------------------------------------------------------
 
@@ -621,5 +619,4 @@ def respond():
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    print("here")
     app.run(threaded=True)
