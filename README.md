@@ -86,6 +86,9 @@ Inventory file from ansible directory
 ### setup supervisord 
 https://www.nixknight.com/2020/03/setup-supervisor-with-python-pip-on-ubuntu-debian/
 
+### Install Caddy for reverse proxy
+https://caddyserver.com/docs/download
+
 ### Run Scheduler
 ```
 python3 scheduler.py <time> & 
