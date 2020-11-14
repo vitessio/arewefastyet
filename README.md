@@ -1,4 +1,4 @@
-# [AreWeFastYet](http://86.109.15.11/)
+# [AreWeFastYet](https://benchmark.vitess.io)
 Uses sysbench to run a benchmark on vitess. 
 The following codebase:
 1. Creates a VPS
