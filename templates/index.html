@@ -226,6 +226,9 @@
     others = []
 
     for (var i = 0; i < graph_oltp.benchmark.length; i++) {
+
+      if (graph_oltp.benchmark[i].oltp.length != 0) {
+
       label_oltp.push(graph_oltp.benchmark[i].commit + " | " + graph_oltp.benchmark[i].datetime);
 
       for (var j = 0; j < graph_oltp.benchmark[i].oltp.length; j++) {
@@ -239,6 +242,7 @@
           others.push(graph_oltp.benchmark[i].oltp[j].qps[k].other_qps)
         }
       }
+    }
     }
 
     //---------------------------------------------------------------------------------------------------------------------------------------------

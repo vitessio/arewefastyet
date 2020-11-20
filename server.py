@@ -48,7 +48,13 @@ app = Flask(__name__)
 def home():
     data_oltp = graph_data('oltp')
     data_tpcc = graph_data('tpcc')
-    print(data_tpcc)
+
+    # Use to dedug 
+    #print("---------------- OLTP -----------------")
+    #print(data_oltp)
+    #print("---------------- TPCC -----------------")
+    #print(data_tpcc)
+
     return render_template("index.html", data_oltp=data_oltp, data_tpcc=data_tpcc)
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -322,7 +328,6 @@ def filter_results():
            mycursor.execute(sql,adr)
        elif commit != None:
            sql = 'SELECT * FROM benchmark where commit IN ("' + '","'.join(map(str, commit)) + '")'
-           print(sql)
            mycursor.execute(sql)
        else:
            return 'use /allresults to view all results'
@@ -392,14 +397,12 @@ def graph_data(Type):
     conn = mysql_connect()
     mycursor = conn.cursor()
 
-    sql = "SELECT test_no,commit,datetime FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('scheduler','webhook') ORDER BY DateTime LIMIT 14;"
+    sql = "SELECT test_no,commit,datetime FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('webhook') ORDER BY DateTime;"
     mycursor.execute(sql)
         
     benchmark = mycursor.fetchall()
     data = {}
     data['benchmark'] = [] 
-
-    print(len(benchmark))
 
     for i in range(len(benchmark)):
         oltp_tpcc = []
@@ -601,8 +604,7 @@ def search_commit(commit,Type):
 
 @app.route('/webhook', methods=['POST'])
 def respond():
-    
-    print(request.json["ref"])
+
     if request.json["ref"] == "refs/heads/master":
       commit = 'HEAD'
       run_id = uuid.uuid4()

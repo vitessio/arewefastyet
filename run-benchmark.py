@@ -34,7 +34,7 @@ def tasks():
    source = sys.argv[3]
 
    os.system('benchmark/bin/python initialize_benchmark.py '+ str(run_id) + ' ' + commit)
-   print('------------- Running Benchamrk oltp------------------')
+   print('------------- Running Benchmark oltp------------------')
    os.system('./run-oltp '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
    print('------------- Adding results to the database oltp------------------')
    os.system('benchmark/bin/python report.py ' + str(run_id) + ' ' + source + ' oltp')
@@ -44,7 +44,7 @@ def tasks():
    print('------------- Initialize VPS TPC-C ------------------')
 
    os.system('benchmark/bin/python initialize_benchmark.py '+ str(run_id) + ' ' + commit)
-   print('------------- Running Benchamrk tpcc------------------')
+   print('------------- Running Benchmark tpcc------------------')
    os.system('./run-tpcc '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
    print('------------- Adding results to the database tpcc------------------')
    os.system('benchmark/bin/python report.py ' + str(run_id) + ' ' + source + ' tpcc')
