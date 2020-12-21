@@ -1,0 +1,8 @@
+{
+	"sans": [
+		"vbenchmark.akilan.io"
+	],
+	"issuer_data": {
+		"url": "https://acme-v02.api.letsencrypt.org/acme/cert/037150a97c6053b503000fc090df4e2c7967"
+	}
+}

@@ -1,0 +1,8 @@
+{
+	"sans": [
+		"benchmark.vitess.io"
+	],
+	"issuer_data": {
+		"url": "https://acme-v02.api.letsencrypt.org/acme/cert/0417fffecbf4c79b6c655364b3d4f8ad1108"
+	}
+}

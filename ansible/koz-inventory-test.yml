@@ -1,80 +1,81 @@
+---
 all:
-  children:
-    etcd:
-      hosts:
-        147.75.101.41: null
-    prometheus:
-      hosts:
-        147.75.101.41: null
-    sysbench:
-      hosts:
-        147.75.101.41: null
-    vtctld:
-      hosts:
-        147.75.101.41: null
-    vtgate:
-      hosts:
-        147.75.101.41:
-          gateways:
-          - grpc_port: 15306
-            id: 1
-            mysql_port: 13306
-            port: 15001
-          - grpc_port: 15307
-            id: 2
-            mysql_port: 13307
-            port: 15002
-          - grpc_port: 15308
-            id: 3
-            mysql_port: 13308
-            port: 15003
-          - grpc_port: 15309
-            id: 4
-            mysql_port: 13309
-            port: 15004
-          - grpc_port: 15310
-            id: 5
-            mysql_port: 13310
-            port: 15005
-          - grpc_port: 15311
-            id: 6
-            mysql_port: 13311
-            port: 15006
-      vars:
-        vtgate_max_goproc: 6
-        vtgate_query_cache_size: 1000
-    vttablet:
-      hosts:
-        147.75.101.41:
-          tablets:
-          - grpc_port: 17001
-            id: 1001
-            keyspace: main
-            mysql_port: 18001
-            mysqld_exporter_port: 9104
-            pool_size: 500
-            port: 16001
-            shard: -80
-            transaction_cap: 2000
-          - grpc_port: 17002
-            id: 2001
-            keyspace: main
-            mysql_port: 18002
-            mysqld_exporter_port: 9105
-            pool_size: 500
-            port: 16002
-            shard: 80-
-            transaction_cap: 2000
-      vars:
-        vitess_memory_ratio: 0.6
-        vttablet_max_goproc: 24
-        vttablet_query_cache_size: 10000
+  vars:
+    vitess_git_version: "HEAD"
+    cell: local
+    keyspace: main
   hosts:
-    147.75.101.41:
+    52.250.110.51:
       storage_device:
         device: nvme0n1
         partition: nvme0n1p1
-  vars:
-    cell: local
-    keyspace: main
-    vitess_git_version: 5ab4af4f90a16765ffbdb24ff200d47511b5e04c
+  children:
+    sysbench:
+      hosts:
+        52.250.110.51:
+    prometheus:
+      hosts:
+        52.250.110.51:
+    etcd:
+      hosts:
+        52.250.110.51:
+    vtctld:
+      hosts:
+        52.250.110.51:
+    vtgate:
+      vars:
+        vtgate_query_cache_size: 1000
+        vtgate_max_goproc: 6
+      hosts:
+        52.250.110.51:
+          gateways:
+            - id: 1
+              port: 15001
+              mysql_port: 13306
+              grpc_port: 15306
+            - id: 2
+              port: 15002
+              mysql_port: 13307
+              grpc_port: 15307
+            - id: 3
+              port: 15003
+              mysql_port: 13308
+              grpc_port: 15308
+            - id: 4
+              port: 15004
+              mysql_port: 13309
+              grpc_port: 15309
+            - id: 5
+              port: 15005
+              mysql_port: 13310
+              grpc_port: 15310
+            - id: 6
+              port: 15006
+              mysql_port: 13311
+              grpc_port: 15311
+    vttablet:
+      vars:
+        vitess_memory_ratio: 0.6
+        vttablet_query_cache_size: 10000
+        vttablet_max_goproc: 24
+      hosts:
+        52.250.110.51:
+          tablets:
+            - id: 1001
+              keyspace: main
+              shard: -80
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16001
+              grpc_port: 17001
+              mysql_port: 18001
+              mysqld_exporter_port: 9104
+            - id: 2001
+              keyspace: main
+              shard: 80-
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16002
+              grpc_port: 17002
+              mysql_port: 18002
+              mysqld_exporter_port: 9105
