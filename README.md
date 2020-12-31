@@ -18,11 +18,10 @@ The following codebase:
 Ubuntu: https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/
 CentOS: https://tecadmin.net/install-python-3-7-on-centos-8/
 
-#### Install virtual environment
-Ubuntu: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-on-ubuntu-18-04/
-CentOS: https://www.liquidweb.com/kb/how-to-setup-a-python-virtual-environment-on-centos/
-
+#### Install virtual environment and configure
 ```
+sudo pip3 install virtualenv
+
 virtualenv --python=python3.7 benchmark
 // activate virtual environment
 source benchmark/bin/activate
