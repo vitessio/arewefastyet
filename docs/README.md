@@ -4,5 +4,5 @@ The purpose of this project is to do a benchmark run when ever there is a push. 
 ### We use the Packet API to create and kill the bare metal server which we used to run the benchmarks on.
 
 ## Index 
-1. Installation
+1. [Installation](Installation.md)
 2. [Api](Api.md) 
