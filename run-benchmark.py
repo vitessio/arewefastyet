@@ -23,34 +23,50 @@ from config import inventory_file
 from pathlib import Path
 import uuid 
 import sys
+from initialize_benchmark import init
+from report import add_oltp, add_tpcc
 
 # ------------------------------------------------------ Runs benchmark tasks ---------------------------------------------------------
 
-def tasks():
-   print('------------- Initialize VPS OLTP ------------------')
+def init_task(name, script, save_results):
+   return {
+      "name": name,
+      "run_script": script,
+      "save_results": save_results
+   }
+
+tasks_list = {
+   "oltp": init_task("oltp", "run-oltp", add_oltp),
+   "tpcc": init_task("tpcc", "run-tpcc", add_tpcc)
+}
+
+def print_step(task, step):
+   print('-------------', task, '-', step, '-------------')   
+
+def create_task(task):
+   return tasks_list.get(task)
+
+def run_tasks(commit, run_id, source, tasks):
+   for task in tasks:
+      task_info = create_task(task)
+
+      print_step(task_info['name'], 'Initialize VPS')
+      init(run_id, commit)
+   
+      print_step(task_info['name'], 'Running Benchmark')
+      os.system('./' + task_info['run_script'] + ' ' + Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
+   
+      print_step(task_info['name'], 'Saving Results')
+      task_info['save_results'](run_id, source)
+
+
+if __name__ == "__main__":
    #run_id = uuid.uuid4()
    commit = sys.argv[1]
    run_id = sys.argv[2]
    source = sys.argv[3]
 
-   os.system('benchmark/bin/python initialize_benchmark.py '+ str(run_id) + ' ' + commit)
-   print('------------- Running Benchmark oltp------------------')
-   os.system('./run-oltp '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
-   print('------------- Adding results to the database oltp------------------')
-   os.system('benchmark/bin/python report.py ' + str(run_id) + ' ' + source + ' oltp')
+   # TODO: add to CLI flags
+   tasks = ["oltp", "tpcc"]
 
-   #TODO: Repitition of steps to run for TPCC.
-   
-   print('------------- Initialize VPS TPC-C ------------------')
-
-   os.system('benchmark/bin/python initialize_benchmark.py '+ str(run_id) + ' ' + commit)
-   print('------------- Running Benchmark tpcc------------------')
-   os.system('./run-tpcc '+ Path('./ansible/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
-   print('------------- Adding results to the database tpcc------------------')
-   os.system('benchmark/bin/python report.py ' + str(run_id) + ' ' + source + ' tpcc')
-
-# -------------------------------------------------------------------------------------------------------------------------------------
-
-#Activate virtual environment
-os.system('source benchmark/bin/activate')
-tasks()
+   run_tasks(commit, run_id, source, tasks)
