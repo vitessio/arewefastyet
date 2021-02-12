@@ -37,18 +37,18 @@ def doesFileExists(filePathAndName):
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------- Initializes benchmark process --------------------------------------------------------
 
-def init():
-    vps = create_vps(sys.argv[1])
+def init(run_id, commit_hash):
+    vps = create_vps(run_id)
 
     # create copy of inventory file 
-    shutil.copy2('./ansible/'+inventory_file(), './ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + sys.argv[1] + '.yml')
+    shutil.copy2('./ansible/'+inventory_file(), './ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
     
     if doesFileExists('config-lock.json'):
       with open('config-lock.json') as json_file:
           data = json.load(json_file)
          
       data['run'].append({
-        'run_id':sys.argv[1],
+        'run_id':run_id,
         'vps_id':vps[0],
         'ip_address':vps[1]
       })
@@ -60,7 +60,7 @@ def init():
        data = {}
        data['run'] = []
        data['run'].append({
-        'run_id':sys.argv[1],
+        'run_id':run_id,
         'vps_id':vps[0],
         'ip_address':vps[1]
        })
@@ -74,7 +74,6 @@ def init():
     data = recursive_dict(data,vps[1])
 
     # if HEAD then get commit hash
-    commit_hash = sys.argv[2]
     if commit_hash == 'HEAD':
        commit_hash = head_commit_hash()
 
@@ -82,7 +81,7 @@ def init():
 
     print(data)
     
-    with open('ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + sys.argv[1] + '.yml' , 'w') as f:
+    with open('ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml' , 'w') as f:
       yaml.dump(data,f)
     
 # ----------------------------------------------------------------------------------------------------------------------------------------
@@ -101,7 +100,3 @@ def recursive_dict_ip(data,ip):
         old_key = k
         data[ip] = data.pop(old_key)
     return data
-
-# ----------------------------------------------------------------------------------------------------------------------------------------
-
-init()

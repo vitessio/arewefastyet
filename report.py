@@ -101,10 +101,10 @@ def remove_inventory_file(id):
 # --------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------- Main function for report and add OLTP to database ---------------------------------------------
 
-def add_oltp():
+def add_oltp(run_id, source):
     # Read the argument for the run id and source
-    run_id = sys.argv[1]
-    source = sys.argv[2]
+    # run_id = sys.argv[1]
+    # source = sys.argv[2]
 
     config_lock = get_ip_and_project_id(run_id)
 
@@ -172,10 +172,10 @@ def add_oltp():
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------ Main function for report and add TPCC to database ---------------------------------------------
 
-def add_tpcc():
+def add_tpcc(run_id, source):
     # Read the argument for the run id and source
-    run_id = sys.argv[1]
-    source = sys.argv[2]
+    # run_id = sys.argv[1]
+    # source = sys.argv[2]
 
     config_lock = get_ip_and_project_id(run_id)
 
@@ -243,10 +243,10 @@ def add_tpcc():
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------- Checks argument and runs according method ------------------------------------------------------
 
-if sys.argv[3] == "oltp":
-   add_oltp()
+# if sys.argv[3] == "oltp":
+#    add_oltp()
 
-elif sys.argv[3] == "tpcc":
-   add_tpcc()
+# elif sys.argv[3] == "tpcc":
+#    add_tpcc()
 
 # -------------------------------------------------------------------------------------------------------------------------------------------------
