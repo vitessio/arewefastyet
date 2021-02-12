@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Fixes https://github.com/ansible/ansible/issues/32499
-if [ "$(uname)" == "Darwin" ]
+if [ "$(uname)" == "Darwin" ];
 then
     export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 fi
