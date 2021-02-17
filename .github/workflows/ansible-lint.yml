@@ -1,0 +1,24 @@
+name: Ansible Lint
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Lint Ansible Playbook
+      uses: ansible/ansible-lint-action@master
+      with:
+        targets: |
+            ansible/*.yml
+            ansible/roles
+
+        override-deps: |
+          ansible==2.9
+          ansible-lint==4.2.0
+
+        args: ""
