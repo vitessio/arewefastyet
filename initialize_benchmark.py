@@ -40,8 +40,11 @@ def doesFileExists(filePathAndName):
 def init(run_id, commit_hash):
     vps = create_vps(run_id)
 
-    # create copy of inventory file 
-    shutil.copy2('./ansible/'+inventory_file(), './ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
+    # make sure build folder is present
+    if Path('./ansible/build').exists() == False:
+        os.mkdir('./ansible/build')
+    # create copy of inventory file
+    shutil.copy2('./ansible/'+inventory_file(), './ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
     
     if doesFileExists('config-lock.json'):
       with open('config-lock.json') as json_file:

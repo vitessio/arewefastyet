@@ -160,3 +160,6 @@ process.txt
 
 #To hide private key of certificate caddy
 caddy/ 
+
+# Built Ansible inventory files
+ansible/build/*
