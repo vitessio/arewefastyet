@@ -18,7 +18,7 @@ jobs:
             ansible/roles
 
         override-deps: |
-          ansible==2.9
+          ansible==2.9.12
           ansible-lint==4.2.0
 
         args: ""
