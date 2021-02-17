@@ -84,7 +84,7 @@ def init(run_id, commit_hash):
 
     print(data)
     
-    with open('ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml' , 'w') as f:
+    with open('ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml' , 'w') as f:
       yaml.dump(data,f)
     
 # ----------------------------------------------------------------------------------------------------------------------------------------
