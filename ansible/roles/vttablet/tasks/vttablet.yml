@@ -13,7 +13,8 @@
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
     mode: '0644'
-- name: start vttablet
+
+- name: start mysql
   become: yes
   become_user: root
   when:
@@ -24,5 +25,42 @@
     state: started
   with_items:
     - 'mysqlctld@{{ tablet.id }}'
-    - 'vttablet@{{ tablet.id }}'
     - 'mysqld_exporter@{{ tablet.id }}'
+
+- name: wait for mysql socket
+  become: yes
+  become_user: root
+  tags: filepresensevalidation
+  register: filepresensevalidation
+  wait_for:
+    path:  '{{vitess_root}}/socket/mysql{{ tablet.id }}.sock'
+    delay: 5
+    timeout: 60
+    state: present
+    msg: "mysql socket needs to be present {{vitess_root}}/socket/mysql{{ tablet.id }}.sock"
+  ignore_errors: true
+
+- name: wait for mysqlctl socket
+  become: yes
+  become_user: root
+  tags: filepresensevalidation
+  register: filepresensevalidation
+  wait_for:
+    path:  '{{vitess_root}}/socket/mysqlctl{{ tablet.id }}.sock'
+    delay: 5
+    timeout: 60
+    state: present
+    msg: "mysqlctl socket needs to be present at {{vitess_root}}/socket/mysqlctl{{ tablet.id }}.sock"
+  ignore_errors: true
+
+- name: start vttablet
+  become: yes
+  become_user: root
+  when:
+    - enable_vttablet | bool
+  service:
+    name: '{{ item }}'
+    enabled: yes
+    state: started
+  with_items:
+    - 'vttablet@{{ tablet.id }}'
