@@ -12,4 +12,4 @@ fi
 cd ansible/
 
 #Run ansible script (Runs for all except sysbench)
-ANSIBLE_HOST_KEY_CHECKING=False ../benchmark/bin/ansible-playbook --private-key=~/.ssh/id_rsa -i $1 full.yml -u root -e provision=True -e tpcc=true -e clean=True
+ANSIBLE_HOST_KEY_CHECKING=False ../benchmark/bin/ansible-playbook --private-key=~/.ssh/id_rsa -i build/$1 full.yml -u root -e provision=True -e tpcc=true -e clean=True
