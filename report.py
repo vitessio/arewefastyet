@@ -88,24 +88,20 @@ def add_data_report(run_id,source,Type):
         data = json.load(f)
     data[0]["run_id"] = run_id
     data[0]["source"] = source
-    data[0]["commit_id"] = vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
+    data[0]["commit_id"] = vitess_git_version('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
     with open('report/oltp.json', 'w') as outfile:
        json.dump(data, outfile)
-    
+
 # --------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------- Remove Inventory file -------------------------------------------------------------
 
 def remove_inventory_file(id):
-    os.remove('./ansible/' + Path('./ansible/' + inventory_file()).stem + '-' + id + '.yml')
+    os.remove('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + id + '.yml')
 
 # --------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------- Main function for report and add OLTP to database ---------------------------------------------
 
 def add_oltp(run_id, source):
-    # Read the argument for the run id and source
-    # run_id = sys.argv[1]
-    # source = sys.argv[2]
-
     config_lock = get_ip_and_project_id(run_id)
 
     get_remote_oltp(config_lock[0],'oltp')
@@ -134,7 +130,7 @@ def add_oltp(run_id, source):
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
+    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
@@ -173,10 +169,6 @@ def add_oltp(run_id, source):
 # ------------------------------------------------ Main function for report and add TPCC to database ---------------------------------------------
 
 def add_tpcc(run_id, source):
-    # Read the argument for the run id and source
-    # run_id = sys.argv[1]
-    # source = sys.argv[2]
-
     config_lock = get_ip_and_project_id(run_id)
 
     get_remote_oltp(config_lock[0],'tpcc')
@@ -205,7 +197,7 @@ def add_tpcc(run_id, source):
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version(Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
+    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
@@ -239,14 +231,3 @@ def add_tpcc(run_id, source):
     remove_inventory_file(run_id)
 
     return test_no
-
-# ------------------------------------------------------------------------------------------------------------------------------------------------
-# ----------------------------------------------- Checks argument and runs according method ------------------------------------------------------
-
-# if sys.argv[3] == "oltp":
-#    add_oltp()
-
-# elif sys.argv[3] == "tpcc":
-#    add_tpcc()
-
-# -------------------------------------------------------------------------------------------------------------------------------------------------

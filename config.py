@@ -36,7 +36,7 @@ def mysql_connect():
 def vitess_git_version(inventory_file):
     data = read_config()
 
-    with open('ansible/'+inventory_file) as f:
+    with open(inventory_file) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
         print(data)
     return data["all"]["vars"]["vitess_git_version"]
