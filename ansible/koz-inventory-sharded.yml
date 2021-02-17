@@ -4,6 +4,22 @@ all:
     vitess_git_version: "HEAD"
     cell: local
     keyspace: main
+    # OLTP
+    oltp_table_size: 10000000
+    oltp_threads: 100
+    oltp_preparation_time: 30
+    oltp_warmup_time: 10
+    oltp_test_time: 900
+    oltp_number_tables: 50
+    # TPCC
+    tpcc_warehouses: 1000
+    tpcc_threads: 300
+    tpcc_load_threads: 25
+    tpcc_preparation_time: 900
+    tpcc_ensure_time: 900
+    tpcc_warmup_time: 90
+    tpcc_test_time: 900
+    tpcc_number_tables: 1
   hosts:
     52.250.110.51:
       storage_device:
