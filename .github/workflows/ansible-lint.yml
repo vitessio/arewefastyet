@@ -9,6 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.7.9'
 
     - name: Lint Ansible Playbook
       uses: ansible/ansible-lint-action@master
@@ -17,8 +20,8 @@ jobs:
             ansible/*.yml
             ansible/roles
 
-        override-deps: |
-          ansible==2.9.12
-          ansible-lint==4.2.0
+        # override-deps: |
+        #   ansible==2.10.7
+        #   ansible-lint==4.2.0
 
         args: ""
