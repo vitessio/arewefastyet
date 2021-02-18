@@ -10,7 +10,7 @@
       - mysql-devel
       - openssl-devel
       - git
-  
+
 - name: Install sysbench dependencies
   become: yes
   become_user: root
@@ -30,7 +30,7 @@
     version: 151672f3ab1fcddecb16ffffb156bb6ce83ef81d
     depth: 1
     force: 1
-    
+
 - name: Build sysbench
   become: yes
   become_user: root

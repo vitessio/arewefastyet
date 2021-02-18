@@ -33,11 +33,11 @@
   tags: filepresensevalidation
   register: filepresensevalidation
   wait_for:
-    path:  '{{vitess_root}}/socket/mysql{{ tablet.id }}.sock'
+    path:  '{{ vitess_root }}/socket/mysql{{ tablet.id }}.sock'
     delay: 5
     timeout: 60
     state: present
-    msg: "mysql socket needs to be present {{vitess_root}}/socket/mysql{{ tablet.id }}.sock"
+    msg: "mysql socket needs to be present {{ vitess_root }}/socket/mysql{{ tablet.id }}.sock"
   ignore_errors: true
 
 - name: wait for mysqlctl socket
@@ -46,11 +46,11 @@
   tags: filepresensevalidation
   register: filepresensevalidation
   wait_for:
-    path:  '{{vitess_root}}/socket/mysqlctl{{ tablet.id }}.sock'
+    path:  '{{ vitess_root }}/socket/mysqlctl{{ tablet.id }}.sock'
     delay: 5
     timeout: 60
     state: present
-    msg: "mysqlctl socket needs to be present at {{vitess_root}}/socket/mysqlctl{{ tablet.id }}.sock"
+    msg: "mysqlctl socket needs to be present at {{ vitess_root }}/socket/mysqlctl{{ tablet.id }}.sock"
   ignore_errors: true
 
 - name: start vttablet

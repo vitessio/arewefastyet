@@ -25,7 +25,7 @@
         name: parted
         state: present
         update_cache: true
-    
+
     - name: Partition the Drive
       parted:
         label: gpt
@@ -42,14 +42,14 @@
       filesystem:
         device: '/dev/{{storage_device.partition}}'
         fstype: xfs
-        
+
     - name: create folder for mount
       file:
         path: /vt
         state: directory
         recurse: yes
         mode: 0644
-    
+
     - name: Mount the Drive
       mount:
         path: /vt
