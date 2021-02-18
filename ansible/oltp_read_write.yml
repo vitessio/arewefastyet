@@ -6,11 +6,15 @@
       block:
         - name: Prepare sysbench
           shell: |
-            sysbench --luajit-cmd=off --threads={{ oltp_threads }} --time={{ oltp_preparation_time }} --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --auto-inc=off --tables={{ oltp_number_tables }} --table_size={{ oltp_table_size }} --range_selects=0 --rand-type=uniform oltp_read_write prepare
+            sysbench --luajit-cmd=off --threads={{ oltp_threads }} --time={{ oltp_preparation_time }} \
+                      --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql \
+                      --report-interval=10 --auto-inc=off --tables={{ oltp_number_tables }} \
+                      --table_size={{ oltp_table_size }} --range_selects=0 --rand-type=uniform oltp_read_write prepare
           async: 86400
           poll: 0
           register: sysbench_prepare
-        - async_status:
+        - name: Wait for Prepare Sysbench to finish
+          async_status:
             jid: '{{ sysbench_prepare.ansible_job_id }}'
           register: job_result
           until: job_result.finished
@@ -18,13 +22,21 @@
 
     - name: Warm up sysbench
       shell: |
-        sysbench --luajit-cmd=off --threads={{ oltp_threads }} --time={{ oltp_warmup_time }} --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --auto-inc=off --tables={{ oltp_number_tables }} --table_size={{ oltp_table_size }} --range_selects=0 --rand-type=uniform oltp_read_write run > /tmp/warm_oltp.json
+        sysbench --luajit-cmd=off --threads={{ oltp_threads }} --time={{ oltp_warmup_time }} \
+                  --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql \
+                  --report-interval=10 --auto-inc=off --tables={{ oltp_number_tables }} --table_size={{ oltp_table_size }} \
+                  --range_selects=0 --rand-type=uniform oltp_read_write run > /tmp/warm_oltp.json
+      changed_when: false
 
     # Do the runs in parallel
     - name: Run Sysbench
       block:
-        - shell: |
-            sysbench --luajit-cmd=off --threads={{ oltp_threads }} --time={{ oltp_test_time }} --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --auto-inc=off --tables={{ oltp_number_tables }} --table_size={{ oltp_table_size }} --range_selects=0 --rand-type=uniform --verbosity=0 --report_json=true oltp_read_write run > /tmp/oltp.json
+        - name: Run sysbench
+          shell: |
+            sysbench --luajit-cmd=off --threads={{ oltp_threads }} --time={{ oltp_test_time }} \
+                      --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql \
+                      --auto-inc=off --tables={{ oltp_number_tables }} --table_size={{ oltp_table_size }} --range_selects=0 \
+                      --rand-type=uniform --verbosity=0 --report_json=true oltp_read_write run > /tmp/oltp.json
           async: '{{ oltp_test_time * 2 }}'
           poll: 0
           register: sysbench_run
