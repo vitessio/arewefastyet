@@ -1,9 +1,9 @@
 ---
 - hosts: sysbench
   vars:
-    table_size: 10000000
-    threads: 150
-    test_time: 900
+    table_size: 1
+    threads: 30
+    test_time: 200
   tasks:
     - name: Prepare sysbench
       when: provision is defined
@@ -22,7 +22,7 @@
 
     - name: Warm up sysbench
       shell: |
-        sysbench --luajit-cmd=off --threads=10 --time=90 --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --auto-inc=off --tables=50 --table_size={{ table_size }} --range_selects=0 --rand-type=uniform oltp_read_write run > /tmp/warm_oltp.json
+        sysbench --luajit-cmd=off --threads=10 --time=10 --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --auto-inc=off --tables=50 --table_size={{ table_size }} --range_selects=0 --rand-type=uniform oltp_read_write run > /tmp/warm_oltp.json
 
     # Do the runs in parallel
     - name: Run Sysbench

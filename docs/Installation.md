@@ -1,7 +1,7 @@
 # Installation steps
 
 ### Requirements :
-1. CentOS 8 or Ubuntu 
+1. CentOS 8 or Ubuntu
 2. Python 3
 3. Mysql Server
 4. Packet API key
@@ -9,21 +9,34 @@
 ### Install python 3.7.x and set up virtual environment
 Ubuntu: https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/
 CentOS: https://tecadmin.net/install-python-3-7-on-centos-8/
-
+Mac Os:
+```
+brew update && brew upgrade
+brew install pyenv
+pyenv install 3.7.9
+// Add output to .zshrc file or .bashrc file 
+pynev init -
+pyenv global 3.7.9
+```
 #### Install virtual environment and configure
 ```
 sudo pip3 install virtualenv
 
+// Linux
 virtualenv --python=python3.7 benchmark
+
+//Mac or if python 3.7 is your default python version
+virtualenv benchmark
+
 // activate virtual environment
 source benchmark/bin/activate
 ```
 
-### Install python libraries 
+### Install python libraries
 ```
 pip install -r requirements.txt
 ```
-### Install Ansible 
+### Install Ansible
 https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 
 ### Configure Ansible
@@ -33,6 +46,12 @@ https://github.com/vitessio/arewefastyet/blob/modify-ansible/ansible/README.md
 cd ansible
 ansible-galaxy install cloudalchemy.node-exporter
 ansible-galaxy install cloudalchemy.prometheus
+```
+
+### For MacOS Dependencies
+```
+brew install jq
+brew install gnu-tar
 ```
 
 ### Create SSH key for ansible or use exsisting
@@ -46,7 +65,7 @@ https://vitess.io/docs/contributing/build-on-ubuntu/
 chmod +x run-benchmark
 chmod +x scheduler
 ```
-### Create file config.yaml 
+### Create file config.yaml
 ```
 mysql_host: <mysql hostname>
 mysql_username: <mysql username>
@@ -59,7 +78,7 @@ api_key: <api key you want for the flask server>
 slack_api_token: <slack_token>
 slack_channel: <channel name>
 ```
-Ex : 
+Ex :
 ```
 mysql_host: localhost:3306
 mysql_username: vitess
@@ -74,7 +93,7 @@ slack_channel: benchmark
 ```
 Inventory file from ansible directory
 
-### setup supervisord 
+### setup supervisord
 https://www.nixknight.com/2020/03/setup-supervisor-with-python-pip-on-ubuntu-debian/
 
 ### Install Caddy for reverse proxy
@@ -82,7 +101,7 @@ https://caddyserver.com/docs/download
 
 ### Run Scheduler
 ```
-python3 scheduler.py <time> & 
+python3 scheduler.py <time> &
 ```
 ### Example run for API
 ```
