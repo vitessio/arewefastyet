@@ -24,4 +24,4 @@ jobs:
           ansible==2.10.7
           ansible-lint==4.3.7
 
-        args: "-x 301,204"
+        args: "-x 301,303,204"
