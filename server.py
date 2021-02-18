@@ -86,7 +86,7 @@ def search_compare():
     compare_1_flag_empty = "No"
     compare_1_flag_tpcc_empty = "No"
     compare_2_flag_empty = "No"
-    compare_2_flag_tpcc_empty = "No"
+    # compare_2_flag_tpcc_empty = "No"
 
     if searchcommit != None:
        search_result = search_commit(searchcommit,'oltp')
@@ -116,7 +116,7 @@ def search_compare():
            compare_2_flag_empty = "Yes"
            compare_result_2 = []
        if compare_result_tpcc_2 == None:
-           compare_2_flag_tpcc_empty = "Yes"
+        #    compare_2_flag_tpcc_empty = "Yes"
            compare_result_tpcc_2 = []
 
     
@@ -145,7 +145,7 @@ def request_benchmark():
         client = WebClient(slack_api_token())
 
         try:
-          response = client.chat_postMessage(
+          client.chat_postMessage(
             channel='#' + slack_channel(),
             text=""" Request Benchmark run 
             Name: """ + name + """

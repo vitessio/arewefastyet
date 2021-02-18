@@ -91,7 +91,7 @@ def init(run_id, commit_hash):
 # ------------------------------------------------- Changes IP recursively ---------------------------------------------------------------
 
 def recursive_dict(data,ip):
-     for k, v in data.items():
+     for k, _ in data.items():
         if isinstance(data[k],dict) and k == "hosts":
             data[k] = recursive_dict_ip(data[k],ip)
         elif isinstance(data[k],dict):
@@ -99,7 +99,7 @@ def recursive_dict(data,ip):
      return data
 
 def recursive_dict_ip(data,ip):
-    for k, v in data.items():
+    for k, _ in data.items():
         old_key = k
         data[ip] = data.pop(old_key)
     return data
