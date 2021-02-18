@@ -13,6 +13,7 @@
 
     - name: Ensure Master
       shell: |
+        set -o pipefail
         alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
         for keyspace in $(vc GetKeyspaces); do
             echo "working on ${keyspace}"
@@ -27,10 +28,15 @@
                 fi
             done
         done
+      args:
+        executable: /bin/bash
+      changed_when: false
+
     - name: Ensure VSchmea
       shell: |
         vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat vitess-benchmark/sysbench.json)" main
       when: tpcc is not defined
+
     - name: Ensure VSchmea
       shell: |
         vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat vitess-benchmark/tpcc_vschema.json)" main
