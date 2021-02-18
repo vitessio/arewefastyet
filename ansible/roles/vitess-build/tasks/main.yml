@@ -78,17 +78,17 @@
         force: 1
 
     - name: Build Vitess Binaries
-      shell:
+      command:
         chdir: /go/src/vitess.io/vitess
         cmd: make build
 
     - name: Install Vitess Binaries
-      shell:
+      command:
         chdir: /go/src/vitess.io/vitess
         cmd: make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
 
     - name: Install Vitess Other Binaries
-      shell:
+      command:
         chdir: /go/src/vitess.io/vitess
         cmd: cp bin/vtctl /usr/local/bin/
   when: vtroot is undefined

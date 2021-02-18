@@ -1,11 +1,27 @@
-- name: Turn off everything
-  shell: |
-    systemctl stop mysqlctld@* || /bin/true
-    systemctl stop vttablet@* || /bin/true
-    systemctl stop vtctld@* || /bin/true
-    systemctl stop cell@* || /bin/true
-    systemctl stop vtgate@* || /bin/true
-  ignore_errors: yes
+- name: Stop service mysqlctld
+  ansible.builtin.systemd:
+    name: mysqlctld@*
+    state: stopped
+
+- name: Stop service vttablet
+  ansible.builtin.systemd:
+    name: vttablet@*
+    state: stopped
+
+- name: Stop service vtctld
+  ansible.builtin.systemd:
+    name: vtctld@*
+    state: stopped
+
+- name: Stop service cell
+  ansible.builtin.systemd:
+    name: cell@*
+    state: stopped
+
+- name: Stop service vtgate
+  ansible.builtin.systemd:
+    name: vtgate@*
+    state: stopped
 
 - name: Find Elements to remove
   find:
