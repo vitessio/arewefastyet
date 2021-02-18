@@ -20,8 +20,8 @@ jobs:
             ansible/*.yml
             ansible/roles
 
-        # override-deps: |
-        #   ansible==2.10.7
-        #   ansible-lint==4.2.0
+        override-deps: |
+          ansible==2.10.7
+          ansible-lint==4.3.7
 
         args: ""
