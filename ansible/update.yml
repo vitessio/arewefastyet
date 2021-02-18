@@ -1,7 +1,7 @@
 ---
 - hosts: all
   roles:
-    - vitess-build
+    - vitess_build
 - hosts: vtctld
   roles:
     - vtctld

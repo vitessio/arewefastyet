@@ -3,7 +3,7 @@
   roles:
     - host
     - cloudalchemy.node-exporter
-    - vitess-build
+    - vitess_build
   tasks:
 
 - hosts: etcd
