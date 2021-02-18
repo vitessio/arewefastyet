@@ -6,6 +6,7 @@
     systemctl stop cell@* || /bin/true
     systemctl stop vtgate@* || /bin/true
   ignore_errors: yes
+  changed_when: false
 
 - name: Find Elements to remove
   find:
