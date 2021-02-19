@@ -1,7 +1,7 @@
 ---
 - hosts: all
   roles:
-    - vitess-build
+    - vitess_build
 - hosts: vtctld
   roles:
     - vtctld
@@ -33,7 +33,8 @@
                 fi
             done
         done
-        
+      changed_when: false
+
     - name: Ensure OLTP VSchmea
       shell: |
         vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat ~/src/planetscale-benchmark/sysbench.json)" main

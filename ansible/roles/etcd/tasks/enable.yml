@@ -46,7 +46,6 @@
     dest: '{{ item.d }}/{{ item.f }}'
     owner: '{{ etcd_user }}'
     group: '{{ etcd_group }}'
-    mode: 0644
   notify:
   - restart etcd masters
 

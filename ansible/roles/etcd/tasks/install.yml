@@ -17,7 +17,6 @@
         dest: /tmp/{{ etcd_archive }}
         checksum: '{{ etcd_checksum }}'
         timeout: '{{ etcd_download_timeout_seconds }}'
-        mode: 0644
     - name: unachive etcd
       become: yes
       become_user: root

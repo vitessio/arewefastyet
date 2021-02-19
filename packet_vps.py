@@ -51,7 +51,7 @@ def create_vps(id):
 # ---------------------------------------------------- Deletes packet server ---------------------------------------------------------
 
 def delete_vps(id):
-    project_id = packet_project_id()
+    # project_id = packet_project_id()
     manager = auth_packet()
 
     device = manager.get_device(id)

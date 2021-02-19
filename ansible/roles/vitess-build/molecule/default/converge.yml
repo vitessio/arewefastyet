@@ -1,7 +1,0 @@
----
-- name: Converge
-  hosts: all
-  tasks:
-    - name: "Include vitess-build"
-      include_role:
-        name: "vitess-build"
