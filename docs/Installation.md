@@ -14,7 +14,7 @@ Mac Os:
 brew update && brew upgrade
 brew install pyenv
 pyenv install 3.7.9
-// Add output to .zshrc file or .bashrc file 
+// Add output to .zshrc file or .bashrc file
 pynev init -
 pyenv global 3.7.9
 ```
@@ -64,6 +64,7 @@ https://vitess.io/docs/contributing/build-on-ubuntu/
 ```
 chmod +x run-benchmark
 chmod +x scheduler
+chmod +x cli
 ```
 ### Create file config.yaml
 ```
