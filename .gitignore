@@ -146,20 +146,23 @@ config.yaml
 # hide config-lock.json
 config-lock.json
 
-#.out files 
+#.out files
 *.out
 
 #Hide the benchmakr virtual environment folder
 benchmark/
 
-#Hide process txt 
+#Hide process txt
 process.txt
 
 #For vs code files
 .vscode/
 
 #To hide private key of certificate caddy
-caddy/ 
+caddy/
 
 # Built Ansible inventory files
 ansible/build/*
+
+#For Mac OS
+.DS_Store
