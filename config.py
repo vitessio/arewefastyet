@@ -65,13 +65,17 @@ def inventory_file_default():
     inventory_file = str(data["inventory_file"])
 
 def set_inventory_file(file):
+    global inventory_file
     inventory_file = file
 
 def get_inventory_file():
     return inventory_file
 
 # Sets to default in config file
-inventory_file_default()
+if 'inventory_file' not in globals():
+    inventory_file_default()
+    print(get_inventory_file())
+
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------- Returns API key for flask server -------------------------------------------------
