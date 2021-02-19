@@ -11,16 +11,16 @@
 # limitations under the License.
 #
 # demonstrates to:
-#   - create a copy of inventory file for the run 
-#   - calls create_vps to create packet server 
-#   - add run information to config-lock.json file 
-#   - changes the ip address in the copy of the inventory file 
+#   - create a copy of inventory file for the run
+#   - calls create_vps to create packet server
+#   - add run information to config-lock.json file
+#   - changes the ip address in the copy of the inventory file
 #
 # Arguments: python initialize_benchmark.py <run id> <commit hash>
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 from packet_vps import create_vps
-from config import inventory_file
+from config import get_inventory_file
 from pathlib import Path
 import json
 import os
@@ -44,21 +44,21 @@ def init(run_id, commit_hash):
     if Path('./ansible/build').exists() == False:
         os.mkdir('./ansible/build')
     # create copy of inventory file
-    shutil.copy2('./ansible/'+inventory_file(), './ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
-    
+    shutil.copy2('./ansible/' + get_inventory_file(), './ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml')
+
     if doesFileExists('config-lock.json'):
       with open('config-lock.json') as json_file:
           data = json.load(json_file)
-         
+
       data['run'].append({
         'run_id':run_id,
         'vps_id':vps[0],
         'ip_address':vps[1]
       })
-     
+
       with open('config-lock.json', 'w') as outfile:
         json.dump(data, outfile)
-    
+
     else:
        data = {}
        data['run'] = []
@@ -72,7 +72,7 @@ def init(run_id, commit_hash):
 
     with open('ansible/'+inventory_file()) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
-    
+
     # Changes ip address with new ip address
     data = recursive_dict(data,vps[1])
 
@@ -83,10 +83,10 @@ def init(run_id, commit_hash):
     data["all"]["vars"]["vitess_git_version"] = commit_hash
 
     print(data)
-    
-    with open('ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml' , 'w') as f:
+
+    with open('ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml' , 'w') as f:
       yaml.dump(data,f)
-    
+
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------- Changes IP recursively ---------------------------------------------------------------
 

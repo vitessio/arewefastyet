@@ -19,7 +19,7 @@
 import time
 import subprocess
 import os
-from config import inventory_file
+from config import get_inventory_file
 from pathlib import Path
 import sys
 from initialize_benchmark import init
@@ -53,7 +53,7 @@ def run_tasks(commit, run_id, source, tasks):
       init(run_id, commit)
 
       print_step(task_info['name'], 'Running Benchmark')
-      os.system('./' + task_info['run_script'] + ' ' + Path('./ansible/build/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
+      os.system('./' + task_info['run_script'] + ' ' + Path('./ansible/build/' + get_inventory_file()).stem + '-' + str(run_id) + '.yml')
 
       print_step(task_info['name'], 'Saving Results')
       task_info['save_results'](run_id, source)

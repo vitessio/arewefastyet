@@ -11,7 +11,7 @@
 # limitations under the License.
 #
 # demonstrates to:
-#   - returns data from config.yaml file 
+#   - returns data from config.yaml file
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 from connection import connectdb
@@ -58,9 +58,20 @@ def packet_project_id():
 # -------------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Returns Inventory file name ----------------------------------------------------
 
+inventory_file = ""
+
 def inventory_file():
     data = read_config()
-    return data["inventory_file"]
+    inventory_file = data["inventory_file"]
+
+def set_inventory_file(file):
+    inventory_file = file
+
+def get_inventory_file():
+    return inventory_file
+
+# Sets to default in config file 
+inventory_file()
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------- Returns API key for flask server -------------------------------------------------
