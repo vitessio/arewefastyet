@@ -60,7 +60,7 @@ def packet_project_id():
 
 inventory_file = ""
 
-def inventory_file():
+def inventory_file_default():
     data = read_config()
     inventory_file = data["inventory_file"]
 
@@ -70,8 +70,8 @@ def set_inventory_file(file):
 def get_inventory_file():
     return inventory_file
 
-# Sets to default in config file 
-inventory_file()
+# Sets to default in config file
+inventory_file_default()
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------- Returns API key for flask server -------------------------------------------------
