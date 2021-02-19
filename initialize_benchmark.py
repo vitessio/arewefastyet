@@ -70,7 +70,7 @@ def init(run_id, commit_hash):
        with open('config-lock.json', 'w') as outfile:
         json.dump(data, outfile)
 
-    with open('ansible/'+inventory_file()) as f:
+    with open('ansible/'+get_inventory_file()) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
 
     # Changes ip address with new ip address
