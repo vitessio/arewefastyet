@@ -58,11 +58,11 @@ def packet_project_id():
 # -------------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Returns Inventory file name ----------------------------------------------------
 
-inventory_file = ""
 
 def inventory_file_default():
     data = read_config()
-    inventory_file = data["inventory_file"]
+    global inventory_file
+    inventory_file = str(data["inventory_file"])
 
 def set_inventory_file(file):
     inventory_file = file
