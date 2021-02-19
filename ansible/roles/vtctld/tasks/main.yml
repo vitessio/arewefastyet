@@ -34,7 +34,6 @@
     path: '{{ item }}'
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
-    mode: 0644
 
 - name: install config
   become: yes

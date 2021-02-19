@@ -21,7 +21,6 @@
 
     - name: Ensure Master
       shell: |
-        set -o pipefail
         alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
         for keyspace in $(vc GetKeyspaces); do
             echo "working on ${keyspace}"
@@ -34,8 +33,6 @@
                 fi
             done
         done
-      args:
-        executable: /bin/bash
       changed_when: false
 
     - name: Ensure OLTP VSchmea

@@ -48,7 +48,6 @@
         path: /vt
         state: directory
         recurse: yes
-        mode: 0644
 
     - name: Mount the Drive
       mount:
