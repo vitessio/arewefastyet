@@ -14,6 +14,8 @@
   become_user: root
   shell: |
     sysctl -w fs.aio-max-nr=1048576
+  changed_when: false
+
 - name: Handle Secondary Storage
   become: true
   become_user: root
@@ -23,7 +25,7 @@
         name: parted
         state: present
         update_cache: true
-    
+
     - name: Partition the Drive
       parted:
         label: gpt
@@ -38,15 +40,15 @@
 
     - name: Format the Drive
       filesystem:
-        device: '/dev/{{storage_device.partition}}'
+        device: '/dev/{{ storage_device.partition }}'
         fstype: xfs
-        
+
     - name: create folder for mount
       file:
         path: /vt
         state: directory
         recurse: yes
-    
+
     - name: Mount the Drive
       mount:
         path: /vt

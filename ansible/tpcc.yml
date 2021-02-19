@@ -1,25 +1,24 @@
 # Run the sysbench TPC-C benchmark and report the results
 ---
 - hosts: sysbench
-  vars:
-    warehouses: 1000
-    load_threads: 25
-    threads: 300
-    test_time: 900
   tasks:
     - name: Prepare sysbench
       when: provision is defined
       block:
         - name: Prepare sysbench
           shell: |
-            sysbench --luajit-cmd=off --threads={{ load_threads }} --time={{ test_time }} --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --mysql-ignore-errors=all --use_fk=0 --tables=1 --scale={{ warehouses }} ./tpcc.lua prepare
+            sysbench --luajit-cmd=off --threads={{ tpcc_load_threads }} --time={{ tpcc_preparation_time }} \
+                      --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql \
+                      --report-interval=10 --mysql-ignore-errors=all --use_fk=0 --tables={{ tpcc_number_tables }} \
+                      --scale={{ tpcc_warehouses }} ./tpcc.lua prepare
           args:
             chdir: /src/sysbench-tpcc/
           async: 86400
           poll: 0
           register: sysbench_prepare
 
-        - async_status:
+        - name: Wait for Prepare sysbench
+          async_status:
             jid: '{{ sysbench_prepare.ansible_job_id }}'
           register: job_result
           until: job_result.finished
@@ -27,24 +26,35 @@
 
     - name: ensure sysbench
       shell: |
-        sysbench --luajit-cmd=off --threads={{ load_threads//7 }} --time={{ test_time }} --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --mysql-ignore-errors=all --use_fk=0 --tables=1 --scale={{ warehouses }} ./tpcc.lua ensure
+        sysbench --luajit-cmd=off --threads={{ tpcc_load_threads//7 }} --time={{ tpcc_ensure_time }} \
+                  --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql \
+                  --report-interval=10 --mysql-ignore-errors=all --use_fk=0 --tables={{ tpcc_number_tables }} \
+                  --scale={{ tpcc_warehouses }} ./tpcc.lua ensure
       args:
         chdir: /src/sysbench-tpcc/
+      changed_when: false
 
     - name: Warm up sysbench
       shell: |
-        sysbench --luajit-cmd=off --threads=10 --time=90 --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --mysql-ignore-errors=all --use_fk=0 --rand-type=uniform --verbosity=0 --report_json=yes --tables=1 --scale=10 ./tpcc.lua run > /tmp/warm_tpcc.json
+        sysbench --luajit-cmd=off --threads={{ tpcc_load_threads }} --time={{ tpcc_warmup_time }} \
+                  --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql \
+                  --mysql-ignore-errors=all --use_fk=0 --rand-type=uniform --verbosity=0 --report_json=yes \
+                  --tables={{ tpcc_number_tables }} --scale={{ tpcc_warehouses }} ./tpcc.lua run > /tmp/warm_tpcc.json
       args:
         chdir: /src/sysbench-tpcc/
+      changed_when: false
 
     - name: Run sysbench
       block:
        - name: Run the test
          shell: |
-           sysbench --luajit-cmd=off --threads={{ threads }} --time={{ test_time }} --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --mysql-ignore-errors=all --use_fk=0 --rand-type=uniform --verbosity=0 --report_json=yes --tables=1 --scale={{ warehouses }} ./tpcc.lua run > /tmp/tpcc.json
+           sysbench --luajit-cmd=off --threads={{ tpcc_threads }} --time={{ tpcc_test_time }} \
+                    --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable \
+                    --db-driver=mysql --mysql-ignore-errors=all --use_fk=0 --rand-type=uniform --verbosity=0 \
+                    --report_json=yes --tables={{ tpcc_number_tables }} --scale={{ tpcc_warehouses }} ./tpcc.lua run > /tmp/tpcc.json
          args:
            chdir: /src/sysbench-tpcc/
-         async: '{{ test_time*2 }}'
+         async: '{{ tpcc_test_time*2 }}'
          poll: 0
          register: sysbench_run
        - name: Wait for sysbench to finish
@@ -52,6 +62,6 @@
             jid: "{{ sysbench_run.ansible_job_id }}"
          register: job_result
          until: job_result.finished
-         retries: '{{ test_time*2 }}'
+         retries: '{{ tpcc_test_time*2 }}'
        - debug:
            msg: '{{ job_result }}'

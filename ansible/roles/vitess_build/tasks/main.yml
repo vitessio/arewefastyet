@@ -2,7 +2,7 @@
 - include: clean.yml
   become: yes
   become_user: root
-  
+
 - include: golang.yml
   become: yes
   become_user: root
@@ -65,7 +65,7 @@
     state: disabled
   ignore_errors: yes
   when: ansible_os_family == 'RedHat'
-  
+
 - name: Update Vitess
   become: yes
   become_user: root
@@ -78,19 +78,23 @@
         force: 1
 
     - name: Build Vitess Binaries
-      shell:
-        chdir: /go/src/vitess.io/vitess
-        cmd: make build
+      shell: |
+        cd /go/src/vitess.io/vitess
+        make build
+      changed_when: false
 
     - name: Install Vitess Binaries
-      shell:
-        chdir: /go/src/vitess.io/vitess
-        cmd: make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
+      shell: |
+        cd /go/src/vitess.io/vitess
+        make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
+      changed_when: false
 
     - name: Install Vitess Other Binaries
-      shell:
-        chdir: /go/src/vitess.io/vitess
-        cmd: cp bin/vtctl /usr/local/bin/
+      shell: |
+        cd /go/src/vitess.io/vitess
+        cp bin/vtctl /usr/local/bin/
+      changed_when: false
+
   when: vtroot is undefined
 
 - name: Copy Vitess Binaries

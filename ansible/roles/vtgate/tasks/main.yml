@@ -19,7 +19,7 @@
   become_user: root
   with_items:
     - '{{ vitess_root }}'
-    - '{{vitess_root}}/socket'
+    - '{{ vitess_root }}/socket'
   file:
     state: directory
     path:   '{{ item }}'

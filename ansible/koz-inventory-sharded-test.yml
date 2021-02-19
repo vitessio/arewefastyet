@@ -4,8 +4,27 @@ all:
     vitess_git_version: "HEAD"
     cell: local
     keyspace: main
+    # OLTP
+    oltp_table_size: 1
+    oltp_threads: 5
+    oltp_preparation_time: 5
+    oltp_warmup_time: 5
+    oltp_test_time: 5
+    oltp_number_tables: 5
+    # TPCC
+    tpcc_warehouses: 1
+    tpcc_threads: 14
+    tpcc_load_threads: 7
+    tpcc_preparation_time: 1
+    tpcc_ensure_time: 1
+    tpcc_warmup_time: 1
+    tpcc_test_time: 1
+    tpcc_number_tables: 1
   hosts:
     52.250.110.51:
+      storage_device:
+        device: nvme0n1
+        partition: nvme0n1p1
   children:
     sysbench:
       hosts:
