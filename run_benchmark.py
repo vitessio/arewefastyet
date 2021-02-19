@@ -19,9 +19,8 @@
 import time
 import subprocess
 import os
-from config import inventory_file
+from config import get_inventory_file
 from pathlib import Path
-import uuid 
 import sys
 from initialize_benchmark import init
 from report import add_oltp, add_tpcc
@@ -41,7 +40,7 @@ tasks_list = {
 }
 
 def print_step(task, step):
-   print('-------------', task, '-', step, '-------------')   
+   print('-------------', task, '-', step, '-------------')
 
 def create_task(task):
    return tasks_list.get(task)
@@ -52,21 +51,10 @@ def run_tasks(commit, run_id, source, tasks):
 
       print_step(task_info['name'], 'Initialize VPS')
       init(run_id, commit)
-   
+
       print_step(task_info['name'], 'Running Benchmark')
-      os.system('./' + task_info['run_script'] + ' ' + Path('./ansible/build/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
-   
+
+      os.system('./' + task_info['run_script'] + ' ' + Path('./ansible/build/' + get_inventory_file()).stem + '-' + str(run_id) + '.yml')
+
       print_step(task_info['name'], 'Saving Results')
       task_info['save_results'](run_id, source)
-
-
-if __name__ == "__main__":
-   #run_id = uuid.uuid4()
-   commit = sys.argv[1]
-   run_id = sys.argv[2]
-   source = sys.argv[3]
-
-   # TODO: add to CLI flags
-   tasks = ["oltp", "tpcc"]
-
-   run_tasks(commit, run_id, source, tasks)

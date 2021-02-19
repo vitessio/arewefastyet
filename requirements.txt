@@ -13,3 +13,4 @@ asyncio
 gitpython
 flask_sslify
 pyOpenSSL
+click

@@ -11,9 +11,9 @@
 # limitations under the License.
 #
 # demonstrates to:
-#   - OLTP results to a database 
+#   - OLTP results to a database
 #   - Sends the inventory file used and oltp.json as a slack message
-#   - Deletes the packet baremetal server used to run the Ansibles 
+#   - Deletes the packet baremetal server used to run the Ansibles
 #
 #  Arguments: python report.py <run id> <source> <oltp or tpcc>
 #  TODO: Reduce duplicate code for (TPCC and OLTP)
@@ -21,7 +21,7 @@
 
 import datetime
 from connection import connectdb
-from config import mysql_connect,vitess_git_version,slack_api_token,slack_channel,inventory_file
+from config import mysql_connect,vitess_git_version,slack_api_token,slack_channel,get_inventory_file
 from remote_file import get_remote_oltp
 from packet_vps import delete_vps
 from slack import WebClient
@@ -38,7 +38,7 @@ import ssl
 def get_ip_and_project_id(run_id):
   with open('config-lock.json') as json_file:
     data = json.load(json_file)
-  
+
   print(data)
   for i in data['run']:
     if i['run_id'] == run_id:
@@ -54,7 +54,7 @@ def get_ip_and_project_id(run_id):
 
 def send_slack_message(Type):
     ssl._create_default_https_context = ssl._create_unverified_context
-   
+
     client = WebClient(slack_api_token())
 
     if Type == "oltp":
@@ -67,7 +67,7 @@ def send_slack_message(Type):
        response = client.files_upload(
          channels='#'+slack_channel(),
          file=filepath)
-       assert response["file"]  # the uploaded file 
+       assert response["file"]  # the uploaded file
     except SlackApiError as e:
     # You will get a SlackApiError if "ok" is False
        assert e.response["ok"] is False
@@ -88,7 +88,7 @@ def add_data_report(run_id,source,Type):
         data = json.load(f)
     data[0]["run_id"] = run_id
     data[0]["source"] = source
-    data[0]["commit_id"] = vitess_git_version('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml')
+    data[0]["commit_id"] = vitess_git_version('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml')
     with open('report/oltp.json', 'w') as outfile:
        json.dump(data, outfile)
 
@@ -96,7 +96,7 @@ def add_data_report(run_id,source,Type):
 # -------------------------------------------------- Remove Inventory file -------------------------------------------------------------
 
 def remove_inventory_file(id):
-    os.remove('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + id + '.yml')
+    os.remove('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + id + '.yml')
 
 # --------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------- Main function for report and add OLTP to database ---------------------------------------------
@@ -105,7 +105,7 @@ def add_oltp(run_id, source):
     config_lock = get_ip_and_project_id(run_id)
 
     get_remote_oltp(config_lock[0],'oltp')
-    
+
     # Add run_id , source , vitess_git_version to oltp.json
     add_data_report(run_id,source,'oltp')
 
@@ -130,7 +130,7 @@ def add_oltp(run_id, source):
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
+    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
@@ -159,7 +159,7 @@ def add_oltp(run_id, source):
 
     # Delete vps instance
     delete_vps(config_lock[1])
-    
+
     # remove inventory file
     remove_inventory_file(run_id)
 
@@ -172,7 +172,7 @@ def add_tpcc(run_id, source):
     config_lock = get_ip_and_project_id(run_id)
 
     get_remote_oltp(config_lock[0],'tpcc')
-    
+
     # Add run_id , source , vitess_git_version to oltp.json
     add_data_report(run_id,source,'tpcc')
 
@@ -197,7 +197,7 @@ def add_tpcc(run_id, source):
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
+    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
@@ -226,7 +226,7 @@ def add_tpcc(run_id, source):
 
     # Delete vps instance
     delete_vps(config_lock[1])
-    
+
     # remove inventory file
     remove_inventory_file(run_id)
 
