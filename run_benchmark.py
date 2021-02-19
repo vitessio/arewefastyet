@@ -53,11 +53,8 @@ def run_tasks(commit, run_id, source, tasks):
       init(run_id, commit)
 
       print_step(task_info['name'], 'Running Benchmark')
-<<<<<<< HEAD:run_benchmark.py
+
       os.system('./' + task_info['run_script'] + ' ' + Path('./ansible/build/' + get_inventory_file()).stem + '-' + str(run_id) + '.yml')
-=======
-      os.system('./' + task_info['run_script'] + ' ' + Path('./ansible/build/' + inventory_file()).stem + '-' + str(run_id) + '.yml')
->>>>>>> 4fb7389d2e264401f49688816ea4a73cc9c2636c:run-benchmark.py
 
       print_step(task_info['name'], 'Saving Results')
       task_info['save_results'](run_id, source)
