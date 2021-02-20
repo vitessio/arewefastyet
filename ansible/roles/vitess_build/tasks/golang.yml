@@ -48,3 +48,10 @@
   with_items:
     - go
     - gofmt
+
+- name: Go version
+  shell: go version
+  register: go
+
+- name: Print go version
+  debug: msg="{{ go.stdout }}"
