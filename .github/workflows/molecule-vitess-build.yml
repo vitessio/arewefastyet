@@ -32,13 +32,14 @@ jobs:
         run: |
           virtualenv --python=python${{ matrix.python-version }} benchmark
           source benchmark/bin/activate
+          pip install -r requirements.txt
 
       - name: Install dependencies
         run: |
           sudo apt install docker
-          pip install -r requirements.txt
 
       - name: Test with molecule
         run: |
+          source benchmark/bin/activate
           cd ansible/roles/vitess_build
           molecule test
