@@ -8,6 +8,7 @@ platforms:
     groups:
       - etcd
       - vtctld
+      - vitess_build
     image: centos:8
     command: /sbin/init
     tmpfs:
