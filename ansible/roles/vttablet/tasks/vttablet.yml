@@ -26,6 +26,7 @@
   with_items:
     - 'mysqlctld@{{ tablet.id }}'
     - 'mysqld_exporter@{{ tablet.id }}'
+  changed_when: false
 
 - name: wait for mysql socket
   become: yes
@@ -64,3 +65,4 @@
     state: started
   with_items:
     - 'vttablet@{{ tablet.id }}'
+  changed_when: false

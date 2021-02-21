@@ -1,0 +1,24 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: instance
+    groups:
+      - etcd
+      - vtctld
+      - vtgate
+      - vttablet
+    image: centos:8
+    privileged: True
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmpm
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

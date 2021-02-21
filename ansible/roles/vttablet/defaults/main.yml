@@ -8,6 +8,7 @@ vitess_cluster: 'main'
 vitess_cell: 'local'
 default_tablet_type: 'replica'
 vitess_monitoring_user: 'vt_dba'
+keyspace: main
 
 tablets:
   - id: '1001'
@@ -26,6 +27,6 @@ vttablet_connection_pool_size: 300
 vttablet_transaction_cap: 300
 vttablet_stream_pool_size: 16
 vttablet_found_rows_pool_size: 16
-vttablet_query_cache_size: 0
+vttablet_query_cache_size: 1000
 
 vttablet_max_goproc: 24

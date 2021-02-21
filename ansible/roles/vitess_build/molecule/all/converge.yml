@@ -1,0 +1,22 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include Cloud Alchemy node-exporter"
+      include_role:
+        name: "cloudalchemy.node-exporter"
+    - name: "Include vitess_build"
+      include_role:
+        name: "vitess_build"
+    - name: "Include etcd"
+      include_role:
+        name: "etcd"
+    - name: "Include vtctld"
+      include_role:
+        name: "vtctld"
+    - name: "Include vtgate"
+      include_role:
+        name: "vtgate"
+    - name: "Include vttablet"
+      include_role:
+        name: "vttablet"
