@@ -8,6 +8,8 @@ platforms:
     groups:
       - etcd
       - vtctld
+      - vtgate
+      - vttablet
     image: centos:8
     command: /sbin/init
     tmpfs:
