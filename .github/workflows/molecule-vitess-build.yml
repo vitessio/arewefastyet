@@ -35,6 +35,7 @@ jobs:
       - name: Install docker
         run: |
           sudo apt install docker
+          sudo systemctl unmask docker
           sudo systemctl start docker
 
       - name: Test with molecule
