@@ -39,9 +39,11 @@
   file:
     state: absent
     path: /usr/local/go
+  changed_when: False
 
 - name: Extract go archive to /usr/local
   unarchive: "src={{ go_dest }} dest=/usr/local/ copy=no"
+  changed_when: False
 
 - name: Add symlinks from /usr/local/go/bin to /usr/bin
   file: src=/usr/local/go/bin/{{ item }} dest=/usr/bin/{{ item }} state=link
@@ -52,6 +54,7 @@
 - name: Go version
   shell: go version
   register: go
+  changed_when: False
 
 - name: Print go version
   debug: msg="{{ go.stdout }}"
