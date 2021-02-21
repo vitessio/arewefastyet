@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          path: ${{ github.repository }}
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -35,6 +37,7 @@ jobs:
       - name: Install docker
         run: |
           sudo apt install docker
+          sudo systemctl start docker
 
       - name: Test with molecule
         run: |
