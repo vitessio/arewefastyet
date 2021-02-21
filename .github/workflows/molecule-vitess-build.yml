@@ -29,13 +29,13 @@ jobs:
       - name: Install docker
         run: |
           sudo apt install docker
+          docker info
       
       - name: Set up virtualenv
         run: |
           virtualenv --python=python${{ matrix.python-version }} benchmark
           source benchmark/bin/activate
           pip install -r requirements.txt
-
 
       - name: Test with molecule
         run: |
