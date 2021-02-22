@@ -21,7 +21,7 @@ import yaml
 
 def read_config():
     with open('config.yaml') as f:
-      return yaml.load(f, Loader=yaml.FullLoader)
+      return yaml.load(f, Loader=yaml.SafeLoader)
 
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------- Reads Mysql parameters and return connection object ------------------------------------------
@@ -37,7 +37,7 @@ def vitess_git_version(inventory_file):
     data = read_config()
 
     with open(inventory_file) as f:
-        data = yaml.load(f, Loader=yaml.FullLoader)
+        data = yaml.load(f, Loader=yaml.SafeLoader)
         print(data)
     return data["all"]["vars"]["vitess_git_version"]
 
