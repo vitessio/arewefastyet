@@ -11,19 +11,14 @@ platforms:
       - vtgate
       - vttablet
     image: centos:8
+    privileged: True
     command: /sbin/init
     tmpfs:
       - /run
-      - /tmp
+      - /tmpm
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    capabilities:
-      - SYS_ADMIN
 provisioner:
   name: ansible
-  inventory:
-    host_vars:
-      instance:
-        enable_vttablet: False
 verifier:
   name: ansible

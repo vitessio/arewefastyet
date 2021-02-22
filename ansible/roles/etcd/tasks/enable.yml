@@ -76,3 +76,4 @@
     name: etcd
     enabled: yes
     state: started
+  changed_when: false

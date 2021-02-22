@@ -4,6 +4,7 @@ pyyaml
 pysftp
 packet-python
 ansible==2.9.12
+molecule[ansible, docker]
 jmespath
 flask
 slackclient

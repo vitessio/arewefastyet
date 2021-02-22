@@ -7,6 +7,7 @@ platforms:
   - name: instance
     groups:
       - etcd
+      - vttablet
     image: centos:8
     command: /sbin/init
     tmpfs:

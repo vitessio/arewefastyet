@@ -71,6 +71,7 @@
     name: cell@{{ vitess_cell }}
     enabled: yes
     state: started
+  changed_when: false
 
 - name: start vtctld
   become: yes
@@ -81,3 +82,4 @@
     name: vtctld@{{ vitess_cell }}
     enabled: yes
     state: started
+  changed_when: false

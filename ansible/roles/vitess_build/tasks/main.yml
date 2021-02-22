@@ -77,14 +77,26 @@
         version: "{{ vitess_git_version }}"
         force: 1
 
+    - name: Tmp directory gopath
+      become: yes
+      become_user: root
+      file:
+        state: directory
+        path: '{{ item }}'
+        mode: 0755
+      with_items:
+        - /root/tmp
+
     - name: Build Vitess Binaries
       shell: |
+        export TMPDIR=~/tmp
         cd /go/src/vitess.io/vitess
         make build
       changed_when: false
 
     - name: Install Vitess Binaries
       shell: |
+        export TMPDIR=~/tmp
         cd /go/src/vitess.io/vitess
         make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
       changed_when: false

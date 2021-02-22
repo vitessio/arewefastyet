@@ -6,6 +6,7 @@
     name: etcd
     state: stopped
   ignore_errors: yes
+  changed_when: false
 
 - name: remove storage
   become: yes

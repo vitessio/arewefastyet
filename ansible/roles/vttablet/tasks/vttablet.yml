@@ -26,12 +26,13 @@
   with_items:
     - 'mysqlctld@{{ tablet.id }}'
     - 'mysqld_exporter@{{ tablet.id }}'
+  changed_when: false
 
 - name: wait for mysql socket
   become: yes
   become_user: root
-  tags: filepresensevalidation
-  register: filepresensevalidation
+  when:
+    - enable_vttablet | bool
   wait_for:
     path:  '{{ vitess_root }}/socket/mysql{{ tablet.id }}.sock'
     delay: 5
@@ -43,8 +44,8 @@
 - name: wait for mysqlctl socket
   become: yes
   become_user: root
-  tags: filepresensevalidation
-  register: filepresensevalidation
+  when:
+    - enable_vttablet | bool
   wait_for:
     path:  '{{ vitess_root }}/socket/mysqlctl{{ tablet.id }}.sock'
     delay: 5
@@ -64,3 +65,4 @@
     state: started
   with_items:
     - 'vttablet@{{ tablet.id }}'
+  changed_when: false
