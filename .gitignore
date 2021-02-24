@@ -157,6 +157,7 @@ process.txt
 
 #For vs code files
 .vscode/
+.idea/
 
 #To hide private key of certificate caddy
 caddy/
