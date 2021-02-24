@@ -19,8 +19,8 @@
 # Arguments: python initialize_benchmark.py <run id> <commit hash>
 # -------------------------------------------------------------------------------------------------------------------------------------
 
-from packet_vps import create_vps
-from config import get_inventory_file
+import packet_vps
+import configuration
 from pathlib import Path
 import json
 import os
@@ -37,17 +37,18 @@ def doesFileExists(filePathAndName):
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------- Initializes benchmark process --------------------------------------------------------
 
-def init(run_id, commit_hash):
-    vps = create_vps(run_id)
+def init(cfg : configuration.Config, run_id):
+    vps = packet_vps.create_vps(cfg.packet_token, cfg.packet_project_id, run_id)
 
     # make sure build folder is present
-    if Path('./ansible/build').exists() == False:
-        os.mkdir('./ansible/build')
+    if Path(cfg.ansible_dir + '/build').exists() == False:
+        os.mkdir(cfg.ansible_dir + '/build')
     # create copy of inventory file
-    shutil.copy2('./ansible/' + get_inventory_file(), './ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml')
+    # TODO: create a method for built ansible dir
+    shutil.copy2(cfg.get_inventory_file_path(), cfg.ansible_dir + '/build/' + Path(cfg.get_inventory_file_path()).stem + '-' + run_id + '.yml')
 
     if doesFileExists('config-lock.json'):
-      with open('config-lock.json') as json_file:
+      with open('./config-lock.json') as json_file:
           data = json.load(json_file)
 
       data['run'].append({
@@ -56,7 +57,7 @@ def init(run_id, commit_hash):
         'ip_address':vps[1]
       })
 
-      with open('config-lock.json', 'w') as outfile:
+      with open('./config-lock.json', 'w') as outfile:
         json.dump(data, outfile)
 
     else:
@@ -67,25 +68,23 @@ def init(run_id, commit_hash):
         'vps_id':vps[0],
         'ip_address':vps[1]
        })
-       with open('config-lock.json', 'w') as outfile:
+       with open('./config-lock.json', 'w') as outfile:
         json.dump(data, outfile)
 
-    with open('ansible/'+get_inventory_file()) as f:
+    with open(cfg.get_inventory_file_path()) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
 
     # Changes ip address with new ip address
-    data = recursive_dict(data,vps[1])
+    data = recursive_dict(data, vps[1])
 
     # if HEAD then get commit hash
-    if commit_hash == 'HEAD':
-       commit_hash = head_commit_hash()
+    if cfg.commit == 'HEAD':
+        cfg.commit = head_commit_hash()
 
-    data["all"]["vars"]["vitess_git_version"] = commit_hash
+    data["all"]["vars"]["vitess_git_version"] = cfg.commit
 
-    print(data)
-
-    with open('ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml' , 'w') as f:
-      yaml.dump(data,f)
+    with open(cfg.ansible_dir + '/build/' + Path(cfg.get_inventory_file_path()).stem + '-' + run_id + '.yml', 'w') as f:
+        yaml.dump(data, f)
 
 # ----------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------- Changes IP recursively ---------------------------------------------------------------

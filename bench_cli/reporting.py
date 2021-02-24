@@ -20,8 +20,8 @@
 # --------------------------------------------------------------------------------------------------------------------------------
 
 import datetime
+import configuration
 from connection import connectdb
-from config import mysql_connect,vitess_git_version,slack_api_token,slack_channel,get_inventory_file
 from remote_file import get_remote_oltp
 from packet_vps import delete_vps
 from slack import WebClient
@@ -52,20 +52,20 @@ def get_ip_and_project_id(run_id):
 # ----------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Send Slack Message ----------------------------------------------------------
 
-def send_slack_message(Type):
+def send_slack_message(cfg, Type):
     ssl._create_default_https_context = ssl._create_unverified_context
 
-    client = WebClient(slack_api_token())
+    client = WebClient(cfg.slack_api_token)
 
     if Type == "oltp":
-      path = "./report/oltp.json"
+      path = cfg.tasks_reports_dir + "/oltp.json"
     elif Type == "tpcc":
-      path = "./report/tpcc.json"
+      path = cfg.tasks_reports_dir + "/tpcc.json"
     # Upload OLTP file to slack
     try:
        filepath=path
        response = client.files_upload(
-         channels='#'+slack_channel(),
+         channels='#'+cfg.slack_channel,
          file=filepath)
        assert response["file"]  # the uploaded file
     except SlackApiError as e:
@@ -77,43 +77,43 @@ def send_slack_message(Type):
 # -------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------- Adds run_id , vitess_version , source --------------------------------------------------
 
-def add_data_report(run_id,source,Type):
+def add_data_report(cfg, run_id, Type):
 
     if Type == "oltp":
-      path = "report/oltp.json"
+      path = cfg.tasks_reports_dir + "/oltp.json"
     elif Type == "tpcc":
-      path = "report/tpcc.json"
+      path = cfg.tasks_reports_dir + "/tpcc.json"
 
     with open(path) as f:
         data = json.load(f)
     data[0]["run_id"] = run_id
-    data[0]["source"] = source
-    data[0]["commit_id"] = vitess_git_version('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml')
-    with open('report/oltp.json', 'w') as outfile:
+    data[0]["source"] = cfg.source
+    data[0]["commit_id"] = cfg.commit
+    with open(cfg.tasks_reports_dir + '/oltp.json', 'w') as outfile:
        json.dump(data, outfile)
 
 # --------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------------------- Remove Inventory file -------------------------------------------------------------
 
-def remove_inventory_file(id):
-    os.remove('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + id + '.yml')
+def remove_inventory_file(ansible_dir, inventory_file, run_id):
+    os.remove(ansible_dir + '/build/' + Path(inventory_file).stem + '-' + run_id + '.yml')
 
 # --------------------------------------------------------------------------------------------------------------------------------------
 # -------------------------------------- Main function for report and add OLTP to database ---------------------------------------------
 
-def add_oltp(run_id, source):
+def add_oltp(cfg : configuration.Config, run_id):
     config_lock = get_ip_and_project_id(run_id)
 
-    get_remote_oltp(config_lock[0],'oltp')
+    get_remote_oltp(cfg, config_lock[0], 'oltp')
 
     # Add run_id , source , vitess_git_version to oltp.json
-    add_data_report(run_id,source,'oltp')
+    add_data_report(cfg, run_id, 'oltp')
 
     # Send report file
-    send_slack_message('oltp')
+    send_slack_message(cfg, 'oltp')
 
     # local variable db connection object
-    conn = mysql_connect()
+    conn = cfg.mysql_connect()
 
     # source (https://www.w3schools.com/python/python_mysql_insert.asp)
     mycursor = conn.cursor()
@@ -130,7 +130,7 @@ def add_oltp(run_id, source):
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
+    mycursor.execute(benchmark, (cfg.commit, mysql_timestamp, cfg.source))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
@@ -139,7 +139,7 @@ def add_oltp(run_id, source):
 
 
     ## TODO: replace with calling ssh server and get remote file
-    with open('report/oltp.json') as f:
+    with open(cfg.tasks_reports_dir + '/oltp.json') as f:
       data = json.load(f)
 
     # Inserting for oltp
@@ -158,29 +158,29 @@ def add_oltp(run_id, source):
     conn.commit()
 
     # Delete vps instance
-    delete_vps(config_lock[1])
+    delete_vps(cfg.packet_token, config_lock[1])
 
     # remove inventory file
-    remove_inventory_file(run_id)
+    remove_inventory_file(cfg.ansible_dir, cfg.inventory_file, run_id)
 
     return test_no
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------ Main function for report and add TPCC to database ---------------------------------------------
 
-def add_tpcc(run_id, source):
+def add_tpcc(cfg : configuration.Config, run_id):
     config_lock = get_ip_and_project_id(run_id)
 
-    get_remote_oltp(config_lock[0],'tpcc')
+    get_remote_oltp(cfg, config_lock[0], 'tpcc')
 
     # Add run_id , source , vitess_git_version to oltp.json
-    add_data_report(run_id,source,'tpcc')
+    add_data_report(cfg, run_id,'tpcc')
 
     # Send report file
-    send_slack_message('tpcc')
+    send_slack_message(cfg, 'tpcc')
 
     # local variable db connection object
-    conn = mysql_connect()
+    conn = cfg.mysql_connect()
 
     # source (https://www.w3schools.com/python/python_mysql_insert.asp)
     mycursor = conn.cursor()
@@ -197,7 +197,7 @@ def add_tpcc(run_id, source):
     data = None
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (vitess_git_version('./ansible/build/' + Path('./ansible/' + get_inventory_file()).stem + '-' + run_id + '.yml'),mysql_timestamp,source))
+    mycursor.execute(benchmark, (cfg.commit, mysql_timestamp, cfg.source))
     conn.commit()
 
     mycursor.execute("select *from benchmark ORDER BY test_no DESC LIMIT 1;")
@@ -206,7 +206,7 @@ def add_tpcc(run_id, source):
 
 
     ## TODO: replace with calling ssh server and get remote file
-    with open('report/oltp.json') as f:
+    with open(cfg.tasks_reports_dir + '/oltp.json') as f:
       data = json.load(f)
 
     # Inserting for tpcc
@@ -225,9 +225,9 @@ def add_tpcc(run_id, source):
     conn.commit()
 
     # Delete vps instance
-    delete_vps(config_lock[1])
+    delete_vps(cfg.packet_token, config_lock[1])
 
     # remove inventory file
-    remove_inventory_file(run_id)
+    remove_inventory_file(cfg.ansible_dir, cfg.inventory_file, run_id)
 
     return test_no

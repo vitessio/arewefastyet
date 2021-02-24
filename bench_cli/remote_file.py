@@ -15,11 +15,12 @@
 # --------------------------------------------------------------------------------------------------------------------------------
 
 import pysftp
+import configuration
 import os
 
 # ------------------------------------------------ get OLTP file from remote server -----------------------------------------------
 
-def get_remote_oltp(hostname,Type):
+def get_remote_oltp(cfg : configuration.Config, hostname, Type):
   # Hardcoded root
   myUsername = "root"
   #os.system('ssh-keygen -f "/root/.ssh/known_hosts" -R "'+hostname+'"')
@@ -36,7 +37,7 @@ def get_remote_oltp(hostname,Type):
        remoteFilePath = '/tmp/oltp.json'
 
        # Define the local path where the file will be saved
-       localFilePath = './report/oltp.json'
+       localFilePath = cfg.tasks_reports_dir + '/oltp.json'
 
        sftp.get(remoteFilePath, localFilePath)
 
@@ -45,7 +46,7 @@ def get_remote_oltp(hostname,Type):
        remoteFilePath = '/tmp/tpcc.json'
 
        # Define the local path where the file will be saved
-       localFilePath = './report/tpcc.json'
+       localFilePath = cfg.tasks_reports_dir + '/tpcc.json'
 
        sftp.get(remoteFilePath, localFilePath)
 
