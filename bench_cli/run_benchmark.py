@@ -18,40 +18,69 @@
 
 import os
 import configuration
+import uuid
 from pathlib import Path
 from initialize_benchmark import init
 from reporting import add_oltp, add_tpcc
+import abc
+
+class Task:
+    def __init__(self):
+        self.task_id = uuid.uuid4()
+
+    def run(self):
+        pass
+
+    def save_results(self):
+        pass
+
+    @abc.abstractmethod
+    def name(self) -> str:
+        pass
+
+class OLTP(Task):
+    def name(self) -> str:
+        return 'oltp'
+
+class TPCC(Task):
+    def name(self) -> str:
+        return 'tpcc'
+
+
+class TaskFactory:
+    def __init__(self):
+        pass
+
+    def create_task(self, task_name) -> Task:
+        if task_name == "oltp":
+            return OLTP()
+        elif task_name == "tpcc":
+            return TPCC()
 
 # ------------------------------------------------------ Runs benchmark tasks ---------------------------------------------------------
 
-def init_task(name, script, save_results):
-   return {
-      "name": name,
-      "run_script": script,
-      "save_results": save_results
-   }
+class BenchmarkRunner:
+    def __init__(self, config: configuration.Config, echo=False):
+        self.runner_id = uuid.uuid4()
+        self.config = config
+        self.tasks = self.__instantiate_tasks__()
+        if echo:
+            print('Runner ' + self.runner_id.__str__() + ' created.')
 
-tasks_list = {
-   "oltp": init_task("oltp", "run-oltp", add_oltp),
-   "tpcc": init_task("tpcc", "run-tpcc", add_tpcc)
-}
+    def __instantiate_tasks__(self) -> [Task]:
+        tasks = []
+        task_factory = TaskFactory()
+        for task_name in self.config.tasks:
+            tasks.append(task_factory.create_task(task_name))
+        return tasks
 
-def print_step(task, step):
-   print('-------------', task, '-', step, '-------------')
-
-def create_task(task):
-   return tasks_list.get(task)
-
-def run_tasks(cfg : configuration.Config, run_id):
-   for task in cfg.tasks:
-      task_info = create_task(task)
-
-      print_step(task_info['name'], 'Initialize VPS')
-      init(cfg, run_id)
-
-      print_step(task_info['name'], 'Running Benchmark')
-
-      os.system(cfg.tasks_scripts_dir + '/' + task_info['run_script'] + ' ' + Path(cfg.get_inventory_file_path()).stem + '-' + str(run_id) + '.yml')
-
-      print_step(task_info['name'], 'Saving Results')
-      task_info['save_results'](cfg, run_id)
+    def run(self):
+        for task in self.tasks:
+            print(task.name())
+            # init(cfg, run_id)
+            #
+            #
+            # os.system(cfg.tasks_scripts_dir + '/' + task_info['run_script'] + ' ' + Path(
+            #     cfg.get_inventory_file_path()).stem + '-' + str(run_id) + '.yml')
+            #
+            # task_info['save_results'](cfg, run_id)

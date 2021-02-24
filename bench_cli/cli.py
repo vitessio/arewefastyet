@@ -61,8 +61,8 @@ def main(run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host
     cfg.dump()
 
     if cfg.valid_to_run() and len(cfg.tasks) > 0:
-        run_id = str(uuid.uuid4())
-        run_benchmark.run_tasks(cfg, run_id)
+        benchmark_runner = run_benchmark.BenchmarkRunner(cfg, echo=True)
+        benchmark_runner.run()
     else:
         ctx = click.get_current_context()
         click.echo(ctx.get_help())
