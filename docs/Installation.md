@@ -5,53 +5,43 @@
 2. Python 3
 3. Mysql Server
 4. Packet API key
+5. Make
 
-### Install python 3.7.x and set up virtual environment
+### Install python 3.7.x
 Ubuntu: https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/
+
 CentOS: https://tecadmin.net/install-python-3-7-on-centos-8/
+
 Mac Os:
-```
+```shell
 brew update && brew upgrade
 brew install pyenv
 pyenv install 3.7.9
-// Add output to .zshrc file or .bashrc file
+# Add output to .zshrc file or .bashrc file
 pynev init -
 pyenv global 3.7.9
 ```
-#### Install virtual environment and configure
-```
-sudo pip3 install virtualenv
 
-// Linux
-virtualenv --python=python3.7 benchmark
-
-//Mac or if python 3.7 is your default python version
-virtualenv benchmark
-
-// activate virtual environment
-source benchmark/bin/activate
-```
-
-### Install python libraries
-```
-pip install -r requirements.txt
-```
 ### Install Ansible
 https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 
-### Configure Ansible
+#### Configure Ansible
 https://github.com/vitessio/arewefastyet/blob/modify-ansible/ansible/README.md
-#### Ansible dependencies
-```
-cd ansible
-ansible-galaxy install cloudalchemy.node-exporter
-ansible-galaxy install cloudalchemy.prometheus
-```
 
-### For MacOS Dependencies
-```
+### Install MacOS Dependencies
+
+> For OSX systems only
+
+```shell
 brew install jq
 brew install gnu-tar
+```
+
+### Install virtual environment and dependencies
+```shell
+sudo pip3 install virtualenv
+
+make install
 ```
 
 ### Create SSH key for ansible or use exsisting
@@ -61,13 +51,13 @@ https://docs.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-ke
 https://vitess.io/docs/contributing/build-on-ubuntu/
 
 ### Change files to executables
-```
+```shell
 chmod +x run-benchmark
 chmod +x scheduler
 chmod +x cli
 ```
 ### Create file config.yaml
-```
+```yaml
 mysql_host: <mysql hostname>
 mysql_username: <mysql username>
 mysql_password: <mysql password>
@@ -80,7 +70,7 @@ slack_api_token: <slack_token>
 slack_channel: <channel name>
 ```
 Ex :
-```
+```yaml
 mysql_host: localhost:3306
 mysql_username: vitess
 mysql_password: vitess123
