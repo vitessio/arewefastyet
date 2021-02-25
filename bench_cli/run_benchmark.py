@@ -17,17 +17,17 @@
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 import os
-import configuration
-import packet_vps
 import uuid
 import shutil
 import json
 import yaml
-import get_head_hash
-import reporting
 import pysftp
 import abc
 
+import bench_cli.reporting as reporting
+import bench_cli.configuration as configuration
+import bench_cli.packet_vps as packet_vps
+import bench_cli.get_head_hash as get_head_hash
 
 class Task:
     def __init__(self, report_dir: str, ansible_dir: str, inventory_file: str, source: str,

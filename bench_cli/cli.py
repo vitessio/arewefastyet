@@ -22,10 +22,10 @@
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 import click
-import uuid
-import configuration
-import run_benchmark
 import sys
+
+import bench_cli.configuration as configuration
+import bench_cli.run_benchmark as run_benchmark
 
 @click.command()
 @click.option("--run-all",                  is_flag=True, help="runs OLTP and TPCC")
