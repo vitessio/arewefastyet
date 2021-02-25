@@ -59,13 +59,12 @@ def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql
         api_key, slack_api_token, slack_channel, config_file, ansible_dir, tasks_scripts_dir,
         tasks_reports_dir)
     )
-
     cfg.unsafe_dump()
 
-    if web is None and cfg.valid_to_run() and len(cfg.tasks) > 0:
+    if web is False and cfg.valid_to_run() and len(cfg.tasks) > 0:
         benchmark_runner = run_benchmark.BenchmarkRunner(cfg, echo=True)
         benchmark_runner.run()
-    elif web is not None:
+    elif web is True:
         server.main(cfg)
     else:
         ctx = click.get_current_context()
@@ -81,4 +80,4 @@ def run_to_task_array(all, oltp, tpcc):
     return tasks
 
 if __name__ == "__main__":
-    main()
+    main()  # pylint: disable=E1120

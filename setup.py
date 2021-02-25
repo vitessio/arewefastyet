@@ -16,7 +16,9 @@ setuptools.setup(
     },
     packages=setuptools.find_packages(include=[
         "bench_cli",
-        "bench_cli.*"
+        "bench_cli.*",
+        "test",
+        "test.*"
     ]),
     python_requires='>=3.7',
 )
