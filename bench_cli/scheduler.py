@@ -31,9 +31,11 @@ def job():
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Runs everyday at <specified time>
-schedule.every().day.at(sys.argv[1]).do(job)
+if __name__ == '__main__':
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+    # Runs everyday at <specified time>
+    schedule.every().day.at(sys.argv[1]).do(job)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

@@ -157,7 +157,7 @@ class OLTP(Task):
 
     def run(self, script_path: str):
         # TODO: Use Ansible Python API
-        os.system(os.path.join(script_path, "run-oltp") + ' ' + self.ansible_built_inventory_file)
+        os.system(os.path.join(script_path, "run-oltp") + ' ' + self.ansible_built_inventory_filepath + ' ' + self.ansible_dir)
 
     def report_path(self, base: str = None) -> str:
         if base is not None:
@@ -174,7 +174,7 @@ class TPCC(Task):
 
     def run(self, script_path: str):
         # TODO: Use Ansible Python API
-        os.system(os.path.join(script_path, "run-tpcc") + ' ' + self.ansible_built_inventory_file)
+        os.system(os.path.join(script_path, "run-tpcc") + ' ' + self.ansible_built_inventory_filepath + ' ' + self.ansible_dir)
 
     def report_path(self, base: str = None) -> str:
         if base is not None:
