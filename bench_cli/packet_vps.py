@@ -19,7 +19,6 @@
 import packet
 import time
 import uuid
-import configuration
 
 # ---------------------------------------------------- Authenticate token ---------------------------------------------------------
 
@@ -47,10 +46,10 @@ def create_vps(packet_token, packet_project_id, run_id: uuid.UUID):
 # ------------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Deletes packet server ---------------------------------------------------------
 
-def delete_vps(packet_token, run_id):
+def delete_vps(packet_token, device_id):
     manager = auth_packet(packet_token)
 
-    device = manager.get_device(run_id)
+    device = manager.get_device(device_id)
     device.delete()
 
 # ------------------------------------------------------------------------------------------------------------------------------------
