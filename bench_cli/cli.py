@@ -58,7 +58,7 @@ def main(run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host
         tasks_reports_dir)
     )
 
-    cfg.dump()
+    cfg.unsafe_dump()
 
     if cfg.valid_to_run() and len(cfg.tasks) > 0:
         benchmark_runner = run_benchmark.BenchmarkRunner(cfg, echo=True)

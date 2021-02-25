@@ -66,7 +66,7 @@ class Config:
     def get_inventory_file_path(self):
         return os.path.join(self.ansible_dir, self.inventory_file)
 
-    def dump(self):
+    def unsafe_dump(self):
         attrs = vars(self)
         print('\n'.join("%s: %s" % item for item in attrs.items()))
 

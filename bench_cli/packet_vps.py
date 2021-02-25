@@ -18,6 +18,7 @@
 
 import packet
 import time
+import uuid
 import configuration
 
 # ---------------------------------------------------- Authenticate token ---------------------------------------------------------
@@ -28,10 +29,10 @@ def auth_packet(packet_token):
 # ----------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Creates packet server -------------------------------------------------------
 
-def create_vps(packet_token, packet_project_id, run_id):
+def create_vps(packet_token, packet_project_id, run_id: uuid.UUID):
     manager = auth_packet(packet_token)
     device = manager.create_device(project_id=packet_project_id,
-                                   hostname="benchmark-" + run_id,
+                                   hostname="benchmark-" + run_id.__str__(),
                                    plan="m2.xlarge.x86", facility='ams1',
                                    operating_system='centos_8')
 
