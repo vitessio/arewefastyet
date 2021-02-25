@@ -143,7 +143,7 @@ class Task:
         pass
 
     @abc.abstractmethod
-    def report_path(self, base: str) -> str:
+    def report_path(self, base: str = None) -> str:
         pass
 
     @abc.abstractmethod
