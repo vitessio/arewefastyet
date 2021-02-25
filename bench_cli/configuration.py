@@ -14,9 +14,10 @@
 #   - returns data from config.yaml file
 # -------------------------------------------------------------------------------------------------------------------------------------
 
-from connection import connectdb
 import yaml
 import os
+
+import bench_cli.connection as connection
 
 def create_cfg(web, tasks, commit, source, inventory_file, mysql_host, mysql_username,
                mysql_password, mysql_database, packet_token, packet_project_id,
@@ -78,7 +79,7 @@ class Config:
         return True
 
     def mysql_connect(self):
-        return connectdb(self.mysql_host, self.mysql_username, self.mysql_password, self.mysql_database)
+        return connection.connectdb(self.mysql_host, self.mysql_username, self.mysql_password, self.mysql_database)
 
 # ------------------------------------------------- Reads config.yaml file ------------------------------------------------------------
 
