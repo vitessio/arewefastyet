@@ -24,10 +24,12 @@
 import click
 import sys
 
+import bench_cli.server.server as server
 import bench_cli.configuration as configuration
 import bench_cli.run_benchmark as run_benchmark
 
 @click.command()
+@click.option("-web",                       is_flag=True, help="Only runs the web UI")
 @click.option("--run-all",                  is_flag=True, help="runs OLTP and TPCC")
 @click.option("--run-tpcc", "-runt",        is_flag=True, help="Runs TPCC")
 @click.option("--run-oltp", "-runo",        is_flag=True, help="Runs OLTP")
@@ -47,12 +49,12 @@ import bench_cli.run_benchmark as run_benchmark
 @click.option("--slack-api-token",          help="Slack API token", envvar="BCLI_SLACK_TOKEN")
 @click.option("--slack-channel",            help="Slack channel", envvar="BCLI_SLACK_CHANNEL")
 @click.option("--config-file",              help="Configuration file path", envvar="BCLI_CONFIG_FILE")
-def main(run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host, mysql_username,
+def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host, mysql_username,
          mysql_password, mysql_database, packet_token, packet_project_id, api_key, slack_api_token,
          slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir):
 
     cfg = configuration.Config(configuration.create_cfg(
-        run_to_task_array(run_all, run_oltp, run_tpcc), commit, source, inventory_file, mysql_host,
+        web, run_to_task_array(run_all, run_oltp, run_tpcc), commit, source, inventory_file, mysql_host,
         mysql_username, mysql_password, mysql_database, packet_token, packet_project_id,
         api_key, slack_api_token, slack_channel, config_file, ansible_dir, tasks_scripts_dir,
         tasks_reports_dir)
@@ -60,9 +62,11 @@ def main(run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host
 
     cfg.unsafe_dump()
 
-    if cfg.valid_to_run() and len(cfg.tasks) > 0:
+    if web is None and cfg.valid_to_run() and len(cfg.tasks) > 0:
         benchmark_runner = run_benchmark.BenchmarkRunner(cfg, echo=True)
         benchmark_runner.run()
+    elif web is not None:
+        server.main(cfg)
     else:
         ctx = click.get_current_context()
         click.echo(ctx.get_help())

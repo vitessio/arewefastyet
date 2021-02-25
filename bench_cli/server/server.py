@@ -28,20 +28,22 @@
 #   Future code fix: Normalize code (Reduce Code duplication)
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-from flask import Flask ,request ,jsonify, render_template, Response
+from flask import Flask, request, jsonify, render_template, Response
 import os
 import datetime
-import uuid 
-from multiprocessing import Process
-from connection import connectdb
-from config import mysql_connect,api_key,slack_api_token,slack_channel
+import uuid
+import bench_cli.configuration as configuration
 from slack import WebClient
 from slack.errors import SlackApiError
 import ssl
 
+from bench_cli.configuration import Config
+
 os.system('source benchmark/bin/activate')
 app = Flask(__name__)
 
+# TODO: get rid of global (introduced in quick-fix)
+__config: configuration.Config = None
 # ----------------------------------------------------------------- Render Home page -------------------------------------------------------------------
 
 @app.route('/')
@@ -131,6 +133,7 @@ def search_compare():
 
 @app.route('/request_benchmark')
 def request_benchmark():
+    global __config
     name = request.args.get('name')
     commit_hash = request.args.get('commit_hash')
     email_id = request.args.get('email_id')
@@ -142,11 +145,11 @@ def request_benchmark():
     if name != None and commit_hash != None and email_id != None:
         ssl._create_default_https_context = ssl._create_unverified_context
 
-        client = WebClient(slack_api_token())
+        client = WebClient(__config.slack_api_token)
 
         try:
           client.chat_postMessage(
-            channel='#' + slack_channel(),
+            channel='#' + __config.slack_channel,
             text=""" Request Benchmark run 
             Name: """ + name + """
             Commit hash: """ + commit_hash + """
@@ -174,12 +177,13 @@ def request_benchmark():
 
 @app.route('/run')
 def run_benchmark():
+    global __config
     key = request.headers.get('api-key')
 
     if key == None:
         return "please add api key in header"
 
-    if key != api_key():
+    if key != __config.api_key:
         return "wrong api key"
 
     commit = request.args.get('commit')
@@ -195,12 +199,13 @@ def run_benchmark():
 
 @app.route('/run_scheduler')
 def nightly_bechmark():
+    global __config
     key = request.headers.get('api-key')
 
     if key == None:
         return "please add api key in header"
 
-    if key != api_key():
+    if key != __config.api_key:
         return "wrong api key"
 
     time = request.args.get('time')
@@ -217,16 +222,16 @@ def server_time():
 
 @app.route('/allresults')
 def all_results():
-
+    global __config
     key = request.headers.get('api-key')
 
     if key == None:
         return "please add api key in header"
 
-    if key != api_key():
+    if key != __config.api_key:
         return "wrong api key"
 
-    conn = mysql_connect()
+    conn = __config.mysql_connect()
     mycursor = conn.cursor()
     
     # Basic run info
@@ -294,20 +299,21 @@ def all_results():
 
 @app.route('/filter_results')
 def filter_results():
-    
+    global __config
+
     key = request.headers.get('api-key')
 
     if key == None:
         return "please add api key in header"
 
-    if key != api_key():
+    if key != __config.api_key:
         return "wrong api key"
 
     date = request.args.get('date')
     commit = request.args.getlist('commit')
     test_no = request.args.get('test_no') 
 
-    conn = mysql_connect()
+    conn = __config.mysql_connect()
     mycursor = conn.cursor()
     
     commit = tuple(commit)
@@ -394,7 +400,8 @@ def filter_results():
 # ----------------------------------------------------------- Returns results for the last 7 days ----------------------------------------------------------------
 
 def graph_data(Type):
-    conn = mysql_connect()
+    global __config
+    conn = __config.mysql_connect()
     mycursor = conn.cursor()
 
     sql = "SELECT test_no,commit,datetime FROM benchmark WHERE DateTime BETWEEN DATE(NOW()) - INTERVAL 7 DAY AND DATE(NOW()) AND source IN('webhook') ORDER BY DateTime;"
@@ -498,7 +505,9 @@ def graph_data(Type):
 # ------------------------------------------------------------ Returns results based on commit hash ---------------------------------------------------------------
 
 def search_commit(commit,Type):
-    conn = mysql_connect()
+    global __config
+
+    conn = __config.mysql_connect()
     mycursor = conn.cursor()
 
     sql = "SELECT * FROM benchmark where commit=%s;"
@@ -620,5 +629,10 @@ def respond():
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-if __name__ == "__main__":
+def main(cfg: configuration.Config):
+    global __config
+    __config = cfg
     app.run(threaded=True)
+
+if __name__ == "__main__":
+    main(None)

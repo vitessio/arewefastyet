@@ -18,12 +18,12 @@ from connection import connectdb
 import yaml
 import os
 
-def create_cfg(tasks, commit, source, inventory_file, mysql_host, mysql_username,
+def create_cfg(web, tasks, commit, source, inventory_file, mysql_host, mysql_username,
                mysql_password, mysql_database, packet_token, packet_project_id,
                api_key, slack_api_token, slack_channel, config_file, ansible_dir,
                tasks_scripts_dir, tasks_reports_dir):
     return {
-        "tasks": tasks, "commit": commit, "source": source,
+        "web": web, "tasks": tasks, "commit": commit, "source": source,
         "inventory_file":inventory_file, "mysql_host": mysql_host,
         "mysql_username": mysql_username, "mysql_password": mysql_password,
         "mysql_database": mysql_database, "packet_token": packet_token,
@@ -45,6 +45,7 @@ class Config:
             return yaml.load(f, Loader=yaml.FullLoader)
 
     def __load_config(self, cfg):
+        self.web = cfg["web"]
         self.tasks = cfg["tasks"]
         self.commit = cfg["commit"]
         self.source = cfg["source"]
