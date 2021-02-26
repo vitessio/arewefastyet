@@ -155,7 +155,7 @@ benchmark/
 #Hide process txt
 process.txt
 
-#For vs code files
+# IDEs
 .vscode/
 .idea/
 

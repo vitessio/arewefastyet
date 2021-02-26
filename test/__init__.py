@@ -9,18 +9,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
-
-# Fixes https://github.com/ansible/ansible/issues/32499
-if [ "$(uname)" == "Darwin" ];
-then
-    export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-fi
-
-#alias activate="benchmark/bin/activate"
-
-#Directory of ansible files
-cd ansible/
-
-#Run ansible script (Runs for all except sysbench)
-ANSIBLE_HOST_KEY_CHECKING=False ../benchmark/bin/ansible-playbook --private-key=~/.ssh/id_rsa -i build/$1 full.yml -u root -e provision=True -e tpcc=true -e clean=True
+import bench_cli
