@@ -58,6 +58,10 @@ class Task:
         return os.path.basename(splits[0] + "-" + str(self.task_id) + splits[1])
 
     def append_state_to_file(self, filepath: str):
+        """
+        Append the task's state to the given file.
+        @param filepath: Filepath used to append the state
+        """
         curr_state = self.get_state()
         dump = {'run': []}
         if os.path.exists(filepath):
@@ -68,6 +72,11 @@ class Task:
             json.dump(dump, outfile)
 
     def get_state(self):
+        """
+        Returns the task's state.
+
+        @todo: optimize
+        """
         return {
             'task_name': self.name(),
             'run_id': self.task_id.__str__(),
@@ -79,15 +88,30 @@ class Task:
         }
 
     def create_device(self, packet_token, packet_project_id):
+        """
+        Creates the task's Packet Device.
+        @param: packet_token: The packet API token
+        @param: packet_project_id: The packet project ID
+        """
         vps = packet_vps.create_vps(packet_token, packet_project_id, self.task_id)
         self.device_id = vps[0]
         self.device_ip = vps[1]
         self.append_state_to_file("config-lock.json")
 
     def delete_device(self, packet_token):
+        """
+        Delete the task's Packet Device.
+        @param: packet_token: The packet API token
+        """
         packet_vps.delete_vps(packet_token, self.device_id)
 
     def build_ansible_inventory(self, commit_hash: str):
+        """
+        Create a new Ansible inventory file and build it by appending the task's configuration.
+        The file will be used to run the task on Ansible.
+
+        @param: commit_hash: Commit hash that will be used to run the task
+        """
         shutil.copy2(self.ansible_inventory_file, self.ansible_built_inventory_filepath)
         with open(self.ansible_inventory_file, 'r') as invf:
             invdata = yaml.load(invf, Loader=yaml.FullLoader)
@@ -129,6 +153,9 @@ class Task:
         return task_report
 
     def save_report(self):
+        """
+        Save the task's state to a report file.
+        """
         task_report = self.__get_remote_task_report()
         if len(task_report) == 0:
             return
@@ -137,6 +164,9 @@ class Task:
             json.dump(self.report, f)
 
     def clean_up(self):
+        """
+        Removes the ansible_built_inventory_file of the file system.
+        """
         os.remove(self.ansible_built_inventory_file)
 
     @abc.abstractmethod
@@ -158,35 +188,69 @@ class Task:
 
 class OLTP(Task):
     def name(self) -> str:
+        """
+        Returns the task's name
+        """
         return 'oltp'
 
     def run(self, script_path: str):
-        # TODO: Use Ansible Python API
+        """
+        Runs the task.
+
+        @param: script_path: Path to the Ansible script's directory.
+
+        @todo: Use the Ansible Galaxy API
+        """
         os.system(os.path.join(script_path, "run-oltp") + ' ' + self.ansible_built_inventory_filepath + ' ' + self.ansible_dir)
 
     def report_path(self, base: str = None) -> str:
+        """
+        Returns the path of the task report directory.
+
+        @param: base: Folder to use as base for the report directory
+        """
         if base is not None:
             return os.path.join(base, "oltp_v2.json")
         return os.path.join(self.report_dir, "oltp_v2.json")
 
     def table_name(self) -> str:
+        """
+        Returns the task's table name
+        """
         return "OLTP"
 
 
 class TPCC(Task):
     def name(self) -> str:
+        """
+        Returns the task's name
+        """
         return 'tpcc'
 
     def run(self, script_path: str):
-        # TODO: Use Ansible Python API
+        """
+        Runs the task.
+
+        @param: script_path: Path to the Ansible script's directory.
+
+        @todo: Use the Ansible Galaxy API
+        """
         os.system(os.path.join(script_path, "run-tpcc") + ' ' + self.ansible_built_inventory_filepath + ' ' + self.ansible_dir)
 
     def report_path(self, base: str = None) -> str:
+        """
+        Returns the path of the task report directory.
+
+        @param: base: Folder to use as base for the report directory
+        """
         if base is not None:
             return os.path.join(base, "tpcc_v2.json")
         return os.path.join(self.report_dir, "tpcc_v2.json")
 
     def table_name(self) -> str:
+        """
+        Returns the task's table name
+        """
         return "TPCC"
 
 
@@ -195,6 +259,16 @@ class TaskFactory:
         pass
 
     def create_task(self, task_name, report_dir, ansible_dir, inventory_file, source) -> Task:
+        """
+        Create a task children based on the given task_name.
+        The task created can either be "oltp" (OLTP) or "tpcc" (TPCC).
+
+        @param: task_name
+        @param: report_dir: Path to task's report directory
+        @param: ansible_dir: Path to the Ansible directory to use
+        @param: inventory_file: Filename of the inventory to use
+        @param: source: The task's source
+        """
         if task_name == "oltp":
             return OLTP(report_dir, ansible_dir, inventory_file, source)
         elif task_name == "tpcc":
@@ -223,6 +297,9 @@ class BenchmarkRunner:
         return tasks
 
     def run(self):
+        """
+        Run the BenchmarkRunner's tasks one by one.
+        """
         for task in self.tasks:
             task.create_device(self.config.packet_token, self.config.packet_project_id)
             task.build_ansible_inventory(self.config.commit)

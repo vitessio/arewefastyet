@@ -71,7 +71,14 @@ def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql
         click.echo(ctx.get_help())
         sys.exit(1)
 
-def run_to_task_array(all, oltp, tpcc):
+def run_to_task_array(all, oltp, tpcc) -> [str]:
+    """
+    Transforms the tasks given through CLI flags into an array of string.
+    @param all: All tasks
+    @param oltp: OLTP task
+    @param tpcc: TPCC task
+    @return: [str]
+    """
     tasks = []
     if oltp or all:
         tasks.append("oltp")

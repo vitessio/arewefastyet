@@ -45,42 +45,59 @@ class Config:
         with open(self.config_file) as f:
             return yaml.load(f, Loader=yaml.FullLoader)
 
-    def __load_config(self, cfg):
-        self.web = cfg["web"]
-        self.tasks = cfg["tasks"]
-        self.commit = cfg["commit"]
-        self.source = cfg["source"]
-        self.inventory_file = cfg["inventory_file"]
-        self.mysql_host = cfg["mysql_host"]
-        self.mysql_username = cfg["mysql_username"]
-        self.mysql_password = cfg["mysql_password"]
-        self.mysql_database = cfg["mysql_database"]
-        self.packet_token = cfg["packet_token"]
-        self.packet_project_id = cfg["packet_project_id"]
-        self.api_key = cfg["api_key"]
-        self.slack_api_token = cfg["slack_api_token"]
-        self.slack_channel = cfg["slack_channel"]
-        self.config_file = cfg["config_file"]
-        self.ansible_dir = cfg["ansible_dir"]
-        self.tasks_scripts_dir = cfg["tasks_scripts_dir"]
-        self.tasks_reports_dir = cfg["tasks_reports_dir"]
+    def __load_config(self, cfg) -> None:
+        self.web: bool = cfg["web"]
+        self.tasks: [str] = cfg["tasks"]
+        self.commit: str = cfg["commit"]
+        self.source: str = cfg["source"]
+        self.inventory_file: str = cfg["inventory_file"]
+        self.mysql_host: str = cfg["mysql_host"]
+        self.mysql_username: str = cfg["mysql_username"]
+        self.mysql_password: str = cfg["mysql_password"]
+        self.mysql_database: str = cfg["mysql_database"]
+        self.packet_token: str = cfg["packet_token"]
+        self.packet_project_id: str = cfg["packet_project_id"]
+        self.api_key: str = cfg["api_key"]
+        self.slack_api_token: str = cfg["slack_api_token"]
+        self.slack_channel: str = cfg["slack_channel"]
+        self.config_file: str = cfg["config_file"]
+        self.ansible_dir: str = cfg["ansible_dir"]
+        self.tasks_scripts_dir: str = cfg["tasks_scripts_dir"]
+        self.tasks_reports_dir: str = cfg["tasks_reports_dir"]
 
-    def get_inventory_file_path(self):
+    def get_inventory_file_path(self) -> str:
+        """
+        Build the inventory file path from the given ansible directory and inventory file.
+        @return: str
+        """
         return os.path.join(self.ansible_dir, self.inventory_file)
 
-    def unsafe_dump(self, echo=True):
+    def unsafe_dump(self, echo=True) -> str:
+        """
+        Dumps the configuration data.
+        @param echo: If True, prints the dump
+        @return: str
+        """
         attrs = vars(self)
         dumpstr = '\n'.join("%s: %s" % item for item in attrs.items())
         if echo:
             print(dumpstr)
         return dumpstr
 
-
     def valid_to_run(self) -> bool:
+        """
+        Check if the configuration allows us to run tests.
+        @return: bool
+
+        @todo: Returns False if the inventory file cannot be resolved
+        """
         if not self.commit or not self.source or not self.inventory_file:
             # TODO: throw error instead
             return False
         return True
 
     def mysql_connect(self):
+        """
+        Connect to the mysql.
+        """
         return connection.connectdb(self.mysql_host, self.mysql_username, self.mysql_password, self.mysql_database)
