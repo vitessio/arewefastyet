@@ -41,16 +41,21 @@ class Task:
         self.report_dir = report_dir
         self.ansible_dir = ansible_dir
         self.ansible_build_dir = os.path.join(self.ansible_dir, "build")
-        self.ansible_inventory_file = inventory_file + '.yml'
-        self.ansible_built_inventory_file = self.__build_built_inventory_filename(inventory_file)
+        self.ansible_inventory_file = inventory_file
+        if self.ansible_inventory_file.find('.') is None:
+            self.ansible_inventory_file += '.yml'
+        self.ansible_built_inventory_file = self.__build_built_inventory_filename()
         self.ansible_built_inventory_filepath = os.path.join(self.ansible_build_dir, self.ansible_built_inventory_file)
 
         if create_build_dir and (
                 not os.path.exists(self.ansible_build_dir) or not os.path.isdir(self.ansible_build_dir)):
             os.mkdir(self.ansible_build_dir)
 
-    def __build_built_inventory_filename(self, inventory_file: str):
-        return os.path.basename(inventory_file + "-" + str(self.task_id) + ".yml")
+    def __build_built_inventory_filename(self):
+        splits = self.ansible_inventory_file.split('.')
+        if len(splits) == 1:
+            splits.append('.yml')
+        return os.path.basename(splits[0] + "-" + str(self.task_id) + splits[1])
 
     def append_state_to_file(self, filepath: str):
         curr_state = self.get_state()
