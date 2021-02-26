@@ -1,4 +1,4 @@
-name: Test benchmarks TPCC
+name: Unit Test bench_cli
 
 on: [push, pull_request]
 
