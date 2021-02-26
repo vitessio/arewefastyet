@@ -68,9 +68,13 @@ class Config:
     def get_inventory_file_path(self):
         return os.path.join(self.ansible_dir, self.inventory_file)
 
-    def unsafe_dump(self):
+    def unsafe_dump(self, echo=True):
         attrs = vars(self)
-        print('\n'.join("%s: %s" % item for item in attrs.items()))
+        dumpstr = '\n'.join("%s: %s" % item for item in attrs.items())
+        if echo:
+            print(dumpstr)
+        return dumpstr
+
 
     def valid_to_run(self) -> bool:
         if not self.commit or not self.source or not self.inventory_file:
