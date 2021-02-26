@@ -59,7 +59,6 @@ def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql
         api_key, slack_api_token, slack_channel, config_file, ansible_dir, tasks_scripts_dir,
         tasks_reports_dir)
     )
-    cfg.unsafe_dump()
 
     if web is False and cfg.valid_to_run() and len(cfg.tasks) > 0:
         benchmark_runner = run_benchmark.BenchmarkRunner(cfg, echo=True)
