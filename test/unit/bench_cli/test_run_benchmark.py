@@ -89,7 +89,7 @@ class TestCreateBenchmarkRunner(unittest.TestCase):
         self.assertEqual(1, len(benchmark_runner.tasks))
         self.assertEqual(self.cfg["tasks"][0], benchmark_runner.tasks[0].name())
 
-class TestCreationOfTaskWithValues(unittest.TestCase):
+class TestCreationOfTaskCheckValues(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         cfg_file_data = default_cfg_fields.copy()
@@ -110,48 +110,59 @@ class TestCreationOfTaskWithValues(unittest.TestCase):
         super().tearDown()
         shutil.rmtree(self.tmpdir)
 
-    def test_simple_task(self):
-        source = "unit_test"
-        inventory_file = "inv_file"
-        task_name = "oltp"
+    def test_create_task_check_values(self):
+        tcs = [
+            {"source": "unit_test","inventory_file": "inv_file","task_name": "oltp"},
+            {"source": "unit_test", "inventory_file": "inv_file", "task_name": "tpcc"}
+        ]
+        for tc in tcs:
+            task = self.task_factory.create_task(tc["task_name"], self.tmpdir, self.tmpdir, tc["inventory_file"], tc["source"])
 
-        task = self.task_factory.create_task(task_name, self.tmpdir, self.tmpdir, inventory_file, source)
+            self.assertEqual(tc["task_name"], task.name())
+            self.assertEqual(self.tmpdir, task.report_dir)
+            self.assertEqual(self.tmpdir, task.ansible_dir)
+            self.assertEqual(tc["inventory_file"], task.ansible_inventory_file)
+            self.assertEqual(tc["source"], task.source)
 
-        self.assertEqual(task_name, task.name())
-        self.assertEqual(self.tmpdir, task.report_dir)
-        self.assertEqual(self.tmpdir, task.ansible_dir)
-        self.assertEqual(inventory_file, task.ansible_inventory_file)
-        self.assertEqual(source, task.source)
+            expected_ansible_build_dir = os.path.join(self.tmpdir, 'build')
+            self.assertEqual(expected_ansible_build_dir, task.ansible_build_dir)
 
-        expected_ansible_build_dir = os.path.join(self.tmpdir, 'build')
-        self.assertEqual(expected_ansible_build_dir, task.ansible_build_dir)
+            expected_ansible_built_file = tc["inventory_file"].split('.')[0] + '-' + str(task.task_id) + '.yml'
+            self.assertEqual(expected_ansible_built_file, task.ansible_built_inventory_file)
+            self.assertEqual(os.path.join(expected_ansible_build_dir, expected_ansible_built_file), task.ansible_built_inventory_filepath)
 
-        expected_ansible_built_file = inventory_file.split('.')[0] + '-' + str(task.task_id) + '.yml'
-        self.assertEqual(expected_ansible_built_file, task.ansible_built_inventory_file)
+            self.assertEqual(task.name().upper(), task.table_name())
+            self.assertEqual(os.path.join(self.tmpdir, task.name() + "_v2.json"), task.report_path())
+            self.assertEqual(os.path.join("./", task.name() + "_v2.json"), task.report_path("./"))
 
-        self.assertEqual(os.path.join(expected_ansible_build_dir, expected_ansible_built_file), task.ansible_built_inventory_filepath)
+    def test_create_task_with_benchmark_runner_check_values(self):
+        tcs = [
+            {"tasks": ["oltp"]},
+            {"tasks": ["tpcc"]}
+        ]
+        for tc in tcs:
+            self.cfg["tasks"] = tc["tasks"]
+            self.config.tasks = tc["tasks"]
+            benchmark_runner = run_benchmark.BenchmarkRunner(self.config)
 
-    def test_simple_task_with_benchmark_runner(self):
-        self.cfg["tasks"] = ['oltp']
-        self.config.tasks = self.cfg["tasks"]
-        benchmark_runner = run_benchmark.BenchmarkRunner(self.config)
+            task = benchmark_runner.tasks[0]
 
-        task = benchmark_runner.tasks[0]
+            self.assertEqual(self.cfg["tasks"][0], task.name())
+            self.assertEqual(self.tmpdir, task.report_dir)
+            self.assertEqual(self.tmpdir, task.ansible_dir)
+            self.assertEqual(self.config.get_inventory_file_path(), task.ansible_inventory_file)
+            self.assertEqual(self.cfg["source"], task.source)
 
-        self.assertEqual(self.cfg["tasks"][0], task.name())
-        self.assertEqual(self.tmpdir, task.report_dir)
-        self.assertEqual(self.tmpdir, task.ansible_dir)
-        self.assertEqual(self.config.get_inventory_file_path(), task.ansible_inventory_file)
-        self.assertEqual(self.cfg["source"], task.source)
+            expected_ansible_build_dir = os.path.join(self.tmpdir, 'build')
+            self.assertEqual(expected_ansible_build_dir, task.ansible_build_dir)
 
-        expected_ansible_build_dir = os.path.join(self.tmpdir, 'build')
-        self.assertEqual(expected_ansible_build_dir, task.ansible_build_dir)
+            expected_ansible_built_file = self.cfg["inventory_file"].split('.')[0] + '-' + str(task.task_id) + '.yml'
+            self.assertEqual(expected_ansible_built_file, task.ansible_built_inventory_file)
+            self.assertEqual(os.path.join(expected_ansible_build_dir, expected_ansible_built_file), task.ansible_built_inventory_filepath)
 
-        expected_ansible_built_file = self.cfg["inventory_file"].split('.')[0] + '-' + str(task.task_id) + '.yml'
-        self.assertEqual(expected_ansible_built_file, task.ansible_built_inventory_file)
-
-        self.assertEqual(os.path.join(expected_ansible_build_dir, expected_ansible_built_file), task.ansible_built_inventory_filepath)
-
+            self.assertEqual(task.name().upper(), task.table_name())
+            self.assertEqual(os.path.join(self.tmpdir, task.name() + "_v2.json"), task.report_path())
+            self.assertEqual(os.path.join("./", task.name() + "_v2.json"), task.report_path("./"))
 
 if __name__ == '__main__':
     unittest.main()
