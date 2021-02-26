@@ -18,7 +18,7 @@ VIRTUALENV_PATH = benchmark
 ANSIBLE_PATH = ansible
 CONFIG_PATH = config/config.yaml
 SCRIPTS_PATH = scripts
-REPORTS_PATH = reports
+REPORTS_PATH = report
 
 RUN_COMMIT = HEAD
 RUN_INVENTORY_FILE = koz-inventory-unsharded-test.yml

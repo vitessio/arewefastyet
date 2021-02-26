@@ -20,6 +20,6 @@
 | `ANSIBLE_PATH`   | Path to ansible folder | ansible |
 | `CONFIG_PATH`   | Path to config.yaml file | config/config.yaml |
 | `SCRIPTS_PATH`   | Path to scripts dir | scripts |
-| `REPORTS_PATH`   | Path to reports dir | reports |
+| `REPORTS_PATH`   | Path to reports dir | report |
 | `RUN_COMMIT`   | Vitess commit used to run the benchmark | HEAD |
 | `RUN_INVENTORY_FILE`   | Path to the ansible inventory file for benchmark| koz-inventory-unsharded-test.yml |
