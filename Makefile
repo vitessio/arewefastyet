@@ -16,6 +16,9 @@ PY_VERSION = 3.7
 VIRTUALENV_PATH = benchmark
 
 ANSIBLE_PATH = ansible
+CONFIG_PATH = config/config.yaml
+SCRIPTS_PATH = scripts
+REPORTS_PATH = report
 
 RUN_COMMIT = HEAD
 RUN_INVENTORY_FILE = koz-inventory-unsharded-test.yml
@@ -28,16 +31,29 @@ virtual_env:
 install: requirements.txt virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \
 	pip install -r ./requirements.txt
+	python setup.py install
 	ansible-galaxy install cloudalchemy.prometheus
 	ansible-galaxy install cloudalchemy.node-exporter
 
-oltp: cli virtual_env $(VIRTUALENV_PATH)
+install_dev_cli: virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \
-	./cli -c $(RUN_COMMIT) -s makefile_oltp -runo -invf $(RUN_INVENTORY_FILE)
+	python setup.py develop --user
 
-tpcc: cli virtual_env $(VIRTUALENV_PATH)
+oltp: virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \
-	./cli -c $(RUN_COMMIT) -s makefile_tpcc -runt -invf $(RUN_INVENTORY_FILE)
+	clibench -c $(RUN_COMMIT) -s makefile_oltp -runo -invf $(RUN_INVENTORY_FILE) \
+													--config-file $(CONFIG_PATH) \
+													--ansible-dir $(ANSIBLE_PATH) \
+													--tasks-scripts-dir $(SCRIPTS_PATH) \
+													--tasks-reports-dir $(REPORTS_PATH)
+
+tpcc: virtual_env $(VIRTUALENV_PATH)
+	source $(VIRTUALENV_PATH)/bin/activate && \
+	clibench -c $(RUN_COMMIT) -s makefile_tpcc -runt -invf $(RUN_INVENTORY_FILE) \
+													--config-file $(CONFIG_PATH) \
+													--ansible-dir $(ANSIBLE_PATH) \
+													--tasks-scripts-dir $(SCRIPTS_PATH) \
+													--tasks-reports-dir $(REPORTS_PATH)
 
 molecule_converge_all: virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \
