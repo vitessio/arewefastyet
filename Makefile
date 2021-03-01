@@ -63,4 +63,5 @@ molecule_converge_all: virtual_env $(VIRTUALENV_PATH)
 
 tools:
 	echo Installing git hooks
+	chmod +x bootstrap.sh
 	./bootstrap.sh
