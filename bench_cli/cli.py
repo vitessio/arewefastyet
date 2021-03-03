@@ -22,6 +22,7 @@ import sys
 import bench_cli.server.server as server
 import bench_cli.configuration as configuration
 import bench_cli.run_benchmark as run_benchmark
+import bench_cli.packet_vps as vps
 
 @click.command()
 @click.option("-web",                       is_flag=True, help="Only runs the web UI")
@@ -44,21 +45,22 @@ import bench_cli.run_benchmark as run_benchmark
 @click.option("--slack-api-token",          help="Slack API token", envvar="BCLI_SLACK_TOKEN")
 @click.option("--slack-channel",            help="Slack channel", envvar="BCLI_SLACK_CHANNEL")
 @click.option("--config-file",              help="Configuration file path", envvar="BCLI_CONFIG_FILE")
-@click.option("--delete-vps", "-d-vps"      help="Delete VPS")
-@click.option("--running-benchmarks",       is_flag=True, help="View current benchmarks running")
+@click.option("--delete-benchmark", "-d-benchmark",       help="Delete VPS")
 def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host, mysql_username,
          mysql_password, mysql_database, packet_token, packet_project_id, api_key, slack_api_token,
-         slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir,delete_vps,
-         running_benchmarks):
+         slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir,delete_benchmark):
 
     cfg = configuration.Config(configuration.create_cfg(
         web, run_to_task_array(run_all, run_oltp, run_tpcc), commit, source, inventory_file, mysql_host,
         mysql_username, mysql_password, mysql_database, packet_token, packet_project_id,
         api_key, slack_api_token, slack_channel, config_file, ansible_dir, tasks_scripts_dir,
-        tasks_reports_dir,delete_vps,running_benchmarks)
+        tasks_reports_dir,delete_benchmark,running_benchmarks)
     )
+    
+    if delete_benchmark is not None:
+        delete_benchmark_procedure(cfg)
 
-    if web is False and cfg.valid_to_run() and len(cfg.tasks) > 0:
+    elif web is False and cfg.valid_to_run() and len(cfg.tasks) > 0:
         benchmark_runner = run_benchmark.BenchmarkRunner(cfg, echo=True)
         benchmark_runner.run()
     elif web is True:
@@ -67,6 +69,12 @@ def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql
         ctx = click.get_current_context()
         click.echo(ctx.get_help())
         sys.exit(1)
+
+
+def delete_benchmark_procedure(cfg: configuration.Config):
+    vps.delete_vps(cfg.packet_token,cfg.delete_benchmark)
+
+
 
 def run_to_task_array(all, oltp, tpcc) -> [str]:
     """
@@ -82,6 +90,9 @@ def run_to_task_array(all, oltp, tpcc) -> [str]:
     if tpcc or all:
         tasks.append("tpcc")
     return tasks
+
+
+
 
 if __name__ == "__main__":
     main()  # pylint: disable=E1120

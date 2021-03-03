@@ -22,7 +22,7 @@ import bench_cli.connection as connection
 def create_cfg(web, tasks, commit, source, inventory_file, mysql_host, mysql_username,
                mysql_password, mysql_database, packet_token, packet_project_id,
                api_key, slack_api_token, slack_channel, config_file, ansible_dir,
-               tasks_scripts_dir, tasks_reports_dir,delete_vps,running_benchmarks):
+               tasks_scripts_dir, tasks_reports_dir,delete_benchmark):
     return {
         "web": web, "tasks": tasks, "commit": commit, "source": source,
         "inventory_file":inventory_file, "mysql_host": mysql_host,
@@ -32,7 +32,7 @@ def create_cfg(web, tasks, commit, source, inventory_file, mysql_host, mysql_use
         "slack_api_token": slack_api_token, "slack_channel": slack_channel,
         "config_file": config_file, "ansible_dir": ansible_dir,
         "tasks_scripts_dir": tasks_scripts_dir, "tasks_reports_dir": tasks_reports_dir,
-        "delete_vps": delete_vps,"running_benchmarks": running_benchmarks
+        "delete_benchmark": delete_benchmark
     }
 
 class Config:
@@ -65,8 +65,7 @@ class Config:
         self.ansible_dir: str = cfg["ansible_dir"]
         self.tasks_scripts_dir: str = cfg["tasks_scripts_dir"]
         self.tasks_reports_dir: str = cfg["tasks_reports_dir"]
-        self.delete_vps: str = cfg["delete_vps"]
-        self.running_benchmarks: bool = cfg["running_benchmarks"] 
+        self.delete_benchmark: str = cfg["delete_benchmark"]
 
     def get_inventory_file_path(self) -> str:
         """
