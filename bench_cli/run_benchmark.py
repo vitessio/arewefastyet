@@ -51,8 +51,8 @@ class Task:
             os.mkdir(self.ansible_build_dir)
 
     def __build_built_inventory_filename(self):
-        splits = self.ansible_inventory_file.split('.')
-        return os.path.basename(splits[0] + "-" + str(self.task_id) + '.yml')
+        splits = os.path.basename(self.ansible_inventory_file).split('.')
+        return splits[0] + "-" + str(self.task_id) + '.yml'
 
     def append_state_to_file(self, filepath: str):
         """
@@ -306,10 +306,10 @@ class BenchmarkRunner:
         """
         Run the BenchmarkRunner's tasks one by one.
         """
-        for task in self.tasks:
-            task.create_device(self.config.packet_token, self.config.packet_project_id)
-            task.build_ansible_inventory(self.config.commit)
-            task.run(self.config.tasks_scripts_dir)
-            task.save_report()
-            reporting.save_to_mysql(self.config, task.report, task.table_name())
-            reporting.send_slack_message(self.config.slack_api_token, self.config.slack_channel, task.report_path())
+        # for task in self.tasks:
+        #     task.create_device(self.config.packet_token, self.config.packet_project_id)
+        #     task.build_ansible_inventory(self.config.commit)
+        #     task.run(self.config.tasks_scripts_dir)
+        #     task.save_report()
+        #     reporting.save_to_mysql(self.config, task.report, task.table_name())
+        #     reporting.send_slack_message(self.config.slack_api_token, self.config.slack_channel, task.report_path())
