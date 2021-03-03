@@ -24,7 +24,8 @@ default_cfg_fields = {
     "packet_project_id": "AABB11", "api_key": "123-ABC-456-EFG",
     "slack_api_token": "slack-token", "slack_channel": "general",
     "config_file": "./config", "ansible_dir": "./ansible",
-    "tasks_scripts_dir": "./scripts", "tasks_reports_dir": "./reports"
+    "tasks_scripts_dir": "./scripts", "tasks_reports_dir": "./reports",
+    "tasks_pprof": None
 }
 
 default_cfg_file_yaml = "" \
@@ -129,6 +130,66 @@ class TestInventoryFile(unittest.TestCase):
         expected_path = os.path.join("./ansible", "inventory_file")
         path = self.config.get_inventory_file_path()
         self.assertEqual(expected_path, path, "invalid path")
+
+class TestProfilingInformation(unittest.TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.tmpdir = None
+        self.tmpcfg = None
+
+    def tearDown(self) -> None:
+        super().tearDown()
+        if self.tmpdir is not None:
+            shutil.rmtree(self.tmpdir)
+
+    def setup(self, overrides):
+        cfg_file_data = default_cfg_fields.copy()
+        for key in overrides:
+            cfg_file_data.__delitem__(key)
+        self.tmpdir, self.tmpcfg = init_tmp_config_dir(cfg_file_data)
+        cp_cfg_fields = default_cfg_fields.copy()
+        for key in overrides:
+            if overrides[key] == "__tmpdir":
+                cp_cfg_fields[key] = self.tmpdir
+            elif overrides[key] == "__tmpcfg":
+                cp_cfg_fields[key] = self.tmpcfg
+            else:
+                cp_cfg_fields[key] = overrides[key]
+        self.cfg = configuration.create_cfg(**cp_cfg_fields)
+        self.config = configuration.Config(self.cfg)
+
+    def test_vtgate_cpu_pprof(self):
+        targets = ['vtgate']
+        args = "cpu"
+        cf = {
+            "config_file": "__tmpcfg",
+            "tasks_pprof": "{0}/{1}".format(targets[0], args)
+        }
+        self.setup(cf)
+        self.assertEqual(targets, self.config.tasks_pprof_options["targets"])
+        self.assertEqual(args, self.config.tasks_pprof_options["args"])
+
+    def test_vttablet_cpu_pprof(self):
+        targets = ['vttablet']
+        args = "cpu"
+        cf = {
+            "config_file": "__tmpcfg",
+            "tasks_pprof": "{0}/{1}".format(targets[0], args)
+        }
+        self.setup(cf)
+        self.assertEqual(targets, self.config.tasks_pprof_options["targets"])
+        self.assertEqual(args, self.config.tasks_pprof_options["args"])
+
+    def test_vttablet_vtgate_cpu_pprof(self):
+        targets = ['vttablet', 'vtgate']
+        args = "cpu"
+        cf = {
+            "config_file": "__tmpcfg",
+            "tasks_pprof": "{0}/{1}/{2}".format(targets[0], targets[1], args)
+        }
+        self.setup(cf)
+        self.assertEqual(targets, self.config.tasks_pprof_options["targets"])
+        self.assertEqual(args, self.config.tasks_pprof_options["args"])
 
 if __name__ == '__main__':
     unittest.main()
