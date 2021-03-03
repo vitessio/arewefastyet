@@ -19,20 +19,23 @@ import os
 
 import bench_cli.connection as connection
 
+
 def create_cfg(web, tasks, commit, source, inventory_file, mysql_host, mysql_username,
                mysql_password, mysql_database, packet_token, packet_project_id,
                api_key, slack_api_token, slack_channel, config_file, ansible_dir,
-               tasks_scripts_dir, tasks_reports_dir):
+               tasks_scripts_dir, tasks_reports_dir, tasks_pprof):
     return {
         "web": web, "tasks": tasks, "commit": commit, "source": source,
-        "inventory_file":inventory_file, "mysql_host": mysql_host,
+        "inventory_file": inventory_file, "mysql_host": mysql_host,
         "mysql_username": mysql_username, "mysql_password": mysql_password,
         "mysql_database": mysql_database, "packet_token": packet_token,
         "packet_project_id": packet_project_id, "api_key": api_key,
         "slack_api_token": slack_api_token, "slack_channel": slack_channel,
         "config_file": config_file, "ansible_dir": ansible_dir,
-        "tasks_scripts_dir": tasks_scripts_dir, "tasks_reports_dir": tasks_reports_dir
+        "tasks_scripts_dir": tasks_scripts_dir, "tasks_reports_dir": tasks_reports_dir,
+        "tasks_pprof": tasks_pprof
     }
+
 
 class Config:
     def __init__(self, cfg):
@@ -40,6 +43,7 @@ class Config:
         if self.config_file:
             cfg = {**cfg, **self.__read_from_file__()}
             self.__load_config(cfg)
+        self.__parse_all_flags()
 
     def __read_from_file__(self):
         with open(self.config_file) as f:
@@ -64,6 +68,25 @@ class Config:
         self.ansible_dir: str = cfg["ansible_dir"]
         self.tasks_scripts_dir: str = cfg["tasks_scripts_dir"]
         self.tasks_reports_dir: str = cfg["tasks_reports_dir"]
+        self.tasks_pprof: str = cfg["tasks_pprof"]
+
+    def __parse_all_flags(self):
+        self.__parse_profiling_flag()
+
+    def __parse_profiling_flag(self):
+        self.tasks_pprof_options = None
+        if self.tasks_pprof is None:
+            return
+        splits = self.tasks_pprof.split("/")
+        pprof_targets = splits[:len(splits) - 1]
+        pprof_args = splits[-1]
+        if len(pprof_targets) == 0 or ("vttablet" not in pprof_targets and "vtgate" not in pprof_targets):
+            raise AttributeError("profiling needs a target (vttablet, vtgate)")
+        # TODO: check pprof_args based on vitess check
+        self.tasks_profiling_options = {
+            "targets": pprof_targets,
+            "args": pprof_args,
+        }
 
     def get_inventory_file_path(self) -> str:
         """

@@ -30,7 +30,7 @@ import bench_cli.packet_vps as packet_vps
 import bench_cli.get_head_hash as get_head_hash
 
 class Task:
-    def __init__(self, report_dir: str, ansible_dir: str, inventory_file: str, source: str,
+    def __init__(self, report_dir: str, ansible_dir: str, inventory_file: str, source: str, pprof,
                  create_build_dir: bool = True):
         self.task_id = uuid.uuid4()
         self.device_id = 0
@@ -38,6 +38,7 @@ class Task:
         self.source = source
         self.commit_hash = ""
         self.report = None
+        self.pprof = pprof
         self.report_dir = report_dir
         self.ansible_dir = ansible_dir
         self.ansible_build_dir = os.path.join(self.ansible_dir, "build")
@@ -258,7 +259,7 @@ class TaskFactory:
     def __init__(self):
         pass
 
-    def create_task(self, task_name, report_dir, ansible_dir, inventory_file, source) -> Task:
+    def create_task(self, task_name, report_dir, ansible_dir, inventory_file, source, pprof) -> Task:
         """
         Create a task children based on the given task_name.
         The task created can either be "oltp" (OLTP) or "tpcc" (TPCC).
@@ -268,11 +269,12 @@ class TaskFactory:
         @param: ansible_dir: Path to the Ansible directory to use
         @param: inventory_file: Filename of the inventory to use
         @param: source: The task's source
+        @param: pprof: The pprof configuration of the task
         """
         if task_name == "oltp":
-            return OLTP(report_dir, ansible_dir, inventory_file, source)
+            return OLTP(report_dir, ansible_dir, inventory_file, source, pprof)
         elif task_name == "tpcc":
-            return TPCC(report_dir, ansible_dir, inventory_file, source)
+            return TPCC(report_dir, ansible_dir, inventory_file, source, pprof)
 
 
 # ------------------------------------------------------ Runs benchmark tasks ---------------------------------------------------------
@@ -292,7 +294,8 @@ class BenchmarkRunner:
             tasks.append(task_factory.create_task(task_name, self.config.tasks_reports_dir,
                                                   self.config.ansible_dir,
                                                   self.config.get_inventory_file_path(),
-                                                  self.config.source)
+                                                  self.config.source,
+                                                  self.config.tasks_profiling_options)
                          )
         return tasks
 
