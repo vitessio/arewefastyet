@@ -45,16 +45,17 @@ import bench_cli.run_benchmark as run_benchmark
 @click.option("--slack-channel",            help="Slack channel", envvar="BCLI_SLACK_CHANNEL")
 @click.option("--config-file",              help="Configuration file path", envvar="BCLI_CONFIG_FILE")
 @click.option("--delete-vps", "-d-vps"      help="Delete VPS")
-@click.option("--running-benchmarks",       help="Delete VPS")
+@click.option("--running-benchmarks",       is_flag=True, help="View current benchmarks running")
 def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host, mysql_username,
          mysql_password, mysql_database, packet_token, packet_project_id, api_key, slack_api_token,
-         slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir,delete_vps):
+         slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir,delete_vps,
+         running_benchmarks):
 
     cfg = configuration.Config(configuration.create_cfg(
         web, run_to_task_array(run_all, run_oltp, run_tpcc), commit, source, inventory_file, mysql_host,
         mysql_username, mysql_password, mysql_database, packet_token, packet_project_id,
         api_key, slack_api_token, slack_channel, config_file, ansible_dir, tasks_scripts_dir,
-        tasks_reports_dir)
+        tasks_reports_dir,delete_vps,running_benchmarks)
     )
 
     if web is False and cfg.valid_to_run() and len(cfg.tasks) > 0:
