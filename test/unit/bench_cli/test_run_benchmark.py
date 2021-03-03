@@ -125,7 +125,7 @@ default_cfg_fields = {
     "slack_api_token": "slack-token", "slack_channel": "general",
     "config_file": "./config", "ansible_dir": "./ansible",
     "tasks_scripts_dir": "./scripts", "tasks_reports_dir": "./reports",
-    "tasks_pprof": None
+    "tasks_pprof": None, "delete_benchmark": False
 }
 
 def data_to_tmp_yaml(prefix, suffix, data):
