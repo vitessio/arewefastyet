@@ -10,6 +10,18 @@
 # limitations under the License.
 
 ---
+- name: ensure profile directory
+  become: yes
+  become_user: root
+  with_items:
+    - '/tmp/pprof'
+    - '/tmp/pprof/vttablet-{{ gateway.id }}'
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+
 - name: template out configs
   become: yes
   become_user: root
