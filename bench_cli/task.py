@@ -19,6 +19,7 @@ import abc
 
 import bench_cli.packet_vps as packet_vps
 import bench_cli.get_head_hash as get_head_hash
+import bench_cli.get_from_remote as get_from_remote
 
 
 class Task:
@@ -111,8 +112,6 @@ class Task:
             self.commit_hash = get_head_hash.head_commit_hash()
         invdata["all"]["vars"]["vitess_git_version"] = self.commit_hash
 
-        invdata["all"]["vars"]["pprof_targets"] = None
-        invdata["all"]["vars"]["pprof_args"] = None
         if self.pprof:
             invdata["all"]["vars"]["pprof_targets"] = self.pprof["targets"]
             invdata["all"]["vars"]["pprof_args"] = self.pprof["args"]
@@ -134,36 +133,24 @@ class Task:
             data[self.device_ip] = data.pop(old_key)
         return data
 
-    def __get_remote_task_report(self, echo=False):
-        username = "root"
-        cnopts = pysftp.CnOpts()
-        cnopts.hostkeys = None
-        remote_report_file = self.report_path() + '.bench_report'
-        with pysftp.Connection(host=self.device_ip, username=username, cnopts=cnopts) as sftp:
-            if echo:
-                print("Connection succesfully stablished ... ")
-            remote_file_path = '/tmp/' + self.name() + '.json'
-            sftp.get(remote_file_path, remote_report_file)
-        with open(remote_report_file, 'r') as f:
+    def download_remote_report(self):
+        src = '/tmp/' + self.name() + '.json'
+        dest = self.report_path() + '.bench_report'
+        get_from_remote.get_from_remote(self.device_ip, "root", src, dest)
+        with open(dest, 'r') as f:
             task_report = json.load(f)
         return task_report
 
     def download_remote_pprof_folder(self):
-        username = "root"
-        cnopts = pysftp.CnOpts()
-        cnopts.hostkeys = None
         src_dir = '/tmp/pprof'
         dest_dir = os.path.join(self.report_dir, "pprof")
-        if os.path.exists(dest_dir) is False:
-            os.mkdir(dest_dir)
-        with pysftp.Connection(host=self.device_ip, username=username, cnopts=cnopts) as sftp:
-            sftp.get_r(src_dir, dest_dir)
+        get_from_remote.get_from_remote(self.device_ip, "root", src_dir, dest_dir, is_directory=True, create_dest=True)
 
     def save_report(self):
         """
         Save the task's state to a report file.
         """
-        task_report = self.__get_remote_task_report()
+        task_report = self.download_remote_report()
         if len(task_report) == 0:
             return
         self.report = {**self.get_state(), 'results': task_report[0]}
