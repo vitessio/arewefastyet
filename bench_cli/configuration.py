@@ -83,7 +83,7 @@ class Config:
         if len(pprof_targets) == 0 or ("vttablet" not in pprof_targets and "vtgate" not in pprof_targets):
             raise AttributeError("profiling needs a target (vttablet, vtgate)")
         # TODO: check pprof_args based on vitess check
-        self.tasks_profiling_options = {
+        self.tasks_pprof_options = {
             "targets": pprof_targets,
             "args": pprof_args,
         }

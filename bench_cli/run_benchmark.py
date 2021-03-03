@@ -43,8 +43,6 @@ class Task:
         self.ansible_dir = ansible_dir
         self.ansible_build_dir = os.path.join(self.ansible_dir, "build")
         self.ansible_inventory_file = inventory_file
-        if self.ansible_inventory_file.find('.') is None:
-            self.ansible_inventory_file += '.yml'
         self.ansible_built_inventory_file = self.__build_built_inventory_filename()
         self.ansible_built_inventory_filepath = os.path.join(self.ansible_build_dir, self.ansible_built_inventory_file)
 
@@ -54,9 +52,7 @@ class Task:
 
     def __build_built_inventory_filename(self):
         splits = self.ansible_inventory_file.split('.')
-        if len(splits) == 1:
-            splits.append('.yml')
-        return os.path.basename(splits[0] + "-" + str(self.task_id) + splits[1])
+        return os.path.basename(splits[0] + "-" + str(self.task_id) + '.yml')
 
     def append_state_to_file(self, filepath: str):
         """
@@ -117,13 +113,14 @@ class Task:
         with open(self.ansible_inventory_file, 'r') as invf:
             invdata = yaml.load(invf, Loader=yaml.FullLoader)
         self.__recursive_dict(invdata)
+
         # TODO: handle any commit
         if commit_hash == 'HEAD':
             self.commit_hash = get_head_hash.head_commit_hash()
         invdata["all"]["vars"]["vitess_git_version"] = self.commit_hash
+
         with open(self.ansible_built_inventory_filepath, 'w') as builtf:
             yaml.dump(invdata, builtf)
-        pass
 
     def __recursive_dict(self, inventory_data):
         for k, _ in inventory_data.items():
@@ -295,7 +292,7 @@ class BenchmarkRunner:
                                                   self.config.ansible_dir,
                                                   self.config.get_inventory_file_path(),
                                                   self.config.source,
-                                                  self.config.tasks_profiling_options)
+                                                  self.config.tasks_pprof_options)
                          )
         return tasks
 
