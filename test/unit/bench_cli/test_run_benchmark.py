@@ -291,16 +291,11 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
                 cp_cfg_fields[key] = overrides[key]
         cfg = configuration.create_cfg(**cp_cfg_fields)
         self.config = configuration.Config(cfg)
-
-        # cfg_file_data.__delitem__("config_file")
-        # cfg_file_data.__delitem__("tasks_reports_dir")
-        # cfg_file_data.__delitem__("ansible_dir")
-        # self.tmpdir, self.tmpcfg = data_to_tmp_yaml("config", ".yaml", cfg_file_data)
-        # cp_cfg_fields = default_cfg_fields.copy()
-        # cp_cfg_fields["config_file"] = self.tmpcfg
-        # cp_cfg_fields["tasks_reports_dir"] = self.tmpdir
-        # cp_cfg_fields["ansible_dir"] = self.tmpdir
-        # cp_cfg_fields["tasks"] = ['oltp', 'tpcc']
+        path = self.config.get_inventory_file_path()
+        f = open(path, "w+")
+        f.write(sample_inv_file)
+        f.close()
+        self.benchmark_runner = run_benchmark.BenchmarkRunner(self.config)
 
     def test_build_ansible_inventory_created(self):
         inventory_yml = "inventory.yml"
@@ -311,13 +306,8 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
             "inventory_file": inventory_yml
         }
         self.setup(cf)
-        path = os.path.join(self.tmpdir, inventory_yml)
-        f = open(path, "w+")
-        f.write(sample_inv_file)
-        f.close()
-
-        benchmark_runner = run_benchmark.BenchmarkRunner(self.config)
-        task = benchmark_runner.tasks[0]
+        self.setup(cf)
+        task = self.benchmark_runner.tasks[0]
         task.build_ansible_inventory('HEAD')
 
         exptectedPath = os.path.join(self.tmpdir, "build", inventory_yml.split('.')[0] + '-' + task.task_id.__str__() + ".yml")
@@ -334,20 +324,14 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
             "inventory_file": inventory_yml
         }
         self.setup(cf)
-        path = os.path.join(self.tmpdir, inventory_yml)
-        f = open(path, "w+")
-        f.write(sample_inv_file)
-        f.close()
-
-        benchmark_runner = run_benchmark.BenchmarkRunner(self.config)
-        task = benchmark_runner.tasks[0]
+        task = self.benchmark_runner.tasks[0]
         task.build_ansible_inventory('HEAD')
 
-        invf = open(path, 'r')
+        invf = open(task.ansible_built_inventory_filepath, 'r')
         invdata = yaml.load(invf, Loader=yaml.FullLoader)
         invf.close()
-        # self.assertEqual("")
-
+        self.assertEqual(["vtgate"], invdata["all"]["vars"]["pprof_targets"])
+        self.assertEqual("cpu", invdata["all"]["vars"]["pprof_args"])
 
 
 if __name__ == '__main__':

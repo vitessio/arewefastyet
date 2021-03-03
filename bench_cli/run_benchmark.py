@@ -119,6 +119,12 @@ class Task:
             self.commit_hash = get_head_hash.head_commit_hash()
         invdata["all"]["vars"]["vitess_git_version"] = self.commit_hash
 
+        invdata["all"]["vars"]["pprof_targets"] = None
+        invdata["all"]["vars"]["pprof_args"] = None
+        if self.pprof:
+            invdata["all"]["vars"]["pprof_targets"] = self.pprof["targets"]
+            invdata["all"]["vars"]["pprof_args"] = self.pprof["args"]
+
         with open(self.ansible_built_inventory_filepath, 'w') as builtf:
             yaml.dump(invdata, builtf)
 
