@@ -306,7 +306,6 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
             "inventory_file": inventory_yml
         }
         self.setup(cf)
-        self.setup(cf)
         task = self.benchmark_runner.tasks[0]
         task.build_ansible_inventory('HEAD')
 
