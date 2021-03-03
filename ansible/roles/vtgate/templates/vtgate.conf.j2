@@ -20,6 +20,9 @@ ADDITIONAL_CELLS=""
 EXTRA_VTGATE_FLAGS="-vschema_ddl_authorized_users \"%\" \
     -vtgate-config-terse-errors \
     -gate_query_cache_size {{ vtgate_query_cache_size }} \
+    {% for target in pprof_targets if target == "vtgate" %}
+        -pprof {{ pprof_args }},path=/tmp/pprof/vtgate-{{ gateway.id }}
+    {%- endfor %}
     {{gateway.extra_flags|default("")}} \
     {{extra_vtgate_flags|default("")}} \
 "
