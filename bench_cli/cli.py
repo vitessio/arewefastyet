@@ -47,26 +47,18 @@ import bench_cli.packet_vps as vps
 @click.option("--slack-channel",            help="Slack channel", envvar="BCLI_SLACK_CHANNEL")
 @click.option("--config-file",              help="Configuration file path", envvar="BCLI_CONFIG_FILE")
 @click.option("--delete-benchmark", "-d-benchmark",       help="Delete VPS")
-def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host, mysql_username,
-         mysql_password, mysql_database, packet_token, packet_project_id, api_key, slack_api_token,
-         slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir, delete_benchmark,
-         tasks_pprof):
+def main(*args, **kwargs):
+    cfg = configuration.Config(dict(locals().items()).get("kwargs"))
 
-    cfg = configuration.Config(configuration.create_cfg(
-        web, run_to_task_array(run_all, run_oltp, run_tpcc), commit, source, inventory_file, mysql_host,
-        mysql_username, mysql_password, mysql_database, packet_token, packet_project_id,
-        api_key, slack_api_token, slack_channel, config_file, ansible_dir, tasks_scripts_dir,
-        tasks_reports_dir, delete_benchmark, tasks_pprof)
-    )
-    
-    if delete_benchmark is not None:
+    cfg.unsafe_dump()
+
+    if cfg.delete_benchmark is not None:
         delete_benchmark_procedure(cfg)
-
-    elif web is False and cfg.valid_to_run() and len(cfg.tasks) > 0:
+    elif cfg.web is True:
+        server.main(cfg)
+    elif cfg.valid_to_run() and len(cfg.tasks) > 0:
         benchmark_runner = run_benchmark.BenchmarkRunner(cfg, echo=True)
         benchmark_runner.run()
-    elif web is True:
-        server.main(cfg)
     else:
         ctx = click.get_current_context()
         click.echo(ctx.get_help())
