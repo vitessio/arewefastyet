@@ -15,7 +15,7 @@
   become_user: root
   with_items:
     - '/tmp/pprof'
-    - '/tmp/pprof/vttablet-{{ gateway.id }}'
+    - '/tmp/pprof/vttablet-{{ tablet.id }}'
   file:
     state: directory
     path: '{{ item }}'
