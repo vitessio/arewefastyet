@@ -13,12 +13,7 @@
 # limitations under the License.
 #
 # demonstrates to:
-#   - Creates Cli to interact with the benchmarks
-#      1. --runall: runs OLTP and TPCC
-#      2. --commit: specify commit hash or branch name
-#      3. --run-tpcc: Runs TPCC
-#      4. --run-oltp: Runs OLTP
-#      5. --inventory-file: Set inventory file to run
+#  - https://github.com/vitessio/arewefastyet/blob/master/docs/cli.md
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 import click
@@ -49,9 +44,11 @@ import bench_cli.run_benchmark as run_benchmark
 @click.option("--slack-api-token",          help="Slack API token", envvar="BCLI_SLACK_TOKEN")
 @click.option("--slack-channel",            help="Slack channel", envvar="BCLI_SLACK_CHANNEL")
 @click.option("--config-file",              help="Configuration file path", envvar="BCLI_CONFIG_FILE")
+@click.option("--delete-vps", "-d-vps"      help="Delete VPS")
+@click.option("--running-benchmarks",       help="Delete VPS")
 def main(web, run_all, run_tpcc, run_oltp, commit, source, inventory_file, mysql_host, mysql_username,
          mysql_password, mysql_database, packet_token, packet_project_id, api_key, slack_api_token,
-         slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir):
+         slack_channel, config_file, ansible_dir, tasks_scripts_dir, tasks_reports_dir,delete_vps):
 
     cfg = configuration.Config(configuration.create_cfg(
         web, run_to_task_array(run_all, run_oltp, run_tpcc), commit, source, inventory_file, mysql_host,
