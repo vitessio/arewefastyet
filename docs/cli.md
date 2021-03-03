@@ -54,3 +54,4 @@ The `Env` column represents the environment variable name, and `Config name` rep
 | `--slack-api-token`   | `BCLI_SLACK_TOKEN` | `slack_api_token` | Slack API token |
 | `--slack-channel`   | `BCLI_SLACK_CHANNEL` | `slack_channel` | Slack channel |
 | `--config-file`   | `BCLI_CONFIG_FILE` | `config_file` | Path to configuration file |
+| `--delete-benchmark`   | _none_ | `vps_id` | deletes a specific VPS given the VPS ID which can be found in Config-lock file |
