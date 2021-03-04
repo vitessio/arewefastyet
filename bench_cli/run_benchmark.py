@@ -51,9 +51,12 @@ class BenchmarkRunner:
         """
         for task in self.tasks:
             task.create_device(self.config.packet_token, self.config.packet_project_id)
+            task.create_task_data_directory()
             task.build_ansible_inventory(self.config.commit)
             task.run(self.config.tasks_scripts_dir)
             task.save_report()
             task.download_remote_pprof_folder()
+            if self.config.tasks_upload_to_aws:
+                task.upload_report_to_aws()
             reporting.save_to_mysql(self.config, task.report, task.table_name())
             reporting.send_slack_message(self.config.slack_api_token, self.config.slack_channel, task.report_path())

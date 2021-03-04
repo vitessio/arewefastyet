@@ -19,6 +19,8 @@ import abc
 import bench_cli.packet_vps as packet_vps
 import bench_cli.get_head_hash as get_head_hash
 import bench_cli.get_from_remote as get_from_remote
+import bench_cli.zip as zip
+import bench_cli.aws as aws
 
 
 class Task:
@@ -45,6 +47,12 @@ class Task:
     def __build_built_inventory_filename(self):
         splits = os.path.basename(self.ansible_inventory_file).split('.')
         return splits[0] + "-" + str(self.task_id) + '.yml'
+
+    def create_task_data_directory(self):
+        dir = os.path.join(self.report_dir, self.name() + "-"+ self.task_id.__str__()[:8])
+        if os.path.exists(dir) is False:
+            os.mkdir(dir)
+        self.report_dir = dir
 
     def append_state_to_file(self, filepath: str):
         """
@@ -144,6 +152,10 @@ class Task:
         src_dir = '/tmp/pprof'
         dest_dir = os.path.join(self.report_dir, "pprof")
         get_from_remote.get_from_remote(self.device_ip, "root", src_dir, dest_dir, is_directory=True, create_dest=True)
+
+    def upload_report_to_aws(self):
+        zip.zipdir(self.report_dir, "zip", self.report_dir)
+        aws.upload_file(self.report_dir+".zip", object_name=self.name()+"-"+self.task_id.__str__())
 
     def save_report(self):
         """

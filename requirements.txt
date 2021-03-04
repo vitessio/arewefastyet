@@ -16,3 +16,4 @@ flask_sslify
 pyOpenSSL
 click
 setuptools
+boto3

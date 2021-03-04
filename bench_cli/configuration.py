@@ -42,6 +42,7 @@ class Config:
         self.tasks_reports_dir: str = None
         self.tasks_pprof: str = None
         self.tasks_pprof_options = None
+        self.tasks_upload_to_aws = None
 
         # MySQL related
         self.mysql_host: str = None
