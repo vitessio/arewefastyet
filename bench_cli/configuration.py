@@ -65,8 +65,8 @@ class Config:
         self.__load_config(cfg)
         self.__parse()
 
-    def __read_from_file(self):
-        with open(self.config_file) as f:
+    def __read_from_file(self, file):
+        with open(file) as f:
             return yaml.load(f, Loader=yaml.SafeLoader)
 
     def __load_config(self, cfg) -> None:
