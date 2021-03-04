@@ -34,6 +34,7 @@ import bench_cli.packet_vps as vps
 @click.option("--tasks-scripts-dir",        help="Path to tasks scripts directory", envvar="BCLI_TASKS_SCRIPTS_DIR")
 @click.option("--tasks-reports-dir",        help="Path to tasks reports directory", envvar="BCLI_TASKS_REPORTS_DIR")
 @click.option("--tasks-pprof",              help="Profiling option for Vitess")
+@click.option("--tasks-upload-to-aws", "-aws", is_flag=True, help="Upload the task report to AWS S3")
 @click.option("--ansible-dir",              help="Path to the Ansible directory", envvar="BCLI_ANSIBLE_DIR")
 @click.option("--inventory-file", "-invf",  help="Mention inventory file to call", envvar="BCLI_INVENTORY_FILE")
 @click.option("--mysql-host",               help="MySQL server hostname", envvar="BCLI_MYSQL_HOST")

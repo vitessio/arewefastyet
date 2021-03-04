@@ -56,6 +56,7 @@ The `Env` column represents the environment variable name, and `Config name` rep
 | `--config-file`   | `BCLI_CONFIG_FILE` | `config_file` | Path to configuration file |
 | `--delete-benchmark`   | _none_ | `vps_id` | deletes a specific VPS given the VPS ID which can be found in Config-lock file |
 | `--tasks-pprof`   | _none_ | `tasks_pprof` | Specify the profile configuration of vitess |
+| `--tasks-upload-to-aws` `-aws`  | _none_ | `tasks_upload_to_aws` | Boolean specifying if tasks reports should be uploaded to S3 |
 
 
 ### Profiling
