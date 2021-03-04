@@ -14,7 +14,7 @@ import tempfile
 import shutil
 import os
 import yaml
-from .context import configuration, run_benchmark, task, taskfac, oltp, tpcc
+from .context import configuration, run_benchmark, taskfac
 
 sample_inv_file = '''
 ---
@@ -128,12 +128,14 @@ default_cfg_fields = {
     "tasks_pprof": None, "delete_benchmark": False
 }
 
+
 def data_to_tmp_yaml(prefix, suffix, data):
     tmpdir = tempfile.mkdtemp()
     f, tmpcfg = tempfile.mkstemp(suffix, prefix, tmpdir, text=True)
     os.write(f, yaml.dump(data).encode())
     os.close(f)
     return tmpdir, tmpcfg
+
 
 class TestTaskFactoryCreateProperTaskType(unittest.TestCase):
     def setUp(self) -> None:
@@ -157,14 +159,18 @@ class TestTaskFactoryCreateProperTaskType(unittest.TestCase):
 class TestCreateBenchmarkRunner(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
+        self.tmpdir = tempfile.mkdtemp()
         self.cfg = {
             "run_all": True,
-            "tasks_reports_dir": "./report",
-            "ansible_dir": "./report",
-            "source": "./report",
+            "tasks_reports_dir": self.tmpdir,
+            "ansible_dir": self.tmpdir,
+            "source": self.tmpdir,
             "tasks_pprof": "vttablet/mem",
             "inventory_file": "inv.yaml"
         }
+
+    def tearDown(self) -> None:
+        super().tearDown()
 
     def test_create_benchmark_runner_all_tasks(self):
         self.cfg["run_all"] = True
@@ -261,8 +267,9 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
         f.close()
 
     def test_build_ansible_inventory_created(self):
+        tmpdir = tempfile.mkdtemp()
         inventory_yml = "inventory.yml"
-        config = configuration.Config({"source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": "./report", "ansible_dir": "./ansible"})
+        config = configuration.Config({"source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": tmpdir, "ansible_dir": tmpdir})
         self.setup_inventory(config.get_inventory_file_path(), sample_inv_file)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         task = benchmark_runner.tasks[0]
@@ -275,7 +282,7 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
     def test_build_ansible_inventory_pprof(self):
         tmpdir = tempfile.mkdtemp()
         inventory_yml = "inventory.yml"
-        config = configuration.Config({"tasks_pprof": "vtgate/cpu", "source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": "./report", "ansible_dir": tmpdir})
+        config = configuration.Config({"tasks_pprof": "vtgate/cpu", "source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": tmpdir, "ansible_dir": tmpdir})
         self.setup_inventory(config.get_inventory_file_path(), sample_inv_file)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         task = benchmark_runner.tasks[0]
