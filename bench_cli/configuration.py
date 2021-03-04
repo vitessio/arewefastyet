@@ -17,55 +17,88 @@
 import yaml
 import os
 
+from typing import Dict
+
 import bench_cli.connection as connection
 
-def create_cfg(web, tasks, commit, source, inventory_file, mysql_host, mysql_username,
-               mysql_password, mysql_database, packet_token, packet_project_id,
-               api_key, slack_api_token, slack_channel, config_file, ansible_dir,
-               tasks_scripts_dir, tasks_reports_dir,delete_benchmark):
-    return {
-        "web": web, "tasks": tasks, "commit": commit, "source": source,
-        "inventory_file":inventory_file, "mysql_host": mysql_host,
-        "mysql_username": mysql_username, "mysql_password": mysql_password,
-        "mysql_database": mysql_database, "packet_token": packet_token,
-        "packet_project_id": packet_project_id, "api_key": api_key,
-        "slack_api_token": slack_api_token, "slack_channel": slack_channel,
-        "config_file": config_file, "ansible_dir": ansible_dir,
-        "tasks_scripts_dir": tasks_scripts_dir, "tasks_reports_dir": tasks_reports_dir,
-        "delete_benchmark": delete_benchmark
-    }
 
 class Config:
-    def __init__(self, cfg):
+    def __init__(self, cfg: Dict[str, any]):
+        # Web related
+        self.web: bool = None
+        self.api_key: str = None
+
+        # Task related
+        self.tasks: [str] = None
+        self.run_oltp: bool = None
+        self.run_tpcc: bool = None
+        self.run_all: bool = None
+        self.commit: str = None
+        self.source: str = None
+        self.inventory_file: str = None
+        self.config_file: str = None
+        self.ansible_dir: str = None
+        self.tasks_scripts_dir: str = None
+        self.tasks_reports_dir: str = None
+        self.tasks_pprof: str = None
+        self.tasks_pprof_options = None
+
+        # MySQL related
+        self.mysql_host: str = None
+        self.mysql_username: str = None
+        self.mysql_password: str = None
+        self.mysql_database: str = None
+
+        # Packet related
+        self.packet_token: str = None
+        self.packet_project_id: str = None
+
+        # Slack related
+        self.slack_api_token: str = None
+        self.slack_channel: str = None
+
+        # Other commands
+        self.delete_benchmark: str = None
+
+        if cfg.get("config_file") is not None:
+            self.__load_config(self.__read_from_file(cfg.get("config_file")))
         self.__load_config(cfg)
-        if self.config_file:
-            cfg = {**cfg, **self.__read_from_file__()}
-            self.__load_config(cfg)
+        self.__parse()
 
     def __read_from_file__(self):
         with open(self.config_file) as f:
             return yaml.load(f, Loader=yaml.SafeLoader)
 
     def __load_config(self, cfg) -> None:
-        self.web: bool = cfg["web"]
-        self.tasks: [str] = cfg["tasks"]
-        self.commit: str = cfg["commit"]
-        self.source: str = cfg["source"]
-        self.inventory_file: str = cfg["inventory_file"]
-        self.mysql_host: str = cfg["mysql_host"]
-        self.mysql_username: str = cfg["mysql_username"]
-        self.mysql_password: str = cfg["mysql_password"]
-        self.mysql_database: str = cfg["mysql_database"]
-        self.packet_token: str = cfg["packet_token"]
-        self.packet_project_id: str = cfg["packet_project_id"]
-        self.api_key: str = cfg["api_key"]
-        self.slack_api_token: str = cfg["slack_api_token"]
-        self.slack_channel: str = cfg["slack_channel"]
-        self.config_file: str = cfg["config_file"]
-        self.ansible_dir: str = cfg["ansible_dir"]
-        self.tasks_scripts_dir: str = cfg["tasks_scripts_dir"]
-        self.tasks_reports_dir: str = cfg["tasks_reports_dir"]
-        self.delete_benchmark: str = cfg["delete_benchmark"]
+        for key in cfg:
+            if cfg[key] is not None:
+                setattr(self, key, cfg[key])
+
+    def __parse(self):
+        self.__parse_profiling()
+        self.__parse_run_task()
+
+    def __parse_profiling(self):
+        self.tasks_pprof_options = None
+        if self.tasks_pprof is None:
+            return
+        splits = self.tasks_pprof.split("/")
+        pprof_targets = splits[:len(splits) - 1]
+        pprof_args = splits[-1]
+        if len(pprof_targets) == 0 or ("vttablet" not in pprof_targets and "vtgate" not in pprof_targets):
+            raise AttributeError("profiling needs a target (vttablet, vtgate)")
+        # TODO: check pprof_args based on vitess check
+        self.tasks_pprof_options = {
+            "targets": pprof_targets,
+            "args": pprof_args,
+        }
+
+    def __parse_run_task(self):
+        self.tasks = []
+        if self.run_oltp or self.run_all:
+            self.tasks.append("oltp")
+        if self.run_tpcc or self.run_all:
+            self.tasks.append("tpcc")
 
     def get_inventory_file_path(self) -> str:
         """
@@ -90,11 +123,8 @@ class Config:
         """
         Check if the configuration allows us to run tests.
         @return: bool
-
-        @todo: Returns False if the inventory file cannot be resolved
         """
         if not self.commit or not self.source or not self.inventory_file:
-            # TODO: throw error instead
             return False
         return True
 

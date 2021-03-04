@@ -9,14 +9,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+---
+- hosts: vtgate
+  tasks:
+    - name: Shutdown
+      become: yes
+      become_user: root
+      service:
+        name: vtgate@{{ gateway.id }}
+        state: stopped
+      loop: '{{ gateways }}'
+      loop_control:
+        loop_var: gateway
 
-import bench_cli.cli as cli
-import bench_cli.configuration as configuration
-import bench_cli.run_benchmark as run_benchmark
-import bench_cli.task as task
-import bench_cli.task_factory as taskfac
-import bench_cli.task_oltp as oltp
-import bench_cli.task_tpcc as tpcc
+- hosts: vttablet
+  tasks:
+    - name: Shutdown
+      become: yes
+      become_user: root
+      service:
+        name: vttablet@{{ tablet.id }}
+        state: stopped
+      loop: '{{ tablets }}'
+      loop_control:
+        loop_var: tablet

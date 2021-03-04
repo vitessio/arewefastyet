@@ -9,6 +9,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: ensure profile directory
+  become: yes
+  become_user: root
+  with_items:
+    - '/tmp/pprof'
+    - '/tmp/pprof/vtgate-{{ gateway.id }}'
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+
 - name: install config
   become: yes
   become_user: root

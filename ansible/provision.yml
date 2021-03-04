@@ -13,7 +13,7 @@
 - hosts: all
   roles:
     - host
-    - cloudalchemy.node-exporter
+    - cloudalchemy.node_exporter
     - vitess_build
   tasks:
 

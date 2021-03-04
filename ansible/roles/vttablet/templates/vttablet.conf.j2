@@ -37,6 +37,11 @@ EXTRA_VTTABLET_FLAGS="-alsologtostderr \
     --grpc_max_message_size=67108864 \
     --db_charset=utf8 \
     --binlog_use_v3_resharding_mode=true \
+    {% if pprof_targets is defined %}
+        {% for target in pprof_targets if target == "vttablet" %}
+            -pprof {{ pprof_args }},path=/tmp/pprof/vttablet-{{ tablet.id }}
+        {%- endfor %}
+    {% endif %}
     {{ tablet.extra_flags | default("") }} \
     {{ extra_vttablet_flags | default("") }} \
 "
