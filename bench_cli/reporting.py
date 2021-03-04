@@ -29,20 +29,42 @@ import bench_cli.configuration as configuration
 # ---------------------------------------------------- Send Slack Message ----------------------------------------------------------
 
 
-def send_slack_message(slack_api_token: str, slack_channel: str, report_path: str):
+def send_slack_message(slack_api_token: str, slack_channel: str, task_id, report_url=None, filename=None):
     ssl._create_default_https_context = ssl._create_unverified_context
 
     client = WebClient(slack_api_token)
 
-    # Upload OLTP file to slack
     try:
-       response = client.files_upload(channels='#'+slack_channel, file=report_path)
-       assert response["file"]  # the uploaded file
+        if report_url is not None:
+            client.chat_postMessage(channel='#'+slack_channel,
+                                    blocks=[
+                                                {
+                                                    "type": "section",
+                                                    "text": {
+                                                        "type": "mrkdwn",
+                                                        "text": "Benchmark report is available. ID: "+task_id
+                                                    },
+                                                    "accessory": {
+                                                        "type": "button",
+                                                        "text": {
+                                                            "type": "plain_text",
+                                                            "text": "Download",
+                                                        },
+                                                        "value": "download_report",
+                                                        "url": report_url,
+                                                        "action_id": "download_report"
+                                                    }
+                                                }
+                                            ])
+
+        if filename is not None:
+            response = client.files_upload(channels='#'+slack_channel, file=filename)
+            assert response["file"]  # the uploaded file
     except SlackApiError as e:
-    # You will get a SlackApiError if "ok" is False
-       assert e.response["ok"] is False
-       assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
-       print(f"Got an error: {e.response['error']}")
+        # You will get a SlackApiError if "ok" is False
+        assert e.response["ok"] is False
+        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+        print(f"Got an error: {e.response['error']}")
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------

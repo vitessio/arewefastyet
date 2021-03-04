@@ -56,7 +56,12 @@ class BenchmarkRunner:
             task.run(self.config.tasks_scripts_dir)
             task.save_report()
             task.download_remote_pprof_folder()
+
+            report_url = None
             if self.config.tasks_upload_to_aws:
-                task.upload_report_to_aws()
+                report_url = task.upload_report_to_aws()
             reporting.save_to_mysql(self.config, task.report, task.table_name())
-            reporting.send_slack_message(self.config.slack_api_token, self.config.slack_channel, task.report_path())
+            reporting.send_slack_message(self.config.slack_api_token, self.config.slack_channel,
+                                         task_id=task.task_id.__str__(),
+                                         report_url=report_url,
+                                         filename=task.report_path())

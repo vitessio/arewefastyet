@@ -13,6 +13,8 @@ import os
 import uuid
 import shutil
 import json
+from typing import Optional
+
 import yaml
 import abc
 
@@ -153,9 +155,9 @@ class Task:
         dest_dir = os.path.join(self.report_dir, "pprof")
         get_from_remote.get_from_remote(self.device_ip, "root", src_dir, dest_dir, is_directory=True, create_dest=True)
 
-    def upload_report_to_aws(self):
+    def upload_report_to_aws(self) -> Optional[str]:
         zip.zipdir(self.report_dir, "zip", self.report_dir)
-        aws.upload_file(self.report_dir+".zip", object_name=self.name()+"-"+self.task_id.__str__())
+        return aws.upload_file(self.report_dir+".zip", object_name=os.path.basename(self.report_dir+".zip"))
 
     def save_report(self):
         """

@@ -10,17 +10,22 @@
 #  limitations under the License.
 
 import boto3
+from typing import Optional
 from botocore.exceptions import ClientError
 
-def upload_file(file_name, bucket="arewefastyet", object_name=None):
+
+def upload_file(file_name, bucket="arewefastyet", object_name=None, link_exp=86400) -> Optional[str]:
     if object_name is None:
         object_name = file_name
 
     s3_client = boto3.client('s3')
     try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
+        s3_client.upload_file(file_name, bucket, object_name)
+        url = s3_client.generate_presigned_url('get_object',
+                                                    Params={'Bucket': bucket, 'Key': object_name},
+                                                    ExpiresIn=link_exp
+                                                    )
     except ClientError as e:
         print(e)
-        return False
-    print(response)
-    return True
+        return None
+    return url
