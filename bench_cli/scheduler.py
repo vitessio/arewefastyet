@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------------------------------------------------------------------------------------
-# Copyright 2020 The Vitess Authors.
+# Copyright 2021 The Vitess Authors.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -31,9 +31,11 @@ def job():
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-# Runs everyday at <specified time>
-schedule.every().day.at(sys.argv[1]).do(job)
+if __name__ == '__main__':
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+    # Runs everyday at <specified time>
+    schedule.every().day.at(sys.argv[1]).do(job)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

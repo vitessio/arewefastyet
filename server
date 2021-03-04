@@ -1,7 +1,0 @@
-#!/bin/bash
-
-#To be triggered within arewefastyet directory 
-
-alias activate="benchmark/bin/activate"
-
-gunicorn server:app -b 0.0.0.0:80 --limit-request-line 0

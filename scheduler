@@ -1,8 +1,0 @@
-#!/bin/bash
-
-
-alias activate="benchmark/bin/activate"
-
-# virtualenv is now active.
-#
-python scheduler.py $1

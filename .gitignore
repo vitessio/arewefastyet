@@ -155,8 +155,9 @@ benchmark/
 #Hide process txt
 process.txt
 
-#For vs code files
+# IDEs
 .vscode/
+.idea/
 
 #To hide private key of certificate caddy
 caddy/
