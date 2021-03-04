@@ -34,7 +34,7 @@ jobs:
     - name: Install ansible dependencies
       run: |
         cd ansible
-        ansible-galaxy install cloudalchemy.node-exporter
+        ansible-galaxy install cloudalchemy.node_exporter
         ansible-galaxy install cloudalchemy.prometheus
 
     - name: Test OLTP

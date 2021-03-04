@@ -27,3 +27,15 @@
   service:
     name: mysqlctld@{{ tablet_id }}
     state: restarted
+
+- name: stop vttablet
+  become: yes
+  become_user: root
+  when:
+    - enable_vttablet | bool
+  service:
+    name: vttablet@{{ tablet.id }}
+    state: stopped
+  loop: '{{ tablets }}'
+  loop_control:
+    loop_var: tablet

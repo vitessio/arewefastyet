@@ -16,12 +16,12 @@ all:
     cell: local
     keyspace: main
     # OLTP
-    oltp_table_size: 1
-    oltp_threads: 20
-    oltp_preparation_time: 5
-    oltp_warmup_time: 5
-    oltp_test_time: 5
-    oltp_number_tables: 5
+    oltp_table_size: 10000000
+    oltp_threads: 100
+    oltp_preparation_time: 30
+    oltp_warmup_time: 10
+    oltp_test_time: 900
+    oltp_number_tables: 50
     # TPCC
     tpcc_warehouses: 1000
     tpcc_threads: 300

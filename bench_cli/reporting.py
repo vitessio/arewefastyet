@@ -28,6 +28,7 @@ import bench_cli.configuration as configuration
 # ----------------------------------------------------------------------------------------------------------------------------------
 # ---------------------------------------------------- Send Slack Message ----------------------------------------------------------
 
+
 def send_slack_message(slack_api_token: str, slack_channel: str, report_path: str):
     ssl._create_default_https_context = ssl._create_unverified_context
 

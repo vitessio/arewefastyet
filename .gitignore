@@ -167,3 +167,6 @@ ansible/build/*
 
 #For Mac OS
 .DS_Store
+
+report/
+!report/sample

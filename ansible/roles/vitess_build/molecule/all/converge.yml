@@ -13,9 +13,9 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include Cloud Alchemy node-exporter"
+    - name: "Include Cloud Alchemy node_exporter"
       include_role:
-        name: "cloudalchemy.node-exporter"
+        name: "cloudalchemy.node_exporter"
     - name: "Include vitess_build"
       include_role:
         name: "vitess_build"
