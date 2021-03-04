@@ -44,7 +44,7 @@ class Config:
 
     def __read_from_file__(self):
         with open(self.config_file) as f:
-            return yaml.load(f, Loader=yaml.FullLoader)
+            return yaml.load(f, Loader=yaml.SafeLoader)
 
     def __load_config(self, cfg) -> None:
         self.web: bool = cfg["web"]

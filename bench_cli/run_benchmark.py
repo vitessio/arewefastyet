@@ -114,7 +114,7 @@ class Task:
         """
         shutil.copy2(self.ansible_inventory_file, self.ansible_built_inventory_filepath)
         with open(self.ansible_inventory_file, 'r') as invf:
-            invdata = yaml.load(invf, Loader=yaml.FullLoader)
+            invdata = yaml.load(invf, Loader=yaml.SafeLoader)
         self.__recursive_dict(invdata)
         # TODO: handle any commit
         if commit_hash == 'HEAD':
