@@ -14,7 +14,6 @@ import uuid
 import shutil
 import json
 import yaml
-import pysftp
 import abc
 
 import bench_cli.packet_vps as packet_vps
