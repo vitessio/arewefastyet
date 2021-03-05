@@ -1,4 +1,27 @@
+# Copyright 2021 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 ---
+- name: ensure profile directory
+  become: yes
+  become_user: root
+  with_items:
+    - '/tmp/pprof'
+    - '/tmp/pprof/vttablet-{{ tablet.id }}'
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+
 - name: template out configs
   become: yes
   become_user: root
@@ -26,12 +49,13 @@
   with_items:
     - 'mysqlctld@{{ tablet.id }}'
     - 'mysqld_exporter@{{ tablet.id }}'
+  changed_when: false
 
 - name: wait for mysql socket
   become: yes
   become_user: root
-  tags: filepresensevalidation
-  register: filepresensevalidation
+  when:
+    - enable_vttablet | bool
   wait_for:
     path:  '{{ vitess_root }}/socket/mysql{{ tablet.id }}.sock'
     delay: 5
@@ -43,8 +67,8 @@
 - name: wait for mysqlctl socket
   become: yes
   become_user: root
-  tags: filepresensevalidation
-  register: filepresensevalidation
+  when:
+    - enable_vttablet | bool
   wait_for:
     path:  '{{ vitess_root }}/socket/mysqlctl{{ tablet.id }}.sock'
     delay: 5
@@ -64,3 +88,4 @@
     state: started
   with_items:
     - 'vttablet@{{ tablet.id }}'
+  changed_when: false
