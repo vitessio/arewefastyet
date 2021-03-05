@@ -23,6 +23,7 @@ import bench_cli.get_head_hash as get_head_hash
 import bench_cli.get_from_remote as get_from_remote
 import bench_cli.zip as zip
 import bench_cli.aws as aws
+import bench_cli.github_api as ghapi
 
 
 class Task:
@@ -116,10 +117,13 @@ class Task:
             invdata = yaml.load(invf, Loader=yaml.FullLoader)
         self.__recursive_dict(invdata)
 
-        self.commit_hash = commit_hash
-        if commit_hash == 'HEAD':
-            self.commit_hash = get_head_hash.head_commit_hash()
+        self.commit_hash, is_pr = ghapi.resolve_ref(commit_hash)
+        if self.commit_hash is None:
+            self.commit_hash = commit_hash
         invdata["all"]["vars"]["vitess_git_version"] = self.commit_hash
+        if is_pr:
+            invdata["all"]["vars"]["vitess_git_version_pr_nb"] = int(commit_hash)
+            invdata["all"]["vars"]["vitess_git_version_fetch_pr"] = "pull/{0}/head:{0}".format(commit_hash)
 
         if self.pprof:
             invdata["all"]["vars"]["pprof_targets"] = self.pprof["targets"]

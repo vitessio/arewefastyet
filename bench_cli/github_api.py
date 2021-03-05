@@ -13,6 +13,17 @@ from typing import Optional
 from github import Github, GithubException
 
 
+def resolve_ref(initial_ref: str):
+    is_pr = False
+    ref = get_sha_from_ref(initial_ref)
+    if ref is None:
+        pr_nb = int(initial_ref)
+        ref = get_sha_from_pr(pr_nb)
+        if ref is not None:
+            is_pr = True
+    return ref, is_pr
+
+
 def get_sha_from_ref(ref) -> Optional[str]:
     c = Github()
     try:
@@ -21,6 +32,7 @@ def get_sha_from_ref(ref) -> Optional[str]:
         print(e.data.get("message"))
         return None
     return sha
+
 
 def get_sha_from_pr(pr: int) -> Optional[str]:
     c = Github()
