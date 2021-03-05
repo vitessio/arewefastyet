@@ -86,7 +86,8 @@
         repo: "{{ vitess_git_repo }}"
         dest: /go/src/vitess.io/vitess
         version: "{{ vitess_git_version }}"
-        force: 1
+        refspec: "{{ vitess_git_version_fetch_pr if vitess_git_version_pr_nb is defined | default('') }}"
+        force: false
 
     - name: Tmp directory gopath
       become: yes
