@@ -295,6 +295,25 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
         self.assertEqual(["vtgate"], invdata["all"]["vars"]["pprof_targets"])
         self.assertEqual("cpu", invdata["all"]["vars"]["pprof_args"])
 
+    def test_build_ansible_inventory_commit_is_pr(self):
+        tmpdir = tempfile.mkdtemp()
+        inventory_yml = "inventory.yml"
+        commit = "1"  # represents pull request #1
+
+        config = configuration.Config({"tasks_pprof": "vtgate/cpu", "source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": tmpdir, "ansible_dir": tmpdir})
+        self.setup_inventory(config.get_inventory_file_path(), sample_inv_file)
+        benchmark_runner = run_benchmark.BenchmarkRunner(config)
+        task = benchmark_runner.tasks[0]
+        task.build_ansible_inventory(commit)
+
+        invf = open(task.ansible_built_inventory_filepath, 'r')
+        invdata = yaml.load(invf, Loader=yaml.FullLoader)
+        invf.close()
+
+        self.assertEqual(1, invdata["all"]["vars"]["vitess_git_version_pr_nb"])
+        self.assertEqual("pull/1/head:1", invdata["all"]["vars"]["vitess_git_version_fetch_pr"])
+        self.assertEqual("21a4f62c614f19f6717e6161ec049628aa119f52", invdata["all"]["vars"]["vitess_git_version"])  # SHA taken from https://github.com/vitessio/vitess/pull/1/commits/21a4f62c614f19f6717e6161ec049628aa119f52
+
 
 if __name__ == '__main__':
     unittest.main()
