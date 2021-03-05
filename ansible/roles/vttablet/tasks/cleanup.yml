@@ -10,12 +10,11 @@
 # limitations under the License.
 
 ---
-- import_playbook: provision.yml
-  when: provision is defined
-- import_playbook: update.yml
-  when: update is defined
-- import_playbook: configure.yml
-- import_playbook: oltp_read_write.yml
-  when: tpcc is not defined
-- import_playbook: tpcc.yml
-  when: tpcc is defined
+
+- name: Start async profiler-stop
+  shell: |
+    sleep 300
+    kill -s USR1 $(pgrep -d " " vttablet)
+  when: pprof_targets is defined and "vttablet" in pprof_targets
+  async: 400
+  poll: 0

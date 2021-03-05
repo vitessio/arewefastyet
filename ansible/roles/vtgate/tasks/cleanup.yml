@@ -10,26 +10,11 @@
 # limitations under the License.
 
 ---
-- hosts: vtgate
-  tasks:
-    - name: Shutdown
-      become: yes
-      become_user: root
-      service:
-        name: vtgate@{{ gateway.id }}
-        state: stopped
-      loop: '{{ gateways }}'
-      loop_control:
-        loop_var: gateway
 
-- hosts: vttablet
-  tasks:
-    - name: Shutdown
-      become: yes
-      become_user: root
-      service:
-        name: vttablet@{{ tablet.id }}
-        state: stopped
-      loop: '{{ tablets }}'
-      loop_control:
-        loop_var: tablet
+- name: Start async profiler-stop
+  shell: |
+    sleep 300
+    kill -s USR1 $(pgrep -d " " vtgate)
+  when: pprof_targets is defined and "vtgate" in pprof_targets
+  async: 400
+  poll: 0
