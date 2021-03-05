@@ -33,3 +33,5 @@ enable_vtgate: True
 
 vtgate_query_cache_size: 1000
 vtgate_max_goproc: 24
+
+vtgate_deadline_pprof: 300

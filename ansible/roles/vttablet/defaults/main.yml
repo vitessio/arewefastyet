@@ -41,3 +41,5 @@ vttablet_found_rows_pool_size: 16
 vttablet_query_cache_size: 1000
 
 vttablet_max_goproc: 24
+
+vttablet_deadline_pprof: 300
