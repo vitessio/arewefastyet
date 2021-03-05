@@ -116,7 +116,7 @@ class Task:
             invdata = yaml.load(invf, Loader=yaml.FullLoader)
         self.__recursive_dict(invdata)
 
-        # TODO: handle any commit
+        self.commit_hash = commit_hash
         if commit_hash == 'HEAD':
             self.commit_hash = get_head_hash.head_commit_hash()
         invdata["all"]["vars"]["vitess_git_version"] = self.commit_hash

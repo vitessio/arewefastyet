@@ -17,3 +17,4 @@ pyOpenSSL
 click
 setuptools
 boto3
+PyGithub
