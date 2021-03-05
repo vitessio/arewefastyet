@@ -68,7 +68,7 @@ class Config:
 
     def __read_from_file(self, file: str):
         with open(file) as f:
-            return yaml.load(f, Loader=yaml.FullLoader)
+            return yaml.load(f, Loader=yaml.SafeLoader)
 
     def __load_config(self, cfg) -> None:
         for key in cfg:
