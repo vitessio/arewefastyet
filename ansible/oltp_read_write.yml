@@ -52,6 +52,16 @@
           poll: 0
           register: sysbench_run
 
+        - name: Start vtgate sysbench cleanup
+          include_role:
+            name: vtgate
+            tasks_from: cleanup
+
+        - name: Start vttablet sysbench cleanup
+          include_role:
+            name: vttablet
+            tasks_from: cleanup
+
         - name: Wait for sysbench to finish
           async_status:
             jid: "{{ sysbench_run.ansible_job_id }}"

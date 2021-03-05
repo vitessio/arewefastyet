@@ -57,22 +57,33 @@
 
     - name: Run sysbench
       block:
-       - name: Run the test
-         shell: |
-           sysbench --luajit-cmd=off --threads={{ tpcc_threads }} --time={{ tpcc_test_time }} \
+        - name: Run the test
+          shell: |
+            sysbench --luajit-cmd=off --threads={{ tpcc_threads }} --time={{ tpcc_test_time }} \
                     --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable \
                     --db-driver=mysql --mysql-ignore-errors=all --use_fk=0 --rand-type=uniform --verbosity=0 \
                     --report_json=yes --tables={{ tpcc_number_tables }} --scale={{ tpcc_warehouses }} ./tpcc.lua run > /tmp/tpcc.json
-         args:
-           chdir: /src/sysbench-tpcc/
-         async: '{{ tpcc_test_time*2 }}'
-         poll: 0
-         register: sysbench_run
-       - name: Wait for sysbench to finish
-         async_status:
+          args:
+            chdir: /src/sysbench-tpcc/
+          async: '{{ tpcc_test_time*2 }}'
+          poll: 0
+          register: sysbench_run
+
+        - name: Start vtgate sysbench cleanup
+          include_role:
+            name: vtgate
+            tasks_from: cleanup
+
+        - name: Start vttablet sysbench cleanup
+          include_role:
+            name: vttablet
+            tasks_from: cleanup
+
+        - name: Wait for sysbench to finish
+          async_status:
             jid: "{{ sysbench_run.ansible_job_id }}"
-         register: job_result
-         until: job_result.finished
-         retries: '{{ tpcc_test_time*2 }}'
-       - debug:
-           msg: '{{ job_result }}'
+          register: job_result
+          until: job_result.finished
+          retries: '{{ tpcc_test_time*2 }}'
+        - debug:
+            msg: '{{ job_result }}'

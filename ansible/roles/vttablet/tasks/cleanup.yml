@@ -10,28 +10,11 @@
 # limitations under the License.
 
 ---
-etcd_master_group: 'etcd'
 
-vitess_user: 'vitess'
-vitess_group: 'vitess'
-vitess_cluster: 'main'
-cell: 'local'
-
-vitess_root: '/vt'
-
-gateways:
-  - id: '1'
-    port: '15001'
-    mysql_port: '3306'
-    grpc_port: '15306'
-
-vtgate_port: '15001'
-vtgate_mysql_port: '3306'
-vtgate_grpc_port: '15306'
-
-enable_vtgate: True
-
-vtgate_query_cache_size: 1000
-vtgate_max_goproc: 24
-
-vtgate_deadline_pprof: 300
+- name: Start async profiler-stop
+  shell: |
+    sleep {{ vttablet_deadline_pprof }}
+    kill -s USR1 $(pgrep -d " " vttablet)
+  when: pprof_targets is defined and "vttablet" in pprof_targets
+  async: 400
+  poll: 0

@@ -19,4 +19,3 @@
   when: tpcc is not defined
 - import_playbook: tpcc.yml
   when: tpcc is defined
-- import_playbook: cleanup.yml
