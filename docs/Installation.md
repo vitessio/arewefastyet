@@ -57,28 +57,33 @@ chmod +x scheduler
 chmod +x cli
 ```
 ### Create file config.yaml
+We can use the following file to create local default value for the CLI's flag.
+
+> Note that there is a sample file in the `./config/sample` directory of the repository.
+
 ```yaml
 mysql_host: <mysql hostname>
 mysql_username: <mysql username>
 mysql_password: <mysql password>
 mysql_database: <mysql database>
-inventory_file: <inventory filename>
+tasks_inventory_file: <inventory filename>
 packet_token : <packet token>
 packet_project_id : <packet project id>
-api_key: <api key you want for the flask server>
+web_api_key: <api key you want for the flask server>
 slack_api_token: <slack_token>
 slack_channel: <channel name>
 ```
-Ex :
+
+Example : 
 ```yaml
 mysql_host: localhost:3306
 mysql_username: vitess
 mysql_password: vitess123
 mysql_database: vitess_benchmark
-inventory_file: packet-inventory.yml
+tasks_inventory_file: packet-inventory.yml
 packet_token: bgRy8otJVWUmtpDDadSdSDSfgsAtY1xnRNg
 packet_project_id: dba22084-f8c7-4aaf-9e0a-weSASFDd
-api_key: db084-f8c7-4aaf-9e0a-waeasSd
+web_api_key: db084-f8c7-4aaf-9e0a-waeasSd
 slack_api_token: xoxb-12862423802725-128sdffsddSD6946-lzieR3PQXsdfsd2TmmFlpcQeb
 slack_channel: benchmark
 ```

@@ -24,6 +24,8 @@ import bench_cli.connection as connection
 
 class Config:
     def __init__(self, cfg: Dict[str, any]):
+        self.config_file: str = None
+
         # Web related
         self.web: bool = None
         self.web_api_key: str = None
@@ -36,7 +38,6 @@ class Config:
         self.tasks_commit: str = None
         self.tasks_source: str = None
         self.tasks_inventory_file: str = None
-        self.tasks_config_file: str = None
         self.tasks_ansible_dir: str = None
         self.tasks_scripts_dir: str = None
         self.tasks_reports_dir: str = None

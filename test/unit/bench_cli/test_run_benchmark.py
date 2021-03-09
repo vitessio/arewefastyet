@@ -123,7 +123,7 @@ default_cfg_fields = {
     "mysql_database": "main", "packet_token": "AB12345",
     "packet_project_id": "AABB11", "web_api_key": "123-ABC-456-EFG",
     "slack_api_token": "slack-token", "slack_channel": "general",
-    "tasks_config_file": "./config", "tasks_ansible_dir": "./ansible",
+    "config_file": "./config", "tasks_ansible_dir": "./ansible",
     "tasks_scripts_dir": "./scripts", "tasks_reports_dir": "./reports",
     "tasks_pprof": None, "delete_benchmark": False
 }
@@ -236,7 +236,7 @@ class TestCreationOfTaskCheckValues(unittest.TestCase):
         for tc in tcs:
             cfg = default_cfg_fields.copy()
             cfg[tc.get("name")] = True
-            cfg.__delitem__("tasks_config_file")
+            cfg.__delitem__("config_file")
             config = configuration.Config(cfg)
             benchmark_runner = run_benchmark.BenchmarkRunner(config)
 
