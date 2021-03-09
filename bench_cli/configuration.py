@@ -26,18 +26,18 @@ class Config:
     def __init__(self, cfg: Dict[str, any]):
         # Web related
         self.web: bool = None
-        self.api_key: str = None
+        self.web_api_key: str = None
 
         # Task related
         self.tasks: [str] = None
-        self.run_oltp: bool = None
-        self.run_tpcc: bool = None
-        self.run_all: bool = None
-        self.commit: str = None
-        self.source: str = None
-        self.inventory_file: str = None
-        self.config_file: str = None
-        self.ansible_dir: str = None
+        self.tasks_run_oltp: bool = None
+        self.tasks_run_tpcc: bool = None
+        self.tasks_run_all: bool = None
+        self.tasks_commit: str = None
+        self.tasks_source: str = None
+        self.tasks_inventory_file: str = None
+        self.tasks_config_file: str = None
+        self.tasks_ansible_dir: str = None
         self.tasks_scripts_dir: str = None
         self.tasks_reports_dir: str = None
         self.tasks_pprof: str = None
@@ -96,9 +96,9 @@ class Config:
 
     def __parse_run_task(self):
         self.tasks = []
-        if self.run_oltp or self.run_all:
+        if self.tasks_run_oltp or self.tasks_run_all:
             self.tasks.append("oltp")
-        if self.run_tpcc or self.run_all:
+        if self.tasks_run_tpcc or self.tasks_run_all:
             self.tasks.append("tpcc")
 
     def get_inventory_file_path(self) -> str:
@@ -106,7 +106,7 @@ class Config:
         Build the inventory file path from the given ansible directory and inventory file.
         @return: str
         """
-        return os.path.join(self.ansible_dir, self.inventory_file)
+        return os.path.join(self.tasks_ansible_dir, self.tasks_inventory_file)
 
     def unsafe_dump(self, echo=True) -> str:
         """
@@ -125,7 +125,7 @@ class Config:
         Check if the configuration allows us to run tests.
         @return: bool
         """
-        if not self.commit or not self.source or not self.inventory_file:
+        if not self.tasks_commit or not self.tasks_source or not self.tasks_inventory_file:
             return False
         return True
 

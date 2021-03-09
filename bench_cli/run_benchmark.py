@@ -38,9 +38,9 @@ class BenchmarkRunner:
         task_factory = taskfac.TaskFactory()
         for task_name in self.config.tasks:
             tasks.append(task_factory.create_task(task_name, self.config.tasks_reports_dir,
-                                                  self.config.ansible_dir,
+                                                  self.config.tasks_ansible_dir,
                                                   self.config.get_inventory_file_path(),
-                                                  self.config.source,
+                                                  self.config.tasks_source,
                                                   self.config.tasks_pprof_options)
                          )
         return tasks
@@ -52,7 +52,7 @@ class BenchmarkRunner:
         for task in self.tasks:
             task.create_device(self.config.packet_token, self.config.packet_project_id)
             task.create_task_data_directory()
-            task.build_ansible_inventory(self.config.commit)
+            task.build_ansible_inventory(self.config.tasks_commit)
             task.run(self.config.tasks_scripts_dir)
             task.save_report()
             task.download_remote_pprof_folder()
