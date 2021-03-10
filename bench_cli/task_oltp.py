@@ -42,8 +42,8 @@ class OLTP(task.Task):
             envvars=dict({"OBJC_DISABLE_INITIALIZE_FORK_SAFETY": "YES"}),
             cmdline="-u root",
         )
-        if runner.rc is not 0:
-            print("ansible exec failed")
+        if runner.status == "failed" or runner.rc is not 0:
+            raise RuntimeError("task execution failed, ansible finished with {0}".format(runner.rc))
         shutil.rmtree(tmpdir)
 
 

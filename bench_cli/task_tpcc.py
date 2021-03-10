@@ -38,12 +38,12 @@ class TPCC(task.Task):
             playbook=os.path.abspath(os.path.join(self.ansible_dir, "full.yml")),
             inventory=[os.path.abspath(self.ansible_built_inventory_filepath)],
             ssh_key=ssh_priv_key,
-            extravars=dict({"provision": True, "clean": True}),
+            extravars=dict({"provision": True, "clean": True, "tpcc": "true"}),
             envvars=dict({"OBJC_DISABLE_INITIALIZE_FORK_SAFETY": "YES"}),
             cmdline="-u root",
         )
-        if runner.rc is not 0:
-            print("ansible exec failed")
+        if runner.status == "failed" or runner.rc is not 0:
+            raise RuntimeError("task execution failed, ansible finished with {0}".format(runner.rc))
         shutil.rmtree(tmpdir)
 
     def report_path(self, base: str = None) -> str:
