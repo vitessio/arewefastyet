@@ -38,7 +38,7 @@
   git:
     repo: https://github.com/planetscale/sysbench
     dest: /src/sysbench
-    version: 151672f3ab1fcddecb16ffffb156bb6ce83ef81d
+    version: master
     depth: 1
     force: 1
 
@@ -59,6 +59,32 @@
   git:
     repo: https://github.com/planetscale/sysbench-tpcc
     dest: /src/sysbench-tpcc
-    version: 4bcc6d93f4968203a65e5217a5b34b76952ae6c7
+    version: master
     depth: 1
     force: 1
+
+- name: Install iptables
+  package:
+    name: 'iptables'
+    state: present
+    update_cache: true
+
+- name: Set up Masquerading
+  shell: |
+    iptables -t nat -A POSTROUTING -j MASQUERADE
+    sysctl -w net.ipv4.conf.lo.route_localnet=1
+  changed_when: false
+
+- name: Flush all rules
+  shell: |
+    iptables -t nat -F OUTPUT
+  changed_when: false
+
+- name: Set up VTGate Loadbalancing
+  shell: |
+    iptables -t nat -A OUTPUT -p tcp --dport 3306 -m state --state NEW -m statistic --mode nth --every {{ ((gateways | length) - index) }} --packet 0 -j DNAT --to-destination {{ gateway }}
+  with_items: '{{ gateways }}'
+  changed_when: false
+  loop_control:
+    loop_var: gateway
+    index_var: index
