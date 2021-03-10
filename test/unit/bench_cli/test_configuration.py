@@ -15,13 +15,13 @@ import os
 from .context import configuration
 
 default_cfg_fields = {
-    "web": False, "tasks": [], "commit": "HEAD", "source": "testing",
-    "inventory_file": "inventory_file", "mysql_host": "localhost",
+    "web": False, "tasks": [], "tasks_commit": "HEAD", "tasks_source": "testing",
+    "tasks_inventory_file": "tasks_inventory_file", "mysql_host": "localhost",
     "mysql_username": "root", "mysql_password": "password",
     "mysql_database": "main", "packet_token": "AB12345",
-    "packet_project_id": "AABB11", "api_key": "123-ABC-456-EFG",
+    "packet_project_id": "AABB11", "web_api_key": "123-ABC-456-EFG",
     "slack_api_token": "slack-token", "slack_channel": "general",
-    "config_file": "./config", "ansible_dir": "./ansible",
+    "config_file": "./config", "tasks_ansible_dir": "./ansible",
     "tasks_scripts_dir": "./scripts", "tasks_reports_dir": "./reports",
     "tasks_pprof": None, "delete_benchmark": False
 }
@@ -31,32 +31,32 @@ default_cfg_file_yaml = "" \
                         "mysql_username: root\n"\
                         "mysql_password: password\n"\
                         "mysql_database: main\n"\
-                        "inventory_file: inventory_file\n"\
+                        "tasks_inventory_file: inventory_file\n"\
                         "packet_token : AB12345\n"\
                         "packet_project_id : AABB11\n"\
-                        "api_key: 123-ABC-456-EFG\n"\
+                        "web_api_key: 123-ABC-456-EFG\n"\
                         "slack_api_token: slack-token\n"\
                         "slack_channel: general\n"
 
 
 class TestValidToRun(unittest.TestCase):
     def test_valid_to_run_true(self):
-        config = configuration.Config({"commit": "HEAD", "source": "test", "inventory_file": "file"})
+        config = configuration.Config({"tasks_commit": "HEAD", "tasks_source": "test", "tasks_inventory_file": "file"})
         valid = config.valid_to_run()
         self.assertTrue(valid, "should be valid")
 
     def test_valid_to_run_no_commit(self):
-        config = configuration.Config({"source": "test", "inventory_file": "file"})
+        config = configuration.Config({"tasks_source": "test", "tasks_inventory_file": "file"})
         valid = config.valid_to_run()
         self.assertFalse(valid, "should be invalid")
 
     def test_valid_to_run_no_source(self):
-        config = configuration.Config({"commit": "HEAD", "inventory_file": "file"})
+        config = configuration.Config({"tasks_commit": "HEAD", "tasks_inventory_file": "file"})
         valid = config.valid_to_run()
         self.assertFalse(valid, "should be invalid")
 
     def test_valid_to_run_no_inventory_file(self):
-        config = configuration.Config({"commit": "HEAD", "source": "test"})
+        config = configuration.Config({"tasks_commit": "HEAD", "tasks_source": "test"})
         valid = config.valid_to_run()
         self.assertFalse(valid, "should be invalid")
 
@@ -65,7 +65,7 @@ class TestInventoryFile(unittest.TestCase):
     def test_get_inventory_file_path(self):
         ansible_dir = "./ansible"
         inventory_file = "inventory_file"
-        config = configuration.Config({"ansible_dir": ansible_dir, "inventory_file": inventory_file})
+        config = configuration.Config({"tasks_ansible_dir": ansible_dir, "tasks_inventory_file": inventory_file})
 
         expected_path = os.path.join(ansible_dir, inventory_file)
         path = config.get_inventory_file_path()

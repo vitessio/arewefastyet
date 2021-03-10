@@ -117,13 +117,13 @@ all:
 '''
 
 default_cfg_fields = {
-    "web": False, "tasks": ['oltp'], "commit": "HEAD", "source": "testing",
-    "inventory_file": "inventory_file", "mysql_host": "localhost",
+    "web": False, "tasks": ['oltp'], "tasks_commit": "HEAD", "tasks_source": "testing",
+    "tasks_inventory_file": "tasks_inventory_file", "mysql_host": "localhost",
     "mysql_username": "root", "mysql_password": "password",
     "mysql_database": "main", "packet_token": "AB12345",
-    "packet_project_id": "AABB11", "api_key": "123-ABC-456-EFG",
+    "packet_project_id": "AABB11", "web_api_key": "123-ABC-456-EFG",
     "slack_api_token": "slack-token", "slack_channel": "general",
-    "config_file": "./config", "ansible_dir": "./ansible",
+    "config_file": "./config", "tasks_ansible_dir": "./ansible",
     "tasks_scripts_dir": "./scripts", "tasks_reports_dir": "./reports",
     "tasks_pprof": None, "delete_benchmark": False
 }
@@ -161,21 +161,21 @@ class TestCreateBenchmarkRunner(unittest.TestCase):
         super().setUp()
         self.tmpdir = tempfile.mkdtemp()
         self.cfg = {
-            "run_all": True,
+            "tasks_run_all": True,
             "tasks_reports_dir": self.tmpdir,
-            "ansible_dir": self.tmpdir,
-            "source": self.tmpdir,
+            "tasks_ansible_dir": self.tmpdir,
+            "tasks_source": self.tmpdir,
             "tasks_pprof": "vttablet/mem",
-            "inventory_file": "inv.yaml"
+            "tasks_inventory_file": "inv.yaml"
         }
 
     def tearDown(self) -> None:
         super().tearDown()
 
     def test_create_benchmark_runner_all_tasks(self):
-        self.cfg["run_all"] = True
-        self.cfg["run_oltp"] = False
-        self.cfg["run_tpcc"] = False
+        self.cfg["tasks_run_all"] = True
+        self.cfg["tasks_run_oltp"] = False
+        self.cfg["tasks_run_tpcc"] = False
         config = configuration.Config(self.cfg)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         self.assertEqual(2, len(benchmark_runner.tasks))
@@ -183,18 +183,18 @@ class TestCreateBenchmarkRunner(unittest.TestCase):
             self.assertEqual(config.tasks[i], task.name())
 
     def test_create_benchmark_runner_oltp(self):
-        self.cfg["run_all"] = False
-        self.cfg["run_oltp"] = True
-        self.cfg["run_tpcc"] = False
+        self.cfg["tasks_run_all"] = False
+        self.cfg["tasks_run_oltp"] = True
+        self.cfg["tasks_run_tpcc"] = False
         config = configuration.Config(self.cfg)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         self.assertEqual(1, len(benchmark_runner.tasks))
         self.assertEqual(config.tasks[0], benchmark_runner.tasks[0].name())
 
     def test_create_benchmark_runner_tpcc(self):
-        self.cfg["run_all"] = False
-        self.cfg["run_oltp"] = False
-        self.cfg["run_tpcc"] = True
+        self.cfg["tasks_run_all"] = False
+        self.cfg["tasks_run_oltp"] = False
+        self.cfg["tasks_run_tpcc"] = True
         config = configuration.Config(self.cfg)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         self.assertEqual(1, len(benchmark_runner.tasks))
@@ -230,8 +230,8 @@ class TestCreationOfTaskCheckValues(unittest.TestCase):
 
     def test_create_task_with_benchmark_runner_check_values(self):
         tcs = [
-            {"name": "run_oltp"},
-            {"name": "run_tpcc"}
+            {"name": "tasks_run_oltp"},
+            {"name": "tasks_run_tpcc"}
         ]
         for tc in tcs:
             cfg = default_cfg_fields.copy()
@@ -240,18 +240,19 @@ class TestCreationOfTaskCheckValues(unittest.TestCase):
             config = configuration.Config(cfg)
             benchmark_runner = run_benchmark.BenchmarkRunner(config)
 
+            self.assertEqual(1, len(benchmark_runner.tasks))
             task = benchmark_runner.tasks[0]
 
             self.assertEqual(config.tasks[0], task.name())
             self.assertEqual(config.tasks_reports_dir, task.report_dir)
-            self.assertEqual(config.ansible_dir, task.ansible_dir)
+            self.assertEqual(config.tasks_ansible_dir, task.ansible_dir)
             self.assertEqual(config.get_inventory_file_path(), task.ansible_inventory_file)
-            self.assertEqual(config.source, task.source)
+            self.assertEqual(config.tasks_source, task.source)
 
-            expected_ansible_build_dir = os.path.join(config.ansible_dir, 'build')
+            expected_ansible_build_dir = os.path.join(config.tasks_ansible_dir, 'build')
             self.assertEqual(expected_ansible_build_dir, task.ansible_build_dir)
 
-            expected_ansible_built_file = config.inventory_file.split('.')[0] + '-' + str(task.task_id) + '.yml'
+            expected_ansible_built_file = config.tasks_inventory_file.split('.')[0] + '-' + str(task.task_id) + '.yml'
             self.assertEqual(expected_ansible_built_file, task.ansible_built_inventory_file)
             self.assertEqual(os.path.join(expected_ansible_build_dir, expected_ansible_built_file), task.ansible_built_inventory_filepath)
 
@@ -269,20 +270,20 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
     def test_build_ansible_inventory_created(self):
         tmpdir = tempfile.mkdtemp()
         inventory_yml = "inventory.yml"
-        config = configuration.Config({"source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": tmpdir, "ansible_dir": tmpdir})
+        config = configuration.Config({"tasks_source": "unit_test", "tasks_inventory_file": inventory_yml, "tasks_run_oltp": True, "tasks_reports_dir": tmpdir, "tasks_ansible_dir": tmpdir})
         self.setup_inventory(config.get_inventory_file_path(), sample_inv_file)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         task = benchmark_runner.tasks[0]
         task.build_ansible_inventory('HEAD')
 
-        exptected_path = os.path.join(config.ansible_dir, "build", inventory_yml.split('.')[0] + '-' + task.task_id.__str__() + ".yml")
+        exptected_path = os.path.join(config.tasks_ansible_dir, "build", inventory_yml.split('.')[0] + '-' + task.task_id.__str__() + ".yml")
         self.assertEqual(exptected_path, task.ansible_built_inventory_filepath)
         self.assertTrue(os.path.exists(exptected_path))
 
     def test_build_ansible_inventory_pprof(self):
         tmpdir = tempfile.mkdtemp()
         inventory_yml = "inventory.yml"
-        config = configuration.Config({"tasks_pprof": "vtgate/cpu", "source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": tmpdir, "ansible_dir": tmpdir})
+        config = configuration.Config({"tasks_pprof": "vtgate/cpu", "tasks_source": "unit_test", "tasks_inventory_file": inventory_yml, "tasks_run_oltp": True, "tasks_reports_dir": tmpdir, "tasks_ansible_dir": tmpdir})
         self.setup_inventory(config.get_inventory_file_path(), sample_inv_file)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         task = benchmark_runner.tasks[0]
@@ -300,7 +301,7 @@ class TestBuildAnsibleInventoryFile(unittest.TestCase):
         inventory_yml = "inventory.yml"
         commit = "1"  # represents pull request #1
 
-        config = configuration.Config({"tasks_pprof": "vtgate/cpu", "source": "unit_test", "inventory_file": inventory_yml, "run_oltp": True, "tasks_reports_dir": tmpdir, "ansible_dir": tmpdir})
+        config = configuration.Config({"tasks_pprof": "vtgate/cpu", "tasks_source": "unit_test", "tasks_inventory_file": inventory_yml, "tasks_run_oltp": True, "tasks_reports_dir": tmpdir, "tasks_ansible_dir": tmpdir})
         self.setup_inventory(config.get_inventory_file_path(), sample_inv_file)
         benchmark_runner = run_benchmark.BenchmarkRunner(config)
         task = benchmark_runner.tasks[0]

@@ -41,17 +41,17 @@ install_dev_cli: virtual_env $(VIRTUALENV_PATH)
 
 oltp: virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \
-	clibench -c $(RUN_COMMIT) -s makefile_oltp -runo -invf $(RUN_INVENTORY_FILE) \
+	clibench -c $(RUN_COMMIT) -s makefile_oltp -oltp -invf $(RUN_INVENTORY_FILE) \
 													--config-file $(CONFIG_PATH) \
-													--ansible-dir $(ANSIBLE_PATH) \
+													--tasks-ansible-dir $(ANSIBLE_PATH) \
 													--tasks-scripts-dir $(SCRIPTS_PATH) \
 													--tasks-reports-dir $(REPORTS_PATH)
 
 tpcc: virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \
-	clibench -c $(RUN_COMMIT) -s makefile_tpcc -runt -invf $(RUN_INVENTORY_FILE) \
+	clibench -c $(RUN_COMMIT) -s makefile_tpcc -tpcc -invf $(RUN_INVENTORY_FILE) \
 													--config-file $(CONFIG_PATH) \
-													--ansible-dir $(ANSIBLE_PATH) \
+													--tasks--dir $(ANSIBLE_PATH) \
 													--tasks-scripts-dir $(SCRIPTS_PATH) \
 													--tasks-reports-dir $(REPORTS_PATH)
 
