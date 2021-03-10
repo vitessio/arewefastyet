@@ -32,7 +32,7 @@ jobs:
 
       - name: Install ansible dependencies
         run: |
-          cd ansible
+          source benchmark/bin/activate
           ansible-galaxy install cloudalchemy.node_exporter
           ansible-galaxy install cloudalchemy.prometheus
 
