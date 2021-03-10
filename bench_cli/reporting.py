@@ -84,7 +84,7 @@ def save_to_mysql(cfg: configuration.Config, report, table_name: str):
     mysql_timestamp = now.strftime(format)
 
     benchmark = "INSERT INTO benchmark(commit,Datetime,source) values(%s,%s,%s)"
-    mycursor.execute(benchmark, (cfg.commit, mysql_timestamp, cfg.source))
+    mycursor.execute(benchmark, (cfg.tasks_commit, mysql_timestamp, cfg.tasks_source))
     conn.commit()
 
     mycursor.execute("select * from benchmark ORDER BY test_no DESC LIMIT 1;")
