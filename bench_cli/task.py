@@ -14,7 +14,6 @@ import uuid
 import shutil
 import json
 from typing import Optional
-
 import yaml
 import abc
 
@@ -178,6 +177,7 @@ class Task:
         Removes the ansible_built_inventory_file of the file system.
         """
         os.remove(self.ansible_built_inventory_file)
+
 
     @abc.abstractmethod
     def run(self, script_path: str):
