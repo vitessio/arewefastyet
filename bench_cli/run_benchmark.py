@@ -53,7 +53,7 @@ class BenchmarkRunner:
             task.create_device(self.config.packet_token, self.config.packet_project_id)
             task.create_task_data_directory()
             task.build_ansible_inventory(self.config.tasks_commit)
-            task.run(self.config.tasks_scripts_dir)
+            task.run()
             task.save_report()
             task.download_remote_pprof_folder()
 

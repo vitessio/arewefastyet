@@ -16,6 +16,7 @@ import json
 from typing import Optional
 import yaml
 import abc
+import ansible_runner
 
 import bench_cli.packet_vps as packet_vps
 import bench_cli.get_from_remote as get_from_remote
@@ -50,7 +51,7 @@ class Task:
         return splits[0] + "-" + str(self.task_id) + '.yml'
 
     def create_task_data_directory(self):
-        dir = os.path.join(self.report_dir, self.name() + "-"+ self.task_id.__str__()[:8])
+        dir = os.path.join(self.report_dir, self.name() + "-" + self.task_id.__str__()[:8])
         if os.path.exists(dir) is False:
             os.mkdir(dir)
         self.report_dir = dir
@@ -180,7 +181,7 @@ class Task:
 
 
     @abc.abstractmethod
-    def run(self, script_path: str):
+    def run(self, config: ansible_runner.RunnerConfig = None):
         pass
 
     @abc.abstractmethod

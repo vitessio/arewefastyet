@@ -11,8 +11,8 @@
 
 import os
 import ansible_runner
-import tempfile
 import shutil
+import tempfile
 
 import bench_cli.task as task
 
@@ -24,7 +24,7 @@ class OLTP(task.Task):
         """
         return 'oltp'
 
-    def run(self, script_path: str):
+    def run(self):
         """
         Runs the task.
 
@@ -32,7 +32,7 @@ class OLTP(task.Task):
         """
         tmpdir = tempfile.mkdtemp()
         ssh_priv_key = open(os.path.expanduser('~/.ssh/id_rsa')).read()
-        ansible_runner.run(
+        runner = ansible_runner.run(
             ident=self.task_id,
             private_data_dir=tmpdir,
             project_dir=self.ansible_dir,
@@ -44,7 +44,10 @@ class OLTP(task.Task):
             envvars=dict({"OBJC_DISABLE_INITIALIZE_FORK_SAFETY": "YES"}),
             cmdline="-u root",
         )
+        if runner.rc is not 0:
+            print("ansible exec failed")
         shutil.rmtree(tmpdir)
+
 
     def report_path(self, base: str = None) -> str:
         """

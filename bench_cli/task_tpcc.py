@@ -10,6 +10,9 @@
 # limitations under the License.
 
 import os
+import ansible_runner
+import shutil
+import tempfile
 
 import bench_cli.task as task
 
@@ -20,15 +23,30 @@ class TPCC(task.Task):
         """
         return 'tpcc'
 
-    def run(self, script_path: str):
+    def run(self, config: ansible_runner.RunnerConfig = None):
         """
         Runs the task.
 
         @param: script_path: Path to the Ansible script's directory.
-
-        @todo: Use the Ansible Galaxy API
         """
-        os.system(os.path.join(script_path, "run-tpcc") + ' ' + self.ansible_built_inventory_filepath + ' ' + self.ansible_dir)
+        tmpdir = tempfile.mkdtemp()
+        ssh_priv_key = open(os.path.expanduser('~/.ssh/id_rsa')).read()
+
+        runner = ansible_runner.run(
+            ident=self.task_id,
+            private_data_dir=tmpdir,
+            project_dir=self.ansible_dir,
+            artifact_dir=os.path.abspath(os.path.join(self.ansible_dir, "artifacts")),
+            playbook=os.path.abspath(os.path.join(self.ansible_dir, "full.yml")),
+            inventory=[os.path.abspath(self.ansible_built_inventory_filepath)],
+            ssh_key=ssh_priv_key,
+            extravars=dict({"provision": True, "clean": True}),
+            envvars=dict({"OBJC_DISABLE_INITIALIZE_FORK_SAFETY": "YES"}),
+            cmdline="-u root",
+        )
+        if runner.rc is not 0:
+            print("ansible exec failed")
+        shutil.rmtree(tmpdir)
 
     def report_path(self, base: str = None) -> str:
         """
