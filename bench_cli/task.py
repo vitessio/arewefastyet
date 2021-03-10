@@ -19,7 +19,6 @@ import yaml
 import abc
 
 import bench_cli.packet_vps as packet_vps
-import bench_cli.get_head_hash as get_head_hash
 import bench_cli.get_from_remote as get_from_remote
 import bench_cli.zip as zip
 import bench_cli.aws as aws
