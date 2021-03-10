@@ -164,6 +164,7 @@ caddy/
 
 # Built Ansible inventory files
 ansible/build/*
+ansible/artifacts/*
 
 #For Mac OS
 .DS_Store

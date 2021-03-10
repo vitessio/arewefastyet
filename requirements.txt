@@ -18,3 +18,4 @@ click
 setuptools
 boto3
 PyGithub
+ansible_runner
