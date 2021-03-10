@@ -26,8 +26,6 @@ class TPCC(task.Task):
     def run(self, config: ansible_runner.RunnerConfig = None):
         """
         Runs the task.
-
-        @param: script_path: Path to the Ansible script's directory.
         """
         tmpdir = tempfile.mkdtemp()
         ssh_priv_key = open(os.path.expanduser('~/.ssh/id_rsa')).read()

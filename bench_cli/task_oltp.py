@@ -27,8 +27,6 @@ class OLTP(task.Task):
     def run(self):
         """
         Runs the task.
-
-        @param: script_path: Path to the Ansible script's directory.
         """
         tmpdir = tempfile.mkdtemp()
         ssh_priv_key = open(os.path.expanduser('~/.ssh/id_rsa')).read()
