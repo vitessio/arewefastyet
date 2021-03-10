@@ -65,3 +65,4 @@ class BenchmarkRunner:
                                          task_id=task.task_id.__str__(),
                                          report_url=report_url,
                                          filename=task.report_path())
+            task.clean_up()

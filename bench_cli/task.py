@@ -174,11 +174,13 @@ class Task:
         with open(self.report_path(), 'w') as f:
             json.dump(self.report, f)
 
-    def clean_up(self):
+    def clean_up(self, delete_device=True):
         """
         Removes the ansible_built_inventory_file of the file system.
         """
         os.remove(self.ansible_built_inventory_file)
+        if delete_device is True:
+            self.delete_device()
 
     @abc.abstractmethod
     def run(self, script_path: str):
