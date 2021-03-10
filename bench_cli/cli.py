@@ -17,6 +17,32 @@
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 import click
+from bench_cli.commands import benchmark
+import bench_cli.configuration as configuration
+
+cfg = None
+
+@click.group(help="CLI to configure, run and control benchmark runs")
+@click.option("--tasks-ansible-dir",  help="Path to the Ansible directory", envvar="BCLI_TASKS_ANSIBLE_DIR")
+@click.option("--config-file",        help="Configuration file path", envvar="BCLI_CONFIG_FILE")
+@click.option("--mysql-host",                       help="MySQL server hostname", envvar="BCLI_MYSQL_HOST")
+@click.option("--mysql-username",                   help="MySQL server username", envvar="BCLI_MYSQL_USER")
+@click.option("--mysql-password",                   help="MySQL server password", envvar="BCLI_MYSQL_PASSWORD")
+@click.option("--mysql-database",                   help="MySQL database to use", envvar="BCLI_MYSQL_DB")
+@click.option("--packet-token",                     help="Token used to authenticate Packet", envvar="BCLI_PACKET_TOKEN")
+@click.option("--packet-project-id",                help="Packet project ID", envvar="BCLI_PACKET_PROJECT_ID")
+@click.option("--slack-api-token",                  help="Slack API token", envvar="BCLI_SLACK_TOKEN")
+def main(*args, **kwargs):
+    global cfg
+    cfg = configuration.Config(dict(locals().items()).get("kwargs"))
+    pass
+
+main.add_command(benchmark.benchmark)
+
+if __name__ == '__main__':
+    main()
+'''
+import click
 import sys
 
 import bench_cli.server.server as server
@@ -91,3 +117,4 @@ def run_to_task_array(all, oltp, tpcc) -> [str]:
 
 if __name__ == "__main__":
     main()  # pylint: disable=E1120
+'''
