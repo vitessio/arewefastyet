@@ -174,11 +174,25 @@ class Task:
         with open(self.report_path(), 'w') as f:
             json.dump(self.report, f)
 
-    def clean_up(self):
+    def clean_up(self, packet_token=None, rm_artifacts=True, rm_report=True):
         """
-        Removes the ansible_built_inventory_file of the file system.
+        Cleans up the task's data:
+            - Ansible built inventory file
+            - Ansible artifacts directory
+            - The VPS device
+            - The report directory and ZIP file
         """
-        os.remove(self.ansible_built_inventory_file)
+        os.remove(self.ansible_built_inventory_filepath)
+        if packet_token is not None:
+            self.delete_device(packet_token)
+        if rm_artifacts is True:
+            path_to_artifact = os.path.join(self.ansible_dir, "artifacts", self.task_id.__str__())
+            if os.path.exists(path_to_artifact) is True:
+                shutil.rmtree(path_to_artifact)
+        if rm_report is True:
+            if os.path.exists(self.report_dir+".zip") is True:
+                os.remove(self.report_dir+'.zip')
+            shutil.rmtree(self.report_dir)
 
     @abc.abstractmethod
     def run(self, script_path: str):
