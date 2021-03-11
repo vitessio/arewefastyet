@@ -61,6 +61,11 @@ molecule_converge_all: virtual_env $(VIRTUALENV_PATH)
 	molecule create --scenario-name all && \
 	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES molecule converge --scenario-name all
 
+molecule_dryrun_all: virtual_env $(VIRTUALENV_PATH)
+	source $(VIRTUALENV_PATH)/bin/activate && \
+	cd $(ANSIBLE_PATH)/roles/vitess_build && \
+	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES molecule converge --scenario-name all -- --skip-tags="oltp,tpcc"
+
 tools:
 	echo Installing git hooks
 	chmod +x bootstrap.sh

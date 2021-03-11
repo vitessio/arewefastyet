@@ -46,25 +46,29 @@
         name: "vtctld"
         tasks_from: ensure
 
-- name: Benchmark converge
+- name: Sysbench
   hosts: all
   tasks:
     - name: "Include sysbench"
       include_role:
         name: "sysbench"
+        defaults_from: small
 
+- name: Benchmarks
+  hosts: all
+  tasks:
     - name: "OLTP"
+      tags:
+        - oltp
       include_role:
         name: "sysbench"
         tasks_from: oltp
-        apply:
-          tags:
-            - provision
+        defaults_from: small
 
     - name: "TPCC"
+      tags:
+        - tpcc
       include_role:
         name: "sysbench"
         tasks_from: tpcc
-        apply:
-          tags:
-            - provision
+        defaults_from: small

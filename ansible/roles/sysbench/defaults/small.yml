@@ -10,33 +10,21 @@
 # limitations under the License.
 
 ---
-dependency:
-  name: galaxy
-driver:
-  name: docker
-platforms:
-  - name: instance
-    groups:
-      - etcd
-      - vtctld
-      - vtgate
-      - vttablet
-      - sysbench
-    image: centos:8
-    privileged: True
-    command: /sbin/init
-    exposed_ports:
-      - 15999
-    published_ports:
-      - "15999:15999"
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-provisioner:
-  name: ansible
-  playbooks:
-    prep: prep.yml
-verifier:
-  name: ansible
+oltp_table_size: 1
+oltp_threads: 5
+oltp_preparation_time: 5
+oltp_warmup_time: 5
+oltp_test_time: 5
+oltp_number_tables: 5
+
+tpcc_warehouses: 1
+tpcc_threads: 14
+tpcc_load_threads: 7
+tpcc_preparation_time: 1
+tpcc_ensure_time: 1
+tpcc_warmup_time: 1
+tpcc_test_time: 1
+tpcc_number_tables: 1
+
+gateways:
+  - 127.0.0.1:3306
