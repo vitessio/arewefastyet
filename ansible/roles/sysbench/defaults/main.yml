@@ -1,0 +1,30 @@
+# Copyright 2021 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+oltp_table_size: 10000000
+oltp_threads: 100
+oltp_preparation_time: 30
+oltp_warmup_time: 10
+oltp_test_time: 900
+oltp_number_tables: 50
+
+tpcc_warehouses: 1000
+tpcc_threads: 300
+tpcc_load_threads: 25
+tpcc_preparation_time: 900
+tpcc_ensure_time: 900
+tpcc_warmup_time: 90
+tpcc_test_time: 900
+tpcc_number_tables: 1
+
+gateways:
+  - 127.0.0.1:3306
