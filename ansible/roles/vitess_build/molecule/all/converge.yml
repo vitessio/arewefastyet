@@ -16,18 +16,55 @@
     - name: "Include Cloud Alchemy node_exporter"
       include_role:
         name: "cloudalchemy.node_exporter"
+
     - name: "Include vitess_build"
       include_role:
         name: "vitess_build"
+
     - name: "Include etcd"
       include_role:
         name: "etcd"
+
     - name: "Include vtctld"
       include_role:
         name: "vtctld"
+
     - name: "Include vtgate"
       include_role:
         name: "vtgate"
+
     - name: "Include vttablet"
       include_role:
         name: "vttablet"
+
+- name: Ensure Master
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: "Ensure Master"
+      include_role:
+        name: "vtctld"
+        tasks_from: ensure
+
+- name: Benchmark converge
+  hosts: all
+  tasks:
+    - name: "Include sysbench"
+      include_role:
+        name: "sysbench"
+
+    - name: "OLTP"
+      include_role:
+        name: "sysbench"
+        tasks_from: oltp
+        apply:
+          tags:
+            - provision
+
+    - name: "TPCC"
+      include_role:
+        name: "sysbench"
+        tasks_from: tpcc
+        apply:
+          tags:
+            - provision
