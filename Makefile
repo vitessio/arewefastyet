@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-SHELL="/bin/bash"
+.ONESHELL:
+SHELL = /bin/bash
 
 PY_VERSION = 3.7
 VIRTUALENV_PATH = benchmark
