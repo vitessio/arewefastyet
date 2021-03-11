@@ -56,6 +56,7 @@ class BenchmarkRunner:
                 task.run()
             except RuntimeError as e:
                 print(e)
+                task.clean_up(packet_token=self.config.packet_token)
                 continue
 
             task.save_report()

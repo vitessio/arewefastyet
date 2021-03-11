@@ -193,9 +193,8 @@ class Task:
                 os.remove(self.report_dir+'.zip')
             shutil.rmtree(self.report_dir)
 
-
     @abc.abstractmethod
-    def run(self, config: ansible_runner.RunnerConfig = None):
+    def run(self):
         pass
 
     @abc.abstractmethod
