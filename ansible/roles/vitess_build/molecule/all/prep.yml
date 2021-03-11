@@ -10,10 +10,7 @@
 # limitations under the License.
 
 ---
-- import_playbook: provision.yml
-  when: provision is defined
-- import_playbook: update.yml
-  when: update is defined
-- import_playbook: configure.yml
-- import_playbook: benchmark.yml
-
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  no_log: false

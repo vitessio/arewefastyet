@@ -36,8 +36,8 @@ jobs:
           ansible-galaxy install cloudalchemy.node_exporter
           ansible-galaxy install cloudalchemy.prometheus
 
+      - name: Install jq
+        run: sudo apt-get install jq
+
       - name: Test with molecule
-        run: |
-          source benchmark/bin/activate
-          cd ansible/roles/vitess_build
-          molecule test --scenario-name all
+        run: make molecule_dryrun_all
