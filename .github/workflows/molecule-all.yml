@@ -37,7 +37,7 @@ jobs:
           ansible-galaxy install cloudalchemy.prometheus
 
       - name: Install jq
-        run: apt-get install jq
+        run: sudo apt-get install jq
 
       - name: Test with molecule
         run: |
