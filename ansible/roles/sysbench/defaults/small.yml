@@ -10,10 +10,21 @@
 # limitations under the License.
 
 ---
-- import_playbook: provision.yml
-  when: provision is defined
-- import_playbook: update.yml
-  when: update is defined
-- import_playbook: configure.yml
-- import_playbook: benchmark.yml
+oltp_table_size: 1
+oltp_threads: 5
+oltp_preparation_time: 5
+oltp_warmup_time: 5
+oltp_test_time: 5
+oltp_number_tables: 5
 
+tpcc_warehouses: 1
+tpcc_threads: 14
+tpcc_load_threads: 7
+tpcc_preparation_time: 1
+tpcc_ensure_time: 1
+tpcc_warmup_time: 1
+tpcc_test_time: 1
+tpcc_number_tables: 1
+
+gateways:
+  - 127.0.0.1:3306

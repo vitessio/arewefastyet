@@ -14,12 +14,11 @@ import uuid
 import shutil
 import json
 from typing import Optional
-
 import yaml
 import abc
+import ansible_runner
 
 import bench_cli.packet_vps as packet_vps
-import bench_cli.get_head_hash as get_head_hash
 import bench_cli.get_from_remote as get_from_remote
 import bench_cli.zip as zip
 import bench_cli.aws as aws
@@ -52,7 +51,7 @@ class Task:
         return splits[0] + "-" + str(self.task_id) + '.yml'
 
     def create_task_data_directory(self):
-        dir = os.path.join(self.report_dir, self.name() + "-"+ self.task_id.__str__()[:8])
+        dir = os.path.join(self.report_dir, self.name() + "-" + self.task_id.__str__()[:8])
         if os.path.exists(dir) is False:
             os.mkdir(dir)
         self.report_dir = dir
@@ -174,14 +173,28 @@ class Task:
         with open(self.report_path(), 'w') as f:
             json.dump(self.report, f)
 
-    def clean_up(self):
+    def clean_up(self, packet_token=None, rm_artifacts=True, rm_report=True):
         """
-        Removes the ansible_built_inventory_file of the file system.
+        Cleans up the task's data:
+            - Ansible built inventory file
+            - Ansible artifacts directory
+            - The VPS device
+            - The report directory and ZIP file
         """
-        os.remove(self.ansible_built_inventory_file)
+        os.remove(self.ansible_built_inventory_filepath)
+        if packet_token is not None:
+            self.delete_device(packet_token)
+        if rm_artifacts is True:
+            path_to_artifact = os.path.join(self.ansible_dir, "artifacts", self.task_id.__str__())
+            if os.path.exists(path_to_artifact) is True:
+                shutil.rmtree(path_to_artifact)
+        if rm_report is True:
+            if os.path.exists(self.report_dir+".zip") is True:
+                os.remove(self.report_dir+'.zip')
+            shutil.rmtree(self.report_dir)
 
     @abc.abstractmethod
-    def run(self, script_path: str):
+    def run(self):
         pass
 
     @abc.abstractmethod

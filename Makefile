@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+.ONESHELL:
+SHELL = /bin/bash
+
 PY_VERSION = 3.7
 VIRTUALENV_PATH = benchmark
 
@@ -60,6 +63,11 @@ molecule_converge_all: virtual_env $(VIRTUALENV_PATH)
 	cd $(ANSIBLE_PATH)/roles/vitess_build && \
 	molecule create --scenario-name all && \
 	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES molecule converge --scenario-name all
+
+molecule_dryrun_all: virtual_env $(VIRTUALENV_PATH)
+	source $(VIRTUALENV_PATH)/bin/activate && \
+	cd $(ANSIBLE_PATH)/roles/vitess_build && \
+	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES molecule converge --scenario-name all -- --skip-tags="oltp,tpcc"
 
 tools:
 	echo Installing git hooks

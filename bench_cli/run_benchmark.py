@@ -16,7 +16,6 @@
 # Arguments: python run-benchmark.py <commit hash> <run id> <source>
 # -------------------------------------------------------------------------------------------------------------------------------------
 
-import os
 import uuid
 
 import bench_cli.reporting as reporting
@@ -53,10 +52,15 @@ class BenchmarkRunner:
             task.create_device(self.config.packet_token, self.config.packet_project_id)
             task.create_task_data_directory()
             task.build_ansible_inventory(self.config.tasks_commit)
-            task.run(self.config.tasks_scripts_dir)
+            try:
+                task.run()
+            except RuntimeError as e:
+                print(e)
+                task.clean_up(packet_token=self.config.packet_token)
+                continue
+
             task.save_report()
             task.download_remote_pprof_folder()
-
             report_url = None
             if self.config.tasks_upload_to_aws:
                 report_url = task.upload_report_to_aws()
@@ -65,3 +69,4 @@ class BenchmarkRunner:
                                          task_id=task.task_id.__str__(),
                                          report_url=report_url,
                                          filename=task.report_path())
+            task.clean_up(packet_token=self.config.packet_token)
