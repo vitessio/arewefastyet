@@ -1,7 +1,5 @@
 import click
 import bench_cli.configuration as configuration
-import bench_cli.server.server as server
-import bench_cli.configuration as configuration
 import bench_cli.run_benchmark as run_benchmark
 import bench_cli.packet_vps as vps
 import bench_cli.cli as cli
@@ -19,6 +17,25 @@ import bench_cli.cli as cli
 @click.option("--tasks-inventory-file", "-invf",    help="Mention inventory file to call", envvar="BCLI_TASKS_INVENTORY_FILE")
 def benchmark(*arg, **kwargs):
     cli.cfg.set_config(dict(locals().items()).get("kwargs"))
+    if cli.cfg.valid_to_run() and len(cli.cfg.tasks) > 0:
+        benchmark_runner = run_benchmark.BenchmarkRunner(cli.cfg, echo=True)
+        benchmark_runner.run()
+
+
+def run_to_task_array(all, oltp, tpcc) -> [str]:
+    """
+    Transforms the tasks given through CLI flags into an array of string.
+    @param all: All tasks
+    @param oltp: OLTP task
+    @param tpcc: TPCC task
+    @return: [str]
+    """
+    tasks = []
+    if oltp or all:
+        tasks.append("oltp")
+    if tpcc or all:
+        tasks.append("tpcc")
+    return tasks
     #cli.cfg.unsafe_dump()
 
     #if cfg.valid_to_run() and len(cfg.tasks) > 0:

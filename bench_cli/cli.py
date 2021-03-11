@@ -17,7 +17,7 @@
 # -------------------------------------------------------------------------------------------------------------------------------------
 
 import click
-from bench_cli.commands import benchmark
+from bench_cli.commands import benchmark, tasks, web
 import bench_cli.configuration as configuration
 
 cfg = None
@@ -38,6 +38,8 @@ def main(*args, **kwargs):
     pass
 
 main.add_command(benchmark.benchmark)
+main.add_command(tasks.tasks)
+main.add_command(web.web)
 
 if __name__ == '__main__':
     main()
