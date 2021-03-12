@@ -16,4 +16,50 @@ limitations under the License.
 
 package mysql
 
-// TODO: add MySQL struct and its connect, insert methods
+import (
+	"database/sql"
+	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
+)
+
+const (
+	ErrorClientConnectionNotInitialized = "the client connection to the database is not initialized"
+)
+
+type Client struct {
+	db     *sql.DB
+}
+
+func New(config ConfigDB) (client *Client, err error) {
+	client = &Client{}
+	client.db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", config.User, config.Password, config.Host, config.Database))
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
+func (c *Client) Close() error {
+	if c.db == nil {
+		return errors.New(ErrorClientConnectionNotInitialized)
+	}
+	return c.db.Close()
+}
+
+func (c Client) Insert(query string, args ...interface{}) (ID int64, err error) {
+	if c.db == nil {
+		return 0, errors.New(ErrorClientConnectionNotInitialized)
+	}
+	stms, err := c.db.Prepare(query)
+	if err != nil {
+		return 0, err
+	}
+	defer stms.Close()
+
+	res, err := stms.Exec(args...)
+	if err != nil {
+		return 0, err
+	}
+	return res.LastInsertId()
+}

@@ -19,7 +19,9 @@ package microbench
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/mysql"
 	"go/types"
+	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -30,6 +32,7 @@ import (
 )
 
 type benchmark struct {
+	id int64
 	filePath, pkgName, name string
 }
 
@@ -47,12 +50,29 @@ var benchmarkResultsRegArray = []*regexp.Regexp{
 	regexp.MustCompile(`Benchmark.+\b\s*([0-9]+)\s+([\d\.]+) ns/op`),
 }
 
+func (b *benchmark) RegisterToMySQL(client *mysql.Client) error {
+	query := "INSERT INTO microbenchmark(test_no, pkg_name, name) VALUES(?, ?, ?)"
+	id, err := client.Insert(query, 0, b.pkgName, b.name)
+	if err != nil {
+		return err
+	}
+	b.id = id
+	return nil
+}
+
 // MicroBenchmark runs "go test bench" on the given package (pkg) and outputs
 // the results to outputPath.
 // Profiling files will be written to the current working directory.
-func MicroBenchmark(cfg *MicroBenchConfig) {
+func MicroBenchmark(cfg MicroBenchConfig) {
+	var sqlClient *mysql.Client
+	var err error
 
-	// TODO: connect to MySQL
+	if cfg.DatabaseConfig.IsValid() {
+		sqlClient, err = mysql.New(*cfg.DatabaseConfig)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	loaded, err := packages.Load(&packages.Config{
 		Mode:  packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedDeps | packages.NeedImports | packages.NeedModule,
@@ -76,6 +96,12 @@ func MicroBenchmark(cfg *MicroBenchConfig) {
 		b, err := command.Output()
 
 		if err == nil {
+			if sqlClient != nil {
+				if err := benchmark.RegisterToMySQL(sqlClient); err != nil {
+					log.Fatal(err)
+				}
+			}
+
 			lines := strings.Split(string(b), "\n")
 			for _, line := range lines {
 				var benchLine benchmarkRunLine

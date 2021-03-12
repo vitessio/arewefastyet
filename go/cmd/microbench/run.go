@@ -33,11 +33,7 @@ func run() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			mbcfg.Package = args[0]
 			mbcfg.Output = args[1]
-
-			if mbcfg.DatabaseConfig.IsValid() == false {
-				mbcfg.DatabaseConfig = nil
-			}
-			microbench.MicroBenchmark(&mbcfg)
+			microbench.MicroBenchmark(mbcfg)
 			return nil
 		},
 	}
