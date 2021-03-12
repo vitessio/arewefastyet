@@ -117,9 +117,11 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 				if benchLine.benchType != "" {
 					fmt.Printf("%s - %s: %s ns/op\n", benchmark.pkgName, benchLine.submatch[1], benchLine.submatch[3])
 					fmt.Fprintf(w, "%s - %s: %s ns/op\n", benchmark.pkgName, benchLine.submatch[1], benchLine.submatch[3])
-					err = benchLine.InsertToMySQL(benchmark.id, sqlClient)
-					if err != nil {
-						log.Fatal(err)
+					if sqlClient != nil {
+						err = benchLine.InsertToMySQL(benchmark.id, sqlClient)
+						if err != nil {
+							log.Fatal(err)
+						}
 					}
 				}
 			}
