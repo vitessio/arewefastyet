@@ -19,7 +19,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/vitessio/arewefastyet/go/cmd/microbench"
+	"log"
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -82,4 +84,31 @@ func initConfig() {
 			os.Exit(1)
 		}
 	}
+
+	postInitCommands(rootCmd.Commands())
+}
+
+// https://github.com/spf13/viper/issues/397
+func postInitCommands(commands []*cobra.Command) {
+	for _, cmd := range commands {
+		presetRequiredFlags(cmd)
+		if cmd.HasSubCommands() {
+			postInitCommands(cmd.Commands())
+		}
+	}
+}
+
+func presetRequiredFlags(cmd *cobra.Command) {
+	err := viper.BindPFlags(cmd.Flags())
+	if err != nil {
+		log.Fatal(err)
+	}
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		if viper.IsSet(f.Name) && viper.GetString(f.Name) != "" {
+			err = cmd.Flags().Set(f.Name, viper.GetString(f.Name))
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	})
 }

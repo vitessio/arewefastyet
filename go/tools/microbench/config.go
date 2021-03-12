@@ -19,7 +19,7 @@ package microbench
 import "github.com/vitessio/arewefastyet/go/mysql"
 
 type MicroBenchConfig struct {
-	Package      string
-	Output   string
+	Package        string
+	Output         string
 	DatabaseConfig *mysql.ConfigDB
 }

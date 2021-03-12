@@ -51,6 +51,9 @@ var benchmarkResultsRegArray = []*regexp.Regexp{
 // the results to outputPath.
 // Profiling files will be written to the current working directory.
 func MicroBenchmark(cfg *MicroBenchConfig) {
+
+	// TODO: connect to MySQL
+
 	loaded, err := packages.Load(&packages.Config{
 		Mode:  packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedDeps | packages.NeedImports | packages.NeedModule,
 		Tests: true,
@@ -90,6 +93,8 @@ func MicroBenchmark(cfg *MicroBenchConfig) {
 				if len(submatch) > 0 {
 					fmt.Printf("%s %s ns/op\n", benchmark.name, submatch[2])
 					fmt.Fprintf(w, "%s %s ns/op\n", benchmark.name, submatch[2])
+
+					// TODO: insert to MySQL
 				}
 			}
 		} else {
@@ -102,6 +107,8 @@ func MicroBenchmark(cfg *MicroBenchConfig) {
 		if err == nil {
 			fmt.Printf("CPU profile generated %s\n", cpuprofFile)
 			fmt.Fprintf(w, "CPU profile generated %s\n", cpuprofFile)
+
+			// TODO: insert to MySQL
 		}
 	}
 }

@@ -29,8 +29,8 @@ func (cfg *ConfigDB) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&cfg.Password, "db-password", "", "Password to authenticate the database.")
 	cmd.Flags().StringVar(&cfg.User, "db-user", "", "User used to connect to the database")
 
-	viper.BindPFlag("db-database", cmd.PersistentFlags().Lookup("db-database"))
-	viper.BindPFlag("db-host", cmd.PersistentFlags().Lookup("db-host"))
-	viper.BindPFlag("db-password", cmd.PersistentFlags().Lookup("db-password"))
-	viper.BindPFlag("db-user", cmd.PersistentFlags().Lookup("db-user"))
+	viper.BindPFlag("db-database", cmd.Flags().Lookup("db-database"))
+	viper.BindPFlag("db-host", cmd.Flags().Lookup("db-host"))
+	viper.BindPFlag("db-password", cmd.Flags().Lookup("db-password"))
+	viper.BindPFlag("db-user", cmd.Flags().Lookup("db-user"))
 }

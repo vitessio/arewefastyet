@@ -15,3 +15,5 @@ limitations under the License.
 */
 
 package mysql
+
+// TODO: add MySQL struct and its connect, insert methods
