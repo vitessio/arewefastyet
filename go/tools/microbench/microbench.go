@@ -21,33 +21,31 @@ import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"go/types"
+	"golang.org/x/tools/go/packages"
 	"log"
 	"os"
 	"os/exec"
 	"regexp"
 	"strings"
-	"time"
-
-	"golang.org/x/tools/go/packages"
 )
 
+type BenchType string
+
+const (
+	RegularBenchmark = BenchType("regular")
+	AllocsBenchmark  = BenchType("allocs")
+	BytesBenchmark   = BenchType("bytes")
+)
+
+var benchmarkResultsRegArray = map[BenchType]*regexp.Regexp{
+	AllocsBenchmark:  regexp.MustCompile(`(Benchmark.+\b) \s*([0-9]+)\s+([\d\.]+) ns\/op\s+([\d\.]+) (.+)\/op\s+([\d\.]+) allocs\/op`),
+	BytesBenchmark:   regexp.MustCompile(`(Benchmark.+\b) \s*([0-9]+)\s+([\d\.]+) ns\/op\s+([\d\.]+) (.+)\/s`),
+	RegularBenchmark: regexp.MustCompile(`(Benchmark.+\b) \s*([0-9]+)\s+([\d\.]+) ns/op`),
+}
+
 type benchmark struct {
-	id int64
+	id                      int64
 	filePath, pkgName, name string
-}
-
-type benchmarkRunLine struct {
-	Time    time.Time
-	Action  string
-	Package string
-	Output  string
-	Elapsed string
-}
-
-var benchmarkResultsRegArray = []*regexp.Regexp{
-	regexp.MustCompile(`Benchmark.+\b\s*([0-9]+)\s+([\d\.]+) ns\/op\s+([\d\.]+) (.+)\/op\s+([\d\.]+) allocs\/op`),
-	regexp.MustCompile(`Benchmark.+\b\s*([0-9]+)\s+([\d\.]+) ns\/op\s+([\d\.]+) (.+)\/s`),
-	regexp.MustCompile(`Benchmark.+\b\s*([0-9]+)\s+([\d\.]+) ns/op`),
 }
 
 func (b *benchmark) RegisterToMySQL(client *mysql.Client) error {
@@ -72,6 +70,7 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		defer sqlClient.Close()
 	}
 
 	loaded, err := packages.Load(&packages.Config{
@@ -106,21 +105,22 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 			for _, line := range lines {
 				var benchLine benchmarkRunLine
 				err := json.Unmarshal([]byte(line), &benchLine)
-				if err != nil {
+				if err != nil || benchLine.Output == "" {
 					continue
 				}
-				var submatch []string
-				for _, reg := range benchmarkResultsRegArray {
-					submatch = reg.FindStringSubmatch(benchLine.Output)
-					if len(submatch) > 0 {
-						break
-					}
-				}
-				if len(submatch) > 0 {
-					fmt.Printf("%s %s ns/op\n", benchmark.name, submatch[2])
-					fmt.Fprintf(w, "%s %s ns/op\n", benchmark.name, submatch[2])
 
-					// TODO: insert to MySQL
+				err = benchLine.Parse()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				if benchLine.benchType != "" {
+					fmt.Printf("%s - %s: %s ns/op\n", benchmark.pkgName, benchLine.submatch[1], benchLine.submatch[3])
+					fmt.Fprintf(w, "%s - %s: %s ns/op\n", benchmark.pkgName, benchLine.submatch[1], benchLine.submatch[3])
+					err = benchLine.InsertToMySQL(benchmark.id, sqlClient)
+					if err != nil {
+						log.Fatal(err)
+					}
 				}
 			}
 		} else {

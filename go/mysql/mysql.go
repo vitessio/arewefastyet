@@ -18,9 +18,9 @@ package mysql
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/tools/go/ssa/interp/testdata/src/errors"
 )
 
 const (
@@ -28,7 +28,7 @@ const (
 )
 
 type Client struct {
-	db     *sql.DB
+	db *sql.DB
 }
 
 func New(config ConfigDB) (client *Client, err error) {
