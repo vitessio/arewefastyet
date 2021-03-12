@@ -14,10 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package microbench
 
-import "github.com/vitessio/arewefastyet/go/cmd"
+import (
+	"github.com/spf13/cobra"
+)
 
-func main() {
-	cmd.Execute()
+// MicroBenchCmd handles subcommands related to running micro benchmarks.
+func MicroBenchCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "microbench <command>",
+		// Short:   "",
+		Aliases: []string{"mb"},
+		// Long:    "",
+	}
+
+	cmd.AddCommand(run())
+
+	return cmd
 }

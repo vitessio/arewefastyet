@@ -14,10 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package microbench
 
-import "github.com/vitessio/arewefastyet/go/cmd"
+import (
+	"github.com/spf13/cobra"
+	"github.com/vitessio/arewefastyet/go/tools/microbench"
+)
 
-func main() {
-	cmd.Execute()
+func run() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "run <pkg path> <output path>",
+		Args: cobra.ExactArgs(2),
+		Short: "Run go bench test for the given pkg, and output to the given path.",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pkg := args[0]
+			output := args[1]
+			microbench.MicroBenchmark(pkg, output)
+			return nil
+		},
+	}
+	return cmd
 }
