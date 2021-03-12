@@ -24,3 +24,12 @@ type ConfigDB struct {
 	Password string
 	Database string
 }
+
+func (cfg ConfigDB) IsValid() (valid bool) {
+	valid = true
+
+	if cfg.Database == "" || cfg.Password == "" || cfg.User == "" || cfg.Host == "" {
+		valid = false
+	}
+	return valid
+}

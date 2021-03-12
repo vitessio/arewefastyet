@@ -20,7 +20,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
-	"log"
 )
 
 func run() *cobra.Command {
@@ -35,14 +34,9 @@ func run() *cobra.Command {
 			mbcfg.Package = args[0]
 			mbcfg.Output = args[1]
 
-
-			log.Println(mbcfg.DatabaseConfig.Database)
-			if mbcfg.DatabaseConfig.Host == "" || mbcfg.DatabaseConfig.User == "" ||
-				mbcfg.DatabaseConfig.Password == "" || mbcfg.DatabaseConfig.Database == "" {
-
+			if mbcfg.DatabaseConfig.IsValid() == false {
 				mbcfg.DatabaseConfig = nil
 			}
-
 			microbench.MicroBenchmark(&mbcfg)
 			return nil
 		},
