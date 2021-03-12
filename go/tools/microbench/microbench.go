@@ -1,24 +1,20 @@
 /*
-Copyright 2021 The Vitess Authors.
+ * # Copyright 2021 The Vitess Authors.
+ * # Licensed under the Apache License, Version 2.0 (the "License");
+ * # you may not use this file except in compliance with the License.
+ * # You may obtain a copy of the License at
+ * #    http://www.apache.org/licenses/LICENSE-2.0
+ * # Unless required by applicable law or agreed to in writing, software
+ * # distributed under the License is distributed on an "AS IS" BASIS,
+ * # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * # See the License for the specific language governing permissions and
+ * # limitations under the License.
+ */
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
-package main
+package microbench
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"go/types"
 	"os"
@@ -48,15 +44,10 @@ var benchmarkResultsRegArray = []*regexp.Regexp{
 	regexp.MustCompile(`Benchmark.+\b\s*([0-9]+)\s+([\d\.]+) ns/op`),
 }
 
-func main() {
-
-	var pkg string
-	var output string
-
-	flag.StringVar(&pkg, "in", "", "Go package to benchmark")
-	flag.StringVar(&output, "out", "", "Output file")
-	flag.Parse()
-
+// MicroBenchmark runs "go test bench" on the given package (pkg) and outputs
+// the results to outputPath.
+// Profiling files will be written to the current working directory.
+func MicroBenchmark(pkg, outputPath string) {
 	loaded, err := packages.Load(&packages.Config{
 		Mode:  packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedDeps | packages.NeedImports | packages.NeedModule,
 		Tests: true,
@@ -65,7 +56,7 @@ func main() {
 		panic(err)
 	}
 
-	w, err := os.Create(output)
+	w, err := os.Create(outputPath)
 	if err != nil {
 		panic(err)
 	}

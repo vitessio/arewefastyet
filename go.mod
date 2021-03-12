@@ -1,4 +1,4 @@
-module github.com/vitessio/arewefastyet/go
+module github.com/vitessio/arewefastyet
 
 go 1.16
 
