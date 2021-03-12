@@ -50,16 +50,16 @@ var benchmarkResultsRegArray = []*regexp.Regexp{
 // MicroBenchmark runs "go test bench" on the given package (pkg) and outputs
 // the results to outputPath.
 // Profiling files will be written to the current working directory.
-func MicroBenchmark(pkg, outputPath string) {
+func MicroBenchmark(cfg *MicroBenchConfig) {
 	loaded, err := packages.Load(&packages.Config{
 		Mode:  packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedDeps | packages.NeedImports | packages.NeedModule,
 		Tests: true,
-	}, pkg)
+	}, cfg.Package)
 	if err != nil {
 		panic(err)
 	}
 
-	w, err := os.Create(outputPath)
+	w, err := os.Create(cfg.Output)
 	if err != nil {
 		panic(err)
 	}

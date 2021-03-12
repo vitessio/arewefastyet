@@ -18,20 +18,34 @@ package microbench
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/vitessio/arewefastyet/go/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
 func run() *cobra.Command {
+	var mbcfg microbench.MicroBenchConfig
+	mbcfg.DatabaseConfig = &mysql.ConfigDB{}
+
 	cmd := &cobra.Command{
 		Use:   "run <pkg path> <output path>",
-		Args: cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(2),
 		Short: "Run go bench test for the given pkg, and output to the given path.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pkg := args[0]
-			output := args[1]
-			microbench.MicroBenchmark(pkg, output)
+			mbcfg.Package = args[0]
+			mbcfg.Output = args[1]
+
+			if mbcfg.DatabaseConfig.Host == "" || mbcfg.DatabaseConfig.User == "" ||
+				mbcfg.DatabaseConfig.Password == "" || mbcfg.DatabaseConfig.Database == "" {
+
+				mbcfg.DatabaseConfig = nil
+			}
+
+			microbench.MicroBenchmark(&mbcfg)
 			return nil
 		},
 	}
+
+	mbcfg.DatabaseConfig.AddToCommand(cmd)
+
 	return cmd
 }

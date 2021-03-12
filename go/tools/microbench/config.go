@@ -14,10 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package main
+package microbench
 
-import "github.com/vitessio/arewefastyet/go/cmd"
+import "github.com/vitessio/arewefastyet/go/mysql"
 
-func main() {
-	cmd.Execute()
+type MicroBenchConfig struct {
+	Package      string
+	Output   string
+	DatabaseConfig *mysql.ConfigDB
 }

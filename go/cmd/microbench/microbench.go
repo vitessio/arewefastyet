@@ -23,7 +23,7 @@ import (
 // MicroBenchCmd handles subcommands related to running micro benchmarks.
 func MicroBenchCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "microbench <command>",
+		Use: "microbench <command>",
 		// Short:   "",
 		Aliases: []string{"mb"},
 		// Long:    "",
