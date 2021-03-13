@@ -121,7 +121,7 @@ func (line *benchmarkRunLine) parseRegularBenchmark() error {
 // The 5th index measures the value of the 4th index.
 // For example:
 // 		submatch[4] = 1
-// 		submatch[4] = "B"
+// 		submatch[5] = "B"
 // can be read as "1 Byte".
 //
 // The 6th index is the number of allocation per operation.
