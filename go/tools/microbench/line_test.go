@@ -46,6 +46,18 @@ func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 		{name: "Valid bytes benchmark 4", benchTypeWanted: BytesBenchmark, stringToParse: "BenchmarkBytes-32 \t2039889 \t   152.913 ns/op \t40572898.10 MB/s\n"},
 		{name: "Valid bytes benchmark (only spaces)", benchTypeWanted: BytesBenchmark, stringToParse: "BenchmarkBytes-32 2039889 152.913 ns/op 40572898.10 MB/s\n"},
 		{name: "Valid bytes benchmark (only tabs)", benchTypeWanted: BytesBenchmark, stringToParse: "BenchmarkBytes-32\t2039889\t152.913 ns/op\t40572898.10 MB/s\n"},
+
+		{name: "Not a benchmark 1", benchTypeWanted: "", stringToParse: "BenchmarkEmpty-16 1000000000 0.2439 \n"},
+		{name: "Not a benchmark 2", benchTypeWanted: "", stringToParse: "BenchmarkTestRegular-8   \t18983  \t1.2 ns/op"},
+		{name: "Not a benchmark 3", benchTypeWanted: "", stringToParse: "BenchmarkEmptySingleT-1 98413 16.9016 ns/op  data\n"},
+		{name: "Not a benchmark 4", benchTypeWanted: "", stringToParse: "BenchmarkFunctionBytes-16\t2039889\t152.913 ns/op\t40572898.10 \n"},
+		{name: "Not a benchmark 5", benchTypeWanted: "", stringToParse: "BenchmarkFunctionBytes-16\t2039889\t152.913 ns/op\t40572898.10 /s\n"},
+		{name: "Not a benchmark 6", benchTypeWanted: "", stringToParse: ""},
+		{name: "Not a benchmark 7", benchTypeWanted: "", stringToParse: "\n"},
+		{name: "Not a benchmark 8", benchTypeWanted: "", stringToParse: "Not a benchmark type\n"},
+		{name: "Not a benchmark 9", benchTypeWanted: "", stringToParse: "BenchEmpty-16 \t101609937 \t   156.3899 ns/op\n"}, // Should start with "Benchmark"
+		{name: "Not a benchmark 10", benchTypeWanted: "", stringToParse: "BenchmarkAllocs-4 101609937 156.9 ns/op 0 B/op 0 alloc/op\n"}, // Should be "allocs" not "alloc"
+		{name: "Not a benchmark 11", benchTypeWanted: "", stringToParse: "BenchmarkAllocs-4 101609937 156.9ns/op 0 B /op 0 allocs/op\n"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -59,3 +71,40 @@ func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkApplyRegularExprRegularBenchmark(b *testing.B) {
+	b.ReportAllocs()
+	line := &benchmarkRunLine{Output: "BenchmarkEmpty-16 1000000000 0.2439 ns/op\n"}
+
+	for i := 0; i < b.N; i++ {
+		line.applyRegularExpr()
+		if line.benchType != RegularBenchmark {
+			b.Errorf("Benchmark failed, got %v, want %v", line.benchType, RegularBenchmark)
+		}
+	}
+}
+
+func BenchmarkApplyRegularExprAllocsBenchmark(b *testing.B) {
+	b.ReportAllocs()
+	line := &benchmarkRunLine{Output: "BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n"}
+
+	for i := 0; i < b.N; i++ {
+		line.applyRegularExpr()
+		if line.benchType != AllocsBenchmark {
+			b.Errorf("Benchmark failed, got %v, want %v", line.benchType, AllocsBenchmark)
+		}
+	}
+}
+
+func BenchmarkApplyRegularExprBytesBenchmark(b *testing.B) {
+	b.ReportAllocs()
+	line := &benchmarkRunLine{Output: "BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n"}
+
+	for i := 0; i < b.N; i++ {
+		line.applyRegularExpr()
+		if line.benchType != BytesBenchmark {
+			b.Errorf("Benchmark failed, got %v, want %v", line.benchType, BytesBenchmark)
+		}
+	}
+}
+
