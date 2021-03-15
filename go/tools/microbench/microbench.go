@@ -48,7 +48,7 @@ type benchmark struct {
 	filePath, pkgName, name string
 }
 
-func (b *benchmark) RegisterToMySQL(client *mysql.Client) error {
+func (b *benchmark) registerToMySQL(client *mysql.Client) error {
 	query := "INSERT INTO microbenchmark(test_no, pkg_name, name) VALUES(?, ?, ?)"
 	id, err := client.Insert(query, 0, b.pkgName, b.name)
 	if err != nil {
@@ -96,7 +96,7 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 
 		if err == nil {
 			if sqlClient != nil {
-				if err := benchmark.RegisterToMySQL(sqlClient); err != nil {
+				if err := benchmark.registerToMySQL(sqlClient); err != nil {
 					log.Fatal(err)
 				}
 			}
