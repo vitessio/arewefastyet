@@ -38,9 +38,9 @@ const (
 )
 
 var benchmarkResultsRegArray = map[BenchType]*regexp.Regexp{
-	AllocsBenchmark:  regexp.MustCompile(`(Benchmark.+\b) \s*([0-9]+)\s+([\d\.]+) ns\/op\s+([\d\.]+) (.+)\/op\s+([\d\.]+) allocs\/op`),
-	BytesBenchmark:   regexp.MustCompile(`(Benchmark.+\b) \s*([0-9]+)\s+([\d\.]+) ns\/op\s+([\d\.]+) (.+)\/s`),
-	RegularBenchmark: regexp.MustCompile(`(Benchmark.+\b) \s*([0-9]+)\s+([\d\.]+) ns/op`),
+	AllocsBenchmark:  regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/op\s+([\d\.]+)\s+allocs\/op\n`),
+	BytesBenchmark:   regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/s\n`),
+	RegularBenchmark: regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\n`),
 }
 
 type benchmark struct {
