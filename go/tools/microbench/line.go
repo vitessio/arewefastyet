@@ -46,7 +46,7 @@ type benchmarkRunLine struct {
 	Output  string
 	Elapsed string
 
-	id int64
+	id        int64
 	name      string
 	benchType BenchType
 	submatch  []string
@@ -199,7 +199,7 @@ func (line *benchmarkRunLine) parseBytesBenchmark() error {
 	if err != nil {
 		return fmt.Errorf("%s: %s", ErrorLineMalformed, err.Error())
 	}
-	line.results.BytesPerOp = mbPerSec
+	line.results.MBs = mbPerSec
 
 	// TODO: handle the 5th index in a better and more dynamic way. Error for now if different than "MB" (byte(s)).
 	if line.submatch[5] != "MB" {

@@ -24,9 +24,9 @@ import (
 
 func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 	tests := []struct {
-		name   string
+		name            string
 		benchTypeWanted BenchType
-		stringToParse string
+		stringToParse   string
 	}{
 		{name: "Valid regular benchmark 1", benchTypeWanted: RegularBenchmark, stringToParse: "BenchmarkEmpty-16 1000000000 0.2439 ns/op\n"},
 		{name: "Valid regular benchmark 2", benchTypeWanted: RegularBenchmark, stringToParse: "BenchmarkTestRegular-8   \t18983  \t1.2 ns/op\n"},
@@ -55,7 +55,7 @@ func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 		{name: "Not a benchmark 6", benchTypeWanted: "", stringToParse: ""},
 		{name: "Not a benchmark 7", benchTypeWanted: "", stringToParse: "\n"},
 		{name: "Not a benchmark 8", benchTypeWanted: "", stringToParse: "Not a benchmark type\n"},
-		{name: "Not a benchmark 9", benchTypeWanted: "", stringToParse: "BenchEmpty-16 \t101609937 \t   156.3899 ns/op\n"}, // Should start with "Benchmark"
+		{name: "Not a benchmark 9", benchTypeWanted: "", stringToParse: "BenchEmpty-16 \t101609937 \t   156.3899 ns/op\n"},              // Should start with "Benchmark"
 		{name: "Not a benchmark 10", benchTypeWanted: "", stringToParse: "BenchmarkAllocs-4 101609937 156.9 ns/op 0 B/op 0 alloc/op\n"}, // Should be "allocs" not "alloc"
 		{name: "Not a benchmark 11", benchTypeWanted: "", stringToParse: "BenchmarkAllocs-4 101609937 156.9ns/op 0 B /op 0 allocs/op\n"},
 	}
@@ -108,3 +108,171 @@ func BenchmarkApplyRegularExprBytesBenchmark(b *testing.B) {
 	}
 }
 
+func Test_benchmarkRunLine_parseRegularBenchmark(t *testing.T) {
+	tests := []struct {
+		name           string
+		submatch       []string
+		wantErr        bool
+		wantResults    benchmarkResult
+	}{
+		{name: "submatch length 0", submatch: []string{}, wantErr: true},
+		{name: "submatch length 1", submatch: []string{""}, wantErr: true},
+		{name: "submatch length 2", submatch: []string{"", ""}, wantErr: true},
+		{name: "submatch length 3", submatch: []string{"", "", ""}, wantErr: true},
+
+		{name: "regular benchmark 1", submatch: []string{"BenchmarkEmpty-16 1000000000 0.2439 ns/op", "BenchmarkEmpty-16", "1000000000", "0.2439"}, wantResults: benchmarkResult{Op: 1000000000, NanosecondPerOp: 0.2439}},
+		{name: "regular benchmark 2", submatch: []string{"BenchmarkEmpty-16 19836 178.2396 ns/op", "BenchmarkEmpty-16", "19836", "178.2396"}, wantResults: benchmarkResult{Op: 19836, NanosecondPerOp: 178.2396}},
+
+		{name: "invalid number of ops", submatch: []string{"BenchmarkEmpty-16 wrong 178.2396 ns/op", "BenchmarkEmpty-16", "wrong", "178.2396"}, wantErr: true},
+		{name: "invalid number of ns/op", submatch: []string{"BenchmarkEmpty-16 1000000000 wrong ns/op", "BenchmarkEmpty-16", "1000000000", "wrong"}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var err error
+			line := &benchmarkRunLine{submatch: tt.submatch}
+			if err = line.parseRegularBenchmark(); (err != nil) != tt.wantErr {
+				t.Errorf("parseRegularBenchmark() error = %v, wantErr %v", err, tt.wantErr)
+			} else if (err != nil) == tt.wantErr {
+				return
+			}
+			gotResults := line.results
+			if gotResults.Op != tt.wantResults.Op {
+				t.Errorf("parseRegularBenchmark() results.Op = %v, want %v", gotResults.Op, tt.wantResults.Op)
+			}
+			if gotResults.NanosecondPerOp != tt.wantResults.NanosecondPerOp {
+				t.Errorf("parseRegularBenchmark() results.NanosecondPerOp = %v, want %v", gotResults.NanosecondPerOp, tt.wantResults.NanosecondPerOp)
+			}
+		})
+	}
+}
+
+func BenchmarkParseRegularBenchmark(b *testing.B) {
+	var err error
+	line := benchmarkRunLine{submatch: []string{"BenchmarkEmpty-16 1000000000 0.2439 ns/op", "BenchmarkEmpty-16", "1000000000", "0.2439"}}
+
+	for i := 0; i < b.N; i++ {
+		err = line.parseRegularBenchmark()
+		if err != nil {
+			b.Errorf("Got an error: %v", err)
+		}
+	}
+}
+
+func Test_benchmarkRunLine_parseAllocsBenchmark(t *testing.T) {
+	tests := []struct {
+		name           string
+		submatch       []string
+		wantErr        bool
+		wantResults    benchmarkResult
+	}{
+		{name: "submatch length 0", submatch: []string{}, wantErr: true},
+		{name: "submatch length 1", submatch: []string{""}, wantErr: true},
+		{name: "submatch length 2", submatch: []string{"", ""}, wantErr: true},
+		{name: "submatch length 3", submatch: []string{"", "", ""}, wantErr: true},
+		{name: "submatch length 4", submatch: []string{"", "", "", ""}, wantErr: true},
+		{name: "submatch length 5", submatch: []string{"", "", "", "", ""}, wantErr: true},
+		{name: "submatch length 6", submatch: []string{"", "", "", "", "", ""}, wantErr: true},
+
+		{name: "allocs benchmark 1", submatch: []string{"BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "1000000000", "0.2439", "90", "B", "1"}, wantResults: benchmarkResult{Op: 1000000000, NanosecondPerOp: 0.2439, BytesPerOp: 90, AllocsPerOp: 1}},
+		{name: "allocs benchmark 2", submatch: []string{"BenchmarkAllocs-16 19836 178.2396 ns/op \t40489 B/op \t190 allocs/op\n", "BenchmarkAllocs-16", "19836", "178.2396", "40489", "B", "190"}, wantResults: benchmarkResult{Op: 19836, NanosecondPerOp: 178.2396, BytesPerOp: 40489, AllocsPerOp: 190}},
+
+		{name: "invalid number of ops", submatch: []string{"BenchmarkAllocs-16 wrong 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "wrong", "0.2439", "90", "B", "1"}, wantErr: true},
+		{name: "invalid ns/op", submatch: []string{"BenchmarkAllocs-16 19836 178.wrong ns/op \t40489 B/op \t190 allocs/op\n", "BenchmarkAllocs-16", "19836", "178.wrong", "40489", "B", "190"}, wantErr: true},
+		{name: "invalid bytes/op", submatch: []string{"BenchmarkAllocs-16 1000000000 0.2439 ns/op \twrong B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "1000000000", "0.2439", "wrong", "B", "1"}, wantErr: true},
+		{name: "unsupported 5th index", submatch: []string{"BenchmarkAllocs-16 19836 178.2396 ns/op \t40489 O/op \t190 allocs/op\n", "BenchmarkAllocs-16", "19836", "178.2396", "40489", "O", "190"}, wantErr: true},
+		{name: "invalid allocs/op", submatch: []string{"BenchmarkAllocs-16 19836 178.2396 ns/op \t40489 B/op \twrong allocs/op\n", "BenchmarkAllocs-16", "19836", "178.2396", "40489", "B", "wrong"}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var err error
+			line := &benchmarkRunLine{submatch: tt.submatch}
+			if err = line.parseAllocsBenchmark(); (err != nil) != tt.wantErr {
+				t.Errorf("parseAllocsBenchmark() error = %v, wantErr %v", err, tt.wantErr)
+			} else if (err != nil) == tt.wantErr {
+				return
+			}
+			gotResults := line.results
+			if gotResults.Op != tt.wantResults.Op {
+				t.Errorf("parseAllocsBenchmark() results.Op = %v, want %v", gotResults.Op, tt.wantResults.Op)
+			}
+			if gotResults.NanosecondPerOp != tt.wantResults.NanosecondPerOp {
+				t.Errorf("parseAllocsBenchmark() results.NanosecondPerOp = %v, want %v", gotResults.NanosecondPerOp, tt.wantResults.NanosecondPerOp)
+			}
+			if gotResults.BytesPerOp != tt.wantResults.BytesPerOp {
+				t.Errorf("parseAllocsBenchmark() results.BytesPerOp = %v, want %v", gotResults.BytesPerOp, tt.wantResults.BytesPerOp)
+			}
+			if gotResults.AllocsPerOp != tt.wantResults.AllocsPerOp {
+				t.Errorf("parseAllocsBenchmark() results.AllocsPerOp = %v, want %v", gotResults.AllocsPerOp, tt.wantResults.AllocsPerOp)
+			}
+		})
+	}
+}
+
+func BenchmarkParseAllocsBenchmark(b *testing.B) {
+	var err error
+	line := benchmarkRunLine{submatch: []string{"BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "1000000000", "0.2439", "90", "B", "1"}}
+
+	for i := 0; i < b.N; i++ {
+		err = line.parseAllocsBenchmark()
+		if err != nil {
+			b.Errorf("Got an error: %v", err)
+		}
+	}
+}
+
+func Test_benchmarkRunLine_parseBytesBenchmark(t *testing.T) {
+	tests := []struct {
+		name           string
+		submatch       []string
+		wantErr        bool
+		wantResults    benchmarkResult
+	}{
+		{name: "submatch length 0", submatch: []string{}, wantErr: true},
+		{name: "submatch length 1", submatch: []string{""}, wantErr: true},
+		{name: "submatch length 2", submatch: []string{"", ""}, wantErr: true},
+		{name: "submatch length 3", submatch: []string{"", "", ""}, wantErr: true},
+		{name: "submatch length 4", submatch: []string{"", "", "", ""}, wantErr: true},
+		{name: "submatch length 5", submatch: []string{"", "", "", "", ""}, wantErr: true},
+
+		{name: "bytes benchmark 1", submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "MB"}, wantResults: benchmarkResult{Op: 1000000000, NanosecondPerOp: 0.2439, MBs: 3837911248885.89}},
+		{name: "bytes benchmark 2", submatch: []string{"BenchmarkBytes-16 19836 178.2396 ns/op \t985291124.89213 MB/s\n", "BenchmarkBytes-16", "19836", "178.2396", "985291124.89213", "MB"}, wantResults: benchmarkResult{Op: 19836, NanosecondPerOp: 178.2396, MBs: 985291124.89213}},
+
+		{name: "invalid number of ops", submatch: []string{"BenchmarkBytes-16 wrong 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "wrong", "0.2439", "3837911248885.89", "MB"}, wantErr: true},
+		{name: "invalid ns/op", submatch: []string{"BenchmarkBytes-16 19836 wrong ns/op \t985291124.89213 MB/s\n", "BenchmarkBytes-16", "19836", "wrong", "985291124.89213", "MB"}, wantErr: true},
+		{name: "invalid MB/s", submatch: []string{"BenchmarkBytes-16 19836 178.2396 ns/op \twrong.89213 MB/s\n", "BenchmarkBytes-16", "19836", "178.2396", "wrong.89213", "MB"}, wantErr: true},
+		{name: "unsupported 5th index", submatch: []string{"BenchmarkBytes-16 19836 178.2396 ns/op \t985291124.89213 PB/s\n", "BenchmarkBytes-16", "19836", "178.2396", "985291124.89213", "PB"}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var err error
+			line := &benchmarkRunLine{submatch: tt.submatch}
+			if err = line.parseBytesBenchmark(); (err != nil) != tt.wantErr {
+				t.Errorf("parseBytesBenchmark() error = %v, wantErr %v", err, tt.wantErr)
+			} else if (err != nil) == tt.wantErr {
+				return
+			}
+			gotResults := line.results
+			if gotResults.Op != tt.wantResults.Op {
+				t.Errorf("parseBytesBenchmark() results.Op = %v, want %v", gotResults.Op, tt.wantResults.Op)
+			}
+			if gotResults.NanosecondPerOp != tt.wantResults.NanosecondPerOp {
+				t.Errorf("parseBytesBenchmark() results.NanosecondPerOp = %v, want %v", gotResults.NanosecondPerOp, tt.wantResults.NanosecondPerOp)
+			}
+			if gotResults.MBs != tt.wantResults.MBs {
+				t.Errorf("parseBytesBenchmark() results.MBs = %v, want %v", gotResults.MBs, tt.wantResults.MBs)
+			}
+		})
+	}
+}
+
+func BenchmarkParseBytesBenchmark(b *testing.B) {
+	var err error
+	line := benchmarkRunLine{submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "MB"}}
+
+	for i := 0; i < b.N; i++ {
+		err = line.parseBytesBenchmark()
+		if err != nil {
+			b.Errorf("Got an error: %v", err)
+		}
+	}
+}
