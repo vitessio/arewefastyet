@@ -16,7 +16,11 @@ limitations under the License.
 
 package integration
 
-import "testing"
+import (
+	"fmt"
+	"os"
+	"testing"
+)
 
 func BenchmarkEmpty(b *testing.B) {
 	for i := 0; i < b.N; i++ {
@@ -24,15 +28,33 @@ func BenchmarkEmpty(b *testing.B) {
 	}
 }
 
-func BenchmarkAllocs(b *testing.B) {
+func BenchmarkMulti(b *testing.B) {
 	b.ReportAllocs()
+	b.SetBytes(int64(len(b.Name())))
+
 	for i := 0; i < b.N; i++ {
 
 	}
 }
 
-func BenchmarkBytes(b *testing.B) {
+func BenchmarkAllocs(b *testing.B) {
+	b.ReportAllocs()
+	null, err := os.Open(os.DevNull)
+	if err != nil {
+		b.Error(err.Error())
+	}
 	for i := 0; i < b.N; i++ {
-		b.SetBytes(int64(i))
+		fmt.Fprintln(null, i)
+	}
+}
+
+func BenchmarkBytes(b *testing.B) {
+	null, err := os.Open(os.DevNull)
+	if err != nil {
+		b.Error(err.Error())
+	}
+	b.SetBytes(int64(len(b.Name())))
+	for i := 0; i < b.N; i++ {
+		fmt.Fprintln(null, b.Name())
 	}
 }

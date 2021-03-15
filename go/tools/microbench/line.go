@@ -33,12 +33,27 @@ const (
 	ErrorLineUnrecognized = "the line format was unrecognized"
 	ErrorLineMalformed    = "the format of the line is malformed"
 
+	GeneralBenchmark = BenchType("general")
 	RegularBenchmark = BenchType("regular")
 	AllocsBenchmark  = BenchType("allocs")
 	BytesBenchmark   = BenchType("bytes")
 )
 
-var benchmarkResultsRegArray = map[BenchType]*regexp.Regexp{
+// benchmarkResultsRegexp's submatch array contains 7 indexes defined below:
+//
+// submatch[0]:  whole string
+// submatch[1]:  benchmark name
+// submatch[2]:  number of ops (number)
+// submatch[3]:  ns/op (number)
+// submatch[4]:  MB/s (number)
+// submatch[5]:  B/op (number)
+// submatch[6]:  allocs/op (number)
+//
+// https://regex101.com/r/JdCpno/3
+var benchmarkResultsRegexp = regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op(?:\s*)?(?:([\d\.]+) MB/s+\s*)?(?:([\d\.]+) B/op+\s*)?(?:([0-9]+) allocs/op\s*)?\n`)
+
+var _ = map[BenchType]*regexp.Regexp{
+	GeneralBenchmark: benchmarkResultsRegexp,
 	AllocsBenchmark:  regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/op\s+([\d\.]+)\s+allocs\/op\n`),
 	BytesBenchmark:   regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/s\n`),
 	RegularBenchmark: regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\n`),
@@ -77,19 +92,19 @@ func (line *benchmarkRunLine) Parse() error {
 func (line *benchmarkRunLine) applyRegularExpr() {
 	var submatch []string
 
-	for benchType, reg := range benchmarkResultsRegArray {
-		submatch = reg.FindStringSubmatch(line.Output)
-		if len(submatch) > 0 {
-			line.submatch = submatch
-			line.name = submatch[1]
-			line.benchType = benchType
-			break
-		}
+	submatch = benchmarkResultsRegexp.FindStringSubmatch(line.Output)
+	if len(submatch) > 0 {
+		line.submatch = submatch
+		line.name = submatch[1]
+		line.benchType = GeneralBenchmark
 	}
 }
 
 func (line *benchmarkRunLine) parseSubmatch() error {
+	fmt.Println(line.Output)
 	switch line.benchType {
+	case GeneralBenchmark:
+		return line.parseGeneralBenchmark()
 	case RegularBenchmark:
 		return line.parseRegularBenchmark()
 	case AllocsBenchmark:
@@ -100,6 +115,53 @@ func (line *benchmarkRunLine) parseSubmatch() error {
 		break
 	}
 	return errors.New(ErrorLineUnrecognized)
+}
+
+func getFloatSubMatch(parent, child string) (float64, error) {
+	if len(parent) == 0 {
+		return 0, nil
+	}
+	val, err := strconv.ParseFloat(child, 64)
+	if err != nil {
+		return 0, err
+	}
+	return val, nil
+}
+
+func (line *benchmarkRunLine) parseGeneralBenchmark() error {
+	if len(line.submatch) != 7 {
+		return fmt.Errorf("%s: expected 7 arguments but got %d", ErrorLineMalformed, len(line.submatch))
+	}
+
+	var err error
+
+	// get number of ops
+	line.results.Op, err = strconv.Atoi(line.submatch[2])
+	if err != nil {
+		return fmt.Errorf("%s: %s", ErrorLineMalformed, err.Error())
+	}
+
+	// get ns/op
+	line.results.NanosecondPerOp, err = strconv.ParseFloat(line.submatch[3], 64)
+	if err != nil {
+		return fmt.Errorf("%s: %s", ErrorLineMalformed, err.Error())
+	}
+
+	line.results.MBs, err = getFloatSubMatch(line.submatch[4], line.submatch[4])
+	if err != nil {
+		return fmt.Errorf("%s: %s", ErrorLineMalformed, err.Error())
+	}
+
+	line.results.BytesPerOp, err = getFloatSubMatch(line.submatch[5], line.submatch[5])
+	if err != nil {
+		return fmt.Errorf("%s: %s", ErrorLineMalformed, err.Error())
+	}
+
+	line.results.AllocsPerOp, err = getFloatSubMatch(line.submatch[6], line.submatch[6])
+	if err != nil {
+		return fmt.Errorf("%s: %s", ErrorLineMalformed, err.Error())
+	}
+	return nil
 }
 
 // The length of submatch for a RegularBenchmark line is 4.
