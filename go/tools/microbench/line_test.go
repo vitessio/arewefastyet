@@ -110,10 +110,10 @@ func BenchmarkApplyRegularExprBytesBenchmark(b *testing.B) {
 
 func Test_benchmarkRunLine_parseRegularBenchmark(t *testing.T) {
 	tests := []struct {
-		name           string
-		submatch       []string
-		wantErr        bool
-		wantResults    benchmarkResult
+		name        string
+		submatch    []string
+		wantErr     bool
+		wantResults benchmarkResult
 	}{
 		{name: "submatch length 0", submatch: []string{}, wantErr: true},
 		{name: "submatch length 1", submatch: []string{""}, wantErr: true},
@@ -160,10 +160,10 @@ func BenchmarkParseRegularBenchmark(b *testing.B) {
 
 func Test_benchmarkRunLine_parseAllocsBenchmark(t *testing.T) {
 	tests := []struct {
-		name           string
-		submatch       []string
-		wantErr        bool
-		wantResults    benchmarkResult
+		name        string
+		submatch    []string
+		wantErr     bool
+		wantResults benchmarkResult
 	}{
 		{name: "submatch length 0", submatch: []string{}, wantErr: true},
 		{name: "submatch length 1", submatch: []string{""}, wantErr: true},
@@ -222,10 +222,10 @@ func BenchmarkParseAllocsBenchmark(b *testing.B) {
 
 func Test_benchmarkRunLine_parseBytesBenchmark(t *testing.T) {
 	tests := []struct {
-		name           string
-		submatch       []string
-		wantErr        bool
-		wantResults    benchmarkResult
+		name        string
+		submatch    []string
+		wantErr     bool
+		wantResults benchmarkResult
 	}{
 		{name: "submatch length 0", submatch: []string{}, wantErr: true},
 		{name: "submatch length 1", submatch: []string{""}, wantErr: true},

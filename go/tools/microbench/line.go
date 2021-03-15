@@ -22,14 +22,27 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	"regexp"
 	"strconv"
 	"time"
 )
 
+type BenchType string
+
 const (
 	ErrorLineUnrecognized = "the line format was unrecognized"
 	ErrorLineMalformed    = "the format of the line is malformed"
+
+	RegularBenchmark = BenchType("regular")
+	AllocsBenchmark  = BenchType("allocs")
+	BytesBenchmark   = BenchType("bytes")
 )
+
+var benchmarkResultsRegArray = map[BenchType]*regexp.Regexp{
+	AllocsBenchmark:  regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/op\s+([\d\.]+)\s+allocs\/op\n`),
+	BytesBenchmark:   regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/s\n`),
+	RegularBenchmark: regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\n`),
+}
 
 type benchmarkResult struct {
 	Op              int

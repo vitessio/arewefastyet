@@ -18,6 +18,7 @@ package microbench
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"go/types"
@@ -25,27 +26,22 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"regexp"
 	"strings"
 )
 
-type BenchType string
-
 const (
-	RegularBenchmark = BenchType("regular")
-	AllocsBenchmark  = BenchType("allocs")
-	BytesBenchmark   = BenchType("bytes")
+	errorInvalidProfileType = "invalid profile type"
+
+	profileCPU = "cpu"
+	profileMem = "mem"
 )
 
-var benchmarkResultsRegArray = map[BenchType]*regexp.Regexp{
-	AllocsBenchmark:  regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/op\s+([\d\.]+)\s+allocs\/op\n`),
-	BytesBenchmark:   regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\s+([\d\.]+)\s+(.+)\/s\n`),
-	RegularBenchmark: regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op\n`),
-}
-
 type benchmark struct {
-	id                      int64
-	filePath, pkgName, name string
+	id               int64
+	filePath         string
+	name             string
+	pkgPath, pkgName string
+	sql              *mysql.Client
 }
 
 func (b *benchmark) registerToMySQL(client *mysql.Client) error {
@@ -55,6 +51,63 @@ func (b *benchmark) registerToMySQL(client *mysql.Client) error {
 		return err
 	}
 	b.id = id
+	return nil
+}
+
+func (b *benchmark) execute(pkgLocalPath string, w *os.File) error {
+	command := exec.Command("go", "test", "-bench=^"+b.name+"$", "-run==", "-json", "-count=10", pkgLocalPath)
+	out, err := command.Output()
+
+	if err != nil {
+		return err
+	}
+
+	if b.sql != nil {
+		if err := b.registerToMySQL(b.sql); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	lines := strings.Split(string(out), "\n")
+	for _, line := range lines {
+		var benchLine benchmarkRunLine
+		err := json.Unmarshal([]byte(line), &benchLine)
+		if err != nil || benchLine.Output == "" {
+			continue
+		}
+
+		err = benchLine.Parse()
+		if err != nil {
+			return err
+		}
+
+		if benchLine.benchType != "" {
+			fmt.Printf("%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
+			fmt.Fprintf(w, "%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
+			if b.sql != nil {
+				err = benchLine.InsertToMySQL(b.id, b.sql)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (b benchmark) executeProfile(pkgLocalPath, profileType string, w *os.File) error {
+	if profileType != profileCPU && profileType != profileMem {
+		return errors.New(errorInvalidProfileType)
+	}
+	profileName := fmt.Sprintf("%sprof_%s.%s.out", profileType, b.pkgName, b.name)
+	command := exec.Command("go", "test", "-bench=^"+b.name+"$", "-run==", "-count=1", pkgLocalPath, fmt.Sprintf("-%sprofile=%s", profileType, profileName))
+
+	_, err := command.Output()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("CPU profile generated %s\n", profileName)
+	fmt.Fprintf(w, "CPU profile generated %s\n", profileName)
 	return nil
 }
 
@@ -85,59 +138,30 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 	if err != nil {
 		panic(err)
 	}
+	defer w.Close()
 
 	benchmarks := findBenchmarks(loaded)
 
 	for _, benchmark := range benchmarks {
 		idx := strings.LastIndex(benchmark.filePath, "/")
-		path := benchmark.filePath[:idx+1]
-		command := exec.Command("go", "test", "-bench=^"+benchmark.name+"$", "-run==", "-json", "-count=10", path)
-		b, err := command.Output()
+		pkgLocalPath := benchmark.filePath[:idx+1]
+		benchmark.sql = sqlClient
 
-		if err == nil {
-			if sqlClient != nil {
-				if err := benchmark.registerToMySQL(sqlClient); err != nil {
-					log.Fatal(err)
-				}
-			}
+		fmt.Println(benchmark.pkgPath)
 
-			lines := strings.Split(string(b), "\n")
-			for _, line := range lines {
-				var benchLine benchmarkRunLine
-				err := json.Unmarshal([]byte(line), &benchLine)
-				if err != nil || benchLine.Output == "" {
-					continue
-				}
-
-				err = benchLine.Parse()
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				if benchLine.benchType != "" {
-					fmt.Printf("%s - %s: %s ns/op\n", benchmark.pkgName, benchLine.submatch[1], benchLine.submatch[3])
-					fmt.Fprintf(w, "%s - %s: %s ns/op\n", benchmark.pkgName, benchLine.submatch[1], benchLine.submatch[3])
-					if sqlClient != nil {
-						err = benchLine.InsertToMySQL(benchmark.id, sqlClient)
-						if err != nil {
-							log.Fatal(err)
-						}
-					}
-				}
-			}
-		} else {
+		err := benchmark.execute(pkgLocalPath, w)
+		if err != nil {
 			fmt.Println(err.Error())
 		}
 
-		cpuprofFile := fmt.Sprintf("cpuprof_%s.%s.out", benchmark.pkgName, benchmark.name)
-		command = exec.Command("go", "test", "-bench=^"+benchmark.name+"$", "-run==", "-count=1", path, fmt.Sprintf("-cpuprofile=%s", cpuprofFile))
-		b, err = command.Output()
-		if err == nil {
-			fmt.Printf("CPU profile generated %s\n", cpuprofFile)
-			fmt.Fprintf(w, "CPU profile generated %s\n", cpuprofFile)
-
-			// TODO: insert to MySQL
+		profiles := []string{profileMem, profileCPU}
+		for _, profile := range profiles {
+			err = benchmark.executeProfile(pkgLocalPath, profile, w)
+			if err != nil && err.Error() != errorInvalidProfileType {
+				fmt.Println(err.Error())
+			}
 		}
+		fmt.Println()
 	}
 }
 
@@ -151,6 +175,7 @@ func findBenchmarks(loaded []*packages.Package) []benchmark {
 				fs := pkg.Fset.File(f.Pos())
 				benchmarks = append(benchmarks, benchmark{
 					pkgName:  f.Pkg().Name(),
+					pkgPath:  f.Pkg().Path(),
 					name:     f.Name(),
 					filePath: fs.Name(),
 				})
