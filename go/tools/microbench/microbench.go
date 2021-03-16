@@ -54,8 +54,9 @@ func (b *benchmark) registerToMySQL(client *mysql.Client) error {
 	return nil
 }
 
-func (b *benchmark) execute(pkgLocalPath string, w *os.File) error {
-	command := exec.Command("go", "test", "-bench=^"+b.name+"$", "-run==", "-json", "-count=10", pkgLocalPath)
+func (b *benchmark) execute(rootDir string, w *os.File) error {
+	command := exec.Command("go", "test", "-bench=^"+b.name+"$", "-run==", "-json", "-count=10", b.pkgPath)
+	command.Dir = rootDir
 	out, err := command.Output()
 
 	if err != nil {
@@ -95,12 +96,13 @@ func (b *benchmark) execute(pkgLocalPath string, w *os.File) error {
 	return nil
 }
 
-func (b benchmark) executeProfile(pkgLocalPath, profileType string, w *os.File) error {
+func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error {
 	if profileType != profileCPU && profileType != profileMem {
 		return errors.New(errorInvalidProfileType)
 	}
 	profileName := fmt.Sprintf("%sprof_%s.%s.out", profileType, b.pkgName, b.name)
-	command := exec.Command("go", "test", "-bench=^"+b.name+"$", "-run==", "-count=1", pkgLocalPath, fmt.Sprintf("-%sprofile=%s", profileType, profileName))
+	command := exec.Command("go", "test", "-bench=^"+b.name+"$", "-run==", "-count=1", b.pkgPath, fmt.Sprintf("-%sprofile=%s", profileType, profileName))
+	command.Dir = rootDir
 
 	_, err := command.Output()
 	if err != nil {
@@ -129,6 +131,7 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 	loaded, err := packages.Load(&packages.Config{
 		Mode:  packages.NeedName | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedDeps | packages.NeedImports | packages.NeedModule,
 		Tests: true,
+		Dir:   cfg.RootDir,
 	}, cfg.Package)
 	if err != nil {
 		panic(err)
@@ -143,20 +146,18 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 	benchmarks := findBenchmarks(loaded)
 
 	for _, benchmark := range benchmarks {
-		idx := strings.LastIndex(benchmark.filePath, "/")
-		pkgLocalPath := benchmark.filePath[:idx+1]
 		benchmark.sql = sqlClient
 
 		fmt.Println(benchmark.pkgPath)
 
-		err := benchmark.execute(pkgLocalPath, w)
+		err := benchmark.execute(cfg.RootDir, w)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
 
 		profiles := []string{profileMem, profileCPU}
 		for _, profile := range profiles {
-			err = benchmark.executeProfile(pkgLocalPath, profile, w)
+			err = benchmark.executeProfile(cfg.RootDir, profile, w)
 			if err != nil && err.Error() != errorInvalidProfileType {
 				fmt.Println(err.Error())
 			}

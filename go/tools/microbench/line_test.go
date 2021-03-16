@@ -67,7 +67,7 @@ func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 		{name: "Wrong benchmark with empty string (6)", benchTypeWanted: "", stringToParse: ""},
 		{name: "Wrong benchmark with empty new line (7)", benchTypeWanted: "", stringToParse: "\n"},
 		{name: "Wrong benchmark with unrelated content (8)", benchTypeWanted: "", stringToParse: "Not a benchmark type\n"},
-		{name: "Wrong benchmark with wrong benchmark name prefix (9)", benchTypeWanted: "", stringToParse: "BenchEmpty-16 \t101609937 \t   156.3899 ns/op\n"},              // Should start with "Benchmark"
+		{name: "Wrong benchmark with wrong benchmark name prefix (9)", benchTypeWanted: "", stringToParse: "BenchEmpty-16 \t101609937 \t   156.3899 ns/op\n"},            // Should start with "Benchmark"
 		{name: "Wrong benchmark with misspelled attribute name (10)", benchTypeWanted: "", stringToParse: "BenchmarkAllocs-4 101609937 156.9 ns/op 0 B/op 0 alloc/op\n"}, // Should be "allocs" not "alloc"
 		{name: "Wrong benchmark with missing chars (11)", benchTypeWanted: "", stringToParse: "BenchmarkAllocs-4 101609937 156.9ns/op 0 B /op 0 allocs/op\n"},
 	}

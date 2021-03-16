@@ -19,6 +19,7 @@ package microbench
 import "github.com/vitessio/arewefastyet/go/mysql"
 
 type MicroBenchConfig struct {
+	RootDir        string
 	Package        string
 	Output         string
 	DatabaseConfig *mysql.ConfigDB

@@ -27,12 +27,19 @@ func run() *cobra.Command {
 	mbcfg.DatabaseConfig = &mysql.ConfigDB{}
 
 	cmd := &cobra.Command{
-		Use:   "run <pkg path> <output path>",
-		Args:  cobra.ExactArgs(2),
-		Short: "Run go bench test for the given pkg, and output to the given path.",
+		Use:   "run [root dir] <pkg> <output path>",
+		Args:  cobra.RangeArgs(2, 3),
+		Short: "Run micro benchmarks from the <root dir> on <pkg>, and outputs to <output path>.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			mbcfg.Package = args[0]
-			mbcfg.Output = args[1]
+			idx := 0
+			if len(args) == 3 {
+				mbcfg.RootDir = args[idx]
+				idx++
+			} else {
+				mbcfg.RootDir = "."
+			}
+			mbcfg.Package = args[idx]
+			mbcfg.Output = args[idx + 1]
 			microbench.MicroBenchmark(mbcfg)
 			return nil
 		},
