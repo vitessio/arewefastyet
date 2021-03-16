@@ -1,4 +1,4 @@
-module github.com/vitessio/arewefastyet/go/server
+module github.com/vitessio/arewefastyet
 
 go 1.15
 
