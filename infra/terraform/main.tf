@@ -9,11 +9,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-provider "packet" {
+provider "metal" {
   auth_token = var.auth_token
 }
 
-resource "packet_device" "node" {
+resource "metal_device" "node" {
   hostname         = var.hostname
   plan             = var.instance_type
   facilities       = var.facilities
