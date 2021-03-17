@@ -23,6 +23,7 @@ import "github.com/spf13/cobra"
 func create() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "create",
+		Short: "Create a new single-node infrastructure using Equinix Metal",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return nil
 		},

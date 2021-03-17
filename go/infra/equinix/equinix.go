@@ -18,19 +18,37 @@
 
 package equinix
 
+import (
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+const (
+	flagToken = "equinix-token"
+	flagProjectID = "equinix-project-id"
+)
+
 type Equinix struct {
 	Token     string
 	ProjectID string
+}
+
+func (e *Equinix) AddToCommand(cmd *cobra.Command) {
+	cmd.Flags().StringVar(&e.Token, flagToken, "", "Auth Token for Equinix Metal")
+	cmd.Flags().StringVar(&e.ProjectID, flagProjectID, "", "Project ID to use for Equinix Metal")
+
+	viper.BindPFlag(flagToken, cmd.Flags().Lookup(flagToken))
+	viper.BindPFlag(flagProjectID, cmd.Flags().Lookup(flagProjectID))
 }
 
 func (e Equinix) ValidConfig() bool {
 	return !(e.Token == "" || e.ProjectID == "")
 }
 
-func (e Equinix) Prepare() error {
+func (e *Equinix) Prepare() error {
 	return nil
 }
 
-func (e Equinix) Run() error {
+func (e *Equinix) Run() error {
 	return nil
 }

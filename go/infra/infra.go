@@ -18,7 +18,10 @@
 
 package infra
 
+import "github.com/spf13/cobra"
+
 type Infra interface {
+	AddToCommand(command *cobra.Command)
 	ValidConfig() bool
 	Prepare() error
 	Run() error
