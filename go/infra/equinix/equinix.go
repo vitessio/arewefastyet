@@ -19,7 +19,9 @@
 package equinix
 
 import (
+	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/infra"
@@ -48,7 +50,20 @@ func (e Equinix) Create() error {
 	if err := e.ValidConfig(); err != nil {
 		return err
 	}
-	// create
+	if err := e.InfraCfg.Prepare(); err != nil {
+		return err
+	}
+	workingDir := e.InfraCfg.Path
+	tf, err := tfexec.NewTerraform(workingDir, e.InfraCfg.PathExecTF)
+	if err != nil {
+		return err
+	}
+
+	err = tf.Init(context.Background(), tfexec.Upgrade(true), tfexec.LockTimeout("60s"))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

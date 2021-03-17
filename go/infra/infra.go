@@ -19,6 +19,8 @@
 package infra
 
 import (
+	"context"
+	"github.com/hashicorp/terraform-exec/tfinstall"
 	"github.com/spf13/cobra"
 )
 
@@ -32,4 +34,12 @@ type Infra interface {
 	ValidConfig() error
 	Prepare() error
 	Run() error
+}
+
+func getTerraformExecPath(installPath string) (string, error) {
+	execPath, err := tfinstall.Find(context.Background(), tfinstall.LatestVersion(installPath, false))
+	if err != nil {
+		return "", err
+	}
+	return execPath, nil
 }

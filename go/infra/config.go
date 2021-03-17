@@ -20,16 +20,20 @@ package infra
 
 import (
 	"errors"
+	"io/ioutil"
 	"os"
 )
 
 const (
-	ErrorPathUnknown = "path does not exist"
-	ErrorPathMissing = "path is missing"
+	ErrorPathUnknown     = "path does not exist"
+	ErrorPathMissing     = "path is missing"
 )
 
 type Config struct {
-	Path string
+	Path          string
+	PathExecTF    string
+
+	pathInstallTF string
 }
 
 func (c Config) Valid() error {
@@ -39,4 +43,22 @@ func (c Config) Valid() error {
 		return errors.New(ErrorPathUnknown)
 	}
 	return nil
+}
+
+func (c *Config) Prepare() error {
+	pathInstallTF, err := ioutil.TempDir("", "tfinstall")
+	if err != nil {
+		return err
+	}
+	c.pathInstallTF = pathInstallTF
+	pathExecTF, err := getTerraformExecPath(c.pathInstallTF)
+	if err != nil {
+		return err
+	}
+	c.PathExecTF = pathExecTF
+	return nil
+}
+
+func (c *Config) Close() error {
+	return os.RemoveAll(c.pathInstallTF)
 }

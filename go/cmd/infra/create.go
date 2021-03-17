@@ -43,6 +43,8 @@ func createEquinix(cfg *infra.Config) *cobra.Command {
 		Aliases: []string{"e"},
 		Short: "Create an Equinix Metal instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			defer cfg.Close()
+
 			err := eq.Create()
 			return err
 		},
