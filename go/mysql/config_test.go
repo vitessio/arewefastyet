@@ -18,7 +18,10 @@
 
 package mysql
 
-import "testing"
+import (
+	qt "github.com/frankban/quicktest"
+	"testing"
+)
 
 func TestConfigDB_IsValid(t *testing.T) {
 	tests := []struct {
@@ -34,9 +37,9 @@ func TestConfigDB_IsValid(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotValid := tt.config.IsValid(); gotValid != tt.wantValid {
-				t.Errorf("IsValid() = %v, want %v", gotValid, tt.wantValid)
-			}
+			c := qt.New(t)
+			gotValid := tt.config.IsValid()
+			c.Assert(gotValid, qt.Equals, tt.wantValid)
 		})
 	}
 }

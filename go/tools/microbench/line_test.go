@@ -19,6 +19,7 @@
 package microbench
 
 import (
+	qt "github.com/frankban/quicktest"
 	"testing"
 )
 
@@ -73,13 +74,11 @@ func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
 			line := &benchmarkRunLine{Output: tt.stringToParse}
 			line.applyRegularExpr()
-
 			gotBenchType := line.benchType
-			if gotBenchType != tt.benchTypeWanted {
-				t.Errorf("line.applyRegularExpr() = %v, want %v", gotBenchType, tt.benchTypeWanted)
-			}
+			c.Assert(gotBenchType, qt.Equals, tt.benchTypeWanted)
 		})
 	}
 }
@@ -137,7 +136,6 @@ func Test_benchmarkRunLine_parseGeneralBenchmarkInvalidSubmatchLen(t *testing.T)
 		name        string
 		submatch    []string
 		wantErr     bool
-		wantResults benchmarkResult
 	}{
 		{name: "submatch length 0", submatch: []string{}, wantErr: true},
 		{name: "submatch length 1", submatch: []string{""}, wantErr: true},
@@ -149,11 +147,10 @@ func Test_benchmarkRunLine_parseGeneralBenchmarkInvalidSubmatchLen(t *testing.T)
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var err error
+			c := qt.New(t)
 			line := &benchmarkRunLine{submatch: tt.submatch}
-			if err = line.parseGeneralBenchmark(); (err != nil) != tt.wantErr {
-				t.Errorf("parseGeneralBenchmark() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			err := line.parseGeneralBenchmark()
+			c.Assert(err != nil, qt.Equals, tt.wantErr)
 		})
 	}
 }
@@ -185,29 +182,22 @@ func Test_benchmarkRunLine_parseGeneralBenchmark(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var err error
+			c := qt.New(t)
 			line := &benchmarkRunLine{submatch: tt.submatch}
-			if err = line.parseGeneralBenchmark(); (err != nil) != tt.wantErr {
-				t.Errorf("parseGeneralBenchmark() error = %v, wantErr %v", err, tt.wantErr)
-			} else if (err != nil) == tt.wantErr {
+			err := line.parseGeneralBenchmark()
+
+			c.Assert(err != nil, qt.Equals, tt.wantErr)
+			if tt.wantErr {
 				return
 			}
+
 			gotResults := line.results
-			if gotResults.Op != tt.wantResults.Op {
-				t.Errorf("parseGeneralBenchmark() results.Op = %v, want %v", gotResults.Op, tt.wantResults.Op)
-			}
-			if gotResults.NanosecondPerOp != tt.wantResults.NanosecondPerOp {
-				t.Errorf("parseGeneralBenchmark() results.NanosecondPerOp = %v, want %v", gotResults.NanosecondPerOp, tt.wantResults.NanosecondPerOp)
-			}
-			if gotResults.MBs != tt.wantResults.MBs {
-				t.Errorf("parseGeneralBenchmark() results.MBs = %v, want %v", gotResults.MBs, tt.wantResults.MBs)
-			}
-			if gotResults.BytesPerOp != tt.wantResults.BytesPerOp {
-				t.Errorf("parseGeneralBenchmark() results.BytesPerOp = %v, want %v", gotResults.BytesPerOp, tt.wantResults.BytesPerOp)
-			}
-			if gotResults.AllocsPerOp != tt.wantResults.AllocsPerOp {
-				t.Errorf("parseGeneralBenchmark() results.AllocsPerOp = %v, want %v", gotResults.AllocsPerOp, tt.wantResults.AllocsPerOp)
-			}
+
+			c.Assert(gotResults.Op, qt.Equals, tt.wantResults.Op)
+			c.Assert(gotResults.NanosecondPerOp, qt.Equals, tt.wantResults.NanosecondPerOp)
+			c.Assert(gotResults.MBs, qt.Equals, tt.wantResults.MBs)
+			c.Assert(gotResults.BytesPerOp, qt.Equals, tt.wantResults.BytesPerOp)
+			c.Assert(gotResults.AllocsPerOp, qt.Equals, tt.wantResults.AllocsPerOp)
 		})
 	}
 }
