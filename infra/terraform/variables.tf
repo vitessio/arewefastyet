@@ -11,10 +11,14 @@
 
 variable "auth_token" {
   description = "Equinix Metal auth token"
+  type = string
+  sensitive = true
 }
 
 variable "project_id" {
-  description = "Project ID"
+  description = "Equinix Metal project id"
+  type = string
+  sensitive = true
 }
 
 variable "hostname" {

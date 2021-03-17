@@ -9,6 +9,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-output "packet-ip" {
+output "device_public_ip" {
   value = metal_device.node.*.network.0.address
+}
+
+output "device_id" {
+  value = metal_device.node.id
 }
