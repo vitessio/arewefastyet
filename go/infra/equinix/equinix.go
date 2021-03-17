@@ -111,6 +111,11 @@ func (e *Equinix) Prepare() error {
 		return err
 	}
 
+	err = tf.SetLogPath("trace.log")
+	if err != nil {
+		return err
+	}
+
 	e.tf = tf
 	return nil
 }
