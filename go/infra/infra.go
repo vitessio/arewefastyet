@@ -26,6 +26,7 @@ import (
 
 const (
 	ErrorInvalidConfiguration = "invalid configuration"
+	ErrorProvision            = "provision failed"
 )
 
 type Infra interface {
