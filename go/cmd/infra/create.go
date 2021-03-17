@@ -18,16 +18,34 @@
 
 package infra
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+	"github.com/vitessio/arewefastyet/go/infra"
+	"github.com/vitessio/arewefastyet/go/infra/equinix"
+)
 
-func create() *cobra.Command {
+func create(cfg *infra.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "create",
-		Short: "Create a new single-node infrastructure using Equinix Metal",
+		Aliases: []string{"c"},
+		Short: "Create a new instance",
+	}
+
+	cmd.AddCommand(createEquinix(cfg))
+	return cmd
+}
+
+func createEquinix(cfg *infra.Config) *cobra.Command {
+	eq := equinix.Equinix{InfraCfg: cfg}
+
+	cmd := &cobra.Command{
+		Use: "equinix",
+		Aliases: []string{"e"},
+		Short: "Create an Equinix Metal instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return nil
 		},
 	}
-
+	eq.AddToCommand(cmd)
 	return cmd
 }

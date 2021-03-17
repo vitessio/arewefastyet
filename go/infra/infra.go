@@ -18,11 +18,18 @@
 
 package infra
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+)
+
+const (
+	ErrorInvalidConfiguration = "invalid configuration"
+)
 
 type Infra interface {
 	AddToCommand(command *cobra.Command)
-	ValidConfig() bool
+	Create() error
+	ValidConfig() error
 	Prepare() error
 	Run() error
 }

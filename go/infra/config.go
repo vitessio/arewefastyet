@@ -18,25 +18,7 @@
 
 package infra
 
-import (
-	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/infra"
-)
-
-const (
-	flagInfraPath = "infra-path"
-)
-
-func InfraCmd() *cobra.Command {
-	var cfg infra.Config
-
-	cmd := &cobra.Command{
-		Use:     "infra <command>",
-		Short:   "Manage infrastructure",
-		Aliases: []string{"i"},
-	}
-
-	cmd.PersistentFlags().StringVar(&cfg.Path, flagInfraPath, "", "Path to the infra directory")
-	cmd.AddCommand(create(&cfg))
-	return cmd
+type Config struct {
+	Path string
+	Name string
 }

@@ -19,18 +19,21 @@
 package equinix
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/infra"
 )
 
 const (
-	flagToken = "equinix-token"
+	flagToken     = "equinix-token"
 	flagProjectID = "equinix-project-id"
 )
 
 type Equinix struct {
 	Token     string
 	ProjectID string
+	InfraCfg  *infra.Config
 }
 
 func (e *Equinix) AddToCommand(cmd *cobra.Command) {
@@ -41,8 +44,21 @@ func (e *Equinix) AddToCommand(cmd *cobra.Command) {
 	viper.BindPFlag(flagProjectID, cmd.Flags().Lookup(flagProjectID))
 }
 
-func (e Equinix) ValidConfig() bool {
-	return !(e.Token == "" || e.ProjectID == "")
+func (e Equinix) Create() error {
+	if err := e.ValidConfig(); err != nil {
+		return err
+	}
+	// create
+	return nil
+}
+
+func (e Equinix) ValidConfig() error {
+	if e.Token == "" {
+		return fmt.Errorf("%s: missing token", infra.ErrorInvalidConfiguration)
+	} else if e.ProjectID == "" {
+		return fmt.Errorf("%s: missing project id", infra.ErrorInvalidConfiguration)
+	}
+	return nil
 }
 
 func (e *Equinix) Prepare() error {
