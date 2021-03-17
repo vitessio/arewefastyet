@@ -57,6 +57,8 @@ func (e Equinix) ValidConfig() error {
 		return fmt.Errorf("%s: missing token", infra.ErrorInvalidConfiguration)
 	} else if e.ProjectID == "" {
 		return fmt.Errorf("%s: missing project id", infra.ErrorInvalidConfiguration)
+	} else if err := e.InfraCfg.Valid(); err != nil {
+		return err
 	}
 	return nil
 }

@@ -18,7 +18,25 @@
 
 package infra
 
+import (
+	"errors"
+	"os"
+)
+
+const (
+	ErrorPathUnknown = "path does not exist"
+	ErrorPathMissing = "path is missing"
+)
+
 type Config struct {
 	Path string
-	Name string
+}
+
+func (c Config) Valid() error {
+	if c.Path == "" {
+		return errors.New(ErrorPathMissing)
+	} else if _, err := os.Stat(c.Path); os.IsNotExist(err) {
+		return errors.New(ErrorPathUnknown)
+	}
+	return nil
 }
