@@ -65,7 +65,7 @@ func (b *benchmark) execute(rootDir string, w *os.File) error {
 
 	if b.sql != nil {
 		if err := b.registerToMySQL(b.sql); err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 
