@@ -16,3 +16,23 @@ variable "auth_token" {
 variable "project_id" {
   description = "Project ID"
 }
+
+variable "hostname" {
+  description = "Hostname given to the new node"
+  default = "benchmark-node-terraform"
+}
+
+variable "operating_system" {
+  description = "Operating system on which to start the node"
+  default = "centos_8"
+}
+
+variable "instance_type" {
+  description = "Equinix Metal instance type that will be used"
+  default = "t1.small.x86"
+}
+
+variable "facilities" {
+  description = "Equinix Metal facility used to run the server"
+  default = ["ams1"]
+}

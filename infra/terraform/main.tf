@@ -13,11 +13,11 @@ provider "packet" {
   auth_token = var.auth_token
 }
 
-resource "packet_device" "node1" {
-  hostname         = "node1"
-  plan             = "c1.small.x86"
-  facilities       = ["ewr1"]
-  operating_system = "ubuntu_16_04"
+resource "packet_device" "node" {
+  hostname         = var.hostname
+  plan             = var.instance_type
+  facilities       = var.facilities
+  operating_system = var.operating_system
   billing_cycle    = "hourly"
   project_id       = var.project_id
 }

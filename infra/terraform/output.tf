@@ -10,5 +10,5 @@
 // limitations under the License.
 
 output "packet-ip" {
-  value = packet_device.node1.*.network.0.address
+  value = packet_device.node.*.network.0.address
 }
