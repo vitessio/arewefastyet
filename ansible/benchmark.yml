@@ -9,11 +9,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-- import_playbook: provision.yml
-  when: provision is defined
-- import_playbook: update.yml
-  when: update is defined
-- import_playbook: configure.yml
-- import_playbook: benchmark.yml
+- name: Benchmarks
+  hosts: all
+  tasks:
+    - name: "OLTP"
+      when: tpcc is not defined
+      include_role:
+        name: "sysbench"
+        tasks_from: oltp
 
+    - name: "TPCC"
+      when: tpcc is defined
+      include_role:
+        name: "sysbench"
+        tasks_from: tpcc

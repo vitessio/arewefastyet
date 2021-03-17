@@ -21,15 +21,22 @@ platforms:
       - vtctld
       - vtgate
       - vttablet
+      - sysbench
     image: centos:8
     privileged: True
     command: /sbin/init
+    exposed_ports:
+      - 15999
+    published_ports:
+      - "15999:15999"
     tmpfs:
       - /run
-      - /tmpm
+      - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
 provisioner:
   name: ansible
+  playbooks:
+    prep: prep.yml
 verifier:
   name: ansible
