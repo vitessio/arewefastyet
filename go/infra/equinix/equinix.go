@@ -16,18 +16,21 @@
  * /
  */
 
-package infra
+package equinix
 
-import "github.com/spf13/cobra"
+type Equinix struct {
+	Token     string
+	ProjectID string
+}
 
-func InfraCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "infra <command>",
-		Short:   "Manage infrastructure",
-		Aliases: []string{"i"},
-	}
+func (e Equinix) ValidConfig() bool {
+	return !(e.Token == "" || e.ProjectID == "")
+}
 
-	cmd.AddCommand(create())
+func (e Equinix) Prepare() error {
+	return nil
+}
 
-	return cmd
+func (e Equinix) Run() error {
+	return nil
 }

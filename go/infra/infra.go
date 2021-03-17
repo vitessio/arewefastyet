@@ -18,16 +18,8 @@
 
 package infra
 
-import "github.com/spf13/cobra"
-
-func InfraCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "infra <command>",
-		Short:   "Manage infrastructure",
-		Aliases: []string{"i"},
-	}
-
-	cmd.AddCommand(create())
-
-	return cmd
+type Infra interface {
+	ValidConfig() bool
+	Prepare() error
+	Run() error
 }
