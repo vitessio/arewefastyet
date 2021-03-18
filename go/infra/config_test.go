@@ -27,11 +27,11 @@ import (
 
 func TestConfig_Close(t *testing.T) {
 	newTmpDir := func() string {
-		path, _ := ioutil.TempDir("","")
+		path, _ := ioutil.TempDir("", "")
 		return path
 	}
 	tests := []struct {
-		name    string
+		name string
 		cfg  Config
 	}{
 		{name: "Close with valid pathInstallTF", cfg: Config{pathInstallTF: newTmpDir()}},
@@ -40,7 +40,7 @@ func TestConfig_Close(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var err error
 			c := qt.New(t)
-			c.Cleanup(func () {os.RemoveAll(tt.cfg.pathInstallTF)})
+			c.Cleanup(func() { os.RemoveAll(tt.cfg.pathInstallTF) })
 
 			if _, err = os.Stat(tt.cfg.pathInstallTF); err != nil {
 				c.Skip("Internal test error:", err.Error())
@@ -51,6 +51,35 @@ func TestConfig_Close(t *testing.T) {
 			_, err = os.Stat(tt.cfg.pathInstallTF)
 			c.Assert(err, qt.Not(qt.IsNil))
 			c.Assert(os.IsNotExist(err), qt.IsTrue)
+		})
+	}
+}
+
+func TestConfig_Valid(t *testing.T) {
+	newTmpDir := func() string {
+		path, _ := ioutil.TempDir("", "")
+		return path
+	}
+	tests := []struct {
+		name    string
+		cfg     Config
+		wantErr string
+	}{
+		{name: "Valid configuration", cfg: Config{Path: newTmpDir()}},
+		{name: "Invalid configuration with unknown path", cfg: Config{Path: "/unknown"}, wantErr: ErrorPathUnknown},
+		{name: "Invalid configuration with missing path", cfg: Config{Path: ""}, wantErr: ErrorPathMissing},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+			c.Cleanup(func() { os.RemoveAll(tt.cfg.Path) })
+
+			gotValid := tt.cfg.Valid()
+
+			c.Assert((gotValid == nil) == (tt.wantErr == ""), qt.IsTrue)
+			if tt.wantErr != "" && gotValid != nil {
+				c.Assert(gotValid, qt.ErrorMatches, tt.wantErr)
+			}
 		})
 	}
 }

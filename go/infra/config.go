@@ -25,13 +25,13 @@ import (
 )
 
 const (
-	ErrorPathUnknown     = "path does not exist"
-	ErrorPathMissing     = "path is missing"
+	ErrorPathUnknown = "path does not exist"
+	ErrorPathMissing = "path is missing"
 )
 
 type Config struct {
-	Path          string
-	PathExecTF    string
+	Path       string
+	PathExecTF string
 
 	pathInstallTF string
 }
