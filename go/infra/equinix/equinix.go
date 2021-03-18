@@ -52,7 +52,7 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 	if e.tf == nil {
 		return nil, fmt.Errorf("%s: equinix terraform not prepared", infra.ErrorInvalidConfiguration)
 	}
-	vars := []*tfexec.VarOption{tfexec.Var("auth_token="+e.Token), tfexec.Var("project_id="+e.ProjectID)}
+	vars := []*tfexec.VarOption{tfexec.Var("auth_token=" + e.Token), tfexec.Var("project_id=" + e.ProjectID)}
 
 	changed, err := e.tf.Plan(context.Background(), []tfexec.PlanOption{vars[0], vars[1]}...)
 	if err != nil {
@@ -66,7 +66,7 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 	} else {
 		fmt.Println("plan did not change, no provision needed")
 	}
-	
+
 	if len(wantOutputs) > 0 {
 		tfOutput, err := e.tf.Output(context.Background())
 		if err != nil {

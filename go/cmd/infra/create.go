@@ -27,9 +27,9 @@ import (
 
 func create(cfg *infra.Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create",
+		Use:     "create",
 		Aliases: []string{"c"},
-		Short: "Create a new instance",
+		Short:   "Create a new instance",
 	}
 
 	cmd.AddCommand(createEquinix(cfg))
@@ -40,9 +40,9 @@ func createEquinix(cfg *infra.Config) *cobra.Command {
 	eq := equinix.Equinix{InfraCfg: cfg}
 
 	cmd := &cobra.Command{
-		Use: "equinix",
+		Use:     "equinix",
 		Aliases: []string{"e"},
-		Short: "Create an Equinix Metal instance",
+		Short:   "Create an Equinix Metal instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			defer cfg.Close()
 
