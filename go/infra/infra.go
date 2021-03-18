@@ -20,6 +20,8 @@ package infra
 
 import (
 	"context"
+	"errors"
+	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/hashicorp/terraform-exec/tfinstall"
 	"github.com/spf13/cobra"
 )
@@ -27,13 +29,15 @@ import (
 const (
 	ErrorInvalidConfiguration = "invalid configuration"
 	ErrorProvision            = "provision failed"
+	ErrorTfOptionNotHandled   = "tf option not handled"
 )
 
 type Infra interface {
-	AddToCommand(command *cobra.Command)
-	Create() error
+	AddToCommand(cmd *cobra.Command)
+	Create(wantOutputs ...string) (output map[string]string, err error)
 	ValidConfig() error
 	Prepare() error
+	TerraformVarArray() (vars []*tfexec.VarOption)
 	Run() error
 }
 
@@ -43,4 +47,23 @@ func getTerraformExecPath(installPath string) (string, error) {
 		return "", err
 	}
 	return execPath, nil
+}
+
+func PopulateTfOption(vars []*tfexec.VarOption, opts interface{}) error {
+	if opts == nil {
+		return errors.New(ErrorTfOptionNotHandled)
+	}
+	switch optsT := opts.(type) {
+	case *[]tfexec.PlanOption:
+		for _, varValue := range vars {
+			*optsT = append(*optsT, varValue)
+		}
+	case *[]tfexec.ApplyOption:
+		for _, varValue := range vars {
+			*optsT = append(*optsT, varValue)
+		}
+	default:
+		return errors.New(ErrorTfOptionNotHandled)
+	}
+	return nil
 }
