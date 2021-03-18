@@ -49,6 +49,8 @@ func getTerraformExecPath(installPath string) (string, error) {
 	return execPath, nil
 }
 
+// PopulateTfOption will fill opts with the given vars.
+// Opts has to be a PlanOption or an ApplyOption.
 func PopulateTfOption(vars []*tfexec.VarOption, opts interface{}) error {
 	if opts == nil {
 		return errors.New(ErrorTfOptionNotHandled)
