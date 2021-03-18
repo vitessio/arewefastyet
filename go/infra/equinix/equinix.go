@@ -29,13 +29,15 @@ import (
 )
 
 const (
-	flagToken     = "equinix-token"
-	flagProjectID = "equinix-project-id"
+	flagToken        = "equinix-token"
+	flagProjectID    = "equinix-project-id"
+	flagInstanceType = "equinix-instance-type"
 )
 
 type Equinix struct {
 	Token     string
 	ProjectID string
+	InstanceType string
 	tf        *tfexec.Terraform
 	InfraCfg  *infra.Config
 }
@@ -43,23 +45,41 @@ type Equinix struct {
 func (e *Equinix) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.Token, flagToken, "", "Auth Token for Equinix Metal")
 	cmd.Flags().StringVar(&e.ProjectID, flagProjectID, "", "Project ID to use for Equinix Metal")
+	cmd.Flags().StringVar(&e.InstanceType, flagInstanceType, "", "Instance type to use for the creation of a new node")
 
 	viper.BindPFlag(flagToken, cmd.Flags().Lookup(flagToken))
 	viper.BindPFlag(flagProjectID, cmd.Flags().Lookup(flagProjectID))
+	viper.BindPFlag(flagInstanceType, cmd.Flags().Lookup(flagInstanceType))
+}
+
+func (e Equinix) TerraformVarArray() (vars []*tfexec.VarOption) {
+	vars = append(vars, tfexec.Var("auth_token=" + e.Token), tfexec.Var("project_id=" + e.ProjectID))
+	if e.InstanceType != "" {
+		vars = append(vars, tfexec.Var("instance_type="+e.InstanceType))
+	}
+	return vars
 }
 
 func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err error) {
 	if e.tf == nil {
 		return nil, fmt.Errorf("%s: equinix terraform not prepared", infra.ErrorInvalidConfiguration)
 	}
-	vars := []*tfexec.VarOption{tfexec.Var("auth_token=" + e.Token), tfexec.Var("project_id=" + e.ProjectID)}
 
-	changed, err := e.tf.Plan(context.Background(), []tfexec.PlanOption{vars[0], vars[1]}...)
+	planOpts := &[]tfexec.PlanOption{}
+	if err = infra.PopulateTfOption(e.TerraformVarArray(), planOpts); err != nil {
+		return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+	}
+
+	changed, err := e.tf.Plan(context.Background(), *planOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
 	} else if changed {
 		log.Println("Applying tf plan.")
-		err = e.tf.Apply(context.Background(), []tfexec.ApplyOption{vars[0], vars[1]}...)
+		applyOpts := &[]tfexec.ApplyOption{}
+		if err = infra.PopulateTfOption(e.TerraformVarArray(), applyOpts); err != nil {
+			return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+		}
+		err = e.tf.Apply(context.Background(), *applyOpts...)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
 		}
