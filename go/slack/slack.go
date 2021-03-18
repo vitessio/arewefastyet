@@ -13,8 +13,8 @@ type conf struct {
 	Channel string `yaml:"slack_channel"`
 }
 
-func UploadFile() error {
-	c, err := GetCredentials()
+func UploadFile(configFilePath,reportFilePath string) error {
+	c, err := GetCredentials(configFilePath)
 
 	if err != nil {
 		return err
@@ -25,7 +25,7 @@ func UploadFile() error {
 	params := slack.FileUploadParameters{
 		Title:          "OlTP ",
 		Filetype:       "json",
-		File:           "report/sample/sample_oltp.json",
+		File:           reportFilePath,
 		Channels:       []string{c.Channel},
 		InitialComment: "This is sample OLTP",
 	}
@@ -39,13 +39,13 @@ func UploadFile() error {
 
 }
 
-func GetCredentials() (*conf, error) {
+func GetCredentials(configFilePath string) (*conf, error) {
 
 	//Read from the config file
 
 	var c conf
 	fmt.Println(os.Getwd())
-	yamlFile, err := ioutil.ReadFile("config/config.yaml")
+	yamlFile, err := ioutil.ReadFile(configFilePath)
 	if err != nil {
 		return nil, err
 	}
