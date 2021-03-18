@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/vitessio/arewefastyet/go/cmd/infra"
 	"github.com/vitessio/arewefastyet/go/cmd/microbench"
 	"log"
 	"os"
@@ -56,6 +57,7 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(microbench.MicroBenchCmd())
+	rootCmd.AddCommand(infra.InfraCmd())
 }
 
 // initConfig reads in config file and ENV variables if set.
