@@ -88,10 +88,11 @@ func (s *Server) Run() error {
 	return s.router.Run(":" + s.port)
 }
 
-func Run(port, templatePath, apiKey string) error {
+func Run(port, templatePath, staticPath, apiKey string) error {
 	s := Server{
 		port:         port,
 		templatePath: templatePath,
+		staticPath:   staticPath,
 		apiKey:       apiKey,
 	}
 	return s.Run()
