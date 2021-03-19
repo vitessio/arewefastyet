@@ -9,20 +9,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-all:
-  hosts:
-    147.75.100.161:
-  children:
-    microbench:
-      hosts:
-        147.75.100.161:
-  vars:
-    vitess_git_version: "HEAD"
-    arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
-    arewefastyet_git_version: "HEAD"
-    database_name: "DB_NAME"
-    database_hostname: "DB_HOSTNAME"
-    database_username: "DB_USERNAME"
-    database_password: "DB_PASSWORD"
-    package_name: "PKG_NAME"
+arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
+arewefastyet_git_version: "master"
