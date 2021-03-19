@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/mysql"
 	"net/http"
 )
 
@@ -23,6 +24,7 @@ type Server struct {
 	staticPath   string
 	apiKey       string
 	router       *gin.Engine
+	dbCfg        *mysql.ConfigDB
 }
 
 func (s *Server) AddToCommand(cmd *cobra.Command) {
@@ -35,6 +37,11 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
 	viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
 	viper.BindPFlag(flagAPIKey, cmd.Flags().Lookup(flagAPIKey))
+
+	if s.dbCfg == nil {
+		s.dbCfg = &mysql.ConfigDB{}
+	}
+	s.dbCfg.AddToCommand(cmd)
 }
 
 func (s Server) isReady() bool {
@@ -48,7 +55,7 @@ func (s *Server) Run() error {
 	s.router = gin.Default()
 	s.router.Static("/static", s.staticPath)
 
-	s.router.LoadHTMLGlob(s.templatePath+"/*")
+	s.router.LoadHTMLGlob(s.templatePath + "/*")
 
 	// Information page
 	s.router.GET("/information", func(c *gin.Context) {
