@@ -10,6 +10,7 @@
 # limitations under the License.
 
 ---
+# All vars and IPs shall be dynamic.
 all:
   hosts:
     147.75.100.161:
@@ -21,8 +22,5 @@ all:
     vitess_git_version: "HEAD"
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "HEAD"
-    database_name: "DB_NAME"
-    database_hostname: "DB_HOSTNAME"
-    database_username: "DB_USERNAME"
-    database_password: "DB_PASSWORD"
-    package_name: "PKG_NAME"
+    microbenchmarks_vitess_package: "./go/vt/sqlparser/..."
+    microbenchmarks_local_config: "../config/config_2.yaml"
