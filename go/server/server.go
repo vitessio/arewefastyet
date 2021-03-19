@@ -1,47 +1,99 @@
-package main
+package server
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/mysql"
 	"net/http"
-	//"fmt"
 )
 
-func main() {
-	router := gin.Default()
-	router.Static("/static", "./static")
+const (
+	ErrorIncorrectConfiguration = "incorrect configuration"
 
-	router.LoadHTMLGlob("templates/*")
-	//router.LoadHTMLFiles("templates/information.tmpl")
-	router.GET("/information", func(c *gin.Context) {
+	flagPort         = "web-port"
+	flagTemplatePath = "web-template-path"
+	flagStaticPath   = "web-static-path"
+	flagAPIKey       = "web-api-key"
+)
+
+type Server struct {
+	port         string
+	templatePath string
+	staticPath   string
+	apiKey       string
+	router       *gin.Engine
+	dbCfg        *mysql.ConfigDB
+}
+
+func (s *Server) AddToCommand(cmd *cobra.Command) {
+	cmd.Flags().StringVar(&s.port, flagPort, "8080", "Port used for the HTTP server")
+	cmd.Flags().StringVar(&s.templatePath, flagTemplatePath, "", "Path to the template directory")
+	cmd.Flags().StringVar(&s.staticPath, flagStaticPath, "", "Path to the static directory")
+	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
+
+	viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
+	viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
+	viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
+	viper.BindPFlag(flagAPIKey, cmd.Flags().Lookup(flagAPIKey))
+
+	if s.dbCfg == nil {
+		s.dbCfg = &mysql.ConfigDB{}
+	}
+	s.dbCfg.AddToCommand(cmd)
+}
+
+func (s Server) isReady() bool {
+	return s.port != "" && s.templatePath != "" && s.staticPath != "" && s.apiKey != ""
+}
+
+func (s *Server) Run() error {
+	if s.isReady() == false {
+		return errors.New(ErrorIncorrectConfiguration)
+	}
+	s.router = gin.Default()
+	s.router.Static("/static", s.staticPath)
+
+	s.router.LoadHTMLGlob(s.templatePath + "/*")
+
+	// Information page
+	s.router.GET("/information", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "information.tmpl", gin.H{
 			"title": "Vitess benchmark",
 		})
 	})
 
-	//Home page
-	router.GET("/", func(c *gin.Context) {
+	// Home page
+	s.router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"title": "Vitess benchmark",
 		})
 	})
 
-	//Request benchmark page
-	router.GET("/search_compare", func(c *gin.Context) {
+	// Request benchmark page
+	s.router.GET("/search_compare", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "search_compare.tmpl", gin.H{
 			"title": "Vitess benchmark",
 		})
 	})
 
-	//Request benchmark page
-	router.GET("/request_benchmark", func(c *gin.Context) {
+	// Request benchmark page
+	s.router.GET("/request_benchmark", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "request_benchmark.tmpl", gin.H{
 			"title": "Vitess benchmark",
 		})
 	})
 
+	return s.router.Run(":" + s.port)
+}
 
-
-
-	router.Run(":8080")
-
+func Run(port, templatePath, staticPath, apiKey string) error {
+	s := Server{
+		port:         port,
+		templatePath: templatePath,
+		staticPath:   staticPath,
+		apiKey:       apiKey,
+	}
+	return s.Run()
 }
