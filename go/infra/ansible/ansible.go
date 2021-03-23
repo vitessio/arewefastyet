@@ -106,7 +106,7 @@ func Run(c *Config) error {
 	return nil
 }
 
-func (c *Config) CopyRootFolder(directory string) error {
+func (c *Config) CopyRootDirectory(directory string) error {
 	if _, err := os.Stat(directory); os.IsNotExist(err) {
 		return errors.New(ErrorPathUnknown)
 	}

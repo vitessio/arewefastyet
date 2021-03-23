@@ -19,36 +19,23 @@
 package exec
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/exec"
-	"log"
+	"encoding/json"
+	"github.com/vitessio/arewefastyet/go/infra"
 )
 
-func ExecCmd() *cobra.Command {
-	ex, err := exec.NewExec()
+func provision(infra infra.Infra) (IPs []string, err error) {
+	if err = infra.Prepare(); err != nil {
+		return nil, err
+	}
+
+	out, err := infra.Create("device_public_ip")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	cmd := &cobra.Command{
-		Use: "exec",
-		Aliases: []string{"e"},
-		Short: "Execute a task",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// prepare
-			if err := ex.Prepare(); err != nil {
-				return err
-			}
-
-			// execute
-			if err := ex.Execute(); err != nil {
-				return err
-			}
-
-			return nil
-		},
+	err = json.Unmarshal([]byte(out["device_public_ip"]), &IPs)
+	if err != nil {
+		return nil, err
 	}
-
-	ex.AddToCommand(cmd)
-	return cmd
+	return IPs, nil
 }

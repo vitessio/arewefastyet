@@ -125,6 +125,7 @@ func TestConfig_CopyTerraformDirectory(t *testing.T) {
 			stat, err := os.Stat(mustFile)
 			c.Assert(err, qt.IsNil)
 			c.Assert(stat.Name(), qt.Equals, "test.txt")
+			c.Assert(tt.cfg.Path, qt.Equals, tt.dir)
 		})
 	}
 }

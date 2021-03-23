@@ -20,6 +20,7 @@ package exec
 
 import (
 	"github.com/google/uuid"
+	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/infra"
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
@@ -31,6 +32,39 @@ type Exec struct {
 	InfraConfig   infra.Config
 	AnsibleConfig ansible.Config
 	Infra         infra.Infra
+
+	rootDir string
+	dirPath string
+}
+
+func (e *Exec) Prepare() error {
+	err := e.prepareDirectories()
+	if err != nil {
+		return err
+	}
+
+	IPs, err := provision(e.Infra)
+	if err != nil {
+		return err
+	}
+
+	err = ansible.AddIPsToFiles(IPs, e.AnsibleConfig)
+	if err != nil {
+		return err
+	}
+	err = ansible.AddLocalConfigPathToFiles(viper.ConfigFileUsed(), e.AnsibleConfig)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e *Exec) Execute() error {
+	err := e.Infra.Run(&e.AnsibleConfig)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewExec() (*Exec, error) {
@@ -49,3 +83,4 @@ func NewExec() (*Exec, error) {
 
 	return &ex, nil
 }
+

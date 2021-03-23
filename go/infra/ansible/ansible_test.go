@@ -54,7 +54,7 @@ func TestConfig_MoveRootFolder(t *testing.T) {
 				os.Create(testFile)
 			}
 
-			err := tt.cfg.CopyRootFolder(tt.dir)
+			err := tt.cfg.CopyRootDirectory(tt.dir)
 			if tt.wantErr == false {
 				c.Assert(err, qt.IsNil)
 			} else {
@@ -66,6 +66,7 @@ func TestConfig_MoveRootFolder(t *testing.T) {
 			stat, err := os.Stat(mustFile)
 			c.Assert(err, qt.IsNil)
 			c.Assert(stat.Name(), qt.Equals, "test.txt")
+			c.Assert(tt.cfg.RootDir, qt.Equals, tt.dir)
 		})
 	}
 }
