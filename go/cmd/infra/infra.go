@@ -23,10 +23,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra"
 )
 
-const (
-	flagInfraPath = "infra-path"
-)
-
 func InfraCmd() *cobra.Command {
 	var cfg infra.Config
 
@@ -36,7 +32,7 @@ func InfraCmd() *cobra.Command {
 		Aliases: []string{"i"},
 	}
 
-	cmd.PersistentFlags().StringVar(&cfg.Path, flagInfraPath, "", "Path to the infra directory")
+	cfg.AddToPersistentCommand(cmd)
 	cmd.AddCommand(create(&cfg))
 	return cmd
 }
