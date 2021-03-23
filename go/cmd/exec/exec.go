@@ -21,6 +21,7 @@ package exec
 import (
 	"encoding/json"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"log"
@@ -56,6 +57,10 @@ func ExecCmd() *cobra.Command {
 			}
 
 			err = ansible.AddIPsToFiles(ips, ex.AnsibleConfig)
+			if err != nil {
+				return err
+			}
+			err = ansible.AddLocalConfigPathToFiles(viper.ConfigFileUsed(), ex.AnsibleConfig)
 			if err != nil {
 				return err
 			}

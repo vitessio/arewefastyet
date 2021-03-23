@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/viper"
 	"io/ioutil"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -32,11 +33,12 @@ const (
 	flagInventoryFiles = "ansible-inventory-files"
 	flagPlaybookFiles  = "ansible-playbook-files"
 
-	tokenDeviceIP = "DEVICE_IP"
+	tokenDeviceIP        = "DEVICE_IP"
+	tokenLocalConfigPath = "LOCAL_CONFIG_PATH"
 )
 
 type Config struct {
-	RootDir string
+	RootDir        string
 	InventoryFiles []string
 	PlaybookFiles  []string
 }
@@ -51,7 +53,7 @@ func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
 	viper.BindPFlag(flagPlaybookFiles, cmd.Flags().Lookup(flagPlaybookFiles))
 }
 
-func addIPsToFile(IPs []string, file, root string) error {
+func insertMetaSliceToFile(values []string, file, root, token string) error {
 	if path.IsAbs(file) == false {
 		file = path.Join(root, file)
 	}
@@ -60,8 +62,8 @@ func addIPsToFile(IPs []string, file, root string) error {
 		return err
 	}
 	var newContent string
-	for i, IP := range IPs {
-		newContent = strings.Replace(string(content), fmt.Sprintf("%s_%d", tokenDeviceIP, i), IP, -1)
+	for i, val := range values {
+		newContent = strings.Replace(string(content), fmt.Sprintf("%s_%d", token, i), val, -1)
 	}
 	err = ioutil.WriteFile(file, []byte(newContent), 0)
 	if err != nil {
@@ -70,9 +72,9 @@ func addIPsToFile(IPs []string, file, root string) error {
 	return nil
 }
 
-func addIPsToFileSlice(IPs, files []string, root string) error {
+func insetMetaSliceToFiles(values, files []string, root, token string) error {
 	for _, file := range files {
-		err := addIPsToFile(IPs, file, root)
+		err := insertMetaSliceToFile(values, file, root, token)
 		if err != nil {
 			return err
 		}
@@ -81,12 +83,29 @@ func addIPsToFileSlice(IPs, files []string, root string) error {
 }
 
 func AddIPsToFiles(IPs []string, c Config) error {
-	err := addIPsToFileSlice(IPs, c.PlaybookFiles, c.RootDir)
+	err := insetMetaSliceToFiles(IPs, c.PlaybookFiles, c.RootDir, tokenDeviceIP)
 	if err != nil {
 		return err
 	}
 
-	err = addIPsToFileSlice(IPs, c.InventoryFiles, c.RootDir)
+	err = insetMetaSliceToFiles(IPs, c.InventoryFiles, c.RootDir, tokenDeviceIP)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func AddLocalConfigPathToFiles(configPath string, c Config) error {
+	absConfigPath, err := filepath.Abs(configPath)
+	if err != nil {
+		return err
+	}
+	err = insetMetaSliceToFiles([]string{absConfigPath}, c.InventoryFiles, c.RootDir, tokenLocalConfigPath)
+	if err != nil {
+		return err
+	}
+
+	err = insetMetaSliceToFiles([]string{absConfigPath}, c.PlaybookFiles, c.RootDir, tokenLocalConfigPath)
 	if err != nil {
 		return err
 	}

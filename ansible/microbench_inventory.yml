@@ -23,4 +23,4 @@ all:
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "HEAD"
     microbenchmarks_vitess_package: "./go/vt/sqlparser/..."
-    microbenchmarks_local_config: "../config/config.yaml"
+    microbenchmarks_local_config: "LOCAL_CONFIG_PATH_0"
