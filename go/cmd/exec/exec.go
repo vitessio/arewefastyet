@@ -19,8 +19,10 @@
 package exec
 
 import (
+	"encoding/json"
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/exec"
+	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"log"
 )
 
@@ -35,16 +37,28 @@ func ExecCmd() *cobra.Command {
 		Aliases: []string{"e"},
 		Short: "Execute a task",
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			// setup infra
 			if err := ex.Infra.Prepare(); err != nil {
 				return err
 			}
 			defer ex.InfraConfig.Close()
-
 			out, err := ex.Infra.Create("device_public_ip")
 			if err != nil {
 				return err
 			}
-			log.Println(out["device_public_ip"])
+
+			// get IPs
+			var ips []string
+			err = json.Unmarshal([]byte(out["device_public_ip"]), &ips)
+			if err != nil {
+				log.Println(err)
+			}
+
+			err = ansible.AddIPsToFiles(ips, ex.AnsibleConfig)
+			if err != nil {
+				return err
+			}
 
 			ex.Infra.Run(ex.AnsibleConfig)
 			return nil

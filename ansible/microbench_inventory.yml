@@ -13,14 +13,14 @@
 # All vars and IPs shall be dynamic.
 all:
   hosts:
-    147.75.100.161:
+    DEVICE_IP_0:
   children:
     microbench:
       hosts:
-        147.75.100.161:
+        DEVICE_IP_0:
   vars:
     vitess_git_version: "HEAD"
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "HEAD"
     microbenchmarks_vitess_package: "./go/vt/sqlparser/..."
-    microbenchmarks_local_config: "../config/config_2.yaml"
+    microbenchmarks_local_config: "../config/config.yaml"
