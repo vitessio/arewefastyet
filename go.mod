@@ -3,10 +3,11 @@ module github.com/vitessio/arewefastyet
 go 1.15
 
 require (
+	github.com/apenella/go-ansible v1.0.0
 	github.com/frankban/quicktest v1.11.3
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/google/uuid v1.2.0 // indirect
+	github.com/google/uuid v1.2.0
 	github.com/hashicorp/terraform-exec v0.13.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/slack-go/slack v0.8.1

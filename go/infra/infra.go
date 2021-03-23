@@ -39,7 +39,7 @@ type Infra interface {
 	ValidConfig() error
 	Prepare() error
 	TerraformVarArray() (vars []*tfexec.VarOption)
-	Run(ansible ansible.Config) error
+	Run(ansible *ansible.Config) error
 	SetConfig(config *Config)
 }
 

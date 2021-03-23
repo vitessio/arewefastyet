@@ -65,8 +65,7 @@ func ExecCmd() *cobra.Command {
 				return err
 			}
 
-			ex.Infra.Run(ex.AnsibleConfig)
-			return nil
+			return ex.Infra.Run(&ex.AnsibleConfig)
 		},
 	}
 

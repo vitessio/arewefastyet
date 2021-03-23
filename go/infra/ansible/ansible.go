@@ -19,22 +19,19 @@
 package ansible
 
 import (
-	"fmt"
+	"context"
+	"github.com/apenella/go-ansible/pkg/execute"
+	"github.com/apenella/go-ansible/pkg/options"
+	"github.com/apenella/go-ansible/pkg/playbook"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io/ioutil"
 	"path"
-	"path/filepath"
-	"strings"
 )
 
 const (
 	flagAnsibleRoot    = "ansible-root-directory"
 	flagInventoryFiles = "ansible-inventory-files"
 	flagPlaybookFiles  = "ansible-playbook-files"
-
-	tokenDeviceIP        = "DEVICE_IP"
-	tokenLocalConfigPath = "LOCAL_CONFIG_PATH"
 )
 
 type Config struct {
@@ -53,59 +50,51 @@ func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
 	viper.BindPFlag(flagPlaybookFiles, cmd.Flags().Lookup(flagPlaybookFiles))
 }
 
-func insertMetaSliceToFile(values []string, file, root, token string) error {
-	if path.IsAbs(file) == false {
-		file = path.Join(root, file)
-	}
-	content, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-	var newContent string
-	for i, val := range values {
-		newContent = strings.Replace(string(content), fmt.Sprintf("%s_%d", token, i), val, -1)
-	}
-	err = ioutil.WriteFile(file, []byte(newContent), 0)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func insetMetaSliceToFiles(values, files []string, root, token string) error {
-	for _, file := range files {
-		err := insertMetaSliceToFile(values, file, root, token)
-		if err != nil {
-			return err
+func applyRootToFiles(root string, files *[]string) {
+	for i, file := range *files {
+		if path.IsAbs(file) == false {
+			(*files)[i] = path.Join(root, file)
 		}
 	}
-	return nil
 }
 
-func AddIPsToFiles(IPs []string, c Config) error {
-	err := insetMetaSliceToFiles(IPs, c.PlaybookFiles, c.RootDir, tokenDeviceIP)
-	if err != nil {
-		return err
+func inventoryFilesToString(invFiles []string) string {
+	var res string
+	for i, inv := range invFiles {
+		if i > 0 {
+			res = res + ", "
+		}
+		res = res + inv
 	}
-
-	err = insetMetaSliceToFiles(IPs, c.InventoryFiles, c.RootDir, tokenDeviceIP)
-	if err != nil {
-		return err
-	}
-	return nil
+	return res
 }
 
-func AddLocalConfigPathToFiles(configPath string, c Config) error {
-	absConfigPath, err := filepath.Abs(configPath)
-	if err != nil {
-		return err
-	}
-	err = insetMetaSliceToFiles([]string{absConfigPath}, c.InventoryFiles, c.RootDir, tokenLocalConfigPath)
-	if err != nil {
-		return err
+func Run(c *Config) error {
+	applyRootToFiles(c.RootDir, &c.PlaybookFiles)
+	applyRootToFiles(c.RootDir, &c.InventoryFiles)
+
+	ansiblePlaybookConnectionOptions := &options.AnsibleConnectionOptions{
+		User:          "root",
+		SSHCommonArgs: "-o StrictHostKeyChecking=no",
 	}
 
-	err = insetMetaSliceToFiles([]string{absConfigPath}, c.PlaybookFiles, c.RootDir, tokenLocalConfigPath)
+	ansiblePlaybookOptions := &playbook.AnsiblePlaybookOptions{
+		Inventory: inventoryFilesToString(c.InventoryFiles),
+	}
+
+	ansiblePlaybookPrivilegeEscalationOptions := &options.AnsiblePrivilegeEscalationOptions{
+		Become: true,
+	}
+
+	plb := &playbook.AnsiblePlaybookCmd{
+		Playbooks:                  c.PlaybookFiles,
+		ConnectionOptions:          ansiblePlaybookConnectionOptions,
+		PrivilegeEscalationOptions: ansiblePlaybookPrivilegeEscalationOptions,
+		Options:                    ansiblePlaybookOptions,
+		Exec:                       execute.NewDefaultExecute(execute.WithShowDuration()),
+	}
+
+	err := plb.Run(context.TODO())
 	if err != nil {
 		return err
 	}
