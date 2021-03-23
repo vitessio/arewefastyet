@@ -24,19 +24,23 @@ import (
 )
 
 const (
+	flagAnsibleRoot    = "ansible-root-directory"
 	flagInventoryFiles = "ansible-inventory-files"
-	flagPlaybookFiles = "ansible-playbook-files"
+	flagPlaybookFiles  = "ansible-playbook-files"
 )
 
-type AnsibleConfig struct {
+type Config struct {
+	RootDir string
 	InventoryFiles []string
 	PlaybookFiles  []string
 }
 
-func (a *AnsibleConfig) AddToPersistentCommand(cmd *cobra.Command) {
+func (a *Config) AddToPersistentCommand(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringVar(&a.RootDir, flagAnsibleRoot, "", "Root directory of Ansible")
 	cmd.PersistentFlags().StringSliceVar(&a.InventoryFiles, flagInventoryFiles, []string{}, "List of inventory files used by Ansible")
 	cmd.PersistentFlags().StringSliceVar(&a.PlaybookFiles, flagPlaybookFiles, []string{}, "List of playbook files used by Ansible")
 
+	viper.BindPFlag(flagAnsibleRoot, cmd.Flags().Lookup(flagAnsibleRoot))
 	viper.BindPFlag(flagInventoryFiles, cmd.Flags().Lookup(flagInventoryFiles))
 	viper.BindPFlag(flagPlaybookFiles, cmd.Flags().Lookup(flagPlaybookFiles))
 }

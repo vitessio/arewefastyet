@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/hashicorp/terraform-exec/tfinstall"
 	"github.com/spf13/cobra"
+	"github.com/vitessio/arewefastyet/go/infra/ansible"
 )
 
 const (
@@ -38,7 +39,8 @@ type Infra interface {
 	ValidConfig() error
 	Prepare() error
 	TerraformVarArray() (vars []*tfexec.VarOption)
-	Run() error
+	Run(ansible ansible.Config) error
+	SetConfig(config *Config)
 }
 
 func getTerraformExecPath(installPath string) (string, error) {

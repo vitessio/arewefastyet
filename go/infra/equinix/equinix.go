@@ -25,10 +25,13 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/infra"
+	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"log"
 )
 
 const (
+	Name = "equinix"
+
 	flagToken        = "equinix-token"
 	flagProjectID    = "equinix-project-id"
 	flagInstanceType = "equinix-instance-type"
@@ -140,6 +143,10 @@ func (e *Equinix) Prepare() error {
 	return nil
 }
 
-func (e *Equinix) Run() error {
+func (e *Equinix) Run(ansible ansible.Config) error {
 	return nil
+}
+
+func (e *Equinix) SetConfig(config *infra.Config) {
+	e.InfraCfg = config
 }
