@@ -20,15 +20,20 @@ package ansible
 
 import (
 	"context"
+	"errors"
 	"github.com/apenella/go-ansible/pkg/execute"
 	"github.com/apenella/go-ansible/pkg/options"
 	"github.com/apenella/go-ansible/pkg/playbook"
+	"github.com/otiai10/copy"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 	"path"
 )
 
 const (
+	ErrorPathUnknown = "path does not exist"
+
 	flagAnsibleRoot    = "ansible-root-directory"
 	flagInventoryFiles = "ansible-inventory-files"
 	flagPlaybookFiles  = "ansible-playbook-files"
@@ -98,5 +103,18 @@ func Run(c *Config) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (c *Config) CopyRootFolder(directory string) error {
+	if _, err := os.Stat(directory); os.IsNotExist(err) {
+		return errors.New(ErrorPathUnknown)
+	}
+
+	err := copy.Copy(c.RootDir, directory)
+	if err != nil {
+		return err
+	}
+	c.RootDir = directory
 	return nil
 }
