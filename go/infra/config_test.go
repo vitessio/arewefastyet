@@ -22,6 +22,7 @@ import (
 	qt "github.com/frankban/quicktest"
 	"io/ioutil"
 	"os"
+	"path"
 	"testing"
 )
 
@@ -80,6 +81,50 @@ func TestConfig_Valid(t *testing.T) {
 			if tt.wantErr != "" && gotValid != nil {
 				c.Assert(gotValid, qt.ErrorMatches, tt.wantErr)
 			}
+		})
+	}
+}
+
+func TestConfig_CopyTerraformDirectory(t *testing.T) {
+	newTmpDir := func() string {
+		path, _ := ioutil.TempDir("", "")
+		return path
+	}
+	tests := []struct {
+		name    string
+		cfg     Config
+		dir     string
+		wantErr bool
+	}{
+		{name: "Valid directory", cfg: Config{Path: newTmpDir()}, dir: newTmpDir()},
+		{name: "Invalid directory", cfg: Config{Path: newTmpDir()}, dir: "invalid", wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+			c.Cleanup(func() {
+				os.RemoveAll(tt.cfg.Path)
+				os.RemoveAll(tt.dir)
+			})
+
+			var testFile string
+			if tt.cfg.Path != "" {
+				testFile = path.Join(tt.cfg.Path, "test.txt")
+				os.Create(testFile)
+			}
+
+			err := tt.cfg.CopyTerraformDirectory(tt.dir)
+			if tt.wantErr == false {
+				c.Assert(err, qt.IsNil)
+			} else {
+				c.Assert(err, qt.Not(qt.IsNil))
+				return
+			}
+
+			mustFile := path.Join(tt.dir, "test.txt")
+			stat, err := os.Stat(mustFile)
+			c.Assert(err, qt.IsNil)
+			c.Assert(stat.Name(), qt.Equals, "test.txt")
 		})
 	}
 }
