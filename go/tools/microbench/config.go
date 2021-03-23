@@ -24,3 +24,7 @@ type MicroBenchConfig struct {
 	Output         string
 	DatabaseConfig *mysql.ConfigDB
 }
+
+func (m MicroBenchConfig) ICfg() {
+	panic("implement me")
+}
