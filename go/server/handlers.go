@@ -50,14 +50,30 @@ func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 }
 
 func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
-	mrs, err := microbench.GetResultsForGitRef("36110d81be87fdd11e0626eeff529ce67df27661", s.dbClient)
+	// get current results
+	currentSHA := "36110d81be87fdd11e0626eeff529ce67df27661"
+	currentMbd, err := microbench.GetResultsForGitRef(currentSHA, s.dbClient)
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	mrs = mrs.ReduceSimpleMedian()
-	log.Println(mrs)
+	currentMbd = currentMbd.ReduceSimpleMedian()
+
+	// get last release results
+	lastReleaseSHA := "daa60859822ff85ce18e2d10c61a27b7797ec6b8"
+	lastReleaseMbd, err := microbench.GetResultsForGitRef(lastReleaseSHA, s.dbClient)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedian()
+
+	matrix := microbench.MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd)
 
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
-		"title": "Vitess benchmark - microbenchmark s",
+		"title":          "Vitess benchmark - microbenchmark",
+		"currentSHA":     currentSHA,
+		"lastReleaseSHA": lastReleaseSHA,
+		"resultMatrix":   matrix,
 	})
 }

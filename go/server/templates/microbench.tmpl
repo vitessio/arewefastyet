@@ -13,26 +13,28 @@
     <section class="py-5">
         <div class="container">
             <h1>Microbenchmarks</h1>
-            <p class="lead"></p>
+            <p class="lead">Displaying results for commit hash {{ .currentSHA }}</p>
+            <a href="https://github.com/vitessio/vitess/commit/{{ .currentSHA }}" target="_blank">See commit on GitHub.</a>
         </div>
 
         <div class="container">
-            <table class="table">
+            <table class="table table-striped table-hover table-sm table-bordered">
                 <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
-                </tr>
+                    <tr>
+                        <th scope="col">Package</th>
+                        <th scope="col">Benchmark Name</th>
+                        <th scope="col" colspan="2" class="text-center">nanosecond/op</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
+                {{range $val := .resultMatrix}}
+                    <tr>
+                        <td>{{ $val.PkgName }}</td>
+                        <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
+                        <td class="text-right">{{ $val.Current.NSPerOp }}</td>
+                        <td class="text-right">{{ $val.Last.NSPerOp }}</td>
+                    </tr>
+                {{end}}
                 </tbody>
             </table>
         </div>
