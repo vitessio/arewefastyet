@@ -47,6 +47,28 @@ type (
 	MicroBenchmarkComparisonArray []MicroBenchmarkComparison
 )
 
+func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, result MicroBenchmarkResult) *MicroBenchmarkDetails {
+	return &MicroBenchmarkDetails{
+		BenchmarkId: benchmarkId,
+		GitRef: gitRef,
+		Result: result,
+	}
+}
+
+func NewBenchmarkId(pkgName string, name string) *BenchmarkId {
+	return &BenchmarkId{
+		PkgName: pkgName,
+		Name: name,
+	}
+}
+
+func NewMicroBenchmarkResult(ops int, NSPerOp float64) *MicroBenchmarkResult {
+	return &MicroBenchmarkResult{
+		Ops: ops,
+		NSPerOp: NSPerOp,
+	}
+}
+
 func MergeMicroBenchmarkDetails(currDetails, lastDetails MicroBenchmarkDetailsArray) MicroBenchmarkComparisonArray {
 	var comparisons MicroBenchmarkComparisonArray
 
