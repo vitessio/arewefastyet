@@ -26,11 +26,11 @@ import (
 func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 	tests := []struct {
 		name string
-		mrs  MicroBenchmarkDetailsArray
+		mbd  MicroBenchmarkDetailsArray
 		want MicroBenchmarkDetailsArray
 	}{
 		// tc1
-		{name: "Few simple values in same package but different benchmark names", mrs: MicroBenchmarkDetailsArray{
+		{name: "Few simple values in same package but different benchmark names", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
@@ -49,7 +49,7 @@ func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 		}},
 
 		// tc2
-		{name: "Few values in different packages and different benchmark names", mrs: MicroBenchmarkDetailsArray{
+		{name: "Few values in different packages and different benchmark names", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1 in pkg 1
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00)),
@@ -68,7 +68,7 @@ func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 		}},
 
 		// tc3
-		{name: "More unordered values with single package and benchmark name", mrs: MicroBenchmarkDetailsArray{
+		{name: "More unordered values with single package and benchmark name", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 30.00)),
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00)),
@@ -88,14 +88,14 @@ func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
-			got := tt.mrs.ReduceSimpleMedian()
+			got := tt.mbd.ReduceSimpleMedian()
 			c.Assert(got, qt.DeepEquals, tt.want)
 		})
 	}
 }
 
 func BenchmarkReduceSimpleMedian(b *testing.B) {
-	mrs := MicroBenchmarkDetailsArray{
+	mbd := MicroBenchmarkDetailsArray{
 		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
 		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
 		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
@@ -106,7 +106,7 @@ func BenchmarkReduceSimpleMedian(b *testing.B) {
 
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		got := mrs.ReduceSimpleMedian()
+		got := mbd.ReduceSimpleMedian()
 
 		// Must be reduced to two indexes (bench1-pkg1 AND bench2-pkg1).
 		if len(got) != 2 {
@@ -120,8 +120,8 @@ func BenchmarkReduceSimpleMedian(b *testing.B) {
 
 func TestMergeMicroBenchmarkDetails(t *testing.T) {
 	type args struct {
-		currDetails MicroBenchmarkDetailsArray
-		lastDetails MicroBenchmarkDetailsArray
+		currentMbd     MicroBenchmarkDetailsArray
+		lastReleaseMbd MicroBenchmarkDetailsArray
 	}
 	tests := []struct {
 		name string
@@ -130,10 +130,10 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 	}{
 		// tc1
 		{name: "Simple compare with ordered array of one elements", args: args{
-			currDetails: MicroBenchmarkDetailsArray{
+			currentMbd: MicroBenchmarkDetailsArray{
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
 			},
-			lastDetails: MicroBenchmarkDetailsArray{
+			lastReleaseMbd: MicroBenchmarkDetailsArray{
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
@@ -142,11 +142,11 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 
 		// tc2
 		{name: "Simple compare with ordered array of two elements", args: args{
-			currDetails: MicroBenchmarkDetailsArray{
+			currentMbd: MicroBenchmarkDetailsArray{
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00)),
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 98.00)),
 			},
-			lastDetails: MicroBenchmarkDetailsArray{
+			lastReleaseMbd: MicroBenchmarkDetailsArray{
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00)),
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 89.00)),
 			},
@@ -157,12 +157,12 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 
 		// tc3
 		{name: "Compare with unordered array", args: args{
-			currDetails: MicroBenchmarkDetailsArray{
+			currentMbd: MicroBenchmarkDetailsArray{
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 58.00)),
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 1.00)),
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 98.00)),
 			},
-			lastDetails: MicroBenchmarkDetailsArray{
+			lastReleaseMbd: MicroBenchmarkDetailsArray{
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 89.00)),
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 5.00)),
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 56.00)),
@@ -177,7 +177,7 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
-			got := MergeMicroBenchmarkDetails(tt.args.currDetails, tt.args.lastDetails)
+			got := MergeMicroBenchmarkDetails(tt.args.currentMbd, tt.args.lastReleaseMbd)
 			c.Assert(got, qt.HasLen, len(tt.want))
 			c.Assert(got, qt.DeepEquals, tt.want)
 		})

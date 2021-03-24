@@ -69,37 +69,33 @@ func NewMicroBenchmarkResult(ops int, NSPerOp float64) *MicroBenchmarkResult {
 	}
 }
 
-func MergeMicroBenchmarkDetails(currDetails, lastDetails MicroBenchmarkDetailsArray) MicroBenchmarkComparisonArray {
-	var comparisons MicroBenchmarkComparisonArray
-
-	for _, details := range currDetails {
-		var comparison MicroBenchmarkComparison
-		comparison.BenchmarkId = details.BenchmarkId
-		comparison.Current = details.Result
-		for j := 0; j < len(lastDetails); j++ {
-			if lastDetails[j].BenchmarkId == details.BenchmarkId {
-				comparison.Last = lastDetails[j].Result
+func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetailsArray) (compareMbs MicroBenchmarkComparisonArray) {
+	for _, details := range currentMbd {
+		var compareMb MicroBenchmarkComparison
+		compareMb.BenchmarkId = details.BenchmarkId
+		compareMb.Current = details.Result
+		for j := 0; j < len(lastReleaseMbd); j++ {
+			if lastReleaseMbd[j].BenchmarkId == details.BenchmarkId {
+				compareMb.Last = lastReleaseMbd[j].Result
 				break
 			}
 		}
-		comparisons = append(comparisons, comparison)
+		compareMbs = append(compareMbs, compareMb)
 	}
-	return comparisons
+	return compareMbs
 }
 
-func (mrs MicroBenchmarkDetailsArray) ReduceSimpleMedian() MicroBenchmarkDetailsArray {
-	var details MicroBenchmarkDetailsArray
-
-	sort.Slice(mrs, func(i, j int) bool {
-		return mrs[i].PkgName < mrs[j].PkgName && mrs[i].Name < mrs[j].Name
+func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBenchmarkDetailsArray) {
+	sort.Slice(mbd, func(i, j int) bool {
+		return mbd[i].PkgName < mbd[j].PkgName && mbd[i].Name < mbd[j].Name
 	})
-	for i := 0; i < len(mrs); {
+	for i := 0; i < len(mbd); {
 		var j int
 		var interOps []int
 		var interNSPerOp []float64
-		for j = i; j < len(mrs) && mrs[i].Name == mrs[j].Name; j++ {
-			interOps = append(interOps, mrs[j].Result.Ops)
-			interNSPerOp = append(interNSPerOp, mrs[j].Result.NSPerOp)
+		for j = i; j < len(mbd) && mbd[i].Name == mbd[j].Name; j++ {
+			interOps = append(interOps, mbd[j].Result.Ops)
+			interNSPerOp = append(interNSPerOp, mbd[j].Result.NSPerOp)
 		}
 
 		sort.Ints(interOps)
@@ -107,20 +103,14 @@ func (mrs MicroBenchmarkDetailsArray) ReduceSimpleMedian() MicroBenchmarkDetails
 		interOpsResult := medianInt(interOps)
 		interNSPerOpResult := medianFloat(interNSPerOp)
 
-		details = append(details, MicroBenchmarkDetails{
-			BenchmarkId: BenchmarkId{
-				PkgName: mrs[i].PkgName,
-				Name:    mrs[i].Name,
-			},
-			GitRef: mrs[i].GitRef,
-			Result: MicroBenchmarkResult{
-				Ops:     interOpsResult,
-				NSPerOp: interNSPerOpResult,
-			},
-		})
+		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(
+			*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name),
+			mbd[i].GitRef,
+			*NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult),
+		))
 		i = j
 	}
-	return details
+	return reduceMbd
 }
 
 func medianInt(values []int) int {
