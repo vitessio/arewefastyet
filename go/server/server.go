@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/mysql"
-	"net/http"
 )
 
 const (
@@ -58,32 +57,16 @@ func (s *Server) Run() error {
 	s.router.LoadHTMLGlob(s.templatePath + "/*")
 
 	// Information page
-	s.router.GET("/information", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "information.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
+	s.router.GET("/information", informationHandler)
 
 	// Home page
-	s.router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
+	s.router.GET("/", homeHanlder)
+
+	// Search and compare page
+	s.router.GET("/search_compare", searchCompareHandler)
 
 	// Request benchmark page
-	s.router.GET("/search_compare", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "search_compare.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
-
-	// Request benchmark page
-	s.router.GET("/request_benchmark", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "request_benchmark.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
+	s.router.GET("/request_benchmark", requestBenchmarkHandler)
 
 	return s.router.Run(":" + s.port)
 }
