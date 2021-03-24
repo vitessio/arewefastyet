@@ -42,9 +42,28 @@ type (
 		BenchmarkId
 		Current, Last MicroBenchmarkResult
 	}
+
+	MicroBenchmarkDetailsArray    []MicroBenchmarkDetails
+	MicroBenchmarkComparisonArray []MicroBenchmarkComparison
 )
 
-type MicroBenchmarkDetailsArray []MicroBenchmarkDetails
+func MergeMicroBenchmarkDetails(currDetails, lastDetails MicroBenchmarkDetailsArray) MicroBenchmarkComparisonArray {
+	var comparisons MicroBenchmarkComparisonArray
+
+	for _, details := range currDetails {
+		var comparison MicroBenchmarkComparison
+		comparison.BenchmarkId = details.BenchmarkId
+		comparison.Current = details.Result
+		for j := 0; j < len(lastDetails); j++ {
+			if lastDetails[j].BenchmarkId == details.BenchmarkId {
+				comparison.Last = lastDetails[j].Result
+				break
+			}
+		}
+		comparisons = append(comparisons, comparison)
+	}
+	return comparisons
+}
 
 func (mrs MicroBenchmarkDetailsArray) ReduceSimpleMedian() MicroBenchmarkDetailsArray {
 	var details MicroBenchmarkDetailsArray
@@ -69,10 +88,10 @@ func (mrs MicroBenchmarkDetailsArray) ReduceSimpleMedian() MicroBenchmarkDetails
 		details = append(details, MicroBenchmarkDetails{
 			BenchmarkId: BenchmarkId{
 				PkgName: mrs[i].PkgName,
-				Name: mrs[i].Name,
+				Name:    mrs[i].Name,
 			},
-			GitRef:      mrs[i].GitRef,
-			Result:      MicroBenchmarkResult{
+			GitRef: mrs[i].GitRef,
+			Result: MicroBenchmarkResult{
 				Ops:     interOpsResult,
 				NSPerOp: interNSPerOpResult,
 			},

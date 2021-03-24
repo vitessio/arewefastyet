@@ -84,32 +84,60 @@ func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 			// want bench 1
 			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 20.00 }},
 		}},
-
-		// tc4
-		// {name: "Verify ordering by names", mrs: MicroBenchmarkDetailsArray{
-		// 	// input bench 2
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
-		//
-		// 	// input bench 1
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
-		//
-		// }, want: MicroBenchmarkResults{
-		// 	// want bench 1
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
-		//
-		// 	// want bench 2
-		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
-		// }},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
 			got := tt.mrs.ReduceSimpleMedian()
+			c.Assert(got, qt.DeepEquals, tt.want)
+		})
+	}
+}
+
+func TestMergeMicroBenchmarkDetails(t *testing.T) {
+	type args struct {
+		currDetails MicroBenchmarkDetailsArray
+		lastDetails MicroBenchmarkDetailsArray
+	}
+	tests := []struct {
+		name string
+		args args
+		want MicroBenchmarkComparisonArray
+	}{
+		// tc1
+		{name: "Simple compare with array of one elements", args: args{
+			currDetails: MicroBenchmarkDetailsArray{
+				MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 1.00 }},
+			},
+			lastDetails: MicroBenchmarkDetailsArray{
+				MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 5.00 }},
+			},
+		}, want: MicroBenchmarkComparisonArray{
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: MicroBenchmarkResult{NSPerOp: 1.00}, Last: MicroBenchmarkResult{NSPerOp: 5.00}},
+		}},
+
+		// tc2
+		{name: "Simple compare with array of two elements", args: args{
+			currDetails: MicroBenchmarkDetailsArray{
+				MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 1.00 }},
+				MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 98.00 }},
+			},
+			lastDetails: MicroBenchmarkDetailsArray{
+				MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 5.00 }},
+				MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 89.00 }},
+			},
+		}, want: MicroBenchmarkComparisonArray{
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: MicroBenchmarkResult{NSPerOp: 1.00}, Last: MicroBenchmarkResult{NSPerOp: 5.00}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: MicroBenchmarkResult{NSPerOp: 98.00}, Last: MicroBenchmarkResult{NSPerOp: 89.00}},
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+
+			got := MergeMicroBenchmarkDetails(tt.args.currDetails, tt.args.lastDetails)
+			c.Assert(got, qt.HasLen, len(tt.want))
 			c.Assert(got, qt.DeepEquals, tt.want)
 		})
 	}
