@@ -46,3 +46,9 @@ func requestBenchmarkHandler(c *gin.Context) {
 		"title": "Vitess benchmark",
 	})
 }
+
+func microbenchmarkResultsHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
+		"title": "Vitess benchmark - microbenchmark s",
+	})
+}

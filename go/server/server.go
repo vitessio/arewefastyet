@@ -24,6 +24,7 @@ type Server struct {
 	apiKey       string
 	router       *gin.Engine
 	dbCfg        *mysql.ConfigDB
+	dbClient     *mysql.Client
 }
 
 func (s *Server) AddToCommand(cmd *cobra.Command) {
@@ -50,7 +51,13 @@ func (s Server) isReady() bool {
 func (s *Server) Run() error {
 	if s.isReady() == false {
 		return errors.New(ErrorIncorrectConfiguration)
+
 	}
+
+	if err := s.setupMySQL(); err != nil {
+		return err
+	}
+
 	s.router = gin.Default()
 	s.router.Static("/static", s.staticPath)
 
@@ -67,6 +74,9 @@ func (s *Server) Run() error {
 
 	// Request benchmark page
 	s.router.GET("/request_benchmark", requestBenchmarkHandler)
+
+	// Request benchmark page
+	s.router.GET("/microbench", microbenchmarkResultsHandler)
 
 	return s.router.Run(":" + s.port)
 }
