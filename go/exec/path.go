@@ -20,7 +20,6 @@ package exec
 
 import (
 	"github.com/google/uuid"
-	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -39,7 +38,7 @@ func createDirFromUUID(uuid uuid.UUID, root string) (dirPath string, err error) 
 		return "", err
 	}
 
-	err = os.MkdirAll(dirPath, fs.ModeDir | fs.ModePerm)
+	err = os.MkdirAll(dirPath, 0755)
 	if err != nil {
 		return "", err
 	}
@@ -53,7 +52,7 @@ func createSubDir(rootDir, subDir string, call func(dir string) error) error {
 		return err
 	}
 
-	err = os.Mkdir(subdirAbs, fs.ModeDir | fs.ModePerm)
+	err = os.Mkdir(subdirAbs, 0755)
 	if err != nil {
 		return err
 	}
