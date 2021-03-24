@@ -23,57 +23,93 @@ import (
 	"sort"
 )
 
-type MicroBenchmarkResult struct {
-	PkgName string
-	Name string
-	NSPerOp float64
-}
+type (
+	MicroBenchmarkResult struct {
+		Ops     int
+		NSPerOp float64
+	}
+	BenchmarkId struct {
+		PkgName string
+		Name    string
+	}
+	MicroBenchmarkDetails struct {
+		BenchmarkId
+		GitRef string
+		Result MicroBenchmarkResult
+	}
 
-type MicroBenchmarkResults []MicroBenchmarkResult
+	MicroBenchmarkComparison struct {
+		BenchmarkId
+		Current, Last MicroBenchmarkResult
+	}
+)
 
-func (mrs MicroBenchmarkResults) ReduceSimpleMedian() MicroBenchmarkResults {
-	var results MicroBenchmarkResults
+type MicroBenchmarkDetailsArray []MicroBenchmarkDetails
+
+func (mrs MicroBenchmarkDetailsArray) ReduceSimpleMedian() MicroBenchmarkDetailsArray {
+	var details MicroBenchmarkDetailsArray
 
 	sort.Slice(mrs, func(i, j int) bool {
-		return mrs[i].PkgName < mrs[i].PkgName && mrs[i].Name < mrs[j].Name
+		return mrs[i].PkgName < mrs[j].PkgName && mrs[i].Name < mrs[j].Name
 	})
 	for i := 0; i < len(mrs); {
 		var j int
+		var interOps []int
 		var interNSPerOp []float64
 		for j = i; j < len(mrs) && mrs[i].Name == mrs[j].Name; j++ {
-			interNSPerOp = append(interNSPerOp, mrs[j].NSPerOp)
+			interOps = append(interOps, mrs[j].Result.Ops)
+			interNSPerOp = append(interNSPerOp, mrs[j].Result.NSPerOp)
 		}
 
+		sort.Ints(interOps)
 		sort.Float64s(interNSPerOp)
-		var interNSPerOpResult float64
-		middle := len(interNSPerOp) / 2
-		if len(interNSPerOp) % 2 == 1 {
-			interNSPerOpResult = interNSPerOp[middle]
-		} else {
-			interNSPerOpResult = (interNSPerOp[middle - 1] + interNSPerOp[middle]) / 2
-		}
+		interOpsResult := medianInt(interOps)
+		interNSPerOpResult := medianFloat(interNSPerOp)
 
-		results = append(results, MicroBenchmarkResult{
-			PkgName: mrs[i].PkgName,
-			Name:    mrs[i].Name,
-			NSPerOp: interNSPerOpResult,
+		details = append(details, MicroBenchmarkDetails{
+			BenchmarkId: BenchmarkId{
+				PkgName: mrs[i].PkgName,
+				Name: mrs[i].Name,
+			},
+			GitRef:      mrs[i].GitRef,
+			Result:      MicroBenchmarkResult{
+				Ops:     interOpsResult,
+				NSPerOp: interNSPerOpResult,
+			},
 		})
 		i = j
 	}
-	return results
+	return details
 }
 
-func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkResults, err error) {
-	rows, err := client.Select("select m.pkg_name, m.name, md.ns_per_op FROM " +
-		"microbenchmark m, microbenchmark_details  md where m.git_ref = ? AND " +
-		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc;", ref)
+func medianInt(values []int) int {
+	middle := len(values) / 2
+	if len(values)%2 == 1 {
+		return values[middle]
+	}
+	return (values[middle-1] + values[middle]) / 2
+}
+
+func medianFloat(values []float64) float64 {
+	middle := len(values) / 2
+	if len(values)%2 == 1 {
+		return values[middle]
+	}
+	return (values[middle-1] + values[middle]) / 2
+}
+
+func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
+	rows, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op FROM "+
+		"microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
+		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc", ref)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		var res MicroBenchmarkResult
-		err = rows.Scan(&res.PkgName, &res.Name, &res.NSPerOp)
+		var res MicroBenchmarkDetails
+		res.GitRef = ref
+		err = rows.Scan(&res.PkgName, &res.Name, &res.Result.Ops, &res.Result.NSPerOp)
 		if err != nil {
 			return nil, err
 		}

@@ -26,64 +26,84 @@ import (
 func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 	tests := []struct {
 		name string
-		mrs  MicroBenchmarkResults
-		want MicroBenchmarkResults
+		mrs  MicroBenchmarkDetailsArray
+		want MicroBenchmarkDetailsArray
 	}{
 		// tc1
-		{name: "Few simple values in same package but different benchmark names", mrs: MicroBenchmarkResults{
+		{name: "Few simple values in same package but different benchmark names", mrs: MicroBenchmarkDetailsArray{
 			// input bench 1
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 1.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 1.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 1.00 }},
 
 			// input bench 2
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
-		}, want: MicroBenchmarkResults{
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 2.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 2.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 2.00 }},
+		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 1.00 }},
 
 			// want bench 2
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 2.00 }},
 		}},
 
 		// tc2
-		{name: "Few values in different packages and different benchmark names", mrs: MicroBenchmarkResults{
+		{name: "Few values in different packages and different benchmark names", mrs: MicroBenchmarkDetailsArray{
 			// input bench 1 in pkg 1
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 5.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 10.00, Name: "bench1-pkg1"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 1.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 5.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 10.00 }},
 
 			// input bench 1 in pkg 2
-			MicroBenchmarkResult{PkgName: "pkg2", NSPerOp: 2.00, Name: "bench1-pkg2"},
-			MicroBenchmarkResult{PkgName: "pkg2", NSPerOp: 2.50, Name: "bench1-pkg2"},
-			MicroBenchmarkResult{PkgName: "pkg2", NSPerOp: 3.00, Name: "bench1-pkg2"},
-		}, want: MicroBenchmarkResults{
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"} , Result: MicroBenchmarkResult{NSPerOp: 2.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"} , Result: MicroBenchmarkResult{NSPerOp: 2.50 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"} , Result: MicroBenchmarkResult{NSPerOp: 3.00 }},
+		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1 from pkg1
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 5.00, Name: "bench1-pkg1"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 5.00 }},
 
 			// want bench 1 from pkg2
-			MicroBenchmarkResult{PkgName: "pkg2", NSPerOp: 2.50, Name: "bench1-pkg2"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"} , Result: MicroBenchmarkResult{NSPerOp: 2.50 }},
 		}},
 
 		// tc3
-		{name: "More unordered values with single package and benchmark name", mrs: MicroBenchmarkResults{
+		{name: "More unordered values with single package and benchmark name", mrs: MicroBenchmarkDetailsArray{
 			// input bench 1
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 30.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 5.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 15.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 10.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 40.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 25.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 20.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 0.00, Name: "bench1-pkg1"},
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 35.00, Name: "bench1-pkg1"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 30.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 5.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 15.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 10.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 40.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 25.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 20.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 0.00 }},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 35.00 }},
 
-		}, want: MicroBenchmarkResults{
+		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1
-			MicroBenchmarkResult{PkgName: "pkg1", NSPerOp: 20.00, Name: "bench1-pkg1"},
+			MicroBenchmarkDetails{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"} , Result: MicroBenchmarkResult{NSPerOp: 20.00 }},
 		}},
+
+		// tc4
+		// {name: "Verify ordering by names", mrs: MicroBenchmarkDetailsArray{
+		// 	// input bench 2
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
+		//
+		// 	// input bench 1
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
+		//
+		// }, want: MicroBenchmarkResults{
+		// 	// want bench 1
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 1.00, Name: "bench1-pkg1"},
+		//
+		// 	// want bench 2
+		// 	MicroBenchmarkDetails{PkgName: "pkg1", NSPerOp: 2.00, Name: "bench2-pkg1"},
+		// }},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
