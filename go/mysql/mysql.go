@@ -63,3 +63,14 @@ func (c Client) Insert(query string, args ...interface{}) (ID int64, err error) 
 	}
 	return res.LastInsertId()
 }
+
+func (c Client) Select(query string, args ...interface{}) (rows *sql.Rows, err error) {
+	if c.db == nil {
+		return nil, errors.New(ErrorClientConnectionNotInitialized)
+	}
+	rows, err = c.db.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
