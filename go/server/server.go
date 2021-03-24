@@ -64,19 +64,19 @@ func (s *Server) Run() error {
 	s.router.LoadHTMLGlob(s.templatePath + "/*")
 
 	// Information page
-	s.router.GET("/information", informationHandler)
+	s.router.GET("/information", s.informationHandler)
 
 	// Home page
-	s.router.GET("/", homeHanlder)
+	s.router.GET("/", s.homeHanlder)
 
 	// Search and compare page
-	s.router.GET("/search_compare", searchCompareHandler)
+	s.router.GET("/search_compare", s.searchCompareHandler)
 
 	// Request benchmark page
-	s.router.GET("/request_benchmark", requestBenchmarkHandler)
+	s.router.GET("/request_benchmark", s.requestBenchmarkHandler)
 
 	// Request benchmark page
-	s.router.GET("/microbench", microbenchmarkResultsHandler)
+	s.router.GET("/microbench", s.microbenchmarkResultsHandler)
 
 	return s.router.Run(":" + s.port)
 }

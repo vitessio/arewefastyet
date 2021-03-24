@@ -20,34 +20,43 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/tools/microbench"
+	"log"
 	"net/http"
 )
 
-func informationHandler(c *gin.Context) {
+func (s *Server) informationHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "information.tmpl", gin.H{
 		"title": "Vitess benchmark",
 	})
 }
 
-func homeHanlder(c *gin.Context) {
+func (s *Server) homeHanlder(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title": "Vitess benchmark",
 	})
 }
 
-func searchCompareHandler(c *gin.Context) {
+func (s *Server) searchCompareHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "search_compare.tmpl", gin.H{
 		"title": "Vitess benchmark",
 	})
 }
 
-func requestBenchmarkHandler(c *gin.Context) {
+func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "request_benchmark.tmpl", gin.H{
 		"title": "Vitess benchmark",
 	})
 }
 
-func microbenchmarkResultsHandler(c *gin.Context) {
+func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
+	mrs, err := microbench.GetResultsForGitRef("36110d81be87fdd11e0626eeff529ce67df27661", s.dbClient)
+	if err != nil {
+		log.Println(err)
+	}
+	mrs = mrs.ReduceSimpleMedian()
+	log.Println(mrs)
+
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
 		"title": "Vitess benchmark - microbenchmark s",
 	})

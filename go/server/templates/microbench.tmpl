@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "headHTML" .}}
+
+<body>
+
+    <!-- Navigation -->
+    {{ template "navigation" "/microbench" }}
+
+    <!--------------------------------------------------------------------------- Information ---------------------------------------------------------------------------------------------->
+
+    <section class="py-5">
+        <div class="container">
+            <h1>Microbenchmarks</h1>
+            <p class="lead"></p>
+        </div>
+
+        <div class="container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First</th>
+                    <th scope="col">Last</th>
+                    <th scope="col">Handle</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {{template "footerHTML" .}}
+
+</body>
+
+</html>
