@@ -172,6 +172,8 @@ ansible/artifacts/*
 report/
 !report/sample
 
+exec/*
+
 # Local .terraform directories
 **/.terraform/*
 

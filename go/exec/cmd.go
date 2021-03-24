@@ -16,23 +16,22 @@
  * /
  */
 
-package infra
+package exec
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/infra"
+	"github.com/spf13/viper"
 )
 
-func InfraCmd() *cobra.Command {
-	var cfg infra.Config
+const (
+	flagRootExec = "exec-root-dir"
+)
 
-	cmd := &cobra.Command{
-		Use:     "infra <command>",
-		Short:   "Manage infrastructure",
-		Aliases: []string{"i"},
-	}
+func (e *Exec) AddToCommand(cmd *cobra.Command) {
+	cmd.Flags().StringVar(&e.rootDir, flagRootExec, "", "Path to the root directory of exec")
+	viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
 
-	cfg.AddToPersistentCommand(cmd)
-	cmd.AddCommand(create(&cfg))
-	return cmd
+	e.AnsibleConfig.AddToPersistentCommand(cmd)
+	e.InfraConfig.AddToPersistentCommand(cmd)
+	e.Infra.AddToCommand(cmd)
 }

@@ -33,9 +33,9 @@ virtual_env:
 
 install: requirements.txt virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \
-	pip install -r ./requirements.txt
-	python setup.py install
-	ansible-galaxy install cloudalchemy.prometheus
+	pip install -r ./requirements.txt && \
+	python setup.py install && \
+	ansible-galaxy install cloudalchemy.prometheus && \
 	ansible-galaxy install cloudalchemy.node_exporter
 
 install_dev_cli: virtual_env $(VIRTUALENV_PATH)

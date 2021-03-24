@@ -20,6 +20,9 @@ package infra
 
 import (
 	"errors"
+	"github.com/otiai10/copy"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
 )
@@ -27,6 +30,8 @@ import (
 const (
 	ErrorPathUnknown = "path does not exist"
 	ErrorPathMissing = "path is missing"
+
+	FlagInfraPath = "infra-path"
 )
 
 type Config struct {
@@ -34,6 +39,11 @@ type Config struct {
 	PathExecTF string
 
 	pathInstallTF string
+}
+
+func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringVar(&c.Path, FlagInfraPath, "", "Path to the infra directory")
+	viper.BindPFlag(FlagInfraPath, cmd.Flags().Lookup(FlagInfraPath))
 }
 
 func (c Config) Valid() error {
@@ -61,4 +71,17 @@ func (c *Config) Prepare() error {
 
 func (c *Config) Close() error {
 	return os.RemoveAll(c.pathInstallTF)
+}
+
+func (c *Config) CopyTerraformDirectory(directory string) error {
+	if _, err := os.Stat(directory); os.IsNotExist(err) {
+		return errors.New(ErrorPathUnknown)
+	}
+
+	err := copy.Copy(c.Path, directory)
+	if err != nil {
+		return err
+	}
+	c.Path = directory
+	return nil
 }

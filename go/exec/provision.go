@@ -16,23 +16,26 @@
  * /
  */
 
-package infra
+package exec
 
 import (
-	"github.com/spf13/cobra"
+	"encoding/json"
 	"github.com/vitessio/arewefastyet/go/infra"
 )
 
-func InfraCmd() *cobra.Command {
-	var cfg infra.Config
-
-	cmd := &cobra.Command{
-		Use:     "infra <command>",
-		Short:   "Manage infrastructure",
-		Aliases: []string{"i"},
+func provision(infra infra.Infra) (IPs []string, err error) {
+	if err = infra.Prepare(); err != nil {
+		return nil, err
 	}
 
-	cfg.AddToPersistentCommand(cmd)
-	cmd.AddCommand(create(&cfg))
-	return cmd
+	out, err := infra.Create("device_public_ip")
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(out["device_public_ip"]), &IPs)
+	if err != nil {
+		return nil, err
+	}
+	return IPs, nil
 }

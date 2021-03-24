@@ -16,23 +16,18 @@
  * /
  */
 
-package infra
+package construct
 
 import (
-	"github.com/spf13/cobra"
+	"errors"
 	"github.com/vitessio/arewefastyet/go/infra"
+	"github.com/vitessio/arewefastyet/go/infra/equinix"
 )
 
-func InfraCmd() *cobra.Command {
-	var cfg infra.Config
-
-	cmd := &cobra.Command{
-		Use:     "infra <command>",
-		Short:   "Manage infrastructure",
-		Aliases: []string{"i"},
+func NewInfra(infraName string) (infra.Infra, error) {
+	switch infraName {
+	case equinix.Name:
+		return &equinix.Equinix{}, nil
 	}
-
-	cfg.AddToPersistentCommand(cmd)
-	cmd.AddCommand(create(&cfg))
-	return cmd
+	return nil, errors.New(infra.ErrorInvalidConfiguration)
 }

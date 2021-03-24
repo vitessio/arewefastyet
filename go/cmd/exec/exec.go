@@ -16,23 +16,39 @@
  * /
  */
 
-package infra
+package exec
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/infra"
+	"github.com/vitessio/arewefastyet/go/exec"
+	"log"
 )
 
-func InfraCmd() *cobra.Command {
-	var cfg infra.Config
-
-	cmd := &cobra.Command{
-		Use:     "infra <command>",
-		Short:   "Manage infrastructure",
-		Aliases: []string{"i"},
+func ExecCmd() *cobra.Command {
+	ex, err := exec.NewExec()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	cfg.AddToPersistentCommand(cmd)
-	cmd.AddCommand(create(&cfg))
+	cmd := &cobra.Command{
+		Use: "exec",
+		Aliases: []string{"e"},
+		Short: "Execute a task",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// prepare
+			if err := ex.Prepare(); err != nil {
+				return err
+			}
+
+			// execute
+			if err := ex.Execute(); err != nil {
+				return err
+			}
+
+			return nil
+		},
+	}
+
+	ex.AddToCommand(cmd)
 	return cmd
 }
