@@ -24,6 +24,7 @@ import (
 )
 
 type (
+	// MicroBenchmarkResult contains all the metrics measured by a microbenchmark.
 	MicroBenchmarkResult struct {
 		Ops         int
 		NSPerOp     float64
@@ -31,21 +32,27 @@ type (
 		BytesPerOp  float64
 		AllocsPerOp float64
 	}
+
+	// BenchmarkId represents the identification of a microbenchmark.
 	BenchmarkId struct {
 		PkgName string
 		Name    string
 	}
+
+	// MicroBenchmarkDetails refers to a single microbenchmark.
 	MicroBenchmarkDetails struct {
 		BenchmarkId
 		GitRef string
 		Result MicroBenchmarkResult
 	}
 
+	// MicroBenchmarkComparison allows comparison of two MicroBenchmarkResult
+	// that share the same BenchmarkId.
 	MicroBenchmarkComparison struct {
 		BenchmarkId
 		Current, Last MicroBenchmarkResult
 
-		// Difference of NSPerOp in % for Current and Last
+		// Difference of NSPerOp in % for Current and Last.
 		CurrLastDiff float64
 	}
 
@@ -53,6 +60,7 @@ type (
 	MicroBenchmarkComparisonArray []MicroBenchmarkComparison
 )
 
+// NewMicroBenchmarkDetails creates a new MicroBenchmarkDetails.
 func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, result MicroBenchmarkResult) *MicroBenchmarkDetails {
 	return &MicroBenchmarkDetails{
 		BenchmarkId: benchmarkId,
@@ -61,6 +69,7 @@ func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, result Mic
 	}
 }
 
+// NewBenchmarkId creates a new BenchmarkId.
 func NewBenchmarkId(pkgName string, name string) *BenchmarkId {
 	return &BenchmarkId{
 		PkgName: pkgName,
@@ -68,6 +77,7 @@ func NewBenchmarkId(pkgName string, name string) *BenchmarkId {
 	}
 }
 
+// NewMicroBenchmarkResult creates a new MicroBenchmarkResult.
 func NewMicroBenchmarkResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *MicroBenchmarkResult {
 	return &MicroBenchmarkResult{
 		Ops:         ops,
@@ -78,6 +88,8 @@ func NewMicroBenchmarkResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp
 	}
 }
 
+// MergeMicroBenchmarkDetails merges two MicroBenchmarkDetailsArray into a single
+// MicroBenchmarkComparisonArray.
 func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetailsArray) (compareMbs MicroBenchmarkComparisonArray) {
 	for _, details := range currentMbd {
 		var compareMb MicroBenchmarkComparison
@@ -96,6 +108,10 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 	return compareMbs
 }
 
+// ReduceSimpleMedian reduces a MicroBenchmarkDetailsArray by merging
+// all MicroBenchmarkDetails with the same benchmark name into a single
+// one. The results of each MicroBenchmarkDetails correspond to the median
+// of the merged elements.
 func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBenchmarkDetailsArray) {
 	sort.SliceStable(mbd, func(i, j int) bool {
 		return mbd[i].Name < mbd[j].Name
@@ -154,6 +170,8 @@ func medianFloat(values []float64) float64 {
 	return (values[middle-1] + values[middle]) / 2
 }
 
+// GetResultsForGitRef will fetch and return a MicroBenchmarkDetailsArray
+// containing all the MicroBenchmarkDetails linked to the given git commit SHA.
 func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
 	rows, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op, md.bytes_per_op,"+
 		" md.allocs_per_op, md.mb_per_sec FROM microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
