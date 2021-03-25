@@ -25,8 +25,11 @@ import (
 
 type (
 	MicroBenchmarkResult struct {
-		Ops     int
-		NSPerOp float64
+		Ops         int
+		NSPerOp     float64
+		MBPerSec    float64
+		BytesPerOp  float64
+		AllocsPerOp float64
 	}
 	BenchmarkId struct {
 		PkgName string
@@ -50,22 +53,25 @@ type (
 func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, result MicroBenchmarkResult) *MicroBenchmarkDetails {
 	return &MicroBenchmarkDetails{
 		BenchmarkId: benchmarkId,
-		GitRef: gitRef,
-		Result: result,
+		GitRef:      gitRef,
+		Result:      result,
 	}
 }
 
 func NewBenchmarkId(pkgName string, name string) *BenchmarkId {
 	return &BenchmarkId{
 		PkgName: pkgName,
-		Name: name,
+		Name:    name,
 	}
 }
 
-func NewMicroBenchmarkResult(ops int, NSPerOp float64) *MicroBenchmarkResult {
+func NewMicroBenchmarkResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *MicroBenchmarkResult {
 	return &MicroBenchmarkResult{
-		Ops: ops,
-		NSPerOp: NSPerOp,
+		Ops:         ops,
+		NSPerOp:     NSPerOp,
+		MBPerSec:    MBPerSec,
+		BytesPerOp:  BytesPerOp,
+		AllocsPerOp: AllocsPerOp,
 	}
 }
 
@@ -93,20 +99,31 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBench
 		var j int
 		var interOps []int
 		var interNSPerOp []float64
+		var interMBPerSec []float64
+		var interBytesPerOp []float64
+		var interAllocsPerOp []float64
 		for j = i; j < len(mbd) && mbd[i].Name == mbd[j].Name; j++ {
 			interOps = append(interOps, mbd[j].Result.Ops)
 			interNSPerOp = append(interNSPerOp, mbd[j].Result.NSPerOp)
+			interMBPerSec = append(interMBPerSec, mbd[j].Result.MBPerSec)
+			interBytesPerOp = append(interBytesPerOp, mbd[j].Result.BytesPerOp)
+			interAllocsPerOp = append(interAllocsPerOp, mbd[j].Result.AllocsPerOp)
 		}
 
 		sort.Ints(interOps)
 		sort.Float64s(interNSPerOp)
+		sort.Float64s(interMBPerSec)
+		sort.Float64s(interBytesPerOp)
+		sort.Float64s(interAllocsPerOp)
 		interOpsResult := medianInt(interOps)
 		interNSPerOpResult := medianFloat(interNSPerOp)
-
+		interMBPerSecResult := medianFloat(interMBPerSec)
+		interBytesPerOpResult := medianFloat(interBytesPerOp)
+		interAllocsPerOpResult := medianFloat(interAllocsPerOp)
 		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(
 			*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name),
 			mbd[i].GitRef,
-			*NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult),
+			*NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult),
 		))
 		i = j
 	}
@@ -130,8 +147,8 @@ func medianFloat(values []float64) float64 {
 }
 
 func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
-	rows, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op FROM "+
-		"microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
+	rows, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op, md.bytes_per_op,"+
+		" md.allocs_per_op, md.mb_per_sec FROM microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
 		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc", ref)
 	if err != nil {
 		return nil, err
@@ -140,7 +157,8 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 	for rows.Next() {
 		var res MicroBenchmarkDetails
 		res.GitRef = ref
-		err = rows.Scan(&res.PkgName, &res.Name, &res.Result.Ops, &res.Result.NSPerOp)
+		err = rows.Scan(&res.PkgName, &res.Name, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
+			&res.Result.AllocsPerOp, &res.Result.MBPerSec)
 		if err != nil {
 			return nil, err
 		}
