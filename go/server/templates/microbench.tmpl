@@ -34,8 +34,8 @@
                         <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
                         <td class="text-right">{{ $val.Current.Ops }}</td>
                         <td class="text-right">{{ $val.Last.Ops }}</td>
-                        <td class="text-right">{{ $val.Current.NSPerOp }}</td>
-                        <td class="text-right">{{ $val.Last.NSPerOp }}</td>
+                        <td class="text-right">{{ printf "%.2f" $val.Current.NSPerOp }}</td>
+                        <td class="text-right">{{ printf "%.2f" $val.Last.NSPerOp }}</td>
                     </tr>
                 {{end}}
                 </tbody>

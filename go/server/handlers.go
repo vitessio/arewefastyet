@@ -23,6 +23,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 	"log"
 	"net/http"
+	"sort"
 )
 
 func (s *Server) informationHandler(c *gin.Context) {
@@ -51,7 +52,7 @@ func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 
 func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	// get current results
-	currentSHA := "36110d81be87fdd11e0626eeff529ce67df27661"
+	currentSHA := "92584e9bf60f354a6b980717c86a336465ab0354"
 	currentMbd, err := microbench.GetResultsForGitRef(currentSHA, s.dbClient)
 	if err != nil {
 		log.Println(err)
@@ -70,6 +71,10 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 
 	matrix := microbench.MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd)
 
+	sort.SliceStable(matrix, func(i, j int) bool {
+		return !(matrix[i].Current.NSPerOp < matrix[j].Current.NSPerOp)
+	})
+	
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
 		"title":          "Vitess benchmark - microbenchmark",
 		"currentSHA":     currentSHA,
