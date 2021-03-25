@@ -52,7 +52,11 @@ func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 
 func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	// get current results
-	currentSHA := "92584e9bf60f354a6b980717c86a336465ab0354" // todo: dynamic value
+	currentSHA := c.Query("csh")
+	if currentSHA == "" {
+		// https://github.com/vitessio/vitess/commit/92584e9bf60f354a6b980717c86a336465ab0354
+		currentSHA = "92584e9bf60f354a6b980717c86a336465ab0354" // todo: dynamic value
+	}
 	currentMbd, err := microbench.GetResultsForGitRef(currentSHA, s.dbClient)
 	if err != nil {
 		log.Println(err)
@@ -61,7 +65,11 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	currentMbd = currentMbd.ReduceSimpleMedian()
 
 	// get last release results
-	lastReleaseSHA := "daa60859822ff85ce18e2d10c61a27b7797ec6b8" // todo: dynamic value
+	lastReleaseSHA := c.Query("lrsh")
+	if lastReleaseSHA == "" {
+		// https://github.com/vitessio/vitess/commit/daa60859822ff85ce18e2d10c61a27b7797ec6b8
+		lastReleaseSHA = "daa60859822ff85ce18e2d10c61a27b7797ec6b8" // todo: dynamic value
+	}
 	lastReleaseMbd, err := microbench.GetResultsForGitRef(lastReleaseSHA, s.dbClient)
 	if err != nil {
 		log.Println(err)
@@ -70,7 +78,6 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedian()
 
 	matrix := microbench.MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd)
-
 	sort.SliceStable(matrix, func(i, j int) bool {
 		return !(matrix[i].Current.NSPerOp < matrix[j].Current.NSPerOp)
 	})
