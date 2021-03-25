@@ -93,7 +93,10 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 
 func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBenchmarkDetailsArray) {
 	sort.SliceStable(mbd, func(i, j int) bool {
-		return mbd[i].PkgName < mbd[j].PkgName || mbd[i].Name < mbd[j].Name
+		return mbd[i].Name < mbd[j].Name
+	})
+	sort.SliceStable(mbd, func(i, j int) bool {
+		return mbd[i].PkgName < mbd[j].PkgName
 	})
 	for i := 0; i < len(mbd); {
 		var j int
