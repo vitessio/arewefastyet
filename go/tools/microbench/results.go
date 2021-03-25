@@ -44,6 +44,9 @@ type (
 	MicroBenchmarkComparison struct {
 		BenchmarkId
 		Current, Last MicroBenchmarkResult
+
+		// Difference of NSPerOp in % for Current and Last
+		CurrLastDiff float64
 	}
 
 	MicroBenchmarkDetailsArray    []MicroBenchmarkDetails
@@ -80,9 +83,11 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 		var compareMb MicroBenchmarkComparison
 		compareMb.BenchmarkId = details.BenchmarkId
 		compareMb.Current = details.Result
+		compareMb.CurrLastDiff = 1.00
 		for j := 0; j < len(lastReleaseMbd); j++ {
 			if lastReleaseMbd[j].BenchmarkId == details.BenchmarkId {
 				compareMb.Last = lastReleaseMbd[j].Result
+				compareMb.CurrLastDiff = compareMb.Current.NSPerOp / compareMb.Last.NSPerOp
 				break
 			}
 		}
