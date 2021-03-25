@@ -172,6 +172,58 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00), Last: *NewMicroBenchmarkResult(0, 5.00)},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00), Last: *NewMicroBenchmarkResult(0, 89.00)},
 		}},
+
+		// tc4
+		{name: "Compare with unordered array from multiple package", args: args{
+			currentMbd: MicroBenchmarkDetailsArray{
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 58.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 1.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 98.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 3.50)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 5.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", *NewMicroBenchmarkResult(0, 2385.00)),
+			},
+			lastReleaseMbd: MicroBenchmarkDetailsArray{
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 89.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", *NewMicroBenchmarkResult(0, 2560.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 56.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 6.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 5.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 4.20)),
+			},
+		}, want: MicroBenchmarkComparisonArray{
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00), Last: *NewMicroBenchmarkResult(0, 56.00)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00), Last: *NewMicroBenchmarkResult(0, 5.00)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00), Last: *NewMicroBenchmarkResult(0, 89.00)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2-pkg2"}, Current: *NewMicroBenchmarkResult(0, 3.50), Last: *NewMicroBenchmarkResult(0, 6.00)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"}, Current: *NewMicroBenchmarkResult(0, 5.00), Last: *NewMicroBenchmarkResult(0, 4.20)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1-pkg3"}, Current: *NewMicroBenchmarkResult(0, 2385.00), Last: *NewMicroBenchmarkResult(0, 2560.00)},
+		}},
+
+		// tc5
+		{name: "Compare with unordered and different size array from multiple package", args: args{
+			currentMbd: MicroBenchmarkDetailsArray{
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 58.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 1.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 98.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 3.50)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 5.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", *NewMicroBenchmarkResult(0, 2385.00)),
+			},
+			lastReleaseMbd: MicroBenchmarkDetailsArray{
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 89.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 56.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 5.00)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 4.20)),
+			},
+		}, want: MicroBenchmarkComparisonArray{
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00), Last: *NewMicroBenchmarkResult(0, 56.00)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00), Last: *NewMicroBenchmarkResult(0, 5.00)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00), Last: *NewMicroBenchmarkResult(0, 89.00)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2-pkg2"}, Current: *NewMicroBenchmarkResult(0, 3.50), Last: *NewMicroBenchmarkResult(0, 0)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"}, Current: *NewMicroBenchmarkResult(0, 5.00), Last: *NewMicroBenchmarkResult(0, 4.20)},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1-pkg3"}, Current: *NewMicroBenchmarkResult(0, 2385.00), Last: *NewMicroBenchmarkResult(0, 0.00)},
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
