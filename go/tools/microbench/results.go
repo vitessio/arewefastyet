@@ -19,6 +19,7 @@
 package microbench
 
 import (
+	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"sort"
 )
@@ -191,4 +192,44 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 		mrs = append(mrs, res)
 	}
 	return mrs, nil
+}
+
+func (r MicroBenchmarkResult) OpsStr() string {
+	if r.Ops == 0 {
+		return ""
+	}
+	return humanize.Comma(int64(r.Ops))
+}
+func (r MicroBenchmarkResult) NSPerOpStr() string {
+	if r.NSPerOp == 0 {
+		return ""
+	}
+
+	return humanize.FormatFloat("#,###.#",r.NSPerOp)
+}
+func (r MicroBenchmarkResult) MBPerSecStr() string {
+	if r.MBPerSec == 0 {
+		return ""
+	}
+
+	return humanize.Bytes(uint64(r.MBPerSec)) + "/s"
+}
+func (r MicroBenchmarkResult) BytesPerOpStr() string {
+	if r.BytesPerOp == 0 {
+		return ""
+	}
+
+	return humanize.Bytes(uint64(r.BytesPerOp)) + "/s"
+}
+func (r MicroBenchmarkResult) AllocsPerOpStr() string {
+	if r.AllocsPerOp == 0 {
+		return ""
+	}
+
+	return humanize.SI(r.AllocsPerOp, "")
+}
+
+func (r MicroBenchmarkComparison) CurrLastDiffStr() string {
+
+	return humanize.Comma(int64(r.CurrLastDiff*100)) + "%"
 }

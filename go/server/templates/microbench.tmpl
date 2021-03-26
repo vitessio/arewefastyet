@@ -24,6 +24,7 @@
                         <th scope="col">Package</th>
                         <th scope="col">Benchmark Name</th>
                         <th scope="col" colspan="2" class="text-center">number of iterations</th>
+                        <th scope="col" colspan="1" class="text-center">Diff</th>
                         <th scope="col" colspan="2" class="text-center">nanosecond/op</th>
                         <th scope="col" colspan="2" class="text-center">B/op</th>
                         <th scope="col" colspan="2" class="text-center">MB/s</th>
@@ -35,20 +36,21 @@
                     <tr>
                         <td>{{ $val.PkgName }}</td>
                         <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
-                        <td class="text-right">{{ $val.Current.Ops }}</td>
-                        <td class="text-right">{{ $val.Last.Ops }}</td>
+                        <td class="text-right">{{ $val.Current.OpsStr }}</td>
+                        <td class="text-right">{{ $val.Last.OpsStr }}</td>
 
-                        <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-success {{ else if ge $val.CurrLastDiff 1.10 }} bg-danger {{ end }}">{{ printf "%.2f" $val.Current.NSPerOp }}</td>
-                        <td class="text-right">{{ printf "%.2f" $val.Last.NSPerOp }}</td>
+                        <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-success {{ else if ge $val.CurrLastDiff 1.10 }} bg-danger {{ end }}">{{ $val.CurrLastDiffStr }}</td>
+                        <td class="text-right">{{ $val.Current.NSPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Last.NSPerOpStr }}</td>
 
-                        <td class="text-right">{{ printf "%.2f" $val.Current.MBPerSec }}</td>
-                        <td class="text-right">{{ printf "%.2f" $val.Last.MBPerSec }}</td>
+                        <td class="text-right">{{ $val.Current.MBPerSecStr }}</td>
+                        <td class="text-right">{{ $val.Last.MBPerSecStr }}</td>
 
-                        <td class="text-right">{{ printf "%.2f" $val.Current.BytesPerOp }}</td>
-                        <td class="text-right">{{ printf "%.2f" $val.Last.BytesPerOp }}</td>
+                        <td class="text-right">{{ $val.Current.BytesPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Last.BytesPerOpStr }}</td>
 
-                        <td class="text-right">{{ printf "%.2f" $val.Current.AllocsPerOp }}</td>
-                        <td class="text-right">{{ printf "%.0f" $val.Last.AllocsPerOp }}</td>
+                        <td class="text-right">{{ $val.Current.AllocsPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Last.AllocsPerOpStr }}</td>
                     </tr>
                 {{end}}
                 </tbody>
