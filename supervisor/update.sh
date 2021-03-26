@@ -5,4 +5,4 @@ supervisord_file="$(dirname $(realpath $0))/supervisord.conf"
 
 cp $supervisord_file /etc/supervisor/supervisord.conf
 
-supervisorctl reload all
+supervisorctl reload
