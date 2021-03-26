@@ -12,7 +12,12 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          port: 22
+          port: ${{ secrets.PORT }}
           script: |
             cd $HOME/arewefastyet
-            ls -l .
+            git reset --hard FETCH_HEAD
+            git clean -fd
+            git fetch origin master
+            git checkout origin FETCH_HEAD
+            go build ./go/main.go
+            ./supervisor/update.sh
