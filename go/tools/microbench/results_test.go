@@ -235,3 +235,24 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 		})
 	}
 }
+
+func TestHumanReadableStrings(t *testing.T) {
+	c := qt.New(t)
+	r := MicroBenchmarkResult{
+		Ops:         876543,
+		NSPerOp:     141650883.50,
+		MBPerSec:    45030859.00,
+		BytesPerOp:  4528.14,
+		AllocsPerOp: 1106456.00,
+	}
+	c.Assert(r.AllocsPerOpStr(), qt.Equals, "1,106,456")
+	c.Assert(r.MBPerSecStr(), qt.Equals, "45 MB")
+	c.Assert(r.NSPerOpStr(), qt.Equals, "141,650,883.5")
+	c.Assert(r.OpsStr(), qt.Equals, "876,543")
+	c.Assert(r.BytesPerOpStr(), qt.Equals, "4.5 kB")
+
+	r = MicroBenchmarkResult{
+		NSPerOp:     2.5149999999999997,
+	}
+	c.Assert(r.NSPerOpStr(), qt.Equals, "141,650,883.5")
+}
