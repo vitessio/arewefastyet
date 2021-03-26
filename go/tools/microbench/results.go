@@ -205,7 +205,7 @@ func (r MicroBenchmarkResult) NSPerOpStr() string {
 		return ""
 	}
 
-	return humanize.FormatFloat("", r.NSPerOp)
+	return humanize.FormatFloat("#,###.#",r.NSPerOp)
 }
 func (r MicroBenchmarkResult) MBPerSecStr() string {
 	if r.MBPerSec == 0 {
