@@ -36,6 +36,7 @@ func TestPopulateTfOption(t *testing.T) {
 	}{
 		{name: "PlanOption with a single var", args: args{vars: []*tfexec.VarOption{tfexec.Var("auth_token=token")}, opts: &[]tfexec.PlanOption{}}, wantErr: false},
 		{name: "ApplyOption with a single var", args: args{vars: []*tfexec.VarOption{tfexec.Var("amb=false")}, opts: &[]tfexec.ApplyOption{}}, wantErr: false},
+		{name: "DestroyOption with a single var", args: args{vars: []*tfexec.VarOption{tfexec.Var("amb=false")}, opts: &[]tfexec.DestroyOption{}}, wantErr: false},
 		{name: "Invalid opts type", args: args{vars: []*tfexec.VarOption{tfexec.Var("import=true")}, opts: &[]tfexec.ImportOption{}}, wantErr: true},
 	}
 	for _, tt := range tests {
