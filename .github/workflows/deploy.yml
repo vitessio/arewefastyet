@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: github.repository_owner == 'vitessio'
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd $HOME/arewefastyet
+            git reset --hard FETCH_HEAD
+            git clean -fd
+            git fetch origin master
+            git checkout FETCH_HEAD
+            /usr/local/go/bin/go build ./go/main.go
+            ./supervisor/update.sh
