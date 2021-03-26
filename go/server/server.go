@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/mysql"
-	"net/http"
 )
 
 const (
@@ -25,6 +24,7 @@ type Server struct {
 	apiKey       string
 	router       *gin.Engine
 	dbCfg        *mysql.ConfigDB
+	dbClient     *mysql.Client
 }
 
 func (s *Server) AddToCommand(cmd *cobra.Command) {
@@ -51,39 +51,32 @@ func (s Server) isReady() bool {
 func (s *Server) Run() error {
 	if s.isReady() == false {
 		return errors.New(ErrorIncorrectConfiguration)
+
 	}
+
+	if err := s.setupMySQL(); err != nil {
+		return err
+	}
+
 	s.router = gin.Default()
 	s.router.Static("/static", s.staticPath)
 
 	s.router.LoadHTMLGlob(s.templatePath + "/*")
 
 	// Information page
-	s.router.GET("/information", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "information.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
+	s.router.GET("/information", s.informationHandler)
 
 	// Home page
-	s.router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
+	s.router.GET("/", s.homeHanlder)
+
+	// Search and compare page
+	s.router.GET("/search_compare", s.searchCompareHandler)
 
 	// Request benchmark page
-	s.router.GET("/search_compare", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "search_compare.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
+	s.router.GET("/request_benchmark", s.requestBenchmarkHandler)
 
 	// Request benchmark page
-	s.router.GET("/request_benchmark", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "request_benchmark.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-	})
+	s.router.GET("/microbench", s.microbenchmarkResultsHandler)
 
 	return s.router.Run(":" + s.port)
 }
