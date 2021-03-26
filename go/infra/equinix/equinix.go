@@ -63,6 +63,22 @@ func (e Equinix) TerraformVarArray() (vars []*tfexec.VarOption) {
 	return vars
 }
 
+func (e *Equinix) CleanUp() error {
+	if e.tf != nil {
+		return fmt.Errorf("%s: equinix terraform not prepared", infra.ErrorInvalidConfiguration)
+	}
+	destroyOpts := &[]tfexec.DestroyOption{}
+	if err := infra.PopulateTfOption(e.TerraformVarArray(), destroyOpts); err != nil {
+		return fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+	}
+
+	err := e.tf.Destroy(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err error) {
 	if e.tf == nil {
 		return nil, fmt.Errorf("%s: equinix terraform not prepared", infra.ErrorInvalidConfiguration)

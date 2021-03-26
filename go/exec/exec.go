@@ -67,6 +67,14 @@ func (e *Exec) Execute() error {
 	return nil
 }
 
+func (e Exec) CleanUp() error {
+	err := e.Infra.CleanUp()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func NewExec() (*Exec, error) {
 	// todo: dynamic choice for infra provider
 	inf, err := construct.NewInfra(equinix.Name)

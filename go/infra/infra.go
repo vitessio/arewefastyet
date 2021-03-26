@@ -35,6 +35,7 @@ const (
 
 type Infra interface {
 	AddToCommand(cmd *cobra.Command)
+	CleanUp() error
 	Create(wantOutputs ...string) (output map[string]string, err error)
 	ValidConfig() error
 	Prepare() error
@@ -63,6 +64,10 @@ func PopulateTfOption(vars []*tfexec.VarOption, opts interface{}) error {
 			*optsT = append(*optsT, varValue)
 		}
 	case *[]tfexec.ApplyOption:
+		for _, varValue := range vars {
+			*optsT = append(*optsT, varValue)
+		}
+	case *[]tfexec.DestroyOption:
 		for _, varValue := range vars {
 			*optsT = append(*optsT, varValue)
 		}

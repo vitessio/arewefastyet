@@ -45,6 +45,10 @@ func ExecCmd() *cobra.Command {
 				return err
 			}
 
+			// cleanup
+			if err := ex.CleanUp(); err != nil {
+				return err
+			}
 			return nil
 		},
 	}
