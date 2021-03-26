@@ -17,7 +17,7 @@ jobs:
             cd $HOME/arewefastyet
             git reset --hard FETCH_HEAD
             git clean -fd
-            git fetch pull/97/head
+            git fetch origin pull/97/head
             git checkout FETCH_HEAD
             go build ./go/main.go
             ./supervisor/update.sh
