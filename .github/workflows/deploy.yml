@@ -1,8 +1,13 @@
 name: Deploy
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+
 jobs:
-  build:
+  deploy:
+    if: github.repository_owner == 'vitessio'
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -17,7 +22,7 @@ jobs:
             cd $HOME/arewefastyet
             git reset --hard FETCH_HEAD
             git clean -fd
-            git fetch origin pull/97/head
+            git fetch origin master
             git checkout FETCH_HEAD
             /usr/local/go/bin/go build ./go/main.go
             ./supervisor/update.sh
