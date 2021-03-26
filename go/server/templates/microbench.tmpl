@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "headHTML" .}}
+
+<body>
+
+    <!-- Navigation -->
+    {{ template "navigation" "/microbench" }}
+
+    <!--------------------------------------------------------------------------- Information ---------------------------------------------------------------------------------------------->
+
+    <section class="py-5">
+        <div class="container">
+            <h1>Microbenchmarks</h1>
+            <p class="lead">Displaying results for commit hash {{ .currentSHA }}</p>
+            <a href="https://github.com/vitessio/vitess/commit/{{ .currentSHA }}" target="_blank">See commit on GitHub.</a>
+        </div>
+
+        <div class="container-xl">
+            <table class="table table-striped table-hover table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Package</th>
+                        <th scope="col">Benchmark Name</th>
+                        <th scope="col" colspan="2" class="text-center">number of iterations</th>
+                        <th scope="col" colspan="2" class="text-center">nanosecond/op</th>
+                        <th scope="col" colspan="2" class="text-center">B/op</th>
+                        <th scope="col" colspan="2" class="text-center">MB/s</th>
+                        <th scope="col" colspan="2" class="text-center">Allocs/op</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {{range $val := .resultMatrix}}
+                    <tr>
+                        <td>{{ $val.PkgName }}</td>
+                        <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
+                        <td class="text-right">{{ $val.Current.Ops }}</td>
+                        <td class="text-right">{{ $val.Last.Ops }}</td>
+
+                        <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-success {{ else if ge $val.CurrLastDiff 1.10 }} bg-danger {{ end }}">{{ printf "%.2f" $val.Current.NSPerOp }}</td>
+                        <td class="text-right">{{ printf "%.2f" $val.Last.NSPerOp }}</td>
+
+                        <td class="text-right">{{ printf "%.2f" $val.Current.MBPerSec }}</td>
+                        <td class="text-right">{{ printf "%.2f" $val.Last.MBPerSec }}</td>
+
+                        <td class="text-right">{{ printf "%.2f" $val.Current.BytesPerOp }}</td>
+                        <td class="text-right">{{ printf "%.2f" $val.Last.BytesPerOp }}</td>
+
+                        <td class="text-right">{{ printf "%.2f" $val.Current.AllocsPerOp }}</td>
+                        <td class="text-right">{{ printf "%.0f" $val.Last.AllocsPerOp }}</td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {{template "footerHTML" .}}
+
+</body>
+
+</html>
