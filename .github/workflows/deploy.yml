@@ -3,10 +3,11 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
+    if: ${{ github.repository_owner == 'vitessio' }}
     name: Build
     runs-on: ubuntu-latest
     steps:
