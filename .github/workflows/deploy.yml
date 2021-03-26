@@ -12,7 +12,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
+          port: 22
           script: |
             cd $HOME/arewefastyet
             ls -l .
