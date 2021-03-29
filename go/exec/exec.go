@@ -67,6 +67,16 @@ func (e *Exec) Execute() error {
 	return nil
 }
 
+// CleanUp cleans and removes all things required only during the execution flow
+// and not after it is done.
+func (e Exec) CleanUp() error {
+	err := e.Infra.CleanUp()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func NewExec() (*Exec, error) {
 	// todo: dynamic choice for infra provider
 	inf, err := construct.NewInfra(equinix.Name)
