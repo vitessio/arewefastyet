@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 	"go/types"
 	"golang.org/x/tools/go/packages"
 	"log"
@@ -42,11 +43,12 @@ type benchmark struct {
 	name             string
 	pkgPath, pkgName string
 	sql              *mysql.Client
+	gitHash          string
 }
 
 func (b *benchmark) registerToMySQL(client *mysql.Client) error {
-	query := "INSERT INTO microbenchmark(test_no, pkg_name, name) VALUES(?, ?, ?)"
-	id, err := client.Insert(query, 0, b.pkgName, b.name)
+	query := "INSERT INTO microbenchmark(test_no, pkg_name, name, git_ref) VALUES(?, ?, ?, ?)"
+	id, err := client.Insert(query, 0, b.pkgName, b.name, b.gitHash)
 	if err != nil {
 		return err
 	}
@@ -146,11 +148,16 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 	benchmarks := findBenchmarks(loaded)
 
 	for _, benchmark := range benchmarks {
+		hash, err := git.GetCommitHash(cfg.RootDir)
+		if err != nil {
+			log.Fatal(err)
+		}
+		benchmark.gitHash = hash
 		benchmark.sql = sqlClient
 
 		fmt.Println(benchmark.pkgPath)
 
-		err := benchmark.execute(cfg.RootDir, w)
+		err = benchmark.execute(cfg.RootDir, w)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
