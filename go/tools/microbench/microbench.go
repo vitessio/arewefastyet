@@ -123,7 +123,7 @@ func MicroBenchmark(cfg MicroBenchConfig) error {
 	var sqlClient *mysql.Client
 	var err error
 
-	if cfg.DatabaseConfig.IsValid() {
+	if cfg.DatabaseConfig != nil && cfg.DatabaseConfig.IsValid() {
 		sqlClient, err = mysql.New(*cfg.DatabaseConfig)
 		if err != nil {
 			return err
@@ -141,7 +141,7 @@ func MicroBenchmark(cfg MicroBenchConfig) error {
 	}
 
 	benchmarks, errs := findBenchmarks(loaded)
-	if len(errs) > 0 || len(benchmarks) != len(loaded) {
+	if len(errs) > 0 {
 		err = errorstool.Concat(errs)
 		if err != nil {
 			return fmt.Errorf("%s:\n%s\n", errorInvalidPackageParsing, err.Error())
