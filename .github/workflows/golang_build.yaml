@@ -1,0 +1,19 @@
+name: Golang Build CLI
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+    name: Build CLI binary
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Build
+        run: go build ./go/...
