@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
 
   build:
-    name: Golang Unit Tests
+    name: Execute all the unit tests
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
