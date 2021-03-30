@@ -32,20 +32,20 @@ func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 		// tc1
 		{name: "Few simple values in same package but different benchmark names", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 1.00, 1, 9)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 2.00, 50, 18)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 3.00, 100, 27)),
 
 			// input bench 2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(150, 2.00, 3.00, 55.00, 42)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(300, 2.00, 4.00, 55.00, 84)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(450, 2.00, 5.00, 55.00, 126)),
 		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 2, 50.00, 18)),
 
 			// want bench 2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(300, 2.00, 4, 55.00, 84)),
 		}},
 
 		// tc2

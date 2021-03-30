@@ -136,12 +136,7 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBench
 			interAllocsPerOp = append(interAllocsPerOp, mbd[j].Result.AllocsPerOp)
 		}
 
-		sort.Ints(interOps)
-		sort.Float64s(interNSPerOp)
-		sort.Float64s(interMBPerSec)
-		sort.Float64s(interBytesPerOp)
-		sort.Float64s(interAllocsPerOp)
-		interOpsResult := math.MedianInt(interOps)
+		interOpsResult := int(math.MedianInt(interOps))
 		interNSPerOpResult := math.MedianFloat(interNSPerOp)
 		interMBPerSecResult := math.MedianFloat(interMBPerSec)
 		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)

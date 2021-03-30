@@ -21,13 +21,13 @@ package math
 import "sort"
 
 // MedianInt computes the median of the given int array.
-func MedianInt(values []int) int {
+func MedianInt(values []int) float64 {
 	sort.Ints(values)
 	middle := len(values) / 2
 	if len(values)%2 == 1 {
-		return values[middle]
+		return float64(values[middle])
 	}
-	return (values[middle-1] + values[middle]) / 2
+	return float64(values[middle-1] + values[middle]) / 2
 }
 
 // MedianFloat computes the median of the given float64 array.
