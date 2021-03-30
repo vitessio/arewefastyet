@@ -51,7 +51,11 @@ func TestConfig_MoveRootFolder(t *testing.T) {
 			var testFile string
 			if tt.cfg.RootDir != "" {
 				testFile = path.Join(tt.cfg.RootDir, "test.txt")
-				os.Create(testFile)
+				_, err := os.Create(testFile)
+				if err != nil {
+					c.Skip("Internal test error", err.Error())
+					return
+				}
 			}
 
 			err := tt.cfg.CopyRootDirectory(tt.dir)

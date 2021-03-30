@@ -50,9 +50,9 @@ func (e *Equinix) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.ProjectID, flagProjectID, "", "Project ID to use for Equinix Metal")
 	cmd.Flags().StringVar(&e.InstanceType, flagInstanceType, "", "Instance type to use for the creation of a new node")
 
-	viper.BindPFlag(flagToken, cmd.Flags().Lookup(flagToken))
-	viper.BindPFlag(flagProjectID, cmd.Flags().Lookup(flagProjectID))
-	viper.BindPFlag(flagInstanceType, cmd.Flags().Lookup(flagInstanceType))
+	_ = viper.BindPFlag(flagToken, cmd.Flags().Lookup(flagToken))
+	_ = viper.BindPFlag(flagProjectID, cmd.Flags().Lookup(flagProjectID))
+	_ = viper.BindPFlag(flagInstanceType, cmd.Flags().Lookup(flagInstanceType))
 }
 
 func (e Equinix) TerraformVarArray() (vars []*tfexec.VarOption) {

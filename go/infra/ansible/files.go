@@ -32,7 +32,7 @@ const (
 )
 
 func insertMetaSliceToFile(values []string, file, root, token string) error {
-	if path.IsAbs(file) == false {
+	if !path.IsAbs(file) {
 		file = path.Join(root, file)
 	}
 	content, err := ioutil.ReadFile(file)
