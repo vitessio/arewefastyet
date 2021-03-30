@@ -40,7 +40,11 @@ func run() *cobra.Command {
 			}
 			mbcfg.Package = args[idx]
 			mbcfg.Output = args[idx + 1]
-			microbench.MicroBenchmark(mbcfg)
+
+			err := microbench.MicroBenchmark(mbcfg)
+			if err != nil {
+				return err
+			}
 			return nil
 		},
 	}

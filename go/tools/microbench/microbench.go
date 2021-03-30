@@ -25,7 +25,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"go/types"
 	"golang.org/x/tools/go/packages"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -33,6 +32,7 @@ import (
 
 const (
 	errorInvalidProfileType = "invalid profile type"
+	errorInvalidPackageParsing = "invalid package parsing"
 
 	profileCPU = "cpu"
 	profileMem = "mem"
@@ -119,14 +119,14 @@ func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error
 // MicroBenchmark runs "go test bench" on the given package (pkg) and outputs
 // the results to outputPath.
 // Profiling files will be written to the current working directory.
-func MicroBenchmark(cfg MicroBenchConfig) {
+func MicroBenchmark(cfg MicroBenchConfig) error {
 	var sqlClient *mysql.Client
 	var err error
 
 	if cfg.DatabaseConfig.IsValid() {
 		sqlClient, err = mysql.New(*cfg.DatabaseConfig)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		defer sqlClient.Close()
 	}
@@ -137,27 +137,27 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 		Dir:   cfg.RootDir,
 	}, cfg.Package)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	benchmarks, errs := findBenchmarks(loaded)
 	if len(errs) > 0 || len(benchmarks) != len(loaded) {
 		err = errorstool.Concat(errs)
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("%s:\n%s\n", errorInvalidPackageParsing, err.Error())
 		}
 	}
 
 	w, err := os.Create(cfg.Output)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer w.Close()
 
 	for _, benchmark := range benchmarks {
 		hash, err := git.GetCommitHash(cfg.RootDir)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		benchmark.gitHash = hash
 		benchmark.sql = sqlClient
@@ -166,6 +166,7 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 
 		err = benchmark.execute(cfg.RootDir, w)
 		if err != nil {
+			// not stopping execution on error
 			fmt.Println(err.Error())
 		}
 
@@ -173,11 +174,13 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 		for _, profile := range profiles {
 			err = benchmark.executeProfile(cfg.RootDir, profile, w)
 			if err != nil && err.Error() != errorInvalidProfileType {
+				// not stopping execution on error
 				fmt.Println(err.Error())
 			}
 		}
 		fmt.Println()
 	}
+	return nil
 }
 
 func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, errs []error) {
