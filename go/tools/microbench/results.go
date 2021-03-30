@@ -21,6 +21,7 @@ package microbench
 import (
 	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/tools/math"
 	"sort"
 )
 
@@ -140,11 +141,11 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBench
 		sort.Float64s(interMBPerSec)
 		sort.Float64s(interBytesPerOp)
 		sort.Float64s(interAllocsPerOp)
-		interOpsResult := medianInt(interOps)
-		interNSPerOpResult := medianFloat(interNSPerOp)
-		interMBPerSecResult := medianFloat(interMBPerSec)
-		interBytesPerOpResult := medianFloat(interBytesPerOp)
-		interAllocsPerOpResult := medianFloat(interAllocsPerOp)
+		interOpsResult := math.MedianInt(interOps)
+		interNSPerOpResult := math.MedianFloat(interNSPerOp)
+		interMBPerSecResult := math.MedianFloat(interMBPerSec)
+		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)
+		interAllocsPerOpResult := math.MedianFloat(interAllocsPerOp)
 		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(
 			*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name),
 			mbd[i].GitRef,
@@ -153,22 +154,6 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBench
 		i = j
 	}
 	return reduceMbd
-}
-
-func medianInt(values []int) int {
-	middle := len(values) / 2
-	if len(values)%2 == 1 {
-		return values[middle]
-	}
-	return (values[middle-1] + values[middle]) / 2
-}
-
-func medianFloat(values []float64) float64 {
-	middle := len(values) / 2
-	if len(values)%2 == 1 {
-		return values[middle]
-	}
-	return (values[middle-1] + values[middle]) / 2
 }
 
 // GetResultsForGitRef will fetch and return a MicroBenchmarkDetailsArray
