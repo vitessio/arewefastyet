@@ -139,13 +139,17 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 		panic(err)
 	}
 
+	benchmarks, errs := findBenchmarks(loaded)
+	if len(errs) > 0 || len(benchmarks) != len(loaded) {
+		// todo: handle error
+		panic("todo: handle error")
+	}
+
 	w, err := os.Create(cfg.Output)
 	if err != nil {
 		panic(err)
 	}
 	defer w.Close()
-
-	benchmarks := findBenchmarks(loaded)
 
 	for _, benchmark := range benchmarks {
 		hash, err := git.GetCommitHash(cfg.RootDir)
@@ -173,9 +177,20 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 	}
 }
 
-func findBenchmarks(loaded []*packages.Package) []benchmark {
-	var benchmarks []benchmark
+func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, errs []error) {
 	for _, pkg := range loaded {
+
+		// Check if current pkg contains parsing errors
+		// If it does, append each packages.Error into
+		// errs (type: []error). Cloud not use:
+		// errs = append(errs, pkg.Errors...)
+		if len(pkg.Errors) > 0 {
+			for _, e := range pkg.Errors {
+				errs = append(errs, errors.New(e.Msg))
+			}
+			continue
+		}
+
 		scope := pkg.Types.Scope()
 		for _, typName := range scope.Names() {
 			f, ok := scope.Lookup(typName).(*types.Func)
@@ -190,7 +205,10 @@ func findBenchmarks(loaded []*packages.Package) []benchmark {
 			}
 		}
 	}
-	return benchmarks
+	if len(errs) > 0 {
+		return nil, errs
+	}
+	return benchmarks, nil
 }
 
 func isBenchmark(f *types.Func) bool {
