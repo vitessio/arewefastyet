@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	errorstool "github.com/vitessio/arewefastyet/go/tools/errors"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"go/types"
 	"golang.org/x/tools/go/packages"
@@ -141,8 +142,10 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 
 	benchmarks, errs := findBenchmarks(loaded)
 	if len(errs) > 0 || len(benchmarks) != len(loaded) {
-		// todo: handle error
-		panic("todo: handle error")
+		err = errorstool.Concat(errs)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	w, err := os.Create(cfg.Output)
