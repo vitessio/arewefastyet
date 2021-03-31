@@ -43,7 +43,7 @@ type Config struct {
 
 func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&c.Path, FlagInfraPath, "", "Path to the infra directory")
-	viper.BindPFlag(FlagInfraPath, cmd.Flags().Lookup(FlagInfraPath))
+	_ = viper.BindPFlag(FlagInfraPath, cmd.Flags().Lookup(FlagInfraPath))
 }
 
 func (c Config) Valid() error {

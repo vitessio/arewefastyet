@@ -29,7 +29,7 @@ const (
 
 func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.rootDir, flagRootExec, "", "Path to the root directory of exec")
-	viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
+	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
 
 	e.AnsibleConfig.AddToPersistentCommand(cmd)
 	e.InfraConfig.AddToPersistentCommand(cmd)

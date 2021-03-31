@@ -110,7 +110,11 @@ func TestConfig_CopyTerraformDirectory(t *testing.T) {
 			var testFile string
 			if tt.cfg.Path != "" {
 				testFile = path.Join(tt.cfg.Path, "test.txt")
-				os.Create(testFile)
+				_, err := os.Create(testFile)
+				if err != nil {
+					c.Skip("Internal test error", err.Error())
+					return
+				}
 			}
 
 			err := tt.cfg.CopyTerraformDirectory(tt.dir)

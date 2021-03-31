@@ -50,14 +50,14 @@ func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringSliceVar(&c.InventoryFiles, flagInventoryFiles, []string{}, "List of inventory files used by Ansible")
 	cmd.PersistentFlags().StringSliceVar(&c.PlaybookFiles, flagPlaybookFiles, []string{}, "List of playbook files used by Ansible")
 
-	viper.BindPFlag(flagAnsibleRoot, cmd.Flags().Lookup(flagAnsibleRoot))
-	viper.BindPFlag(flagInventoryFiles, cmd.Flags().Lookup(flagInventoryFiles))
-	viper.BindPFlag(flagPlaybookFiles, cmd.Flags().Lookup(flagPlaybookFiles))
+	_ = viper.BindPFlag(flagAnsibleRoot, cmd.Flags().Lookup(flagAnsibleRoot))
+	_ = viper.BindPFlag(flagInventoryFiles, cmd.Flags().Lookup(flagInventoryFiles))
+	_ = viper.BindPFlag(flagPlaybookFiles, cmd.Flags().Lookup(flagPlaybookFiles))
 }
 
 func applyRootToFiles(root string, files *[]string) {
 	for i, file := range *files {
-		if path.IsAbs(file) == false {
+		if !path.IsAbs(file) {
 			(*files)[i] = path.Join(root, file)
 		}
 	}
