@@ -19,7 +19,9 @@
 package macrobench
 
 import (
+	"errors"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	"strings"
 	"time"
 )
 
@@ -51,7 +53,7 @@ type (
 	BenchmarkID struct {
 		ID        int
 		Source    string
-		CreatedAt time.Time
+		CreatedAt *time.Time
 	}
 
 	MacroBenchmarkDetails struct {
@@ -65,7 +67,48 @@ type (
 	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
 )
 
+func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays int, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
+	if macroType != OLTP && macroType != TPCC {
+		return nil, errors.New(IncorrectMacroBenchmarkType)
+	}
+
+	upperMacroType := macroType.ToUpper().String()
+	query := "SELECT b.test_no, b.commit, b.source, b.DateTime, " +
+		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
+		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
+		"FROM benchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
+		"WHERE b.DateTime BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW()) " +
+		"AND b.source = ? AND b.test_no = macrotype.test_no AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+
+	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
+
+	macrodetails, err = selectMacroBenchmarkDetailsArray(client, query, lastDays, source)
+	if err != nil {
+		return nil, err
+	}
+	return macrodetails, nil
+}
+
 // GetResultsForGitRef
 func GetResultsForGitRef(ref string, client *mysql.Client) (err error) {
 	return err
 }
+
+func selectMacroBenchmarkDetailsArray(client *mysql.Client, query string, args ...interface{}) (macrodetails MacroBenchmarkDetailsArray, err error) {
+	rows, err := client.Select(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var res MacroBenchmarkDetails
+		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
+			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
+		if err != nil {
+			return nil, err
+		}
+		macrodetails = append(macrodetails, res)
+	}
+	return macrodetails, nil
+}
+
