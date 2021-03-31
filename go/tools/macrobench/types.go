@@ -23,22 +23,25 @@ import (
 )
 
 type (
+	// MacroBenchmarkType determines the type of a macro benchmark.
+	// For instance a macro benchmark can be OLTP or TPCC.
 	MacroBenchmarkType string
 )
 
 const (
 	OLTP = MacroBenchmarkType("oltp")
 	TPCC = MacroBenchmarkType("tpcc")
+
+	IncorrectMacroBenchmarkType = "incorrect macrobenchmark type"
 )
 
+
+// ToUpper returns a new MacroBenchmarkType in upper case.
 func (mbtype MacroBenchmarkType) ToUpper() MacroBenchmarkType {
 	return MacroBenchmarkType(strings.ToUpper(string(mbtype)))
 }
 
+// String returns the given MacroBenchmarkType as a string.
 func (mbtype MacroBenchmarkType) String() string {
 	return string(mbtype)
 }
-
-const (
-	IncorrectMacroBenchmarkType = "incorrect macrobenchmark type"
-)

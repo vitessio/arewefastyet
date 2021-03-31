@@ -50,12 +50,18 @@ type (
 		Threads    float64
 	}
 
+	// BenchmarkID is used to identify a macro benchmark using its database's ID, the
+	// source from which the benchmark was triggered and its creation date.
 	BenchmarkID struct {
 		ID        int
 		Source    string
 		CreatedAt *time.Time
 	}
 
+	// MacroBenchmarkDetails represents the entire macro benchmark and its sub
+	// components. It has a BenchmarkID (ID, creation date, source of the benchmark),
+	// the git reference that was used, and its results represented by a MacroBenchmarkResult.
+	// This struct encapsulates the "benchmark", "qps" and ("OLTP" or "TPCC") database tables.
 	MacroBenchmarkDetails struct {
 		BenchmarkID
 
@@ -67,6 +73,9 @@ type (
 	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
 )
 
+// GetResultsForLastDays returns a slice MacroBenchmarkDetails based on a given macro benchmark type.
+// The type can either be OLTP or TPCC. Using that type, the function will generate a query using
+// the *mysql.Client. The query will select only results that were added between now and lastDays.
 func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays int, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
@@ -94,6 +103,8 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (err error) {
 	return err
 }
 
+// selectMacroBenchmarkDetailsArray is a general function to select multiple MacroBenchmarkDetails
+// using a *mysql.Client, a query string and variadic arguments.
 func selectMacroBenchmarkDetailsArray(client *mysql.Client, query string, args ...interface{}) (macrodetails MacroBenchmarkDetailsArray, err error) {
 	rows, err := client.Select(query, args...)
 	if err != nil {
