@@ -20,6 +20,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 	"log"
 	"net/http"
@@ -33,8 +34,24 @@ func (s *Server) informationHandler(c *gin.Context) {
 }
 
 func (s *Server) homeHanlder(c *gin.Context) {
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "webhook", 31, s.dbClient)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// WIP
+	log.Println("WIP - DEBUG:", oltpData)
+	log.Println("WIP - DEBUG:", tpccData)
+
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title": "Vitess benchmark",
+		"data_oltp": oltpData,
+		"data_tpcc": tpccData,
 	})
 }
 
