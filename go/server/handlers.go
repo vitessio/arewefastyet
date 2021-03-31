@@ -37,11 +37,13 @@ func (s *Server) homeHanlder(c *gin.Context) {
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
 	if err != nil {
 		log.Println(err.Error())
+		return
 	}
 
 	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "webhook", 31, s.dbClient)
 	if err != nil {
 		log.Println(err.Error())
+		return
 	}
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
