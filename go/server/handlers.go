@@ -44,10 +44,6 @@ func (s *Server) homeHanlder(c *gin.Context) {
 		log.Println(err.Error())
 	}
 
-	// WIP
-	log.Println("WIP - DEBUG:", oltpData)
-	log.Println("WIP - DEBUG:", tpccData)
-
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title": "Vitess benchmark",
 		"data_oltp": oltpData,

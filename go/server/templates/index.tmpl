@@ -151,7 +151,7 @@
     //--------------------------------------------------------- OLTP GRAPH ----------------------------------------------------------------------------
 
 
-    graph_oltp = {'benchmark': [{'id': 699, 'commit': 'e84e36661d0769bb14348d387663e58fcecf3215', 'tpcc': [], 'datetime': '2021-03-09 00:56:08'}]}
+    graph_oltp = {{ .data_oltp }}
     label_oltp = []
     data_tps = []
     latency = []
@@ -160,24 +160,15 @@
     writes = []
     others = []
 
-    for (var i = 0; i < graph_oltp.benchmark.length; i++) {
+    for (var i = 0; i < graph_oltp.length; i++) {
+        data_tps.push(graph_oltp[i].Result.TPS);
+        latency.push(graph_oltp[i].Result.Latency);
+        total.push(graph_oltp[i].Result.Total)
+        reads.push(graph_oltp[i].Result.Reads)
+        writes.push(graph_oltp[i].Result.Writes)
+        others.push(graph_oltp[i].Result.Others)
 
-      if (graph_oltp.benchmark[i].oltp.length != 0) {
-
-      label_oltp.push(graph_oltp.benchmark[i].commit + " | " + graph_oltp.benchmark[i].datetime);
-
-      for (var j = 0; j < graph_oltp.benchmark[i].oltp.length; j++) {
-        data_tps.push(graph_oltp.benchmark[i].oltp[j].tps);
-        latency.push(graph_oltp.benchmark[i].oltp[j].latency);
-
-        for (var k = 0; k < graph_oltp.benchmark[i].oltp[j].qps.length; k++) {
-          total.push(graph_oltp.benchmark[i].oltp[j].qps[k].total_qps)
-          reads.push(graph_oltp.benchmark[i].oltp[j].qps[k].reads_qps)
-          writes.push(graph_oltp.benchmark[i].oltp[j].qps[k].writes_qps)
-          others.push(graph_oltp.benchmark[i].oltp[j].qps[k].other_qps)
-        }
-      }
-    }
+      label_oltp.push(graph_oltp[i].GitRef + " | " + graph_oltp[i].CreatedAt);
     }
 
     //---------------------------------------------------------------------------------------------------------------------------------------------
@@ -211,6 +202,9 @@
             },
           }],
           yAxes: [{
+            ticks: {
+              min: 0
+            },
           }]
         }
       }
@@ -262,6 +256,9 @@
             },
           }],
           yAxes: [{
+            ticks: {
+              min: 0
+            },
           }]
         }
       }
@@ -298,6 +295,9 @@
             },
           }],
           yAxes: [{
+            ticks: {
+              min: 0
+            },
           }]
         }
       }
@@ -307,7 +307,7 @@
     //---------------------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------ TPC-C --------------------------------------------------------------------------
 
-    graph_tpcc = {'benchmark': [{'id': 699, 'commit': 'e84e36661d0769bb14348d387663e58fcecf3215', 'tpcc': [], 'datetime': '2021-03-09 00:56:08'}]}
+    graph_tpcc = {{ .data_tpcc }}
     label_tpcc = []
     data_tps = []
     latency = []
@@ -316,26 +316,15 @@
     writes = []
     others = []
 
-    for (var i = 0; i < graph_tpcc.benchmark.length; i++) {
+    for (var i = 0; i < graph_tpcc.length; i++) {
+        data_tps.push(graph_tpcc[i].Result.TPS);
+        latency.push(graph_tpcc[i].Result.Latency);
+        total.push(graph_tpcc[i].Result.Total)
+        reads.push(graph_tpcc[i].Result.Reads)
+        writes.push(graph_tpcc[i].Result.Writes)
+        others.push(graph_tpcc[i].Result.Others)
 
-      if (graph_tpcc.benchmark[i].tpcc.length != 0) {
-
-        label_tpcc.push(graph_tpcc.benchmark[i].commit + " | " + graph_tpcc.benchmark[i].datetime);
-
-        for (var j = 0; j < graph_tpcc.benchmark[i].tpcc.length; j++) {
-          data_tps.push(graph_tpcc.benchmark[i].tpcc[j].tps);
-          latency.push(graph_tpcc.benchmark[i].tpcc[j].latency);
-
-          for (var k = 0; k < graph_tpcc.benchmark[i].tpcc[j].qps.length; k++) {
-            total.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].total_qps)
-            reads.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].reads_qps)
-            writes.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].writes_qps)
-            others.push(graph_tpcc.benchmark[i].tpcc[j].qps[k].other_qps)
-          }
-        }
-
-      }
-
+        label_tpcc.push(graph_tpcc[i].GitRef + " | " + graph_tpcc[i].CreatedAt);
     }
 
     //------------------------------------------------------------- TPCC TPS----------------------------------------------------------------------
@@ -368,6 +357,9 @@
             },
           }],
           yAxes: [{
+            ticks: {
+              min: 0
+            },
           }]
         }
       }
@@ -419,6 +411,9 @@
             },
           }],
           yAxes: [{
+            ticks: {
+              min: 0
+            },
           }]
         }
       }
@@ -455,6 +450,9 @@
             },
           }],
           yAxes: [{
+            ticks: {
+              min: 0
+            },
           }]
         }
       }
