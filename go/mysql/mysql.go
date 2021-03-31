@@ -33,7 +33,7 @@ type Client struct {
 
 func New(config ConfigDB) (client *Client, err error) {
 	client = &Client{}
-	client.db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", config.User, config.Password, config.Host, config.Database))
+	client.db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", config.User, config.Password, config.Host, config.Database))
 	if err != nil {
 		return nil, err
 	}
