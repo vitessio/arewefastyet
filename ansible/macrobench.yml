@@ -148,16 +148,16 @@
 
     - name: Get schema
       ansible.builtin.copy:
-        src: "./vitess-benchmark/sysbench.json"
-        dest: /tmp/schema_sysbench.json
+        src: "{{ macrobenchmark_vschema }}"
+        dest: /tmp/vschema_sysbench.json
         mode: '0644'
 
     - name: Ensure VSchmea
       shell: |
-        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/schema_sysbench.json)" main
+        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
       when: tpcc is not defined
 
     - name: Ensure VSchmea
       shell: |
-        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/schema_sysbench.json)" main
+        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
       when: tpcc is defined

@@ -20,6 +20,7 @@ all:
     vitess_git_version: "HEAD"
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "HEAD"
+    macrobenchmark_vschema: "VSCHEMA_PATH_0"
     cell: local
     keyspace: main
     tpcc_warehouses: 1000
