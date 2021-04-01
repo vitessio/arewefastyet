@@ -15,7 +15,6 @@ type (
 	}
 
 	TextMessage struct {
-		Title string
 		Content string
 	}
 
@@ -59,5 +58,12 @@ func getFileType(f *FileUploadMessage) {
 }
 
 func (t TextMessage) Send(config Config) (err error) {
-	panic("implement me")
+	api := slack.New(config.Token)
+
+	_, _, err = api.PostMessage(config.Channel, slack.MsgOptionText(t.Content, false))
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

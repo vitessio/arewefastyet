@@ -59,6 +59,7 @@ func TestFileUploadMessage_Send(t *testing.T) {
 				c.Assert(err, qt.Not(qt.IsNil))
 				return
 			}
+			c.Assert(err, qt.IsNil)
 		})
 	}
 }
