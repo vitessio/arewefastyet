@@ -26,6 +26,8 @@ import (
 const (
 	flagToken   = "slack-token"
 	flagChannel = "slack-channel"
+
+	ErrorInvalidConfiguration = "invalid configuration"
 )
 
 // Config used for Slack.
@@ -41,4 +43,8 @@ func (c *Config) AddToCommand(cmd *cobra.Command) {
 
 	_ = viper.BindPFlag(flagToken, cmd.Flags().Lookup(flagToken))
 	_ = viper.BindPFlag(flagChannel, cmd.Flags().Lookup(flagChannel))
+}
+
+func (c Config) IsValid() bool {
+	return !(c.Token == "" || c.Channel == "")
 }

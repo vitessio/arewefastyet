@@ -1,59 +1,63 @@
 package slack
 
 import (
-	"fmt"
+	"errors"
 	"github.com/slack-go/slack"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"os"
+	"path"
 )
 
-type conf struct {
-	Token   string `yaml:"slack_api_token"`
-	Channel string `yaml:"slack_channel"`
-}
-
-func UploadFile(configFilePath,reportFilePath string) error {
-	c, err := GetCredentials(configFilePath)
-
-	if err != nil {
-		return err
+type (
+	FileUploadMessage struct {
+		Title string
+		Comment string
+		FilePath string
+		FileType string
 	}
 
-	api := slack.New(c.Token)
+	TextMessage struct {
+		Title string
+		Content string
+	}
+
+	Message interface {
+		Send(config Config) error
+	}
+)
+
+func (f FileUploadMessage) Send(config Config) (err error) {
+	if !config.IsValid() {
+		return errors.New(ErrorInvalidConfiguration)
+	}
+
+	api := slack.New(config.Token)
+
+	if f.FileType == "" {
+		getFileType(&f)
+	}
 
 	params := slack.FileUploadParameters{
-		Title:          "OlTP ",
-		Filetype:       "json",
-		File:           reportFilePath,
-		Channels:       []string{c.Channel},
-		InitialComment: "This is sample OLTP",
+		Title:          f.Title,
+		Filetype:       f.FileType,
+		File:           f.FilePath,
+		Channels:       []string{config.Channel},
+		InitialComment: f.Comment,
 	}
 
 	_, err = api.UploadFile(params)
 	if err != nil {
 		return err
 	}
-
 	return nil
-
 }
 
-func GetCredentials(configFilePath string) (*conf, error) {
-
-	//Read from the config file
-
-	var c conf
-	fmt.Println(os.Getwd())
-	yamlFile, err := ioutil.ReadFile(configFilePath)
-	if err != nil {
-		return nil, err
+func getFileType(f *FileUploadMessage) {
+	ext := path.Ext(f.FilePath)
+	if ext == "" {
+		ext = ".txt"
 	}
-	err = yaml.Unmarshal(yamlFile, &c)
-	if err != nil {
-		return nil, err
-	}
+	f.FileType = ext[1:]
+}
 
-	return &c, nil
-
+func (t TextMessage) Send(config Config) (err error) {
+	panic("implement me")
 }

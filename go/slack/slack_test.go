@@ -1,84 +1,63 @@
 package slack
 
 import (
-	"fmt"
 	qt "github.com/frankban/quicktest"
-	"os"
 	"testing"
 )
 
-func TestReadCred(t *testing.T) {
-
+func Test_getFileType(t *testing.T) {
 	tests := []struct {
-		name    string
-		content map[string]string
-		wantFile bool
-		wantErr bool
+		name string
+		f *FileUploadMessage
+		want string
 	}{
-		{name: "Test valid slack credentials", content: map[string]string{"slack_api_token": "xoxb-2384bizzoEHwq4GOykIR", "slack_channel": "test-channel"}, wantFile: true},
+		{name: "Regular extension", f: &FileUploadMessage{FilePath: "file.json"}, want: "json"},
+		{name: "No extension", f: &FileUploadMessage{FilePath: "file"}, want: "txt"},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
-			path := c.TempDir()
-			configPath := path + "/" + "config.yaml"
-			file, err := os.Create(path + "/" + "config.yaml")
-			if err != nil {
-				c.Skip(err.Error())
-			}
 
-			for key, value := range tt.content {
-				fmt.Fprintf(file, "%s: %s\n", key, value)
-			}
-
-			cred, err := GetCredentials(configPath)
-			c.Assert(err, qt.IsNil)
-			c.Assert(cred.Token, qt.HasLen, len(tt.content["slack_api_token"]))
-			c.Assert(cred.Channel, qt.HasLen, len(tt.content["slack_channel"]))
+			getFileType(tt.f)
+			c.Assert(tt.f.FileType, qt.Equals, tt.want)
 		})
 	}
 }
 
-func TestUploadFile(t *testing.T) {
-
+func TestFileUploadMessage_Send(t *testing.T) {
+	type fields struct {
+		Title    string
+		Comment  string
+		FilePath string
+		FileType string
+	}
+	type args struct {
+		config Config
+	}
 	tests := []struct {
 		name    string
-		credentials map[string]string
-		test_report string
-		wantFile bool
+		fields  fields
+		args    args
 		wantErr bool
 	}{
-		{name: "Test upload file", credentials: map[string]string{"slack_api_token": "wrong token", "slack_channel": "wrong channel"},
-			test_report: "slack bot did you work", wantErr: true},
+		{name: "Invalid configuration (1)", args: args{config: Config{}}, wantErr: true},
+		{name: "Invalid configuration (2)", args: args{config: Config{Token: "token"}}, wantErr: true},
+		{name: "Invalid configuration (3)", args: args{config: Config{Channel: "channel"}}, wantErr: true},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			f := FileUploadMessage{
+				Title:    tt.fields.Title,
+				Comment:  tt.fields.Comment,
+				FilePath: tt.fields.FilePath,
+				FileType: tt.fields.FileType,
+			}
 			c := qt.New(t)
-			path := c.TempDir()
-			configPath := path + "/" + "config.yaml"
-			file, err := os.Create(path + "/" + "config.yaml")
-			if err != nil {
-				c.Skip(err.Error())
-			}
 
-			for key, value := range tt.credentials {
-				fmt.Fprintf(file, "%s: %s\n", key, value)
-			}
-			reportPath := path + "/" + "report.json"
-			fileReport, err := os.Create(path + "/" + "report.json")
-			if err != nil {
-				c.Skip(err.Error())
-			}
-			fmt.Fprintf(fileReport, "%s\n", tt.test_report)
-
-			err = UploadFile(configPath, reportPath)
-			if tt.wantErr == true {
-				// Looks like you gave the right key (You special human)
+			err := f.Send(tt.args.config)
+			if tt.wantErr {
 				c.Assert(err, qt.Not(qt.IsNil))
-			} else {
-				c.Assert(err, qt.IsNil)
+				return
 			}
 		})
 	}
