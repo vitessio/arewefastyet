@@ -10,10 +10,14 @@
 # limitations under the License.
 
 ---
-- import_playbook: provision.yml
+- name: Configure environment
+  import_playbook: macrobench.yml
   when: provision is defined
-- import_playbook: update.yml
-  when: update is defined
-- import_playbook: configure.yml
-- import_playbook: benchmark.yml
 
+- name: Execute OLTP
+  hosts: all
+  tasks:
+    - name: "OLTP"
+      include_role:
+        name: "sysbench"
+        tasks_from: oltp

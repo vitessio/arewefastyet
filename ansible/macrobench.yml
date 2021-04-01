@@ -114,3 +114,50 @@
         file_sd_configs:
           - files:
               - "{{ prometheus_config_dir }}/file_sd/gateways.yml"
+
+
+- hosts: vtctld
+  tasks:
+    - name: Gather facts
+      setup:
+        gather_subset: network
+
+- hosts: vtctld
+  tasks:
+    - name: print
+      debug:
+        msg: Groups {{ groups['vtctld'][0] }}
+
+    - name: Ensure Master
+      shell: |
+        alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
+        for keyspace in $(vc GetKeyspaces); do
+            echo "working on ${keyspace}"
+            for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
+                echo "working on ${shard}"
+                master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
+                if [ -z "${master}" ]; then
+                  echo "setting master for ${keyspace}/${shard}"
+                  vc InitShardMaster -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
+                else
+                  vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
+                fi
+            done
+        done
+      changed_when: false
+
+    - name: Get schema
+      ansible.builtin.copy:
+        src: "./vitess-benchmark/sysbench.json"
+        dest: /tmp/schema_sysbench.json
+        mode: '0644'
+
+    - name: Ensure VSchmea
+      shell: |
+        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/schema_sysbench.json)" main
+      when: tpcc is not defined
+
+    - name: Ensure VSchmea
+      shell: |
+        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/schema_sysbench.json)" main
+      when: tpcc is defined

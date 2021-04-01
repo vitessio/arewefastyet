@@ -11,34 +11,44 @@
 
 ---
 all:
-  vars:
-    vitess_git_version: "HEAD"
-    cell: local
-    keyspace: main
   hosts:
-    52.250.110.51:
+    DEVICE_IP_0:
       storage_device:
         device: nvme0n1
         partition: nvme0n1p1
+  vars:
+    vitess_git_version: "HEAD"
+    arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
+    arewefastyet_git_version: "HEAD"
+    cell: local
+    keyspace: main
+    oltp_table_size: 1
+    oltp_threads: 5
+    oltp_preparation_time: 5
+    oltp_warmup_time: 5
+    oltp_test_time: 5
+    oltp_number_tables: 5
+    provision: 1
+    oltp: 1
   children:
     sysbench:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     prometheus:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     etcd:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     vtctld:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     vtgate:
       vars:
         vtgate_query_cache_size: 1000
         vtgate_max_goproc: 6
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
           gateways:
             - id: 1
               port: 15001
@@ -70,7 +80,7 @@ all:
         vttablet_query_cache_size: 10000
         vttablet_max_goproc: 24
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
           tablets:
             - id: 1001
               keyspace: main
