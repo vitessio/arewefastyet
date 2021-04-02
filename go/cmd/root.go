@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/vitessio/arewefastyet/go/cmd/exec"
+	"github.com/vitessio/arewefastyet/go/cmd/gen"
 	"github.com/vitessio/arewefastyet/go/cmd/infra"
 	"github.com/vitessio/arewefastyet/go/cmd/microbench"
 	"github.com/vitessio/arewefastyet/go/cmd/web"
@@ -62,6 +63,7 @@ func init() {
 	rootCmd.AddCommand(infra.InfraCmd())
 	rootCmd.AddCommand(web.WebCmd())
 	rootCmd.AddCommand(exec.ExecCmd())
+	rootCmd.AddCommand(gen.GenCmd())
 }
 
 // initConfig reads in config file and ENV variables if set.
