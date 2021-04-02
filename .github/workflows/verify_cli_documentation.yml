@@ -1,0 +1,28 @@
+name: Verify CLI Documentation
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Verify CLI Documentation
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.15
+
+      - name: Run gen doc
+        run: |
+          set -e
+          go run ./go/main.go gen doc
+          output=$(git status -s)
+          if [ -z "${output}" ]; then
+           exit 0
+          fi
+          echo 'We wish to maintain a clean documentation. Please run the command `go run ./go/main.go gen doc` on your branch, commit and push again.'
+          echo 'Running `go run ./go/main.go gen doc` on this CI test yields with the following changes:'
+          echo "$output"
+          exit 1
