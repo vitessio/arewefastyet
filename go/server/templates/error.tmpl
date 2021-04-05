@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "headHTML" .}}
+
+<body>
+    {{ template "navigation" .url }}
+
+    <section class="py-5">
+      <div class="container">
+        <h3>Sorry, an error occurred.</h3>
+        <p class="lead"></p>
+        <code>{{ .errorStr }}</code>
+      </div>
+    </section>
+</body>
+
+</html>
