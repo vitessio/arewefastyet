@@ -33,7 +33,7 @@ func (s *Server) informationHandler(c *gin.Context) {
 	})
 }
 
-func (s *Server) homeHanlder(c *gin.Context) {
+func (s *Server) homeHandler(c *gin.Context) {
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
 	if err != nil {
 		log.Println(err.Error())

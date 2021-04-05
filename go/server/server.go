@@ -84,7 +84,7 @@ func (s *Server) Run() error {
 	s.router.GET("/information", s.informationHandler)
 
 	// Home page
-	s.router.GET("/", s.homeHanlder)
+	s.router.GET("/", s.homeHandler)
 
 	// Search and compare page
 	s.router.GET("/search_compare", s.searchCompareHandler)
