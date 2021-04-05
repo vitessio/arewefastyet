@@ -21,8 +21,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
-	errorstool "github.com/vitessio/arewefastyet/go/tools/errors"
 	"github.com/vitessio/arewefastyet/go/tools/git"
+	"go.uber.org/multierr"
 	"go/types"
 	"golang.org/x/tools/go/packages"
 	"os"
@@ -140,12 +140,9 @@ func MicroBenchmark(cfg MicroBenchConfig) error {
 		return err
 	}
 
-	benchmarks, errs := findBenchmarks(loaded)
-	if len(errs) > 0 {
-		err = errorstool.Concat(errs)
-		if err != nil {
-			return fmt.Errorf("%s:\n%s\n", errorInvalidPackageParsing, err.Error())
-		}
+	benchmarks, err := findBenchmarks(loaded)
+	if err != nil {
+		return fmt.Errorf("%s:\n%s\n", errorInvalidPackageParsing, err)
 	}
 
 	w, err := os.Create(cfg.Output)
@@ -183,16 +180,15 @@ func MicroBenchmark(cfg MicroBenchConfig) error {
 	return nil
 }
 
-func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, errs []error) {
+func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, err error) {
 	for _, pkg := range loaded {
 
 		// Check if current pkg contains parsing errors
 		// If it does, append each packages.Error into
-		// errs (type: []error). Cloud not use:
-		// errs = append(errs, pkg.Errors...)
+		// a single error.
 		if len(pkg.Errors) > 0 {
-			for _, e := range pkg.Errors {
-				errs = append(errs, errors.New(e.Msg))
+			for i := 0; i < len(pkg.Errors); i++ {
+				err = multierr.Append(err, errors.New(pkg.Errors[i].Msg))
 			}
 			continue
 		}
@@ -211,8 +207,8 @@ func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, errs []
 			}
 		}
 	}
-	if len(errs) > 0 {
-		return nil, errs
+	if len(multierr.Errors(err)) > 0 {
+		return nil, err
 	}
 	return benchmarks, nil
 }
