@@ -41,7 +41,11 @@
     </section>
     <!-- Header - set the background image for the header in the line below -->
     <header class="py-5 bg-image-full" style="">
+      {{ if not .data_oltp }}
+      <p class="text-center font-italic">The graph could not be rendered.</p>
+      {{ else }}
       <canvas id="tps" height="100"></canvas>
+      {{ end }}
     </header>
 
     <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -57,7 +61,11 @@
     </section>
 
     <header class="py-5 bg-image-full" style="">
+      {{ if not .data_oltp }}
+      <p class="text-center font-italic">The graph could not be rendered.</p>
+      {{ else }}
       <canvas id="qps" height="100"></canvas>
+      {{ end }}
     </header>
 
     <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -73,7 +81,11 @@
     </section>
 
     <header class="py-5 bg-image-full" style="">
+      {{ if not .data_oltp }}
+      <p class="text-center font-italic">The graph could not be rendered.</p>
+      {{ else }}
       <canvas id="latency" height="100"></canvas>
+      {{ end }}
     </header>
 
     <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -104,7 +116,11 @@
 
     <!-- Header - set the background image for the header in the line below -->
     <header class="py-5 bg-image-full" style="">
+      {{ if not .data_tpcc }}
+      <p class="text-center font-italic">The graph could not be rendered.</p>
+      {{ else }}
       <canvas id="tps_tpcc" height="100"></canvas>
+      {{ end }}
     </header>
 
     <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -120,7 +136,11 @@
     </section>
 
     <header class="py-5 bg-image-full" style="">
+      {{ if not .data_tpcc }}
+      <p class="text-center font-italic">The graph could not be rendered.</p>
+      {{ else }}
       <canvas id="qps_tpcc" height="100"></canvas>
+      {{ end }}
     </header>
 
     <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -136,7 +156,11 @@
     </section>
 
     <header class="py-5 bg-image-full" style="">
+      {{ if not .data_tpcc }}
+      <p class="text-center font-italic">The graph could not be rendered.</p>
+      {{ else }}
       <canvas id="latency_tpcc" height="100"></canvas>
+      {{ end }}
     </header>
 
     <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -148,19 +172,146 @@
 
   <script>
 
-    //--------------------------------------------------------- OLTP GRAPH ----------------------------------------------------------------------------
+    function graphTPS(id, labels, data) {
+      var ctx = document.getElementById(id).getContext('2d');
 
+      var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
 
-    graph_oltp = {{ .data_oltp }}
-    label_oltp = []
-    data_tps = []
-    latency = []
-    total = []
-    reads = []
-    writes = []
-    others = []
+        // The data for our dataset
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'TPS (Transactions per second)',
+            borderColor: 'orange',
+            data: data
+          },
+          ]
+        },
 
-    for (var i = 0; i < graph_oltp.length; i++) {
+        // Configuration options go here
+        options: {
+          responsive: true,
+          scales: {
+            xAxes: [{
+              ticks: {
+                display: false, //this will remove only the label
+                padding: 4,
+              },
+            }],
+            yAxes: [{
+              ticks: {
+                min: 0
+              },
+            }]
+          }
+        }
+      });
+    }
+
+    function graphQPS(id, labels, total, reads, writes, others) {
+      var ctx = document.getElementById(id).getContext('2d');
+
+      var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'total',
+            borderColor: 'red',
+            data: total
+          },
+            {
+              label: 'reads',
+              borderColor: 'blue',
+              data: reads
+            },
+            {
+              label: 'writes',
+              borderColor: 'green',
+              data: writes
+            },
+            {
+              label: 'others',
+              borderColor: 'purple',
+              data: others
+            }
+          ]
+        },
+
+        // Configuration options go here
+        options: {
+          responsive: true,
+          scales: {
+            xAxes: [{
+              ticks: {
+                display: false, //this will remove only the label
+                padding: 4,
+              },
+            }],
+            yAxes: [{
+              ticks: {
+                min: 0
+              },
+            }]
+          }
+        }
+      });
+    }
+
+    function graphLatency(id, labels, latency) {
+      var ctx = document.getElementById(id).getContext('2d');
+
+      var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'latency',
+            borderColor: 'black',
+            data: latency
+          },
+          ]
+        },
+
+        // Configuration options go here
+        options: {
+          responsive: true,
+          scales: {
+            xAxes: [{
+              ticks: {
+                display: false, //this will remove only the label
+                padding: 4,
+              },
+            }],
+            yAxes: [{
+              ticks: {
+                min: 0
+              },
+            }]
+          }
+        }
+      });
+    }
+
+    function plotOLTP(data) {
+      graph_oltp = data
+      label_oltp = []
+      data_tps = []
+      latency = []
+      total = []
+      reads = []
+      writes = []
+      others = []
+
+      for (var i = 0; i < graph_oltp.length; i++) {
         data_tps.push(graph_oltp[i].Result.TPS);
         latency.push(graph_oltp[i].Result.Latency);
         total.push(graph_oltp[i].Result.Total)
@@ -169,154 +320,23 @@
         others.push(graph_oltp[i].Result.Others)
 
         label_oltp.push(graph_oltp[i].GitRef + " | " + graph_oltp[i].CreatedAt);
+      }
+      graphTPS("tps", label_oltp, data_tps);
+      graphQPS("qps", label_oltp, total, reads, writes, others);
+      graphLatency("latency", label_oltp, latency);
     }
 
-    //---------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------- OLTP TPS ----------------------------------------------------------------------
+    function plotTPCC(data) {
+      graph_tpcc = data
+      label_tpcc = []
+      data_tps = []
+      latency = []
+      total = []
+      reads = []
+      writes = []
+      others = []
 
-    var ctx = document.getElementById('tps').getContext('2d');
-
-    var chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
-
-      // The data for our dataset
-      data: {
-        labels: label_oltp,
-        datasets: [{
-          label: 'TPS (Transactions per second)',
-          borderColor: 'orange',
-          data: data_tps
-        },
-        ]
-      },
-
-      // Configuration options go here
-      options: {
-        responsive: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              display: false, //this will remove only the label
-              padding: 4,
-            },
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0
-            },
-          }]
-        }
-      }
-    });
-
-    //---------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------- OLTP QPS ----------------------------------------------------------------------
-
-    var ctx = document.getElementById('qps').getContext('2d');
-
-    var chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
-
-      // The data for our dataset
-      data: {
-        labels: label_oltp,
-        datasets: [{
-          label: 'total',
-          borderColor: 'red',
-          data: total
-        },
-        {
-          label: 'reads',
-          borderColor: 'blue',
-          data: reads
-        },
-        {
-          label: 'writes',
-          borderColor: 'green',
-          data: writes
-        },
-        {
-          label: 'others',
-          borderColor: 'purple',
-          data: others
-        }
-        ]
-      },
-
-      // Configuration options go here
-      options: {
-        responsive: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              display: false, //this will remove only the label
-              padding: 4,
-            },
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0
-            },
-          }]
-        }
-      }
-    });
-
-    //------------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------- OLTP LATENCY----------------------------------------------------------------------
-
-    var ctx = document.getElementById('latency').getContext('2d');
-
-    var chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
-
-      // The data for our dataset
-      data: {
-        labels: label_oltp,
-        datasets: [{
-          label: 'latency',
-          borderColor: 'black',
-          data: latency
-        },
-        ]
-      },
-
-      // Configuration options go here
-      options: {
-        responsive: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              display: false, //this will remove only the label
-              padding: 4,
-            },
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0
-            },
-          }]
-        }
-      }
-    });
-
-    //---------------------------------------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------ TPC-C --------------------------------------------------------------------------
-
-    graph_tpcc = {{ .data_tpcc }}
-    label_tpcc = []
-    data_tps = []
-    latency = []
-    total = []
-    reads = []
-    writes = []
-    others = []
-
-    for (var i = 0; i < graph_tpcc.length; i++) {
+      for (var i = 0; i < graph_tpcc.length; i++) {
         data_tps.push(graph_tpcc[i].Result.TPS);
         latency.push(graph_tpcc[i].Result.Latency);
         total.push(graph_tpcc[i].Result.Total)
@@ -325,142 +345,20 @@
         others.push(graph_tpcc[i].Result.Others)
 
         label_tpcc.push(graph_tpcc[i].GitRef + " | " + graph_tpcc[i].CreatedAt);
+      }
+
+      graphTPS("tps_tpcc", label_tpcc, data_tps);
+      graphQPS("qps_tpcc", label_tpcc, total, reads, writes, others);
+      graphLatency("latency_tpcc", label_tpcc, latency);
     }
 
-    //------------------------------------------------------------- TPCC TPS----------------------------------------------------------------------
+    {{ if .data_oltp }}
+      plotOLTP({{ .data_oltp }})
+    {{ end }}
 
-    var ctx = document.getElementById('tps_tpcc').getContext('2d');
-
-    var chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
-
-      // The data for our dataset
-      data: {
-        labels: label_tpcc,
-        datasets: [{
-          label: 'TPS (Transactions per second)',
-          borderColor: 'orange',
-          data: data_tps
-        },
-        ]
-      },
-
-      // Configuration options go here
-      options: {
-        responsive: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              display: false, //this will remove only the label
-              padding: 4,
-            },
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0
-            },
-          }]
-        }
-      }
-    });
-
-    //---------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------- TPCC QPS-----------------------------------------------------------------------
-
-    var ctx = document.getElementById('qps_tpcc').getContext('2d');
-
-    var chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
-
-      // The data for our dataset
-      data: {
-        labels: label_tpcc,
-        datasets: [{
-          label: 'total',
-          borderColor: 'red',
-          data: total
-        },
-        {
-          label: 'reads',
-          borderColor: 'blue',
-          data: reads
-        },
-        {
-          label: 'writes',
-          borderColor: 'green',
-          data: writes
-        },
-        {
-          label: 'others',
-          borderColor: 'purple',
-          data: others
-        }
-        ]
-      },
-
-      // Configuration options go here
-      options: {
-        responsive: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              display: false, //this will remove only the label
-              padding: 4,
-            },
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0
-            },
-          }]
-        }
-      }
-    });
-
-    //-------------------------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------- TPCC LATENCY-----------------------------------------------------------------------
-
-    var ctx = document.getElementById('latency_tpcc').getContext('2d');
-
-    var chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
-
-      // The data for our dataset
-      data: {
-        labels: label_tpcc,
-        datasets: [{
-          label: 'latency',
-          borderColor: 'black',
-          data: latency
-        },
-        ]
-      },
-
-      // Configuration options go here
-      options: {
-        responsive: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              display: false, //this will remove only the label
-              padding: 4,
-            },
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0
-            },
-          }]
-        }
-      }
-    });
-
-  //-------------------------------------------------------------------------------------------------------------------------------------------------
-  //---------------------------------------------------------------------------------------------------------------------------------------------
-
+    {{ if .data_tpcc}}
+      plotTPCC({{ .data_tpcc }})
+    {{ end }}
   </script>
 
 </body>

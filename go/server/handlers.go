@@ -46,16 +46,14 @@ func (s *Server) informationHandler(c *gin.Context) {
 }
 
 func (s *Server) homeHandler(c *gin.Context) {
-	oltpData, err := macrobench.GetResultsForLastDays("ee", "webhook", 31, s.dbClient)
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
 	if err != nil {
-		handleRenderErrors(c, err)
-		return
+		log.Println(err.Error())
 	}
 
 	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "webhook", 31, s.dbClient)
 	if err != nil {
-		handleRenderErrors(c, err)
-		return
+		log.Println(err.Error())
 	}
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
