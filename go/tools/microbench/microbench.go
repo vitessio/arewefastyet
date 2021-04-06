@@ -207,7 +207,7 @@ func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, err err
 			}
 		}
 	}
-	if len(multierr.Errors(err)) > 0 {
+	if err != nil {
 		return nil, err
 	}
 	return benchmarks, nil
