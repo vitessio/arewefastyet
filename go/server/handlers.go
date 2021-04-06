@@ -35,7 +35,6 @@ func handleRenderErrors(c *gin.Context, err error) {
 	c.HTML(http.StatusOK, "error.tmpl", gin.H{
 		"title":    "Vitess benchmark - Error",
 		"url":      c.FullPath(),
-		"errorStr": err.Error(),
 	})
 }
 
