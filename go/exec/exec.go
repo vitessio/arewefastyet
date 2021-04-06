@@ -30,8 +30,8 @@ import (
 )
 
 const (
-	stderrFile = "exec-stderr.log"
-	stdoutFile = "exec-stdout.log"
+	// stderrFile = "exec-stderr.log"
+	// stdoutFile = "exec-stdout.log"
 )
 
 type Exec struct {
