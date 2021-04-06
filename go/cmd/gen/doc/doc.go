@@ -31,6 +31,7 @@ func GenerateDoc() *cobra.Command {
 		Short: "Generate documentation for the CLI",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Println("Generating documentation.")
+			cmd.Root().DisableAutoGenTag = true
 			err := doc.GenMarkdownTree(cmd.Root(), docDir)
 			if err != nil {
 				return err
