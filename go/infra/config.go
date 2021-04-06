@@ -41,6 +41,10 @@ type Config struct {
 	pathInstallTF string
 }
 
+func (c *Config) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(FlagInfraPath, &c.Path)
+}
+
 func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&c.Path, FlagInfraPath, "", "Path to the infra directory")
 	_ = viper.BindPFlag(FlagInfraPath, cmd.Flags().Lookup(FlagInfraPath))

@@ -32,9 +32,9 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	if err != nil {
 		return err
 	}
-
-	// TODO: apply AddToViper method to sub-structs
-
+	e.AnsibleConfig.AddToViper(v)
+	e.InfraConfig.AddToViper(v)
+	e.Infra.AddToViper(v)
 	return nil
 }
 

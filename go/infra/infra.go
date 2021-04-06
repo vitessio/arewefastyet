@@ -24,6 +24,7 @@ import (
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/hashicorp/terraform-exec/tfinstall"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 )
 
@@ -35,6 +36,7 @@ const (
 
 type Infra interface {
 	AddToCommand(cmd *cobra.Command)
+	AddToViper(v *viper.Viper)
 	CleanUp() error
 	Create(wantOutputs ...string) (output map[string]string, err error)
 	ValidConfig() error

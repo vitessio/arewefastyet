@@ -103,8 +103,10 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	}
 	v := viper.New()
 
-	// TODO: load from a dedicated configuration from pathConfig
-	v.Set("exec-root-dir", "test")
+	v.SetConfigFile(pathConfig)
+	if err := v.ReadInConfig(); err != nil {
+		return nil, err
+	}
 
 	err = e.AddToViper(v)
 	if err != nil {

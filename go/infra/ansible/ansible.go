@@ -45,6 +45,12 @@ type Config struct {
 	PlaybookFiles  []string
 }
 
+func (c *Config) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(flagAnsibleRoot, &c.RootDir)
+	_ = v.UnmarshalKey(flagInventoryFiles, &c.InventoryFiles)
+	_ = v.UnmarshalKey(flagPlaybookFiles, &c.PlaybookFiles)
+}
+
 func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&c.RootDir, flagAnsibleRoot, "", "Root directory of Ansible")
 	cmd.PersistentFlags().StringSliceVar(&c.InventoryFiles, flagInventoryFiles, []string{}, "List of inventory files used by Ansible")

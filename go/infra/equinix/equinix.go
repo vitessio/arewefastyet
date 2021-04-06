@@ -55,6 +55,12 @@ func (e *Equinix) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagInstanceType, cmd.Flags().Lookup(flagInstanceType))
 }
 
+func (e *Equinix) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(flagToken, &e.Token)
+	_ = v.UnmarshalKey(flagProjectID, &e.ProjectID)
+	_ = v.UnmarshalKey(flagInstanceType, &e.InstanceType)
+}
+
 func (e Equinix) TerraformVarArray() (vars []*tfexec.VarOption) {
 	vars = append(vars, tfexec.Var("auth_token=" + e.Token), tfexec.Var("project_id=" + e.ProjectID))
 	if e.InstanceType != "" {

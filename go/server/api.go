@@ -45,7 +45,8 @@ func newResponseError(err error) responseError {
 
 func (s *Server) webhookHandler(c *gin.Context) {
 	type webhookPayload struct {
-		Ref string `json:"ref"`
+		Ref        string `json:"ref"`
+		PathConfig string `json:"path_config"`
 	}
 	var wbhPayload webhookPayload
 
@@ -58,18 +59,44 @@ func (s *Server) webhookHandler(c *gin.Context) {
 		return
 	}
 
-	e, err := exec.NewExecWithConfig("")
+	pathConfig := wbhPayload.PathConfig
+	if pathConfig == "" {
+		pathConfig = s.defaultExecConfigFile
+	}
+
+	// Will load any configuration (microbench, OLTP, TPCC, OLTP+TPCC, etc).
+	e, err := exec.NewExecWithConfig(pathConfig)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, newResponseError(err))
 		return
 	}
 
-	log.Println(e)
+	// Start a goroutine with the running execution
+	go func() {
+		// TODO: handle termination
 
-	// TODO: concurrent call to macro bench here
+		err = e.Prepare()
+		if err != nil {
+			log.Println("Prepare", err.Error())
+			return
+		}
+
+		err = e.Execute()
+		if err != nil {
+			log.Println("Execution", err.Error())
+			return
+		}
+
+		err = e.CleanUp()
+		if err != nil {
+			log.Println("Clean Up", err.Error())
+			return
+		}
+	}()
 
 	type webhookResponse struct {
-		Started bool `json:"started"`
+		Started bool   `json:"started"`
+		UUID    string `json:"uuid"`
 	}
-	c.JSON(http.StatusOK, webhookResponse{Started: true})
+	c.JSON(http.StatusOK, webhookResponse{Started: true, UUID: e.UUID.String()})
 }
