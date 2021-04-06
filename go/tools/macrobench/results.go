@@ -91,22 +91,7 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	macrodetails, err = selectMacroBenchmarkDetailsArray(client, query, lastDays, source)
-	if err != nil {
-		return nil, err
-	}
-	return macrodetails, nil
-}
-
-// GetResultsForGitRef
-func GetResultsForGitRef(ref string, client *mysql.Client) (err error) {
-	return err
-}
-
-// selectMacroBenchmarkDetailsArray is a general function to select multiple MacroBenchmarkDetails
-// using a *mysql.Client, a query string and variadic arguments.
-func selectMacroBenchmarkDetailsArray(client *mysql.Client, query string, args ...interface{}) (macrodetails MacroBenchmarkDetailsArray, err error) {
-	rows, err := client.Select(query, args...)
+	rows, err := client.Select(query, lastDays, source)
 	if err != nil {
 		return nil, err
 	}
@@ -122,4 +107,3 @@ func selectMacroBenchmarkDetailsArray(client *mysql.Client, query string, args .
 	}
 	return macrodetails, nil
 }
-
