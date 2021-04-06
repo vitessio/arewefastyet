@@ -115,6 +115,9 @@ func (s *Server) Run() error {
 	// Request benchmark page
 	s.router.GET("/microbench", s.microbenchmarkResultsHandler)
 
+	// MacroBench webhook
+	s.router.POST("/webhook", s.webhookHandler)
+
 	return s.router.Run(":" + s.port)
 }
 
