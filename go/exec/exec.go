@@ -94,3 +94,22 @@ func NewExec() (*Exec, error) {
 	return &ex, nil
 }
 
+// NewExecWithConfig will create a new Exec using the NewExec method, and will
+// use viper.Viper to apply the configuration located at pathConfig.
+func NewExecWithConfig(pathConfig string) (*Exec, error) {
+	e, err := NewExec()
+	if err != nil {
+		return nil, err
+	}
+	v := viper.New()
+
+	// TODO: load from a dedicated configuration from pathConfig
+	v.Set("exec-root-dir", "test")
+
+	err = e.AddToViper(v)
+	if err != nil {
+		return nil, err
+	}
+
+	return e, nil
+}

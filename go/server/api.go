@@ -22,6 +22,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/exec"
+	"log"
 	"net/http"
 )
 
@@ -55,6 +57,14 @@ func (s *Server) webhookHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, newResponseErrorFromString(fmt.Sprintf(errorNeedsValue, "ref")))
 		return
 	}
+
+	e, err := exec.NewExecWithConfig("")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, newResponseError(err))
+		return
+	}
+
+	log.Println(e)
 
 	// TODO: concurrent call to macro bench here
 
