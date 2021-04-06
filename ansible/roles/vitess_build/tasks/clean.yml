@@ -17,16 +17,13 @@
     systemctl stop cell@* || /bin/true
     systemctl stop vtgate@* || /bin/true
   ignore_errors: yes
-  changed_when: false
+  when: clean is defined
 
 - name: Find Elements to remove
   find:
     path: /vt
     file_type: directory
   register: directories
-
-- debug:
-    msg: '{{ directories }}'
 
 - name: Remove Elements
   file:

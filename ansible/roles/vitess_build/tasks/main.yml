@@ -77,6 +77,12 @@
   ignore_errors: yes
   when: ansible_os_family == 'RedHat'
 
+- name: Check if repo exists
+  become: yes
+  become_user: root
+  stat: path=/go/src/vitess.io/vitess
+  register: vitessrepopath
+
 - name: Update Vitess
   become: yes
   become_user: root
@@ -104,7 +110,6 @@
         export TMPDIR=~/tmp
         cd /go/src/vitess.io/vitess
         make build
-      changed_when: false
 
     - name: Install Vitess Binaries
       shell: |
@@ -117,9 +122,10 @@
       shell: |
         cd /go/src/vitess.io/vitess
         cp bin/vtctl /usr/local/bin/
-      changed_when: false
 
-  when: vtroot is undefined
+  when:
+    - vtroot is undefined
+    - not vitessrepopath.stat.exists
 
 - name: Copy Vitess Binaries
   become: yes
