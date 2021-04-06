@@ -104,7 +104,7 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 			return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
 		}
 	} else {
-		fmt.Println("plan did not change, no provision needed")
+		log.Println("plan did not change, no provision needed")
 	}
 
 	if len(wantOutputs) > 0 {

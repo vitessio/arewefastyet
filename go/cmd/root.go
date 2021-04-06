@@ -17,7 +17,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/vitessio/arewefastyet/go/cmd/exec"
@@ -86,7 +85,7 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			fmt.Println(err)
+			log.Println(err)
 			os.Exit(1)
 		}
 	}

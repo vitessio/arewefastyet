@@ -25,6 +25,7 @@ import (
 	"go.uber.org/multierr"
 	"go/types"
 	"golang.org/x/tools/go/packages"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -86,7 +87,7 @@ func (b *benchmark) execute(rootDir string, w *os.File) error {
 		}
 
 		if benchLine.benchType != "" {
-			fmt.Printf("%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
+			log.Printf("%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
 			fmt.Fprintf(w, "%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
 			if b.sql != nil {
 				err = benchLine.InsertToMySQL(b.id, b.sql)
@@ -111,7 +112,7 @@ func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error
 	if err != nil {
 		return err
 	}
-	fmt.Printf("CPU profile generated %s\n", profileName)
+	log.Printf("CPU profile generated %s\n", profileName)
 	fmt.Fprintf(w, "CPU profile generated %s\n", profileName)
 	return nil
 }
@@ -159,12 +160,12 @@ func MicroBenchmark(cfg MicroBenchConfig) error {
 		benchmark.gitHash = hash
 		benchmark.sql = sqlClient
 
-		fmt.Println(benchmark.pkgPath)
+		log.Println(benchmark.pkgPath)
 
 		err = benchmark.execute(cfg.RootDir, w)
 		if err != nil {
 			// not stopping execution on error
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 		}
 
 		profiles := []string{profileMem, profileCPU}
@@ -172,10 +173,10 @@ func MicroBenchmark(cfg MicroBenchConfig) error {
 			err = benchmark.executeProfile(cfg.RootDir, profile, w)
 			if err != nil && err.Error() != errorInvalidProfileType {
 				// not stopping execution on error
-				fmt.Println(err.Error())
+				log.Println(err.Error())
 			}
 		}
-		fmt.Println()
+		log.Println()
 	}
 	return nil
 }

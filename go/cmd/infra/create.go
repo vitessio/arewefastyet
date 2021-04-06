@@ -19,10 +19,10 @@
 package infra
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/infra"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
+	"log"
 )
 
 func create(cfg *infra.Config) *cobra.Command {
@@ -50,7 +50,7 @@ func createEquinix(cfg *infra.Config) *cobra.Command {
 				return err
 			}
 			out, err := eq.Create("device_public_ip")
-			fmt.Printf("Device IP: %s\n", out["device_public_ip"])
+			log.Printf("Device IP: %s\n", out["device_public_ip"])
 			return err
 		},
 	}
