@@ -9,17 +9,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Benchmarks
+---
+- name: Configure environment
+  import_playbook: macrobench.yml
+  when: provision is defined
+
+- name: Execute TPCC
   hosts: all
   tasks:
-    - name: "OLTP"
-      when: tpcc is not defined
-      include_role:
-        name: "sysbench"
-        tasks_from: oltp
-
     - name: "TPCC"
-      when: tpcc is defined
       include_role:
         name: "sysbench"
         tasks_from: tpcc

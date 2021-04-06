@@ -11,18 +11,18 @@
 
 ---
 all:
+  hosts:
+    DEVICE_IP_0:
+      storage_device:
+        device: nvme0n1
+        partition: nvme0n1p1
   vars:
     vitess_git_version: "HEAD"
+    arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
+    arewefastyet_git_version: "HEAD"
+    macrobenchmark_vschema: "./vitess-benchmark/tpcc_vschema.json"
     cell: local
     keyspace: main
-    # OLTP
-    oltp_table_size: 10000000
-    oltp_threads: 100
-    oltp_preparation_time: 30
-    oltp_warmup_time: 10
-    oltp_test_time: 900
-    oltp_number_tables: 50
-    # TPCC
     tpcc_warehouses: 1000
     tpcc_threads: 300
     tpcc_load_threads: 25
@@ -31,30 +31,27 @@ all:
     tpcc_warmup_time: 90
     tpcc_test_time: 900
     tpcc_number_tables: 1
-  hosts:
-    52.250.110.51:
-      storage_device:
-        device: nvme0n1
-        partition: nvme0n1p1
+    provision: 1
+    tpcc: 1
   children:
     sysbench:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     prometheus:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     etcd:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     vtctld:
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
     vtgate:
       vars:
         vtgate_query_cache_size: 1000
         vtgate_max_goproc: 6
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
           gateways:
             - id: 1
               port: 15001
@@ -64,16 +61,45 @@ all:
               port: 15002
               mysql_port: 13307
               grpc_port: 15307
+            - id: 3
+              port: 15003
+              mysql_port: 13308
+              grpc_port: 15308
+            - id: 4
+              port: 15004
+              mysql_port: 13309
+              grpc_port: 15309
+            - id: 5
+              port: 15005
+              mysql_port: 13310
+              grpc_port: 15310
+            - id: 6
+              port: 15006
+              mysql_port: 13311
+              grpc_port: 15311
     vttablet:
       vars:
         vitess_memory_ratio: 0.6
         vttablet_query_cache_size: 10000
         vttablet_max_goproc: 24
       hosts:
-        52.250.110.51:
+        DEVICE_IP_0:
           tablets:
             - id: 1001
               keyspace: main
-              shard: 0
+              shard: -80
               pool_size: 500
               transaction_cap: 2000
+              port: 16001
+              grpc_port: 17001
+              mysql_port: 18001
+              mysqld_exporter_port: 9104
+            - id: 2001
+              keyspace: main
+              shard: 80-
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16002
+              grpc_port: 17002
+              mysql_port: 18002
+              mysqld_exporter_port: 9105
