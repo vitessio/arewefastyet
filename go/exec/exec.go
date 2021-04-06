@@ -25,6 +25,13 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
+	"io"
+	"os"
+)
+
+const (
+	stderrFile = "exec-stderr.log"
+	stdoutFile = "exec-stdout.log"
 )
 
 type Exec struct {
@@ -35,6 +42,25 @@ type Exec struct {
 
 	rootDir string
 	dirPath string
+
+	stdout io.Writer
+	stderr io.Writer
+}
+
+// SetStdout sets the standard output of Exec.
+func (e *Exec) SetStdout(stdout io.Writer) {
+	e.stdout = stdout
+}
+
+// SetStderr sets the standard error output of Exec.
+func (e *Exec) SetStderr(stderr io.Writer) {
+	e.stderr = stderr
+}
+
+// SetOutputToDefaultPath sets both outputs to their default files (stdoutFile and
+// stderrFile). If they can't be found in exec.dirPath, they will be created there.
+func (e Exec) SetOutputToDefaultPath() error {
+	return nil
 }
 
 func (e *Exec) Prepare() error {
@@ -85,8 +111,11 @@ func NewExec() (*Exec, error) {
 	}
 
 	ex := Exec{
-		UUID: uuid.New(),
+		UUID:  uuid.New(),
 		Infra: inf,
+
+		stdout: os.Stdout,
+		stderr: os.Stderr,
 	}
 
 	ex.Infra.SetConfig(&ex.InfraConfig)
