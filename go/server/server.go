@@ -79,11 +79,13 @@ func (s *Server) Run() error {
 		s.Mode.useDefault()
 	}
 
-	err := s.initLogger()
-	if err != nil {
-		return err
+	if slog == nil {
+		err := s.initLogger()
+		if err != nil {
+			return err
+		}
+		defer cleanLogger()
 	}
-	defer cleanLogger()
 
 	if !s.isReady() {
 		return errors.New(ErrorIncorrectConfiguration)
