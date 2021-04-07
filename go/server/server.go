@@ -33,6 +33,7 @@ const (
 	flagTemplatePath = "web-template-path"
 	flagStaticPath   = "web-static-path"
 	flagAPIKey       = "web-api-key"
+	flagMode         = "web-mode"
 )
 
 type Server struct {
@@ -43,6 +44,9 @@ type Server struct {
 	router       *gin.Engine
 	dbCfg        *mysql.ConfigDB
 	dbClient     *mysql.Client
+
+	// Mode used to run the server.
+	Mode
 }
 
 func (s *Server) AddToCommand(cmd *cobra.Command) {
@@ -50,11 +54,13 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.templatePath, flagTemplatePath, "", "Path to the template directory")
 	cmd.Flags().StringVar(&s.staticPath, flagStaticPath, "", "Path to the static directory")
 	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
+	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
 	_ = viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
 	_ = viper.BindPFlag(flagAPIKey, cmd.Flags().Lookup(flagAPIKey))
+	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
 
 	if s.dbCfg == nil {
 		s.dbCfg = &mysql.ConfigDB{}
@@ -67,6 +73,20 @@ func (s Server) isReady() bool {
 }
 
 func (s *Server) Run() error {
+	if s.Mode != "" && !s.Mode.correct() {
+		return errors.New(ErrorIncorrectMode)
+	} else if s.Mode == "" {
+		s.Mode.useDefault()
+	}
+
+	if slog == nil {
+		err := s.initLogger()
+		if err != nil {
+			return err
+		}
+		defer cleanLogger()
+	}
+
 	if !s.isReady() {
 		return errors.New(ErrorIncorrectConfiguration)
 	}
@@ -84,7 +104,7 @@ func (s *Server) Run() error {
 	s.router.GET("/information", s.informationHandler)
 
 	// Home page
-	s.router.GET("/", s.homeHanlder)
+	s.router.GET("/", s.homeHandler)
 
 	// Search and compare page
 	s.router.GET("/search_compare", s.searchCompareHandler)

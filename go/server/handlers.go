@@ -20,11 +20,22 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
-	"log"
 	"net/http"
 	"sort"
 )
+
+func handleRenderErrors(c *gin.Context, err error) {
+	if err == nil {
+		return
+	}
+	slog.Error(err.Error())
+	c.HTML(http.StatusOK, "error.tmpl", gin.H{
+		"title":    "Vitess benchmark - Error",
+		"url":      c.FullPath(),
+	})
+}
 
 func (s *Server) informationHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "information.tmpl", gin.H{
@@ -32,9 +43,21 @@ func (s *Server) informationHandler(c *gin.Context) {
 	})
 }
 
-func (s *Server) homeHanlder(c *gin.Context) {
+func (s *Server) homeHandler(c *gin.Context) {
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+
+	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "webhook", 31, s.dbClient)
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"title": "Vitess benchmark",
+		"title":     "Vitess benchmark",
+		"data_oltp": oltpData,
+		"data_tpcc": tpccData,
 	})
 }
 
@@ -59,7 +82,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	}
 	currentMbd, err := microbench.GetResultsForGitRef(currentSHA, s.dbClient)
 	if err != nil {
-		log.Println(err)
+		handleRenderErrors(c, err)
 		return
 	}
 	currentMbd = currentMbd.ReduceSimpleMedian()
@@ -72,7 +95,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	}
 	lastReleaseMbd, err := microbench.GetResultsForGitRef(lastReleaseSHA, s.dbClient)
 	if err != nil {
-		log.Println(err)
+		handleRenderErrors(c, err)
 		return
 	}
 	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedian()
@@ -81,7 +104,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	sort.SliceStable(matrix, func(i, j int) bool {
 		return !(matrix[i].Current.NSPerOp < matrix[j].Current.NSPerOp)
 	})
-	
+
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
 		"title":          "Vitess benchmark - microbenchmark",
 		"currentSHA":     currentSHA,
