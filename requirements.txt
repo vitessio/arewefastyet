@@ -3,7 +3,7 @@ schedule
 pyyaml
 pysftp
 packet-python
-ansible==2.9.12
+ansible==2.10.0
 molecule[ansible, docker]
 jmespath
 flask
