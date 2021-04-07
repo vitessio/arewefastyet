@@ -24,10 +24,6 @@ import (
 )
 
 func provision(infra infra.Infra) (IPs []string, err error) {
-	if err = infra.Prepare(); err != nil {
-		return nil, err
-	}
-
 	out, err := infra.Create("device_public_ip")
 	if err != nil {
 		return nil, err

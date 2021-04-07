@@ -81,6 +81,12 @@ func (s *Server) webhookHandler(c *gin.Context) {
 			return
 		}
 
+		err = e.SetOutputToDefaultPath()
+		if err != nil {
+			slog.Error("Prepare step", err.Error())
+			return
+		}
+
 		err = e.Execute()
 		if err != nil {
 			slog.Error("Execution step", err.Error())

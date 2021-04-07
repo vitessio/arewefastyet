@@ -19,6 +19,7 @@
 package exec
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/infra"
@@ -33,6 +34,8 @@ import (
 const (
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
+
+	ErrorNotPrepared = "exec is not prepared"
 )
 
 type Exec struct {
@@ -52,6 +55,8 @@ type Exec struct {
 
 	stdout io.Writer
 	stderr io.Writer
+
+	prepared bool
 }
 
 // SetStdout sets the standard output of Exec.
@@ -67,6 +72,9 @@ func (e *Exec) SetStderr(stderr io.Writer) {
 // SetOutputToDefaultPath sets Exec's outputs to their default files (stdoutFile and
 // stderrFile). If they can't be found in Exec.dirPath, they will be created.
 func (e Exec) SetOutputToDefaultPath() error {
+	if !e.prepared {
+		return errors.New(ErrorNotPrepared)
+	}
 	outFile, err := os.OpenFile(path.Join(e.dirPath, stdoutFile), os.O_RDWR | os.O_CREATE, 0755)
 	if err != nil {
 		return err
@@ -82,17 +90,29 @@ func (e Exec) SetOutputToDefaultPath() error {
 	return nil
 }
 
+// Prepare prepares the Exec for a future Execution.
 func (e *Exec) Prepare() error {
 	err := e.prepareDirectories()
 	if err != nil {
 		return err
 	}
 
+	err = e.Infra.Prepare()
+	if err != nil {
+		return err
+	}
+	e.prepared = true
+	return nil
+}
+
+// Execute will rovision infra, configure Ansible files, and run the given Ansible config.
+func (e *Exec) Execute() error {
 	IPs, err := provision(e.Infra)
 	if err != nil {
 		return err
 	}
 
+	// TODO: optimize tokenization of Ansible files.
 	err = ansible.AddIPsToFiles(IPs, e.AnsibleConfig)
 	if err != nil {
 		return err
@@ -101,11 +121,9 @@ func (e *Exec) Prepare() error {
 	if err != nil {
 		return err
 	}
-	return nil
-}
 
-func (e *Exec) Execute() error {
-	err := e.Infra.Run(&e.AnsibleConfig)
+	// Infra will run the given config.
+	err = e.Infra.Run(&e.AnsibleConfig)
 	if err != nil {
 		return err
 	}
