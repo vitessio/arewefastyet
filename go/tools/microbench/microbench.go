@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
+	"go.uber.org/multierr"
 	"go/types"
 	"golang.org/x/tools/go/packages"
 	"log"
@@ -32,6 +33,7 @@ import (
 
 const (
 	errorInvalidProfileType = "invalid profile type"
+	errorInvalidPackageParsing = "invalid package parsing"
 
 	profileCPU = "cpu"
 	profileMem = "mem"
@@ -85,7 +87,7 @@ func (b *benchmark) execute(rootDir string, w *os.File) error {
 		}
 
 		if benchLine.benchType != "" {
-			fmt.Printf("%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
+			log.Printf("%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
 			fmt.Fprintf(w, "%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
 			if b.sql != nil {
 				err = benchLine.InsertToMySQL(b.id, b.sql)
@@ -110,7 +112,7 @@ func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error
 	if err != nil {
 		return err
 	}
-	fmt.Printf("CPU profile generated %s\n", profileName)
+	log.Printf("CPU profile generated %s\n", profileName)
 	fmt.Fprintf(w, "CPU profile generated %s\n", profileName)
 	return nil
 }
@@ -118,14 +120,14 @@ func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error
 // MicroBenchmark runs "go test bench" on the given package (pkg) and outputs
 // the results to outputPath.
 // Profiling files will be written to the current working directory.
-func MicroBenchmark(cfg MicroBenchConfig) {
+func MicroBenchmark(cfg MicroBenchConfig) error {
 	var sqlClient *mysql.Client
 	var err error
 
-	if cfg.DatabaseConfig.IsValid() {
+	if cfg.DatabaseConfig != nil && cfg.DatabaseConfig.IsValid() {
 		sqlClient, err = mysql.New(*cfg.DatabaseConfig)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		defer sqlClient.Close()
 	}
@@ -136,46 +138,62 @@ func MicroBenchmark(cfg MicroBenchConfig) {
 		Dir:   cfg.RootDir,
 	}, cfg.Package)
 	if err != nil {
-		panic(err)
+		return err
+	}
+
+	benchmarks, err := findBenchmarks(loaded)
+	if err != nil {
+		return fmt.Errorf("%s:\n%s\n", errorInvalidPackageParsing, err)
 	}
 
 	w, err := os.Create(cfg.Output)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer w.Close()
-
-	benchmarks := findBenchmarks(loaded)
 
 	for _, benchmark := range benchmarks {
 		hash, err := git.GetCommitHash(cfg.RootDir)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		benchmark.gitHash = hash
 		benchmark.sql = sqlClient
 
-		fmt.Println(benchmark.pkgPath)
+		log.Println(benchmark.pkgPath)
 
 		err = benchmark.execute(cfg.RootDir, w)
 		if err != nil {
-			fmt.Println(err.Error())
+			// not stopping execution on error
+			log.Println(err.Error())
 		}
 
 		profiles := []string{profileMem, profileCPU}
 		for _, profile := range profiles {
 			err = benchmark.executeProfile(cfg.RootDir, profile, w)
 			if err != nil && err.Error() != errorInvalidProfileType {
-				fmt.Println(err.Error())
+				// not stopping execution on error
+				log.Println(err.Error())
 			}
 		}
-		fmt.Println()
+		log.Println()
 	}
+	return nil
 }
 
-func findBenchmarks(loaded []*packages.Package) []benchmark {
-	var benchmarks []benchmark
+func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, err error) {
 	for _, pkg := range loaded {
+
+		// Check if current pkg contains parsing errors
+		// If it does, append each packages.Error into
+		// a single error.
+		if len(pkg.Errors) > 0 {
+			for i := 0; i < len(pkg.Errors); i++ {
+				err = multierr.Append(err, errors.New(pkg.Errors[i].Msg))
+			}
+			continue
+		}
+
 		scope := pkg.Types.Scope()
 		for _, typName := range scope.Names() {
 			f, ok := scope.Lookup(typName).(*types.Func)
@@ -190,7 +208,10 @@ func findBenchmarks(loaded []*packages.Package) []benchmark {
 			}
 		}
 	}
-	return benchmarks
+	if err != nil {
+		return nil, err
+	}
+	return benchmarks, nil
 }
 
 func isBenchmark(f *types.Func) bool {
