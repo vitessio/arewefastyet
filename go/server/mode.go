@@ -24,6 +24,22 @@ type (
 	Mode string
 )
 
+// String implements Cobra flag.Value interface.
+func (m *Mode) String() string {
+	return string(*m)
+}
+
+// Set implements Cobra flag.Value interface.
+func (m *Mode) Set(s string) error {
+	*m = Mode(s)
+	return nil
+}
+
+// Type implements Cobra flag.Value interface.
+func (m *Mode) Type() string {
+	return "string"
+}
+
 const (
 	// ErrorIncorrectMode indicates that the given mode is not correct.
 	ErrorIncorrectMode = "incorrect mode"

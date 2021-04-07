@@ -33,6 +33,7 @@ const (
 	flagTemplatePath = "web-template-path"
 	flagStaticPath   = "web-static-path"
 	flagAPIKey       = "web-api-key"
+	flagMode         = "web-mode"
 )
 
 type Server struct {
@@ -53,11 +54,13 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.templatePath, flagTemplatePath, "", "Path to the template directory")
 	cmd.Flags().StringVar(&s.staticPath, flagStaticPath, "", "Path to the static directory")
 	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
+	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
 	_ = viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
 	_ = viper.BindPFlag(flagAPIKey, cmd.Flags().Lookup(flagAPIKey))
+	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
 
 	if s.dbCfg == nil {
 		s.dbCfg = &mysql.ConfigDB{}
