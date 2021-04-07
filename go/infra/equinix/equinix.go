@@ -26,7 +26,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/infra"
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
-	"log"
 )
 
 const (
@@ -100,7 +99,6 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 	if err != nil {
 		return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
 	} else if changed {
-		log.Println("Applying tf plan.")
 		applyOpts := &[]tfexec.ApplyOption{}
 		if err = infra.PopulateTfOption(e.TerraformVarArray(), applyOpts); err != nil {
 			return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
@@ -109,8 +107,6 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 		if err != nil {
 			return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
 		}
-	} else {
-		log.Println("plan did not change, no provision needed")
 	}
 
 	if len(wantOutputs) > 0 {

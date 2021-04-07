@@ -60,18 +60,20 @@ type Exec struct {
 }
 
 // SetStdout sets the standard output of Exec.
-func (e *Exec) SetStdout(stdout io.Writer) {
+func (e *Exec) SetStdout(stdout *os.File) {
 	e.stdout = stdout
+	e.AnsibleConfig.SetStdout(stdout)
 }
 
 // SetStderr sets the standard error output of Exec.
-func (e *Exec) SetStderr(stderr io.Writer) {
+func (e *Exec) SetStderr(stderr *os.File) {
 	e.stderr = stderr
+	e.AnsibleConfig.SetStderr(stderr)
 }
 
 // SetOutputToDefaultPath sets Exec's outputs to their default files (stdoutFile and
 // stderrFile). If they can't be found in Exec.dirPath, they will be created.
-func (e Exec) SetOutputToDefaultPath() error {
+func (e *Exec) SetOutputToDefaultPath() error {
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
 	}
@@ -87,6 +89,7 @@ func (e Exec) SetOutputToDefaultPath() error {
 
 	e.stdout = outFile
 	e.stderr = errFile
+	e.AnsibleConfig.SetOutputs(outFile, errFile)
 	return nil
 }
 
@@ -105,7 +108,7 @@ func (e *Exec) Prepare() error {
 	return nil
 }
 
-// Execute will rovision infra, configure Ansible files, and run the given Ansible config.
+// Execute will provision infra, configure Ansible files, and run the given Ansible config.
 func (e *Exec) Execute() error {
 	IPs, err := provision(e.Infra)
 	if err != nil {
@@ -160,6 +163,7 @@ func NewExec() (*Exec, error) {
 		stderr: os.Stderr,
 	}
 
+	// ex.AnsibleConfig.SetOutputs(ex.stdout, ex.stderr)
 	ex.Infra.SetConfig(&ex.InfraConfig)
 
 	return &ex, nil
