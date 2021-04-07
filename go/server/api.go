@@ -75,8 +75,6 @@ func (s *Server) webhookHandler(c *gin.Context) {
 
 	// Start a goroutine with the running execution
 	go func() {
-		// TODO: handle termination
-
 		err = e.Prepare()
 		if err != nil {
 			slog.Error("Prepare step", err.Error())
