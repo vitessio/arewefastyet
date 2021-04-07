@@ -44,3 +44,8 @@ func (s Server) initLogger() (err error) {
 func cleanLogger() {
 	_ = slog.Sync()
 }
+
+// SetSLogger sets the *zap.SugaredLogger of this package.
+func SetSLogger(newSlog *zap.SugaredLogger) {
+	slog = newSlog
+}
