@@ -22,7 +22,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
-	"log"
 	"net/http"
 	"sort"
 )
@@ -31,7 +30,7 @@ func handleRenderErrors(c *gin.Context, err error) {
 	if err == nil {
 		return
 	}
-	log.Println(err.Error())
+	slog.Error(err.Error())
 	c.HTML(http.StatusOK, "error.tmpl", gin.H{
 		"title":    "Vitess benchmark - Error",
 		"url":      c.FullPath(),
@@ -47,12 +46,12 @@ func (s *Server) informationHandler(c *gin.Context) {
 func (s *Server) homeHandler(c *gin.Context) {
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
 	if err != nil {
-		log.Println(err.Error())
+		slog.Warn(err.Error())
 	}
 
 	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "webhook", 31, s.dbClient)
 	if err != nil {
-		log.Println(err.Error())
+		slog.Warn(err.Error())
 	}
 
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{

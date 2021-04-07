@@ -25,6 +25,9 @@ type (
 )
 
 const (
+	// ErrorIncorrectMode indicates that the given mode is not correct.
+	ErrorIncorrectMode = "incorrect mode"
+
 	// ProductionMode runs the server in production mode.
 	ProductionMode  = Mode("production")
 

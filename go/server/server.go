@@ -43,6 +43,9 @@ type Server struct {
 	router       *gin.Engine
 	dbCfg        *mysql.ConfigDB
 	dbClient     *mysql.Client
+
+	// Mode used to run the server.
+	Mode
 }
 
 func (s *Server) AddToCommand(cmd *cobra.Command) {
@@ -67,6 +70,18 @@ func (s Server) isReady() bool {
 }
 
 func (s *Server) Run() error {
+	if s.Mode != "" && !s.Mode.correct() {
+		return errors.New(ErrorIncorrectMode)
+	} else if s.Mode == "" {
+		s.Mode.useDefault()
+	}
+
+	err := s.initLogger()
+	if err != nil {
+		return err
+	}
+	defer cleanLogger()
+
 	if !s.isReady() {
 		return errors.New(ErrorIncorrectConfiguration)
 	}
