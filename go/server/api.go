@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
-	"log"
 	"net/http"
 )
 
@@ -52,10 +51,13 @@ func (s *Server) webhookHandler(c *gin.Context) {
 
 	err := json.NewDecoder(c.Request.Body).Decode(&wbhPayload)
 	if err != nil {
+		slog.Warn(err.Error())
 		c.JSON(http.StatusInternalServerError, newResponseError(err))
 		return
 	} else if wbhPayload.Ref == "" {
-		c.JSON(http.StatusBadRequest, newResponseErrorFromString(fmt.Sprintf(errorNeedsValue, "ref")))
+		errorStr := fmt.Sprintf(errorNeedsValue, "ref")
+		slog.Warn(errorStr)
+		c.JSON(http.StatusBadRequest, newResponseErrorFromString(errorStr))
 		return
 	}
 
@@ -77,19 +79,19 @@ func (s *Server) webhookHandler(c *gin.Context) {
 
 		err = e.Prepare()
 		if err != nil {
-			log.Println("Prepare", err.Error())
+			slog.Error("Prepare step", err.Error())
 			return
 		}
 
 		err = e.Execute()
 		if err != nil {
-			log.Println("Execution", err.Error())
+			slog.Error("Execution step", err.Error())
 			return
 		}
 
 		err = e.CleanUp()
 		if err != nil {
-			log.Println("Clean Up", err.Error())
+			slog.Error("Clean step", err.Error())
 			return
 		}
 	}()
