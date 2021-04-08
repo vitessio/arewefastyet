@@ -36,3 +36,14 @@ var (
 		{name: stepRun, sysbenchName: stepRun},
 	}
 )
+
+func skipSteps(steps []step, skip []string) (newSteps []step) {
+	for _, skipStep := range skip {
+		for _, step := range steps {
+			if step.name != skipStep {
+				newSteps = append(newSteps, step)
+			}
+		}
+	}
+	return newSteps
+}

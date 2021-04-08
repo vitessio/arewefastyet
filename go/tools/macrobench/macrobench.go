@@ -61,7 +61,9 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 	var resStr []byte
 
 	mabcfg.parseIntoMap(prefixMacrobenchSysbenchConfig)
-	for _, step := range steps {
+
+	newSteps := skipSteps(steps, mabcfg.SkipSteps)
+	for _, step := range newSteps {
 		log.Println("Step", step.name)
 		args := buildSysbenchArgString(mabcfg.M, step.name)
 		args = append(args, mabcfg.WorkloadPath, step.sysbenchName)

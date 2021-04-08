@@ -30,11 +30,13 @@ type MacroBenchConfig struct {
 	WorkloadPath   string
 	DatabaseConfig *mysql.ConfigDB
 	M              map[string]string
+	SkipSteps      []string
 }
 
 const (
 	flagSysbenchExecutable = "macrobench-sysbench-executable"
 	flagSysbenchPath       = "macrobench-workload-path"
+	flagSkipSteps          = "macrobench-skip-steps"
 )
 
 func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
@@ -42,9 +44,11 @@ func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "")
 	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "")
+	cmd.Flags().StringSliceVar(&mabcfg.SkipSteps, flagSkipSteps, []string{}, "")
 
 	_ = viper.BindPFlag(flagSysbenchPath, cmd.Flags().Lookup(flagSysbenchPath))
 	_ = viper.BindPFlag(flagSysbenchExecutable, cmd.Flags().Lookup(flagSysbenchExecutable))
+	_ = viper.BindPFlag(flagSkipSteps, cmd.Flags().Lookup(flagSkipSteps))
 }
 
 func (mabcfg *MacroBenchConfig) parseIntoMap(prefix string) {
