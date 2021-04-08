@@ -31,23 +31,23 @@ type (
 	QPS struct {
 		ID     int
 		RefID  int
-		Total  float64
-		Reads  float64
-		Writes float64
-		Other  float64
+		Total  float64 `json:"total"`
+		Reads  float64 `json:"reads"`
+		Writes float64 `json:"writes"`
+		Other  float64 `json:"other"`
 	}
 
 	// MacroBenchmarkResult represents both OLTP and TPCC tables.
 	// The two tables share the same schema and can thus be grouped
 	// under an unique go struct.
 	MacroBenchmarkResult struct {
-		QPS
-		TPS        float64
-		Latency    float64
-		Errors     float64
-		Reconnects float64
-		Time       int
-		Threads    float64
+		QPS        QPS     `json:"qps"`
+		TPS        float64 `json:"tps"`
+		Latency    float64 `json:"latency"`
+		Errors     float64 `json:"errors"`
+		Reconnects float64 `json:"reconnects"`
+		Time       int     `json:"time"`
+		Threads    float64 `json:"threads"`
 	}
 
 	// BenchmarkID is used to identify a macro benchmark using its database's ID, the
