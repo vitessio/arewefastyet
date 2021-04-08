@@ -25,6 +25,10 @@ import (
 	"strings"
 )
 
+const (
+	prefixMacrobenchSysbenchConfig = "macrobench_"
+)
+
 func buildSysbenchArgString(m map[string]string, step string) []string {
 	output := map[string]string{}
 	for k, v := range m {
@@ -52,16 +56,19 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 }
 
 func MacroBench(mabcfg MacroBenchConfig) error {
-	mabcfg.parseIntoMap("macrobench_")
+	mabcfg.parseIntoMap(prefixMacrobenchSysbenchConfig)
 
-	args := buildSysbenchArgString(mabcfg.M, "prepare")
-	args = append(args, mabcfg.WorkloadPath, "prepare")
-	command := exec.Command(mabcfg.SysbenchExec, args...)
-	out, err := command.Output()
-	if err != nil {
-		log.Println(err, string(out))
-		return err
+	for _, step := range steps {
+		log.Println("Step", step.name)
+		args := buildSysbenchArgString(mabcfg.M, step.name)
+		args = append(args, mabcfg.WorkloadPath, step.sysbenchName)
+		command := exec.Command(mabcfg.SysbenchExec, args...)
+		out, err := command.Output()
+		if err != nil {
+			log.Println(err, string(out))
+			return err
+		}
+		log.Println(string(out))
 	}
-	log.Println(string(out))
 	return nil
 }
