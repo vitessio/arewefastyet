@@ -22,6 +22,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/cmd/exec"
 	"github.com/vitessio/arewefastyet/go/cmd/gen"
 	"github.com/vitessio/arewefastyet/go/cmd/infra"
+	"github.com/vitessio/arewefastyet/go/cmd/macrobench"
 	"github.com/vitessio/arewefastyet/go/cmd/microbench"
 	"github.com/vitessio/arewefastyet/go/cmd/web"
 	"log"
@@ -59,6 +60,7 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(microbench.MicroBenchCmd())
+	rootCmd.AddCommand(macrobench.MacroBenchCmd())
 	rootCmd.AddCommand(infra.InfraCmd())
 	rootCmd.AddCommand(web.WebCmd())
 	rootCmd.AddCommand(exec.ExecCmd())
