@@ -33,6 +33,7 @@ type MacroBenchConfig struct {
 	DatabaseConfig *mysql.ConfigDB
 	M              map[string]string
 	SkipSteps      []string
+	Type           MacroBenchmarkType
 }
 
 const (

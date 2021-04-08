@@ -67,11 +67,15 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 // and the other for tpcc workload. We use these forks because
 // they implement a custom method to print results in JSON.
 //
-// Regular Sysbench: 	https://github.com/planetscale/sysbench
-// Sysbench-TPCC: 		https://github.com/planetscale/sysbench-tpcc
+// Regular Sysbench: https://github.com/planetscale/sysbench
+// Sysbench-TPCC: https://github.com/planetscale/sysbench-tpcc
 func MacroBench(mabcfg MacroBenchConfig) error {
 	var results []MacroBenchmarkResult
 	var resStr []byte
+
+	// TODO: start MySQL client
+	// Starting it here to verify MySQL related error prior
+	// long running sysbench executions.
 
 	mabcfg.parseIntoMap(prefixMacrobenchSysbenchConfig)
 
@@ -93,5 +97,6 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 	if err != nil {
 		return fmt.Errorf("unmarshal results: %+v\n", err)
 	}
+	// TODO: insert results[0] to MySQL
 	return nil
 }

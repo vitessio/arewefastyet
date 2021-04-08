@@ -41,6 +41,7 @@ type (
 	// The two tables share the same schema and can thus be grouped
 	// under an unique go struct.
 	MacroBenchmarkResult struct {
+		// TODO: add an ID here (referring to OLTP_no and TPCC_no)
 		QPS        QPS     `json:"qps"`
 		TPS        float64 `json:"tps"`
 		Latency    float64 `json:"latency"`
@@ -106,4 +107,12 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 		macrodetails = append(macrodetails, res)
 	}
 	return macrodetails, nil
+}
+
+// InsertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
+// The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
+// Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
+func (mbr MacroBenchmarkResult) InsertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
+	// TODO: insert
+	return nil
 }
