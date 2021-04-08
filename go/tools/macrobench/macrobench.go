@@ -19,6 +19,7 @@
 package macrobench
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os/exec"
@@ -56,19 +57,30 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 }
 
 func MacroBench(mabcfg MacroBenchConfig) error {
-	mabcfg.parseIntoMap(prefixMacrobenchSysbenchConfig)
+	var results []MacroBenchmarkResult
+	var resStr []byte
 
+	mabcfg.parseIntoMap(prefixMacrobenchSysbenchConfig)
 	for _, step := range steps {
 		log.Println("Step", step.name)
 		args := buildSysbenchArgString(mabcfg.M, step.name)
 		args = append(args, mabcfg.WorkloadPath, step.sysbenchName)
+		log.Println(strings.Join(args, " "))
 		command := exec.Command(mabcfg.SysbenchExec, args...)
 		out, err := command.Output()
 		if err != nil {
-			log.Println(err, string(out))
 			return err
 		}
-		log.Println(string(out))
+		if step.name == stepRun {
+			resStr = out
+		}
 	}
+
+	err := json.Unmarshal(resStr, &results)
+	if err != nil {
+		return fmt.Errorf("unmarshal results: %+v\n", err)
+	}
+
+	log.Printf("%+v\n", results[0])
 	return nil
 }
