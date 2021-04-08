@@ -55,9 +55,27 @@ func TestMacroBenchmarkType_ToUpper(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.mbtype.ToUpper(); got != tt.want {
-				t.Errorf("ToUpper() = %v, want %v", got, tt.want)
-			}
+			c := qt.New(t)
+			c.Assert(tt.mbtype.ToUpper(), qt.Equals, tt.want)
+		})
+	}
+}
+
+func TestMacroBenchmarkType_Set(t *testing.T) {
+	tests := []struct {
+		name   string
+		mbtype MacroBenchmarkType
+		s      string
+		want   MacroBenchmarkType
+	}{
+		{name: "Simple string", mbtype: "", s: "TPCC", want: MacroBenchmarkType("TPCC")},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+			err := tt.mbtype.Set(tt.s)
+			c.Assert(err, qt.IsNil)
+			c.Assert(tt.mbtype, qt.Equals, tt.want)
 		})
 	}
 }
