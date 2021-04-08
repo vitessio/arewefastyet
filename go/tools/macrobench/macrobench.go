@@ -18,6 +18,50 @@
 
 package macrobench
 
+import (
+	"fmt"
+	"log"
+	"os/exec"
+	"strings"
+)
+
+func buildSysbenchArgString(m map[string]string, step string) []string {
+	output := map[string]string{}
+	for k, v := range m {
+		idx := strings.Index(k, "_")
+		if idx < 0 {
+			continue
+		}
+		head := k[:idx]
+		tail := k[idx+1:]
+		if head == step || head == "all" {
+			if _, exists := output[tail]; exists {
+				if head == "all" {
+					continue
+				}
+			}
+			output[tail] = v
+		}
+	}
+
+	var results []string
+	for k, v := range output {
+		results = append(results, fmt.Sprintf("--%s=%s", k, v))
+	}
+	return results
+}
+
 func MacroBench(mabcfg MacroBenchConfig) error {
+	mabcfg.parseIntoMap("macrobench_")
+
+	args := buildSysbenchArgString(mabcfg.M, "prepare")
+	args = append(args, mabcfg.WorkloadPath, "prepare")
+	command := exec.Command(mabcfg.SysbenchExec, args...)
+	out, err := command.Output()
+	if err != nil {
+		log.Println(err, string(out))
+		return err
+	}
+	log.Println(string(out))
 	return nil
 }

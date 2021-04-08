@@ -20,13 +20,39 @@ package macrobench
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	"strings"
 )
 
 type MacroBenchConfig struct {
+	SysbenchExec   string
+	WorkloadPath   string
 	DatabaseConfig *mysql.ConfigDB
+	M              map[string]string
 }
 
-func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command)  {
+const (
+	flagSysbenchExecutable = "macrobench-sysbench-executable"
+	flagSysbenchPath       = "macrobench-workload-path"
+)
+
+func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
 	mabcfg.DatabaseConfig.AddToCommand(cmd)
+
+	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "")
+	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "")
+
+	_ = viper.BindPFlag(flagSysbenchPath, cmd.Flags().Lookup(flagSysbenchPath))
+	_ = viper.BindPFlag(flagSysbenchExecutable, cmd.Flags().Lookup(flagSysbenchExecutable))
+}
+
+func (mabcfg *MacroBenchConfig) parseIntoMap(prefix string) {
+	mabcfg.M = map[string]string{}
+	keys := viper.AllKeys()
+	for _, key := range keys {
+		if strings.Index(key, prefix) == 0 {
+			mabcfg.M[key[len(prefix):]] = viper.GetString(key)
+		}
+	}
 }
