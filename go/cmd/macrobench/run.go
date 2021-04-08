@@ -20,13 +20,13 @@ package macrobench
 
 import "github.com/spf13/cobra"
 
-func MacroBenchCmd() *cobra.Command {
+func run() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "macrobench <command>",
-		Aliases: []string{"mab"},
+		Use: "run",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// todo: run the macrobench
+			return nil
+		},
 	}
-
-	cmd.AddCommand(run())
-
 	return cmd
 }
