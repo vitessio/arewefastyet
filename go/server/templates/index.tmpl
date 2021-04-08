@@ -312,12 +312,12 @@
       others = []
 
       for (var i = 0; i < graph_oltp.length; i++) {
-        data_tps.push(graph_oltp[i].Result.TPS);
-        latency.push(graph_oltp[i].Result.Latency);
-        total.push(graph_oltp[i].Result.Total)
-        reads.push(graph_oltp[i].Result.Reads)
-        writes.push(graph_oltp[i].Result.Writes)
-        others.push(graph_oltp[i].Result.Others)
+        data_tps.push(graph_oltp[i].Result.tps);
+        latency.push(graph_oltp[i].Result.latency);
+        total.push(graph_oltp[i].Result.qps.total)
+        reads.push(graph_oltp[i].Result.qps.reads)
+        writes.push(graph_oltp[i].Result.qps.writes)
+        others.push(graph_oltp[i].Result.qps.others)
 
         label_oltp.push(graph_oltp[i].GitRef + " | " + graph_oltp[i].CreatedAt);
       }
@@ -336,13 +336,14 @@
       writes = []
       others = []
 
+      console.log(graph_tpcc[0])
       for (var i = 0; i < graph_tpcc.length; i++) {
-        data_tps.push(graph_tpcc[i].Result.TPS);
-        latency.push(graph_tpcc[i].Result.Latency);
-        total.push(graph_tpcc[i].Result.Total)
-        reads.push(graph_tpcc[i].Result.Reads)
-        writes.push(graph_tpcc[i].Result.Writes)
-        others.push(graph_tpcc[i].Result.Others)
+        data_tps.push(graph_tpcc[i].Result.tps);
+        latency.push(graph_tpcc[i].Result.latency);
+        total.push(graph_tpcc[i].Result.qps.total)
+        reads.push(graph_tpcc[i].Result.qps.reads)
+        writes.push(graph_tpcc[i].Result.qps.writes)
+        others.push(graph_tpcc[i].Result.qps.others)
 
         label_tpcc.push(graph_tpcc[i].GitRef + " | " + graph_tpcc[i].CreatedAt);
       }
