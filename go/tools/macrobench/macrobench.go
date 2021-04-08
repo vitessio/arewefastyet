@@ -64,16 +64,16 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 
 	newSteps := skipSteps(steps, mabcfg.SkipSteps)
 	for _, step := range newSteps {
-		log.Println("Step", step.name)
-		args := buildSysbenchArgString(mabcfg.M, step.name)
-		args = append(args, mabcfg.WorkloadPath, step.sysbenchName)
+		log.Println("Step", step.Name)
+		args := buildSysbenchArgString(mabcfg.M, step.Name)
+		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
 		log.Println(strings.Join(args, " "))
 		command := exec.Command(mabcfg.SysbenchExec, args...)
 		out, err := command.Output()
 		if err != nil {
 			return err
 		}
-		if step.name == stepRun {
+		if step.Name == stepRun {
 			resStr = out
 		}
 	}

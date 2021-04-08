@@ -19,8 +19,8 @@
 package macrobench
 
 type step struct {
-	name         string
-	sysbenchName string
+	Name         string
+	SysbenchName string
 }
 
 const (
@@ -31,18 +31,24 @@ const (
 
 var (
 	steps = []step{
-		{name: stepPrepare, sysbenchName: stepPrepare},
-		{name: stepWarmUp, sysbenchName: stepRun},
-		{name: stepRun, sysbenchName: stepRun},
+		{Name: stepPrepare, SysbenchName: stepPrepare},
+		{Name: stepWarmUp, SysbenchName: stepRun},
+		{Name: stepRun, SysbenchName: stepRun},
 	}
 )
 
 func skipSteps(steps []step, skip []string) (newSteps []step) {
-	for _, skipStep := range skip {
-		for _, step := range steps {
-			if step.name != skipStep {
-				newSteps = append(newSteps, step)
+	newSteps = []step{}
+	for _, step := range steps {
+		add := true
+		for _, skipStep := range skip {
+			if step.Name == skipStep {
+				add = false
+				break
 			}
+		}
+		if add {
+			newSteps = append(newSteps, step)
 		}
 	}
 	return newSteps
