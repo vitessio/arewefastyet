@@ -14,6 +14,7 @@ arewefastyet macrobench run [flags]
       --db-password string                      Password to authenticate the database.
       --db-user string                          User used to connect to the database
   -h, --help                                    help for run
+      --macrobench-skip-steps strings           
       --macrobench-sysbench-executable string   
       --macrobench-workload-path string         
 ```
