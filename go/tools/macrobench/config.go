@@ -25,6 +25,8 @@ import (
 	"strings"
 )
 
+// MacroBenchConfig defines a configuration used to execute macro benchmark.
+// For instance, the MacroBench method uses MacroBenchConfig.
 type MacroBenchConfig struct {
 	SysbenchExec   string
 	WorkloadPath   string
@@ -39,6 +41,8 @@ const (
 	flagSkipSteps          = "macrobench-skip-steps"
 )
 
+// AddToCommand will add the different CLI flags used by MacroBenchConfig into
+// the given *cobra.Command.
 func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
 	mabcfg.DatabaseConfig.AddToCommand(cmd)
 
