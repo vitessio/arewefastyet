@@ -21,24 +21,12 @@ package macrobench
 import (
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/mysql"
-	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
 
-func run() *cobra.Command {
-	mabcfg := macrobench.MacroBenchConfig{
-		DatabaseConfig: &mysql.ConfigDB{},
-	}
+type MacroBenchConfig struct {
+	DatabaseConfig *mysql.ConfigDB
+}
 
-	cmd := &cobra.Command{
-		Use: "run",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := macrobench.MacroBench(mabcfg)
-			if err != nil {
-				return err
-			}
-			return nil
-		},
-	}
-	mabcfg.AddToCommand(cmd)
-	return cmd
+func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command)  {
+	mabcfg.DatabaseConfig.AddToCommand(cmd)
 }
