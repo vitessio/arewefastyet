@@ -116,8 +116,10 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 func (mbr *MacroBenchmarkResult) InsertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
+	} else if benchmarkType == "" {
+		return errors.New(IncorrectMacroBenchmarkType)
 	}
-	query := fmt.Sprintf("INSERT INTO %s(test_no, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.String())
+	query := fmt.Sprintf("INSERT INTO %s(test_no, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
 	id, err := client.Insert(query, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
 	if err != nil {
 		return err
