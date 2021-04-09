@@ -29,11 +29,26 @@ import (
 // MacroBenchConfig defines a configuration used to execute macro benchmark.
 // For instance, the MacroBench method uses MacroBenchConfig.
 type MacroBenchConfig struct {
+	// SysbenchExec defines the path to sysbench binary
 	SysbenchExec   string
+
+	// WorkloadPath defines the path to the lua file used by sysbench.
 	WorkloadPath   string
+
+	// DatabaseConfig points to the required configuration to create
+	// a *mysql.Client. If no configuration, results and reports will
+	// not be saved to MySQL, though the program won't fail.
 	DatabaseConfig *mysql.ConfigDB
+
+	// M contains all metadata used to parameter sysbench execution.
+	// This key value map stores the value of each CLI parameters.
 	M              map[string]string
+
+	// SkipSteps is a slice of string that is used to skip some of
+	// sysbench steps.
 	SkipSteps      []string
+
+	// Type will be used to differentiate macro benchmarks.
 	Type           MacroBenchmarkType
 
 	// Source defines from where the macro benchmark is triggered.
@@ -92,6 +107,8 @@ func (mabcfg *MacroBenchConfig) parseIntoMap(prefix string) {
 	}
 }
 
+// RegisterNewBenchmarkToMySQL will insert a new row in the benchmark table based on
+// the given MacroBenchConfig. The newly created row's unique ID is returned.
 func (mabcfg MacroBenchConfig) RegisterNewBenchmarkToMySQL(client *mysql.Client) (newMacroBenchmarkID int, err error) {
 	if client == nil {
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)

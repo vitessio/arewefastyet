@@ -132,6 +132,10 @@ func (mbr *MacroBenchmarkResult) InsertToMySQL(benchmarkType MacroBenchmarkType,
 	return nil
 }
 
+// InsertToMySQL will insert QPS into MySQL using the *mysql.Client.
+// QPS table in MySQL contains two FK pointing to their parent test, namely
+// OLTP_no and TPCC_no, based on the given MacroBenchmarkType, the parentID
+// will be added to the proper column.
 func (q *QPS) InsertToMySQL(benchmarkType MacroBenchmarkType, parentID int, client *mysql.Client) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
