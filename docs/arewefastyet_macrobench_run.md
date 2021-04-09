@@ -19,6 +19,7 @@ arewefastyet macrobench run [flags]
       --macrobench-source string                
       --macrobench-sysbench-executable string   
       --macrobench-type MacroBenchmarkType      
+      --macrobench-working-directory string     
       --macrobench-workload-path string         
 ```
 
