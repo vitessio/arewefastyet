@@ -125,5 +125,24 @@ func (mbr *MacroBenchmarkResult) InsertToMySQL(benchmarkType MacroBenchmarkType,
 		return err
 	}
 	mbr.ID = int(id)
+	err = mbr.QPS.InsertToMySQL(benchmarkType, mbr.ID, client)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (q *QPS) InsertToMySQL(benchmarkType MacroBenchmarkType, parentID int, client *mysql.Client) error {
+	if client == nil {
+		return errors.New(mysql.ErrorClientConnectionNotInitialized)
+	} else if benchmarkType == "" {
+		return errors.New(IncorrectMacroBenchmarkType)
+	}
+	query := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String() + "_no")
+	id, err := client.Insert(query, parentID, q.Total, q.Reads, q.Writes, q.Other)
+	if err != nil {
+		return err
+	}
+	q.ID = int(id)
 	return nil
 }
