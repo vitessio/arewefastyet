@@ -20,6 +20,7 @@ package macrobench
 
 import (
 	"errors"
+	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"strings"
 	"time"
@@ -113,6 +114,15 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 // The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
 // Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
 func (mbr MacroBenchmarkResult) InsertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
-	// TODO: insert
+	if client == nil {
+		return errors.New(mysql.ErrorClientConnectionNotInitialized)
+	}
+	query := fmt.Sprintf("INSERT INTO %s(test_no, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.String())
+	_, err := client.Insert(query, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
+	if err != nil {
+		return err
+	}
+	// TODO: add IDs
+	// mbr.ID = id
 	return nil
 }
