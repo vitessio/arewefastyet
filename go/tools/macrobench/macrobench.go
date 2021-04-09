@@ -30,7 +30,7 @@ import (
 const (
 	ErrorNoSysBenchResult          = "no sysbench results were found"
 
-	prefixMacrobenchSysbenchConfig = "macrobench_"
+	prefixMacroBenchSysbenchConfig = "macrobench_"
 )
 
 func buildSysbenchArgString(m map[string]string, step string) []string {
@@ -95,7 +95,7 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 	}
 
 	// Prepare
-	mabcfg.parseIntoMap(prefixMacrobenchSysbenchConfig)
+	mabcfg.parseIntoMap(prefixMacroBenchSysbenchConfig)
 	newSteps := skipSteps(steps, mabcfg.SkipSteps)
 
 	// Execution
