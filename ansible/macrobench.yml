@@ -20,12 +20,15 @@
 - hosts: etcd
   roles:
     - etcd
+
 - hosts: vtctld
   roles:
     - vtctld
+
 - hosts: vtgate
   roles:
     - vtgate
+
 - hosts: vttablet
   roles:
     - vttablet
@@ -161,3 +164,7 @@
       shell: |
         vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
       when: tpcc is defined
+
+- hosts: macrobench
+  roles:
+    - macrobench
