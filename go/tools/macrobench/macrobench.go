@@ -23,7 +23,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -120,7 +119,6 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 	}
 
 	// Parse results
-	log.Println(string(resStr))
 	var results []MacroBenchmarkResult
 	err = json.Unmarshal(resStr, &results)
 	if err != nil {
