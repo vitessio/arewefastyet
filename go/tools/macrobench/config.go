@@ -44,6 +44,10 @@ type MacroBenchConfig struct {
 	// GitRef refers to the commit SHA pointing to the version
 	// of Vitess that we are currently macro benchmarking.
 	GitRef string
+
+	// WorkingDirectory defines from where sysbench commands will be executed.
+	// This parameter
+	WorkingDirectory string
 }
 
 const (
@@ -53,6 +57,7 @@ const (
 	flagType               = "macrobench-type"
 	flagSource             = "macrobench-source"
 	flagGitRef             = "macrobench-git-ref"
+	flagWorkingDirectory   = "macrobench-working-directory"
 )
 
 // AddToCommand will add the different CLI flags used by MacroBenchConfig into
@@ -66,6 +71,7 @@ func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().Var(&mabcfg.Type, flagType, "")
 	cmd.Flags().StringVar(&mabcfg.Source, flagSource, "", "")
 	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "")
+	cmd.Flags().StringVar(&mabcfg.WorkingDirectory, flagWorkingDirectory, "", "")
 
 	_ = viper.BindPFlag(flagSysbenchPath, cmd.Flags().Lookup(flagSysbenchPath))
 	_ = viper.BindPFlag(flagSysbenchExecutable, cmd.Flags().Lookup(flagSysbenchExecutable))
@@ -73,6 +79,7 @@ func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagType, cmd.Flags().Lookup(flagType))
 	_ = viper.BindPFlag(flagSource, cmd.Flags().Lookup(flagSource))
 	_ = viper.BindPFlag(flagGitRef, cmd.Flags().Lookup(flagGitRef))
+	_ = viper.BindPFlag(flagWorkingDirectory, cmd.Flags().Lookup(flagWorkingDirectory))
 }
 
 func (mabcfg *MacroBenchConfig) parseIntoMap(prefix string) {

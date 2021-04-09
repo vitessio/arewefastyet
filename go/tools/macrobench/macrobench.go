@@ -23,6 +23,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -95,6 +96,9 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 	}
 
 	// Prepare
+	if mabcfg.WorkingDirectory == "" {
+		mabcfg.WorkingDirectory, _ = os.Getwd()
+	}
 	mabcfg.parseIntoMap(prefixMacroBenchSysbenchConfig)
 	newSteps := skipSteps(steps, mabcfg.SkipSteps)
 
@@ -104,9 +108,10 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 		args := buildSysbenchArgString(mabcfg.M, step.Name)
 		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
 		command := exec.Command(mabcfg.SysbenchExec, args...)
+		command.Dir = mabcfg.WorkingDirectory
 		out, err := command.Output()
 		if err != nil {
-			return err
+			return fmt.Errorf("%s:\n%s", err.Error(), string(out))
 		}
 		if step.Name == stepRun {
 			resStr = out
