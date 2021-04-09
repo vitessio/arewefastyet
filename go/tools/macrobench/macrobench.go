@@ -20,12 +20,16 @@ package macrobench
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/mysql"
 	"os/exec"
 	"strings"
 )
 
 const (
+	ErrorNoSysBenchResult          = "no sysbench results were found"
+
 	prefixMacrobenchSysbenchConfig = "macrobench_"
 )
 
@@ -70,16 +74,32 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 // Regular Sysbench: https://github.com/planetscale/sysbench
 // Sysbench-TPCC: https://github.com/planetscale/sysbench-tpcc
 func MacroBench(mabcfg MacroBenchConfig) error {
-	var results []MacroBenchmarkResult
-	var resStr []byte
+	var err error
+	var sqlClient *mysql.Client
 
-	// TODO: start MySQL client
-	// Starting it here to verify MySQL related error prior
-	// long running sysbench executions.
+	if mabcfg.DatabaseConfig != nil && mabcfg.DatabaseConfig.IsValid() {
+		sqlClient, err = mysql.New(*mabcfg.DatabaseConfig)
+		if err != nil {
+			return err
+		}
+		defer sqlClient.Close()
+	}
 
+	// Create new macro benchmark in MySQL
+	var macrobenchID int
+	if sqlClient != nil {
+		macrobenchID, err = mabcfg.RegisterNewBenchmarkToMySQL(sqlClient)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Prepare
 	mabcfg.parseIntoMap(prefixMacrobenchSysbenchConfig)
-
 	newSteps := skipSteps(steps, mabcfg.SkipSteps)
+
+	// Execution
+	var resStr []byte
 	for _, step := range newSteps {
 		args := buildSysbenchArgString(mabcfg.M, step.Name)
 		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
@@ -93,10 +113,21 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 		}
 	}
 
-	err := json.Unmarshal(resStr, &results)
+	// Parse results
+	var results []MacroBenchmarkResult
+	err = json.Unmarshal(resStr, &results)
 	if err != nil {
 		return fmt.Errorf("unmarshal results: %+v\n", err)
+	} else if len(results) < 0 {
+		return errors.New(ErrorNoSysBenchResult)
 	}
-	// TODO: insert results[0] to MySQL
+
+	// Save results
+	if sqlClient != nil {
+		err = results[0].InsertToMySQL(mabcfg.Type, macrobenchID, sqlClient)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
