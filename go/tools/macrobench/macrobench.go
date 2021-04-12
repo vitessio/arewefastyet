@@ -89,7 +89,7 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 	// Create new macro benchmark in MySQL
 	var macrobenchID int
 	if sqlClient != nil {
-		macrobenchID, err = mabcfg.InsertBenchmarkToSQL(sqlClient)
+		macrobenchID, err = mabcfg.insertBenchmarkToSQL(sqlClient)
 		if err != nil {
 			return err
 		}
@@ -129,7 +129,7 @@ func MacroBench(mabcfg MacroBenchConfig) error {
 
 	// Save results
 	if sqlClient != nil {
-		err = results[0].InsertToMySQL(mabcfg.Type, macrobenchID, sqlClient)
+		err = results[0].insertToMySQL(mabcfg.Type, macrobenchID, sqlClient)
 		if err != nil {
 			return err
 		}

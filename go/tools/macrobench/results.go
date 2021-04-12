@@ -110,43 +110,29 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 	return macrodetails, nil
 }
 
-// InsertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
+// insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
 // The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
 // Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
-func (mbr *MacroBenchmarkResult) InsertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
+// The children table QPS is also inserted.
+func (mbr *MacroBenchmarkResult) insertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
 	} else if benchmarkType == "" {
 		return errors.New(IncorrectMacroBenchmarkType)
 	}
-	query := fmt.Sprintf("INSERT INTO %s(test_no, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
-	id, err := client.Insert(query, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
-	if err != nil {
-		return err
-	}
-	mbr.ID = int(id)
-	err = mbr.QPS.InsertToMySQL(benchmarkType, mbr.ID, client)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
-// InsertToMySQL will insert QPS into MySQL using the *mysql.Client.
-// QPS table in MySQL contains two FK pointing to their parent test, namely
-// OLTP_no and TPCC_no, based on the given MacroBenchmarkType, the parentID
-// will be added to the proper column.
-func (q *QPS) InsertToMySQL(benchmarkType MacroBenchmarkType, parentID int, client *mysql.Client) error {
-	if client == nil {
-		return errors.New(mysql.ErrorClientConnectionNotInitialized)
-	} else if benchmarkType == "" {
-		return errors.New(IncorrectMacroBenchmarkType)
-	}
-	query := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String() + "_no")
-	id, err := client.Insert(query, parentID, q.Total, q.Reads, q.Writes, q.Other)
+	// insert Result
+	queryResult := fmt.Sprintf("INSERT INTO %s(test_no, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
+	resultID, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
 	if err != nil {
 		return err
 	}
-	q.ID = int(id)
+
+	// insert QPS
+	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String() + "_no")
+	_, err = client.Insert(queryQPS, resultID, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
+	if err != nil {
+		return err
+	}
 	return nil
 }
