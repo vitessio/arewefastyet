@@ -27,6 +27,7 @@ import (
 	"github.com/otiai10/copy"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"io"
 	"os"
 	"path"
 )
@@ -43,6 +44,15 @@ type Config struct {
 	RootDir        string
 	InventoryFiles []string
 	PlaybookFiles  []string
+
+	stdout io.Writer
+	stderr io.Writer
+}
+
+func (c *Config) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(flagAnsibleRoot, &c.RootDir)
+	_ = v.UnmarshalKey(flagInventoryFiles, &c.InventoryFiles)
+	_ = v.UnmarshalKey(flagPlaybookFiles, &c.PlaybookFiles)
 }
 
 func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
@@ -96,7 +106,11 @@ func Run(c *Config) error {
 		ConnectionOptions:          ansiblePlaybookConnectionOptions,
 		PrivilegeEscalationOptions: ansiblePlaybookPrivilegeEscalationOptions,
 		Options:                    ansiblePlaybookOptions,
-		Exec:                       execute.NewDefaultExecute(execute.WithShowDuration()),
+		Exec: execute.NewDefaultExecute(
+			execute.WithShowDuration(),
+			execute.WithWrite(c.stdout),
+			execute.WithWriteError(c.stderr),
+		),
 	}
 
 	err := plb.Run(context.TODO())
@@ -117,4 +131,17 @@ func (c *Config) CopyRootDirectory(directory string) error {
 	}
 	c.RootDir = directory
 	return nil
+}
+
+func (c *Config) SetStdout(stdout *os.File) {
+	c.stdout = stdout
+}
+
+func (c *Config) SetStderr(stderr *os.File) {
+	c.stderr = stderr
+}
+
+func (c *Config) SetOutputs(stdout, stderr *os.File) {
+	c.stdout = stdout
+	c.stderr = stderr
 }

@@ -27,6 +27,17 @@ const (
 	flagRootExec = "exec-root-dir"
 )
 
+func (e *Exec) AddToViper(v *viper.Viper) (err error) {
+	err = v.UnmarshalKey(flagRootExec, &e.rootDir)
+	if err != nil {
+		return err
+	}
+	e.AnsibleConfig.AddToViper(v)
+	e.InfraConfig.AddToViper(v)
+	e.Infra.AddToViper(v)
+	return nil
+}
+
 func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.rootDir, flagRootExec, "", "Path to the root directory of exec")
 	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
