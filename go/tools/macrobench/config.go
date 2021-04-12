@@ -107,9 +107,9 @@ func (mabcfg *MacroBenchConfig) parseIntoMap(prefix string) {
 	}
 }
 
-// RegisterNewBenchmarkToMySQL will insert a new row in the benchmark table based on
+// InsertBenchmarkToSQL will insert a new row in the benchmark table based on
 // the given MacroBenchConfig. The newly created row's unique ID is returned.
-func (mabcfg MacroBenchConfig) RegisterNewBenchmarkToMySQL(client *mysql.Client) (newMacroBenchmarkID int, err error) {
+func (mabcfg MacroBenchConfig) InsertBenchmarkToSQL(client *mysql.Client) (newMacroBenchmarkID int, err error) {
 	if client == nil {
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
