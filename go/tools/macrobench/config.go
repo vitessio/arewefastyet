@@ -80,13 +80,13 @@ const (
 func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
 	mabcfg.DatabaseConfig.AddToCommand(cmd)
 
-	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "")
-	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "")
-	cmd.Flags().StringSliceVar(&mabcfg.SkipSteps, flagSkipSteps, []string{}, "")
-	cmd.Flags().Var(&mabcfg.Type, flagType, "")
-	cmd.Flags().StringVar(&mabcfg.Source, flagSource, "", "")
-	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "")
-	cmd.Flags().StringVar(&mabcfg.WorkingDirectory, flagWorkingDirectory, "", "")
+	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "Path to the workload used by sysbench.")
+	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "Path to the sysbench binary.")
+	cmd.Flags().StringSliceVar(&mabcfg.SkipSteps, flagSkipSteps, []string{}, "Slice of sysbench steps to skip.")
+	cmd.Flags().Var(&mabcfg.Type, flagType, "Type of macro benchmark.")
+	cmd.Flags().StringVar(&mabcfg.Source, flagSource, "", "The source or origin of the macro benchmark trigger.")
+	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "Git SHA referring to the macro benchmark.")
+	cmd.Flags().StringVar(&mabcfg.WorkingDirectory, flagWorkingDirectory, "", "Directory on which to execute sysbench.")
 
 	_ = viper.BindPFlag(flagSysbenchPath, cmd.Flags().Lookup(flagSysbenchPath))
 	_ = viper.BindPFlag(flagSysbenchExecutable, cmd.Flags().Lookup(flagSysbenchExecutable))
