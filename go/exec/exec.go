@@ -95,6 +95,10 @@ func (e *Exec) SetOutputToDefaultPath() error {
 
 // Prepare prepares the Exec for a future Execution.
 func (e *Exec) Prepare() error {
+	// Returns if the execution is already prepared
+	if e.prepared {
+		return nil
+	}
 	err := e.prepareDirectories()
 	if err != nil {
 		return err
