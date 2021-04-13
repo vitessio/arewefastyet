@@ -24,14 +24,16 @@ import (
 )
 
 const (
-	flagRootExec = "exec-root-dir"
+	flagRootExec   = "exec-root-dir"
+	flagGitRefExec = "exec-git-ref"
+	flagSourceExec = "exec-source"
 )
 
 func (e *Exec) AddToViper(v *viper.Viper) (err error) {
-	err = v.UnmarshalKey(flagRootExec, &e.rootDir)
-	if err != nil {
-		return err
-	}
+	_ = v.UnmarshalKey(flagRootExec, &e.rootDir)
+	_ = v.UnmarshalKey(flagGitRefExec, &e.GitRef)
+	_ = v.UnmarshalKey(flagSourceExec, &e.Source)
+
 	e.AnsibleConfig.AddToViper(v)
 	e.InfraConfig.AddToViper(v)
 	e.Infra.AddToViper(v)
@@ -40,7 +42,12 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 
 func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.rootDir, flagRootExec, "", "Path to the root directory of exec")
+	cmd.Flags().StringVar(&e.GitRef, flagGitRefExec, "", "Git reference on which the benchmarks will run")
+	cmd.Flags().StringVar(&e.Source, flagSourceExec, "", "Name of the source that triggered the execution")
+
 	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
+	_ = viper.BindPFlag(flagGitRefExec, cmd.Flags().Lookup(flagGitRefExec))
+	_ = viper.BindPFlag(flagSourceExec, cmd.Flags().Lookup(flagSourceExec))
 
 	e.AnsibleConfig.AddToPersistentCommand(cmd)
 	e.InfraConfig.AddToPersistentCommand(cmd)

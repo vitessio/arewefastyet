@@ -37,6 +37,10 @@ const (
 	// the value of the key points to an Execution UUID.
 	keyExecUUID = "arewefastyet_exec_uuid"
 
+	// keyExecSource is the name of the key that stores the name of the
+	// execution's trigger.
+	keyExecSource = "arewefastyet_source"
+
 	// keyVitessVersion is the name of the key that stores the git reference
 	// or SHA on which benchmarks will be executed.
 	keyVitessVersion = "vitess_git_version"
@@ -52,6 +56,8 @@ type Exec struct {
 	InfraConfig   infra.Config
 	AnsibleConfig ansible.Config
 	Infra         infra.Infra
+	Source        string
+	GitRef        string
 
 	// Configuration used to interact with the SQL database.
 	configDB *mysql.ConfigDB
@@ -163,7 +169,8 @@ func (e *Exec) Execute() error {
 
 	e.AnsibleConfig.ExtraVars = map[string]interface{}{
 		keyExecUUID:      e.UUID.String(),
-		// keyVitessVersion: "",
+		keyVitessVersion: e.GitRef,
+		keyExecSource:    e.Source,
 	}
 
 	// Infra will run the given config.

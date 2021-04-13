@@ -19,7 +19,9 @@ arewefastyet exec [flags]
       --equinix-instance-type string      Instance type to use for the creation of a new node
       --equinix-project-id string         Project ID to use for Equinix Metal
       --equinix-token string              Auth Token for Equinix Metal
+      --exec-git-ref string               Git reference on which the benchmarks will run
       --exec-root-dir string              Path to the root directory of exec
+      --exec-source string                Name of the source that triggered the execution
   -h, --help                              help for exec
       --infra-path string                 Path to the infra directory
 ```
