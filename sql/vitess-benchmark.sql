@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS execution (
     `status` VARCHAR(100) DEFAULT 'created',
     `started_at` TIMESTAMP DEFAULT NULL,
     `finished_at` TIMESTAMP DEFAULT NULL,
+    `source` VARCHAR(100) DEFAULT NULL,
     PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
