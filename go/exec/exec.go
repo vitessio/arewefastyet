@@ -26,6 +26,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
+	"github.com/vitessio/arewefastyet/go/mysql"
 	"io"
 	"os"
 	"path"
@@ -43,6 +44,12 @@ type Exec struct {
 	InfraConfig   infra.Config
 	AnsibleConfig ansible.Config
 	Infra         infra.Infra
+
+	// Configuration used to interact with the SQL database.
+	configDB *mysql.ConfigDB
+
+	// Client to communicate with the SQL database.
+	clientDB *mysql.Client
 
 	// rootDir represents the parent directory of the Exec.
 	// From there, the Exec's unique directory named Exec.dirPath will
@@ -77,12 +84,12 @@ func (e *Exec) SetOutputToDefaultPath() error {
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
 	}
-	outFile, err := os.OpenFile(path.Join(e.dirPath, stdoutFile), os.O_RDWR | os.O_CREATE, 0755)
+	outFile, err := os.OpenFile(path.Join(e.dirPath, stdoutFile), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
 
-	errFile, err := os.OpenFile(path.Join(e.dirPath, stderrFile), os.O_RDWR | os.O_CREATE, 0755)
+	errFile, err := os.OpenFile(path.Join(e.dirPath, stderrFile), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
@@ -165,6 +172,9 @@ func NewExec() (*Exec, error) {
 		// exec.SetStdout and exec.SetStderr, or SetOutputToDefaultPath.
 		stdout: os.Stdout,
 		stderr: os.Stderr,
+
+		configDB: &mysql.ConfigDB{},
+		clientDB: nil,
 	}
 
 	// ex.AnsibleConfig.SetOutputs(ex.stdout, ex.stderr)

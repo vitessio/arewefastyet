@@ -45,4 +45,5 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	e.AnsibleConfig.AddToPersistentCommand(cmd)
 	e.InfraConfig.AddToPersistentCommand(cmd)
 	e.Infra.AddToCommand(cmd)
+	e.configDB.AddToCommand(cmd)
 }
