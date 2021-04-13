@@ -1,4 +1,16 @@
-CREATE TABLE `OLTP` (
+CREATE DATABASE IF NOT EXISTS benchmark;
+
+USE benchmark;
+
+CREATE TABLE IF NOT EXISTS macrobenchmark (
+  `test_no` int(11) NOT NULL AUTO_INCREMENT,
+  `commit` varchar(100) DEFAULT NULL,
+  `DateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `source` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`test_no`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `OLTP` (
   `OLTP_no` int(11) NOT NULL AUTO_INCREMENT,
   `test_no` int(11) DEFAULT NULL,
   `tps` decimal(8,2) DEFAULT NULL,
@@ -9,10 +21,10 @@ CREATE TABLE `OLTP` (
   `threads` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`OLTP_no`),
   KEY `test_no` (`test_no`),
-  CONSTRAINT `OLTP_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES `benchmark` (`test_no`)
+  CONSTRAINT `OLTP_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES macrobenchmark (`test_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `TPCC` (
+CREATE TABLE IF NOT EXISTS `TPCC` (
   `TPCC_no` int(11) NOT NULL AUTO_INCREMENT,
   `test_no` int(11) DEFAULT NULL,
   `tps` decimal(8,2) DEFAULT NULL,
@@ -23,18 +35,11 @@ CREATE TABLE `TPCC` (
   `threads` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`TPCC_no`),
   KEY `test_no` (`test_no`),
-  CONSTRAINT `TPCC_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES `benchmark` (`test_no`)
+  CONSTRAINT `TPCC_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES macrobenchmark (`test_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `benchmark` (
-  `test_no` int(11) NOT NULL AUTO_INCREMENT,
-  `commit` varchar(100) DEFAULT NULL,
-  `DateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `source` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`test_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `qps` (
+CREATE TABLE IF NOT EXISTS `qps` (
   `qps_no` int(11) NOT NULL AUTO_INCREMENT,
   `TPCC_no` int(11) DEFAULT NULL,
   `total_qps` decimal(8,2) DEFAULT NULL,
@@ -49,7 +54,7 @@ CREATE TABLE `qps` (
   CONSTRAINT `qps_ibfk_2` FOREIGN KEY (`OLTP_no`) REFERENCES `OLTP` (`OLTP_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `microbenchmark` (
+CREATE TABLE IF NOT EXISTS `microbenchmark` (
     `microbenchmark_no` INT AUTO_INCREMENT,
     `test_no` INT NOT NULL,
     `pkg_name` VARCHAR(255),
@@ -57,7 +62,7 @@ CREATE TABLE `microbenchmark` (
     PRIMARY KEY (`microbenchmark_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `microbenchmark_details` (
+CREATE TABLE IF NOT EXISTS `microbenchmark_details` (
     `detail_no` INT AUTO_INCREMENT,
     `microbenchmark_no` INT,
     `name` VARCHAR(255),
