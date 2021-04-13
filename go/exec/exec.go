@@ -128,7 +128,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, source, git_ref) VALUES(?, ?, ?)", e.UUID.String(), e.Source, e.GitRef); err != nil {
+	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref) VALUES(?, ?, ?, ?)", e.UUID.String(), statusCreated, e.Source, e.GitRef); err != nil {
 		return err
 	}
 
@@ -146,11 +146,19 @@ func (e *Exec) Prepare() error {
 }
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
-func (e *Exec) Execute() error {
+func (e *Exec) Execute() (err error) {
+	defer func() {
+		if err != nil {
+			_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", statusFailed, e.UUID.String())
+			return
+		}
+		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", statusFinished, e.UUID.String())
+	}()
+
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
 	}
-	if _, err := e.clientDB.Insert("UPDATE execution SET started_at = CURRENT_TIME, status = 'executing' WHERE uuid = ?", e.UUID.String()); err != nil {
+	if _, err := e.clientDB.Insert("UPDATE execution SET started_at = CURRENT_TIME, status = ? WHERE uuid = ?", statusStarted, e.UUID.String()); err != nil {
 		return err
 	}
 
@@ -178,9 +186,6 @@ func (e *Exec) Execute() error {
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
 	if err != nil {
-		return err
-	}
-	if _, err := e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = 'finished' WHERE uuid = ?", e.UUID.String()); err != nil {
 		return err
 	}
 	return nil
