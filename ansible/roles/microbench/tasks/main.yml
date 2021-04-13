@@ -36,6 +36,16 @@
         version: "{{ arewefastyet_git_version }}"
         refspec: "{{ arewefastyet_git_version_fetch_pr if arewefastyet_git_version_pr_nb is defined | default('') }}"
         force: true
+      when: arewefastyet_git_version_pr_nb is not defined
+
+    - name: git clone arewefastyet pull request
+      git:
+        repo: "{{ arewefastyet_git_repo }}"
+        dest: /go/src/github.com/vitessio/arewefastyet
+        version: "{{ arewefastyet_git_version }}"
+        refspec: "{{ arewefastyet_git_version_fetch_pr }}"
+        force: true
+      when: arewefastyet_git_version_pr_nb is defined
 
     - name: Build arewefastyet CLI
       shell: |
