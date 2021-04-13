@@ -16,7 +16,15 @@ limitations under the License.
 
 package microbench
 
-import "github.com/vitessio/arewefastyet/go/mysql"
+import (
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/mysql"
+)
+
+const (
+	flagExecUUID = "microbench-exec-uuid"
+)
 
 type MicroBenchConfig struct {
 	// RootDir is the root path from where micro benchmarks will
@@ -38,4 +46,12 @@ type MicroBenchConfig struct {
 	// If this field is empty, the corresponding column in SQL
 	// will be set to NULL.
 	execUUID string
+}
+
+func (mbc *MicroBenchConfig) AddToCommand(cmd *cobra.Command) {
+	cmd.Flags().StringVar(&mbc.execUUID, flagExecUUID, "", "UUID of the parent execution, empty string will set to NULL")
+
+	_ = viper.BindPFlag(flagExecUUID, cmd.Flags().Lookup(flagExecUUID))
+
+	mbc.DatabaseConfig.AddToCommand(cmd)
 }
