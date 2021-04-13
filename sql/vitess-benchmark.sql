@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS execution (
     `started_at` TIMESTAMP DEFAULT NULL,
     `finished_at` TIMESTAMP DEFAULT NULL,
     `source` VARCHAR(100) DEFAULT NULL,
+    `git_ref` VARCHAR(100) DEFAULT NULL,
     PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

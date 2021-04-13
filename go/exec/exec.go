@@ -126,7 +126,9 @@ func (e *Exec) Prepare() error {
 	if err != nil {
 		return err
 	}
-	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid) VALUES(?)", e.UUID.String()); err != nil {
+
+	// insert new exec in SQL
+	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, source, git_ref) VALUES(?, ?, ?)", e.UUID.String(), e.Source, e.GitRef); err != nil {
 		return err
 	}
 
