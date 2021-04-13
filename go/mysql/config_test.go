@@ -30,9 +30,9 @@ func TestConfigDB_IsValid(t *testing.T) {
 		wantValid bool
 	}{
 		{name: "Valid ConfigDB", config: ConfigDB{Host: "host", User: "user", Password: "password", Database: "database"}, wantValid: true},
+		{name: "Valid ConfigDB, missing password", config: ConfigDB{Host: "host", User: "user", Database: "database"}, wantValid: true},
 		{name: "Invalid ConfigDB, missing host", config: ConfigDB{User: "user", Password: "password", Database: "database"}, wantValid: false},
 		{name: "Invalid ConfigDB, missing user", config: ConfigDB{Host: "host", Password: "password", Database: "database"}, wantValid: false},
-		{name: "Invalid ConfigDB, missing password", config: ConfigDB{Host: "host", User: "user", Database: "database"}, wantValid: false},
 		{name: "Invalid ConfigDB, missing database", config: ConfigDB{Host: "host", User: "user", Password: "password"}, wantValid: false},
 	}
 	for _, tt := range tests {
