@@ -154,7 +154,7 @@ func (e *Exec) Execute() error {
 	}
 
 	// Infra will run the given config.
-	err = e.Infra.Run(&e.AnsibleConfig)
+	err = e.Infra.Run(&e.AnsibleConfig, e.UUID)
 	if err != nil {
 		return err
 	}

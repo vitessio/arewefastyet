@@ -11,3 +11,4 @@
 
 arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
 arewefastyet_git_version: "master"
+arewefastyet_exec_uuid: ""

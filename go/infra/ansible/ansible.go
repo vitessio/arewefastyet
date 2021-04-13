@@ -24,6 +24,7 @@ import (
 	"github.com/apenella/go-ansible/pkg/execute"
 	"github.com/apenella/go-ansible/pkg/options"
 	"github.com/apenella/go-ansible/pkg/playbook"
+	"github.com/google/uuid"
 	"github.com/otiai10/copy"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -33,6 +34,10 @@ import (
 )
 
 const (
+	// KeyExecUUID is the name of a key passed to each Ansible playbook
+	// the value of the key points to an Execution UUID.
+	KeyExecUUID = "arewefastyet_exec_uuid"
+
 	ErrorPathUnknown = "path does not exist"
 
 	flagAnsibleRoot    = "ansible-root-directory"
@@ -84,7 +89,7 @@ func inventoryFilesToString(invFiles []string) string {
 	return res
 }
 
-func Run(c *Config) error {
+func Run(c *Config, execUUID uuid.UUID) error {
 	applyRootToFiles(c.RootDir, &c.PlaybookFiles)
 	applyRootToFiles(c.RootDir, &c.InventoryFiles)
 
@@ -95,6 +100,9 @@ func Run(c *Config) error {
 
 	ansiblePlaybookOptions := &playbook.AnsiblePlaybookOptions{
 		Inventory: inventoryFilesToString(c.InventoryFiles),
+		ExtraVars: map[string]interface{}{
+			KeyExecUUID: execUUID.String(),
+		},
 	}
 
 	ansiblePlaybookPrivilegeEscalationOptions := &options.AnsiblePrivilegeEscalationOptions{
