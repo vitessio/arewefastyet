@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS `microbenchmark` (
     `exec_uuid` VARCHAR(100) DEFAULT NULL,
     `pkg_name` VARCHAR(255),
     `name` VARCHAR(255),
+    `git_ref` VARCHAR(255),
     PRIMARY KEY (`microbenchmark_no`),
     KEY `exec_uuid` (`exec_uuid`),
     CONSTRAINT `microbenchmark_ibfk_1` FOREIGN KEY (`exec_uuid`) REFERENCES execution (`uuid`)
