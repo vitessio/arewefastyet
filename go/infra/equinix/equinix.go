@@ -21,7 +21,6 @@ package equinix
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -163,8 +162,8 @@ func (e *Equinix) Prepare() error {
 	return nil
 }
 
-func (e *Equinix) Run(ansibleCfg *ansible.Config, execUUID uuid.UUID) error {
-	return ansible.Run(ansibleCfg, execUUID)
+func (e *Equinix) Run(ansibleCfg *ansible.Config) error {
+	return ansible.Run(ansibleCfg)
 }
 
 func (e *Equinix) SetConfig(config *infra.Config) {

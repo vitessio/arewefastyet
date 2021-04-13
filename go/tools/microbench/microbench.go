@@ -32,7 +32,7 @@ import (
 )
 
 const (
-	errorInvalidProfileType = "invalid profile type"
+	errorInvalidProfileType    = "invalid profile type"
 	errorInvalidPackageParsing = "invalid package parsing"
 
 	profileCPU = "cpu"
@@ -46,11 +46,12 @@ type benchmark struct {
 	pkgPath, pkgName string
 	sql              *mysql.Client
 	gitHash          string
+	execUUID         string
 }
 
 func (b *benchmark) registerToMySQL(client *mysql.Client) error {
-	query := "INSERT INTO microbenchmark(test_no, pkg_name, name, git_ref) VALUES(?, ?, ?, ?)"
-	id, err := client.Insert(query, 0, b.pkgName, b.name, b.gitHash)
+	query := "INSERT INTO microbenchmark(exec_uuid, pkg_name, name, git_ref) VALUES(NULLIF(?, ''), ?, ?, ?)"
+	id, err := client.Insert(query, b.execUUID, b.pkgName, b.name, b.gitHash)
 	if err != nil {
 		return err
 	}
@@ -159,6 +160,7 @@ func MicroBenchmark(cfg MicroBenchConfig) error {
 		}
 		benchmark.gitHash = hash
 		benchmark.sql = sqlClient
+		benchmark.execUUID = cfg.execUUID
 
 		log.Println(benchmark.pkgPath)
 

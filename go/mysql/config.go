@@ -26,5 +26,5 @@ type ConfigDB struct {
 }
 
 func (cfg ConfigDB) IsValid() bool {
-	return !(cfg.Database == "" || cfg.Password == "" || cfg.User == "" || cfg.Host == "")
+	return !(cfg.Database == "" || cfg.User == "" || cfg.Host == "")
 }

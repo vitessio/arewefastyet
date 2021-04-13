@@ -24,7 +24,6 @@ import (
 	"github.com/apenella/go-ansible/pkg/execute"
 	"github.com/apenella/go-ansible/pkg/options"
 	"github.com/apenella/go-ansible/pkg/playbook"
-	"github.com/google/uuid"
 	"github.com/otiai10/copy"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,10 +33,6 @@ import (
 )
 
 const (
-	// KeyExecUUID is the name of a key passed to each Ansible playbook
-	// the value of the key points to an Execution UUID.
-	KeyExecUUID = "arewefastyet_exec_uuid"
-
 	ErrorPathUnknown = "path does not exist"
 
 	flagAnsibleRoot    = "ansible-root-directory"
@@ -52,6 +47,10 @@ type Config struct {
 
 	stdout io.Writer
 	stderr io.Writer
+
+	// ExtraVars is a key value map that will be passed to Ansible
+	// as extra variable using --extra-vars.
+	ExtraVars map[string]interface{}
 }
 
 func (c *Config) AddToViper(v *viper.Viper) {
@@ -89,7 +88,7 @@ func inventoryFilesToString(invFiles []string) string {
 	return res
 }
 
-func Run(c *Config, execUUID uuid.UUID) error {
+func Run(c *Config) error {
 	applyRootToFiles(c.RootDir, &c.PlaybookFiles)
 	applyRootToFiles(c.RootDir, &c.InventoryFiles)
 
@@ -100,9 +99,7 @@ func Run(c *Config, execUUID uuid.UUID) error {
 
 	ansiblePlaybookOptions := &playbook.AnsiblePlaybookOptions{
 		Inventory: inventoryFilesToString(c.InventoryFiles),
-		ExtraVars: map[string]interface{}{
-			KeyExecUUID: execUUID.String(),
-		},
+		ExtraVars: c.ExtraVars,
 	}
 
 	ansiblePlaybookPrivilegeEscalationOptions := &options.AnsiblePrivilegeEscalationOptions{

@@ -33,6 +33,14 @@ import (
 )
 
 const (
+	// keyExecUUID is the name of the key passed to each Ansible playbook
+	// the value of the key points to an Execution UUID.
+	keyExecUUID = "arewefastyet_exec_uuid"
+
+	// keyVitessVersion is the name of the key that stores the git reference
+	// or SHA on which benchmarks will be executed.
+	keyVitessVersion = "vitess_git_version"
+
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
 
@@ -153,8 +161,13 @@ func (e *Exec) Execute() error {
 		return err
 	}
 
+	e.AnsibleConfig.ExtraVars = map[string]interface{}{
+		keyExecUUID:      e.UUID.String(),
+		// keyVitessVersion: "",
+	}
+
 	// Infra will run the given config.
-	err = e.Infra.Run(&e.AnsibleConfig, e.UUID)
+	err = e.Infra.Run(&e.AnsibleConfig)
 	if err != nil {
 		return err
 	}
