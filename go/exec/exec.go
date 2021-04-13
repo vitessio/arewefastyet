@@ -106,7 +106,17 @@ func (e *Exec) Prepare() error {
 	if e.prepared {
 		return nil
 	}
-	err := e.prepareDirectories()
+
+	var err error
+	e.clientDB, err = mysql.New(*e.configDB)
+	if err != nil {
+		return err
+	}
+	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid) VALUES(?)", e.UUID.String()); err != nil {
+		return err
+	}
+
+	err = e.prepareDirectories()
 	if err != nil {
 		return err
 	}
@@ -121,6 +131,13 @@ func (e *Exec) Prepare() error {
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
 func (e *Exec) Execute() error {
+	if !e.prepared {
+		return errors.New(ErrorNotPrepared)
+	}
+	if _, err := e.clientDB.Insert("UPDATE execution SET started_at = CURRENT_TIME, status = 'executing' WHERE uuid = ?", e.UUID.String()); err != nil {
+		return err
+	}
+
 	IPs, err := provision(e.Infra)
 	if err != nil {
 		return err
@@ -139,6 +156,9 @@ func (e *Exec) Execute() error {
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
 	if err != nil {
+		return err
+	}
+	if _, err := e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = 'finished' WHERE uuid = ?", e.UUID.String()); err != nil {
 		return err
 	}
 	return nil
