@@ -78,6 +78,14 @@ type (
 	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
 )
 
+func NewQPS(total float64, reads float64, writes float64, other float64) *QPS {
+	return &QPS{Total: total, Reads: reads, Writes: writes, Other: other}
+}
+
+func NewMacroBenchmarkResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *MacroBenchmarkResult {
+	return &MacroBenchmarkResult{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
+}
+
 func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmarkResult) {
 	inter := struct {
 		total      []float64
