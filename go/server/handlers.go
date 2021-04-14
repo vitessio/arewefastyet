@@ -83,6 +83,13 @@ func (s *Server) searchHandler(c *gin.Context) {
 	}
 	macroOLTP = macroOLTP.ReduceSimpleMedian()
 
+	macroTPCC, err := macrobench.GetResultsForGitRef(macrobench.TPCC, search, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	macroTPCC = macroTPCC.ReduceSimpleMedian()
+
 	micro, err := microbench.GetResultsForGitRef(search, s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
@@ -95,6 +102,8 @@ func (s *Server) searchHandler(c *gin.Context) {
 		"search":         search,
 		"shortSHA":       search[:7],
 		"microbenchmark": micro,
+		"oltp":           macroOLTP,
+		"tpcc":           macroTPCC,
 	})
 }
 
