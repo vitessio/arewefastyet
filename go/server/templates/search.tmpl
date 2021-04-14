@@ -31,6 +31,48 @@
                 <h2>Results for commit <a href="https://github.com/vitessio/vitess/commit/{{ .search }}" target="_blank">{{.shortSHA}}.</a></h2>
 
                 <!-- Macro -->
+                <h3>Macro benchmarks</h3>
+                {{ if .macrobenchmark }}
+                    {{ range $key, $val := .macrobenchmark }}
+                        <h4>{{ $key.ToUpper }}</h4>
+                        <table class="table table-striped table-hover table-sm table-bordered">
+                            <thead>
+                            <tr>
+                                <th scope="col" class="text-center">QPS Total</th>
+                                <th scope="col" class="text-center">QPS Reads</th>
+                                <th scope="col" class="text-center">QPS Writes</th>
+                                <th scope="col" class="text-center">QPS Other</th>
+                                <th scope="col" class="text-center">TPS</th>
+                                <th scope="col" class="text-center">Latency</th>
+                                <th scope="col" class="text-center">Errors</th>
+                                <th scope="col" class="text-center">Reconnects</th>
+                                <th scope="col" class="text-center">Time</th>
+                                <th scope="col" class="text-center">Threads</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $elem := $val }}
+                            <tr>
+                                <td class="text-right">{{ $elem.Result.QPS.Total }}</td>
+                                <td class="text-right">{{ $elem.Result.QPS.Reads }}</td>
+                                <td class="text-right">{{ $elem.Result.QPS.Writes }}</td>
+                                <td class="text-right">{{ $elem.Result.QPS.Other }}</td>
+                                <td class="text-right">{{ $elem.Result.TPS }}</td>
+                                <td class="text-right">{{ $elem.Result.Latency }}</td>
+                                <td class="text-right">{{ $elem.Result.Errors }}</td>
+                                <td class="text-right">{{ $elem.Result.Reconnects }}</td>
+                                <td class="text-right">{{ $elem.Result.Time }}</td>
+                                <td class="text-right">{{ $elem.Result.Threads }}</td>
+                            </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
+                    {{ end }}
+                {{ else if not .macrobenchmark }}
+                    <div class="alert alert-warning" role="alert">
+                        No macro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=macrobench">request</a> a run.
+                    </div>
+                {{ end }}
 
                 <!-- Micro -->
                 <h3>Micro benchmarks</h3>

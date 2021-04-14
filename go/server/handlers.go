@@ -102,8 +102,10 @@ func (s *Server) searchHandler(c *gin.Context) {
 		"search":         search,
 		"shortSHA":       search[:7],
 		"microbenchmark": micro,
-		"oltp":           macroOLTP,
-		"tpcc":           macroTPCC,
+		"macrobenchmark": map[macrobench.MacroBenchmarkType]interface{}{
+			macrobench.OLTP: macroOLTP,
+			macrobench.TPCC: macroTPCC,
+		},
 	})
 }
 
