@@ -81,7 +81,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	slog.Debug(macroOLTP)
+	macroOLTP = macroOLTP.ReduceSimpleMedian()
 
 	micro, err := microbench.GetResultsForGitRef(search, s.dbClient)
 	if err != nil {

@@ -22,6 +22,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/tools/math"
+	"sort"
 	"strings"
 	"time"
 )
@@ -72,8 +74,70 @@ type (
 		Result MacroBenchmarkResult
 	}
 
+	MacroBenchmarkResultsArray []MacroBenchmarkResult
 	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
 )
+
+func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmarkResult) {
+	inter := struct {
+		total      []float64
+		reads      []float64
+		writes     []float64
+		other      []float64
+		tps        []float64
+		latency    []float64
+		errors     []float64
+		reconnects []float64
+		time       []int
+		threads    []float64
+	}{}
+
+	for _, mr := range mrs {
+		inter.total = append(inter.total, mr.QPS.Total)
+		inter.reads = append(inter.reads, mr.QPS.Reads)
+		inter.writes = append(inter.writes, mr.QPS.Writes)
+		inter.other = append(inter.other, mr.QPS.Other)
+		inter.tps = append(inter.tps, mr.TPS)
+		inter.latency = append(inter.latency, mr.Latency)
+		inter.errors = append(inter.errors, mr.Errors)
+		inter.reconnects = append(inter.reconnects, mr.Reconnects)
+		inter.time = append(inter.time, mr.Time)
+		inter.threads = append(inter.threads, mr.Threads)
+	}
+
+	mergedResult.QPS.Total = math.MedianFloat(inter.total)
+	mergedResult.QPS.Reads = math.MedianFloat(inter.reads)
+	mergedResult.QPS.Writes = math.MedianFloat(inter.writes)
+	mergedResult.QPS.Other = math.MedianFloat(inter.other)
+	mergedResult.TPS = math.MedianFloat(inter.tps)
+	mergedResult.Latency = math.MedianFloat(inter.latency)
+	mergedResult.Errors = math.MedianFloat(inter.errors)
+	mergedResult.Reconnects = math.MedianFloat(inter.reconnects)
+	mergedResult.Time = int(math.MedianInt(inter.time))
+	mergedResult.Threads = math.MedianFloat(inter.threads)
+	return mergedResult
+}
+
+func (mabd MacroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMabd MacroBenchmarkDetailsArray) {
+	sort.SliceStable(mabd, func(i, j int) bool {
+		return mabd[i].GitRef < mabd[j].GitRef
+	})
+	for i := 0; i < len(mabd); {
+		var j int
+		interResults := MacroBenchmarkResultsArray{}
+		for j = i; j < len(mabd) && mabd[i].GitRef == mabd[j].GitRef; j++ {
+			interResults = append(interResults, mabd[j].Result)
+		}
+
+		reducedResult := interResults.mergeMedian()
+		reduceMabd = append(reduceMabd, MacroBenchmarkDetails{
+			GitRef: mabd[i].GitRef,
+			Result: reducedResult,
+		})
+		i = j
+	}
+	return reduceMabd
+}
 
 // GetResultsForLastDays returns a slice MacroBenchmarkDetails based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
