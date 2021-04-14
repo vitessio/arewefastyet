@@ -32,8 +32,8 @@ func handleRenderErrors(c *gin.Context, err error) {
 	}
 	slog.Error(err.Error())
 	c.HTML(http.StatusOK, "error.tmpl", gin.H{
-		"title":    "Vitess benchmark - Error",
-		"url":      c.FullPath(),
+		"title": "Vitess benchmark - Error",
+		"url":   c.FullPath(),
 	})
 }
 
@@ -68,8 +68,25 @@ func (s *Server) compareHandler(c *gin.Context) {
 }
 
 func (s *Server) searchHandler(c *gin.Context) {
+	search := c.Query("s")
+	if search == "" {
+		c.HTML(http.StatusOK, "search.tmpl", gin.H{
+			"title": "Vitess benchmark",
+		})
+		return
+	}
+
+	micro, err := microbench.GetResultsForGitRef(search, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	micro = micro.ReduceSimpleMedian()
+
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
-		"title": "Vitess benchmark",
+		"title":  "Vitess benchmark",
+		"search": search,
+		"microbenchmark":  micro,
 	})
 }
 
