@@ -30,25 +30,25 @@ func TestMacroBenchmarkResultsArray_mergeMedian(t *testing.T) {
 		wantMergedResult MacroBenchmarkResult
 	}{
 		{name:"Single result in array", mrs: MacroBenchmarkResultsArray{
-			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-		}, wantMergedResult: *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)},
+			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+		}, wantMergedResult: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)},
 
 		{name:"Even number of results in array", mrs: MacroBenchmarkResultsArray{
-			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-			*NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
-		}, wantMergedResult: *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)},
+			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+			*newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
+		}, wantMergedResult: *newMacroBenchmarkResult(*newQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)},
 
 		{name:"Multiple results in array", mrs: MacroBenchmarkResultsArray{
-			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-		}, wantMergedResult: *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)},
+			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+		}, wantMergedResult: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)},
 
 		{name:"Multiple and different results in array", mrs: MacroBenchmarkResultsArray{
-			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 3), 1.0, 1.0, 1.0, 1.5, 1, 10.0),
-			*NewMacroBenchmarkResult(*NewQPS(2.0, 5.0, 1.5, 6), 2.0, 5.0, 3.0, 2.5, 1000, 20.0),
-			*NewMacroBenchmarkResult(*NewQPS(3.0, 10.0, 2.0, 9), 3.0, 10.0, 2.0, 3.5, 500, 30.0),
-		}, wantMergedResult: *NewMacroBenchmarkResult(*NewQPS(2.0, 5.0, 1.5, 6), 2.0, 5.0, 2.0, 2.5, 500, 20.0)},
+			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 3), 1.0, 1.0, 1.0, 1.5, 1, 10.0),
+			*newMacroBenchmarkResult(*newQPS(2.0, 5.0, 1.5, 6), 2.0, 5.0, 3.0, 2.5, 1000, 20.0),
+			*newMacroBenchmarkResult(*newQPS(3.0, 10.0, 2.0, 9), 3.0, 10.0, 2.0, 3.5, 500, 30.0),
+		}, wantMergedResult: *newMacroBenchmarkResult(*newQPS(2.0, 5.0, 1.5, 6), 2.0, 5.0, 2.0, 2.5, 500, 20.0)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -67,20 +67,20 @@ func TestMacroBenchmarkDetailsArray_ReduceSimpleMedian(t *testing.T) {
 		wantReduceMabd MacroBenchmarkDetailsArray
 	}{
 		{name: "Few elements with same git ref", mabd: []MacroBenchmarkDetails{
-			*NewMacroBenchmarkDetails(*NewBenchmarkID(1, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
-			*NewMacroBenchmarkDetails(*NewBenchmarkID(2, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+			*newMacroBenchmarkDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			*newMacroBenchmarkDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
 		}, wantReduceMabd: []MacroBenchmarkDetails{
-			*NewMacroBenchmarkDetails(BenchmarkID{}, "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
+			*newMacroBenchmarkDetails(BenchmarkID{}, "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
 		}},
 
 		{name: "Few elements with different git refs", mabd: []MacroBenchmarkDetails{
-			*NewMacroBenchmarkDetails(*NewBenchmarkID(1, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
-			*NewMacroBenchmarkDetails(*NewBenchmarkID(2, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
-			*NewMacroBenchmarkDetails(*NewBenchmarkID(3, "api_call", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
-			*NewMacroBenchmarkDetails(*NewBenchmarkID(4, "webhook", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+			*newMacroBenchmarkDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			*newMacroBenchmarkDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+			*newMacroBenchmarkDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			*newMacroBenchmarkDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
 		}, wantReduceMabd: []MacroBenchmarkDetails{
-			*NewMacroBenchmarkDetails(BenchmarkID{}, "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
-			*NewMacroBenchmarkDetails(BenchmarkID{}, "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
+			*newMacroBenchmarkDetails(BenchmarkID{}, "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
+			*newMacroBenchmarkDetails(BenchmarkID{}, "f78gh1p", *newMacroBenchmarkResult(*newQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
 		}},
 	}
 	for _, tt := range tests {
@@ -95,10 +95,10 @@ func TestMacroBenchmarkDetailsArray_ReduceSimpleMedian(t *testing.T) {
 
 func BenchmarkReduceSimpleMedian(b *testing.B) {
 	mabd := MacroBenchmarkDetailsArray{
-		*NewMacroBenchmarkDetails(*NewBenchmarkID(1, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
-		*NewMacroBenchmarkDetails(*NewBenchmarkID(2, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
-		*NewMacroBenchmarkDetails(*NewBenchmarkID(3, "api_call", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
-		*NewMacroBenchmarkDetails(*NewBenchmarkID(4, "webhook", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+		*newMacroBenchmarkDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+		*newMacroBenchmarkDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+		*newMacroBenchmarkDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+		*newMacroBenchmarkDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
 	}
 
 	b.ReportAllocs()

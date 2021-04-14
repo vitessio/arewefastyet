@@ -78,19 +78,19 @@ type (
 	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
 )
 
-func NewBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
+func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
 	return &BenchmarkID{ID: ID, Source: source, CreatedAt: createdAt}
 }
 
-func NewMacroBenchmarkDetails(benchmarkID BenchmarkID, gitRef string, result MacroBenchmarkResult) *MacroBenchmarkDetails {
+func newMacroBenchmarkDetails(benchmarkID BenchmarkID, gitRef string, result MacroBenchmarkResult) *MacroBenchmarkDetails {
 	return &MacroBenchmarkDetails{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result}
 }
 
-func NewQPS(total float64, reads float64, writes float64, other float64) *QPS {
+func newQPS(total float64, reads float64, writes float64, other float64) *QPS {
 	return &QPS{Total: total, Reads: reads, Writes: writes, Other: other}
 }
 
-func NewMacroBenchmarkResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *MacroBenchmarkResult {
+func newMacroBenchmarkResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *MacroBenchmarkResult {
 	return &MacroBenchmarkResult{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
 }
 
@@ -134,6 +134,10 @@ func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmark
 	return mergedResult
 }
 
+// ReduceSimpleMedian reduces the given MacroBenchmarkDetailsArray by
+// merging altogether the elements that share the same GitRef.
+// During the reduce, the math.MedianFloat and math.MedianInt methods
+// are applied on the different MacroBenchmarkResult.
 func (mabd MacroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMabd MacroBenchmarkDetailsArray) {
 	sort.SliceStable(mabd, func(i, j int) bool {
 		return mabd[i].GitRef < mabd[j].GitRef
