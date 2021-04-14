@@ -53,16 +53,16 @@
                             <tbody>
                             {{ range $elem := $val }}
                             <tr>
-                                <td class="text-right">{{ $elem.Result.QPS.Total }}</td>
-                                <td class="text-right">{{ $elem.Result.QPS.Reads }}</td>
-                                <td class="text-right">{{ $elem.Result.QPS.Writes }}</td>
-                                <td class="text-right">{{ $elem.Result.QPS.Other }}</td>
-                                <td class="text-right">{{ $elem.Result.TPS }}</td>
-                                <td class="text-right">{{ $elem.Result.Latency }}</td>
-                                <td class="text-right">{{ $elem.Result.Errors }}</td>
-                                <td class="text-right">{{ $elem.Result.Reconnects }}</td>
-                                <td class="text-right">{{ $elem.Result.Time }}</td>
-                                <td class="text-right">{{ $elem.Result.Threads }}</td>
+                                <td class="text-right">{{ $elem.Result.QPS.TotalStr }}</td>
+                                <td class="text-right">{{ $elem.Result.QPS.ReadsStr }}</td>
+                                <td class="text-right">{{ $elem.Result.QPS.WritesStr }}</td>
+                                <td class="text-right">{{ $elem.Result.QPS.OtherStr }}</td>
+                                <td class="text-right">{{ $elem.Result.TPSStr }}</td>
+                                <td class="text-right">{{ $elem.Result.LatencyStr }}</td>
+                                <td class="text-right">{{ $elem.Result.ErrorsStr }}</td>
+                                <td class="text-right">{{ $elem.Result.ReconnectsStr }}</td>
+                                <td class="text-right">{{ $elem.Result.TimeStr }}</td>
+                                <td class="text-right">{{ $elem.Result.ThreadsStr }}</td>
                             </tr>
                             {{ end }}
                             </tbody>

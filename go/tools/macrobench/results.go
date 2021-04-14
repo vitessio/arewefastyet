@@ -20,6 +20,7 @@ package macrobench
 
 import (
 	"errors"
+	"github.com/dustin/go-humanize"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/math"
@@ -157,6 +158,46 @@ func (mabd MacroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMabd MacroBen
 		i = j
 	}
 	return reduceMabd
+}
+
+func (mbr MacroBenchmarkResult) TPSStr() string {
+	return humanize.FormatFloat("#,###.#", mbr.TPS)
+}
+
+func (mbr MacroBenchmarkResult) LatencyStr() string {
+	return humanize.FormatFloat("#,###.#", mbr.Latency)
+}
+
+func (mbr MacroBenchmarkResult) ErrorsStr() string {
+	return humanize.FormatFloat("#,###.#", mbr.Errors)
+}
+
+func (mbr MacroBenchmarkResult) ReconnectsStr() string {
+	return humanize.FormatFloat("#,###.#", mbr.Reconnects)
+}
+
+func (mbr MacroBenchmarkResult) TimeStr() string {
+	return humanize.FormatInteger("#,###", mbr.Time)
+}
+
+func (mbr MacroBenchmarkResult) ThreadsStr() string {
+	return humanize.FormatFloat("#,###.#", mbr.Threads)
+}
+
+func (qps QPS) TotalStr() string {
+	return humanize.FormatFloat("#,###.#", qps.Total)
+}
+
+func (qps QPS) ReadsStr() string {
+	return humanize.FormatFloat("#,###.#", qps.Reads)
+}
+
+func (qps QPS) WritesStr() string {
+	return humanize.FormatFloat("#,###.#", qps.Writes)
+}
+
+func (qps QPS) OtherStr() string {
+	return humanize.FormatFloat("#,###.#", qps.Other)
 }
 
 // GetResultsForLastDays returns a slice MacroBenchmarkDetails based on a given macro benchmark type.
