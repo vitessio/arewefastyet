@@ -33,6 +33,11 @@ func TestMacroBenchmarkResultsArray_mergeMedian(t *testing.T) {
 			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
 		}, wantMergedResult: *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)},
 
+		{name:"Even number of results in array", mrs: MacroBenchmarkResultsArray{
+			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+			*NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
+		}, wantMergedResult: *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)},
+
 		{name:"Multiple results in array", mrs: MacroBenchmarkResultsArray{
 			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
 			*NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
@@ -52,5 +57,55 @@ func TestMacroBenchmarkResultsArray_mergeMedian(t *testing.T) {
 
 			c.Assert(gotMergedResult, qt.DeepEquals, tt.wantMergedResult)
 		})
+	}
+}
+
+func TestMacroBenchmarkDetailsArray_ReduceSimpleMedian(t *testing.T) {
+	tests := []struct {
+		name           string
+		mabd           MacroBenchmarkDetailsArray
+		wantReduceMabd MacroBenchmarkDetailsArray
+	}{
+		{name: "Few elements with same git ref", mabd: []MacroBenchmarkDetails{
+			*NewMacroBenchmarkDetails(*NewBenchmarkID(1, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			*NewMacroBenchmarkDetails(*NewBenchmarkID(2, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+		}, wantReduceMabd: []MacroBenchmarkDetails{
+			*NewMacroBenchmarkDetails(BenchmarkID{}, "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
+		}},
+
+		{name: "Few elements with different git refs", mabd: []MacroBenchmarkDetails{
+			*NewMacroBenchmarkDetails(*NewBenchmarkID(1, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			*NewMacroBenchmarkDetails(*NewBenchmarkID(2, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+			*NewMacroBenchmarkDetails(*NewBenchmarkID(3, "api_call", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			*NewMacroBenchmarkDetails(*NewBenchmarkID(4, "webhook", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+		}, wantReduceMabd: []MacroBenchmarkDetails{
+			*NewMacroBenchmarkDetails(BenchmarkID{}, "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
+			*NewMacroBenchmarkDetails(BenchmarkID{}, "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)),
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+
+			gotReduceMabd := tt.mabd.ReduceSimpleMedian()
+			c.Assert(gotReduceMabd, qt.DeepEquals, tt.wantReduceMabd)
+		})
+	}
+}
+
+func BenchmarkReduceSimpleMedian(b *testing.B) {
+	mabd := MacroBenchmarkDetailsArray{
+		*NewMacroBenchmarkDetails(*NewBenchmarkID(1, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+		*NewMacroBenchmarkDetails(*NewBenchmarkID(2, "webhook", nil), "11bbAAA", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+		*NewMacroBenchmarkDetails(*NewBenchmarkID(3, "api_call", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+		*NewMacroBenchmarkDetails(*NewBenchmarkID(4, "webhook", nil), "f78gh1p", *NewMacroBenchmarkResult(*NewQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+	}
+
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		got := mabd.ReduceSimpleMedian()
+		if len(got) != 2 {
+			b.Error("benchmark results failed: result must contain 2 elements")
+		}
 	}
 }

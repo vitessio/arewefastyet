@@ -78,6 +78,14 @@ type (
 	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
 )
 
+func NewBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
+	return &BenchmarkID{ID: ID, Source: source, CreatedAt: createdAt}
+}
+
+func NewMacroBenchmarkDetails(benchmarkID BenchmarkID, gitRef string, result MacroBenchmarkResult) *MacroBenchmarkDetails {
+	return &MacroBenchmarkDetails{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result}
+}
+
 func NewQPS(total float64, reads float64, writes float64, other float64) *QPS {
 	return &QPS{Total: total, Reads: reads, Writes: writes, Other: other}
 }
