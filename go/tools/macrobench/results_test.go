@@ -29,22 +29,22 @@ func TestMacroBenchmarkResultsArray_mergeMedian(t *testing.T) {
 		mrs              MacroBenchmarkResultsArray
 		wantMergedResult MacroBenchmarkResult
 	}{
-		{name:"Single result in array", mrs: MacroBenchmarkResultsArray{
+		{name: "Single result in array", mrs: MacroBenchmarkResultsArray{
 			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
 		}, wantMergedResult: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)},
 
-		{name:"Even number of results in array", mrs: MacroBenchmarkResultsArray{
+		{name: "Even number of results in array", mrs: MacroBenchmarkResultsArray{
 			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
 			*newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
 		}, wantMergedResult: *newMacroBenchmarkResult(*newQPS(1.5, 1.5, 1.5, 1.5), 1.5, 1.5, 1.5, 1.5, 1, 1.5)},
 
-		{name:"Multiple results in array", mrs: MacroBenchmarkResultsArray{
+		{name: "Multiple results in array", mrs: MacroBenchmarkResultsArray{
 			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
 			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
 			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
 		}, wantMergedResult: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)},
 
-		{name:"Multiple and different results in array", mrs: MacroBenchmarkResultsArray{
+		{name: "Multiple and different results in array", mrs: MacroBenchmarkResultsArray{
 			*newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 3), 1.0, 1.0, 1.0, 1.5, 1, 10.0),
 			*newMacroBenchmarkResult(*newQPS(2.0, 5.0, 1.5, 6), 2.0, 5.0, 3.0, 2.5, 1000, 20.0),
 			*newMacroBenchmarkResult(*newQPS(3.0, 10.0, 2.0, 9), 3.0, 10.0, 2.0, 3.5, 500, 30.0),
@@ -108,4 +108,32 @@ func BenchmarkReduceSimpleMedian(b *testing.B) {
 			b.Error("benchmark results failed: result must contain 2 elements")
 		}
 	}
+}
+
+func TestHumanReadableStrings(t *testing.T) {
+	c := qt.New(t)
+	r := MacroBenchmarkResult{
+		QPS: QPS{
+			Total:  72029.0,
+			Reads:  45018.1,
+			Writes: 18007.2,
+			Other:  9003.6,
+		},
+		TPS:        4501.8,
+		Latency:    48.3,
+		Errors:     8999.6,
+		Reconnects: 7984.3,
+		Time:       11064,
+		Threads:    1107794.00,
+	}
+	c.Assert(r.QPS.TotalStr(), qt.Equals, "72,029.0")
+	c.Assert(r.QPS.ReadsStr(), qt.Equals, "45,018.1")
+	c.Assert(r.QPS.WritesStr(), qt.Equals, "18,007.2")
+	c.Assert(r.QPS.OtherStr(), qt.Equals, "9,003.6")
+	c.Assert(r.TPSStr(), qt.Equals, "4,501.8")
+	c.Assert(r.LatencyStr(), qt.Equals, "48.3")
+	c.Assert(r.ErrorsStr(), qt.Equals, "8,999.6")
+	c.Assert(r.ReconnectsStr(), qt.Equals, "7,984.3")
+	c.Assert(r.TimeStr(), qt.Equals, "11,064")
+	c.Assert(r.ThreadsStr(), qt.Equals, "1,107,794.0")
 }

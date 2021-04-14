@@ -177,7 +177,7 @@ func (mbr MacroBenchmarkResult) ReconnectsStr() string {
 }
 
 func (mbr MacroBenchmarkResult) TimeStr() string {
-	return humanize.FormatInteger("#,###", mbr.Time)
+	return humanize.Comma(int64(mbr.Time))
 }
 
 func (mbr MacroBenchmarkResult) ThreadsStr() string {
