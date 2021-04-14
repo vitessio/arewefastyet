@@ -76,6 +76,13 @@ func (s *Server) searchHandler(c *gin.Context) {
 		return
 	}
 
+	macroOLTP, err := macrobench.GetResultsForGitRef(macrobench.OLTP, search, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	slog.Debug(macroOLTP)
+
 	micro, err := microbench.GetResultsForGitRef(search, s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
@@ -84,10 +91,10 @@ func (s *Server) searchHandler(c *gin.Context) {
 	micro = micro.ReduceSimpleMedian()
 
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
-		"title":  "Vitess benchmark",
-		"search": search,
-		"shortSHA": search[:7],
-		"microbenchmark":  micro,
+		"title":          "Vitess benchmark",
+		"search":         search,
+		"shortSHA":       search[:7],
+		"microbenchmark": micro,
 	})
 }
 

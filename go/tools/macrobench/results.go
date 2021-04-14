@@ -110,6 +110,36 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 	return macrodetails, nil
 }
 
+func GetResultsForGitRef(macroType MacroBenchmarkType, ref string, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
+	if macroType != OLTP && macroType != TPCC {
+		return nil, errors.New(IncorrectMacroBenchmarkType)
+	}
+	upperMacroType := macroType.ToUpper().String()
+	query := "SELECT b.test_no, b.commit, b.source, b.DateTime, " +
+		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
+		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
+		"FROM benchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
+		"WHERE b.commit = ? AND b.test_no = macrotype.test_no AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+
+	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
+
+	rows, err := client.Select(query, ref)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var res MacroBenchmarkDetails
+		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
+			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
+		if err != nil {
+			return nil, err
+		}
+		macrodetails = append(macrodetails, res)
+	}
+	return macrodetails, nil
+}
+
 // insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
 // The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
 // Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
