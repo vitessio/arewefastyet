@@ -86,6 +86,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
 		"title":  "Vitess benchmark",
 		"search": search,
+		"shortSHA": search[:7],
 		"microbenchmark":  micro,
 	})
 }

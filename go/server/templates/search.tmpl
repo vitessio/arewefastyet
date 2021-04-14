@@ -28,11 +28,12 @@
 
 
             {{ if .search}}
+                <h2>Results for commit <a href="https://github.com/vitessio/vitess/commit/{{ .search }}" target="_blank">{{.shortSHA}}.</a></h2>
 
                 <!-- Macro -->
 
                 <!-- Micro -->
-                <h1>Micro benchmarks</h1>
+                <h3>Micro benchmarks</h3>
                 {{ if .microbenchmark }}
                     <table class="table table-striped table-hover table-sm table-bordered">
                         <thead>
