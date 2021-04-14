@@ -61,8 +61,14 @@ func (s *Server) homeHandler(c *gin.Context) {
 	})
 }
 
-func (s *Server) searchCompareHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "search_compare.tmpl", gin.H{
+func (s *Server) compareHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
+		"title": "Vitess benchmark",
+	})
+}
+
+func (s *Server) searchHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "search.tmpl", gin.H{
 		"title": "Vitess benchmark",
 	})
 }
