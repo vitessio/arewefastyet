@@ -107,7 +107,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 			"SHA":   compare,
 			"short": shortCmp,
 		},
-		"microbenchmark_matrix": microsMatrix,
+		"microbenchmark": microsMatrix,
 	})
 }
 
