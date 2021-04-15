@@ -123,7 +123,8 @@ func Run(mabcfg Config) error {
 	err = json.Unmarshal(resStr, &results)
 	if err != nil {
 		return fmt.Errorf("unmarshal results: %+v\n", err)
-	} else if len(results) == 0 {
+	}
+	if len(results) == 0 {
 		return errors.New(ErrorNoSysBenchResult)
 	}
 

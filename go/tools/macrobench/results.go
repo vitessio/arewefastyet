@@ -117,7 +117,8 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 func (mbr *MacroBenchmarkResult) insertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
-	} else if benchmarkType == "" {
+	}
+	if benchmarkType == "" {
 		return errors.New(IncorrectMacroBenchmarkType)
 	}
 
