@@ -25,6 +25,10 @@
                     </div>
                 </form>
             </div>
+
+            {{ if .compare }}
+                <h2>Comparing <a href="https://github.com/vitessio/vitess/commit/{{ .compare.SHA }}" target="_blank">{{.compare.short}}</a> with <a href="https://github.com/vitessio/vitess/commit/{{ .reference.SHA }}" target="_blank">{{.reference.short}}</a>.</h2>
+            {{ end }}
         </div>
     </section>
 

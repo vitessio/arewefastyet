@@ -72,8 +72,42 @@ func (s *Server) compareHandler(c *gin.Context) {
 		return
 	}
 
+	SHAs := []string{reference, compare}
+
+	// compare micro benchmarks
+	micros := map[string]microbench.MicroBenchmarkDetailsArray{}
+	for _, sha := range SHAs {
+		micro, err := microbench.GetResultsForGitRef(sha, s.dbClient)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		micros[sha] = micro.ReduceSimpleMedian()
+	}
+	microsMatrix := microbench.MergeMicroBenchmarkDetails(micros[reference], micros[compare])
+	sort.SliceStable(microsMatrix, func(i, j int) bool {
+		return !(microsMatrix[i].Current.NSPerOp < microsMatrix[j].Current.NSPerOp)
+	})
+
+	shortRef := reference
+	if len(reference) > 7 {
+		shortRef = reference[:7]
+	}
+	shortCmp := compare
+	if len(compare) > 7 {
+		shortCmp = compare[:7]
+	}
 	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
 		"title": "Vitess benchmark",
+		"reference": map[string]interface{}{
+			"SHA":   reference,
+			"short": shortRef,
+		},
+		"compare": map[string]interface{}{
+			"SHA":   compare,
+			"short": shortCmp,
+		},
+		"microbenchmark_matrix": microsMatrix,
 	})
 }
 
