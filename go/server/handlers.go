@@ -62,6 +62,16 @@ func (s *Server) homeHandler(c *gin.Context) {
 }
 
 func (s *Server) compareHandler(c *gin.Context) {
+	reference := c.Query("r")
+	compare := c.Query("c")
+
+	if reference == "" || compare == "" {
+		c.HTML(http.StatusOK, "compare.tmpl", gin.H{
+			"title": "Vitess benchmark",
+		})
+		return
+	}
+
 	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
 		"title": "Vitess benchmark",
 	})
@@ -94,10 +104,14 @@ func (s *Server) searchHandler(c *gin.Context) {
 	}
 	micro = micro.ReduceSimpleMedian()
 
+	shortSHA := search
+	if len(search) > 7 {
+		shortSHA = search[:7]
+	}
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
 		"title":          "Vitess benchmark",
 		"search":         search,
-		"shortSHA":       search[:7],
+		"shortSHA":       shortSHA,
 		"microbenchmark": micro,
 		"macrobenchmark": macros,
 	})
