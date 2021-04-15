@@ -75,8 +75,18 @@ type (
 		Result MacroBenchmarkResult
 	}
 
+	// Comparison contains two MacroBenchmarkDetails and their difference in a
+	// MacroBenchmarkResult field.
+	Comparison struct {
+		GitRef string
+		Reference, Compare MacroBenchmarkResult
+		Diff MacroBenchmarkResult
+	}
+
 	MacroBenchmarkResultsArray []MacroBenchmarkResult
 	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
+
+	ComparisonArray []Comparison
 )
 
 func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
@@ -93,6 +103,32 @@ func newQPS(total float64, reads float64, writes float64, other float64) *QPS {
 
 func newMacroBenchmarkResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *MacroBenchmarkResult {
 	return &MacroBenchmarkResult{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
+}
+
+func CompareDetailsArrays(references, compares MacroBenchmarkDetailsArray) (compared ComparisonArray) {
+	for _, ref := range references {
+		var cmp Comparison
+		cmp.GitRef = ref.GitRef
+		cmp.Reference = ref.Result
+		for j := 0; j < len(compares); j++ {
+			if compares[j].GitRef == ref.GitRef {
+				cmp.Compare = compares[j].Result
+				cmp.Diff.QPS.Total = cmp.Reference.QPS.Total / cmp.Compare.QPS.Total
+				cmp.Diff.QPS.Reads = cmp.Reference.QPS.Reads / cmp.Compare.QPS.Reads
+				cmp.Diff.QPS.Writes = cmp.Reference.QPS.Writes / cmp.Compare.QPS.Writes
+				cmp.Diff.QPS.Other = cmp.Reference.QPS.Other / cmp.Compare.QPS.Other
+				cmp.Diff.TPS = cmp.Reference.TPS / cmp.Compare.TPS
+				cmp.Diff.Latency = cmp.Reference.Latency / cmp.Compare.Latency
+				cmp.Diff.Reconnects = cmp.Reference.Reconnects / cmp.Compare.Reconnects
+				cmp.Diff.Errors = cmp.Reference.Errors / cmp.Compare.Errors
+				cmp.Diff.Time = cmp.Reference.Time / cmp.Compare.Time
+				cmp.Diff.Threads = cmp.Reference.Threads / cmp.Compare.Threads
+				break
+			}
+		}
+		compared = append(compared, cmp)
+	}
+	return compared
 }
 
 func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmarkResult) {

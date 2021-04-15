@@ -137,3 +137,63 @@ func TestHumanReadableStrings(t *testing.T) {
 	c.Assert(r.TimeStr(), qt.Equals, "11,064")
 	c.Assert(r.ThreadsStr(), qt.Equals, "1,107,794.1")
 }
+
+func TestCompareDetailsArrays(t *testing.T) {
+	type args struct {
+		references MacroBenchmarkDetailsArray
+		compares   MacroBenchmarkDetailsArray
+	}
+	tests := []struct {
+		name         string
+		args         args
+		wantCompared ComparisonArray
+	}{
+		{name: "Simple comparison array", args: args{
+			references: MacroBenchmarkDetailsArray{
+				*newMacroBenchmarkDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			},
+			compares: MacroBenchmarkDetailsArray{
+				*newMacroBenchmarkDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+			},
+		}, wantCompared: ComparisonArray{
+			Comparison{
+				GitRef:    "11bbAAA",
+				Reference: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+				Compare:   *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
+				Diff:      *newMacroBenchmarkResult(*newQPS(0.5, 0.5, 0.5, 0.5), 0.5, 0.5, 0.5, 0.5, 0, 0.5),
+			},
+		}},
+
+		{name: "Simple comparison array with multiple sources", args: args{
+			references: MacroBenchmarkDetailsArray{
+				*newMacroBenchmarkDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+				*newMacroBenchmarkDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+			},
+			compares: MacroBenchmarkDetailsArray{
+				*newMacroBenchmarkDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+				*newMacroBenchmarkDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+			},
+		}, wantCompared: ComparisonArray{
+			Comparison{
+				GitRef:    "11bbAAA",
+				Reference: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+				Compare:   *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
+				Diff:      *newMacroBenchmarkResult(*newQPS(0.5, 0.5, 0.5, 0.5), 0.5, 0.5, 0.5, 0.5, 0, 0.5),
+			},
+			Comparison{
+				GitRef:    "f78gh1p",
+				Reference: *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
+				Compare:   *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
+				Diff:      *newMacroBenchmarkResult(*newQPS(2, 2, 2, 2), 2, 2, 2, 2, 2, 2),
+			},
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+
+			gotCompared := CompareDetailsArrays(tt.args.references, tt.args.compares)
+			c.Assert(gotCompared, qt.DeepEquals, tt.wantCompared)
+		})
+	}
+}
