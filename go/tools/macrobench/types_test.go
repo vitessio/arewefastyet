@@ -26,7 +26,7 @@ import (
 func TestMacroBenchmarkType_String(t *testing.T) {
 	tests := []struct {
 		name   string
-		mbtype MacroBenchmarkType
+		mbtype Type
 		want   string
 	}{
 		{name: "String TPCC", mbtype: TPCC, want: string(TPCC)},
@@ -45,13 +45,13 @@ func TestMacroBenchmarkType_String(t *testing.T) {
 func TestMacroBenchmarkType_ToUpper(t *testing.T) {
 	tests := []struct {
 		name   string
-		mbtype MacroBenchmarkType
-		want   MacroBenchmarkType
+		mbtype Type
+		want   Type
 	}{
-		{name: "String TPCC", mbtype: TPCC, want: MacroBenchmarkType("TPCC")},
-		{name: "String OLTP", mbtype: OLTP, want: MacroBenchmarkType("OLTP")},
-		{name: "Simple string", mbtype: "simple", want: MacroBenchmarkType("SIMPLE")},
-		{name: "Empty string", mbtype: "", want: MacroBenchmarkType("")},
+		{name: "String TPCC", mbtype: TPCC, want: Type("TPCC")},
+		{name: "String OLTP", mbtype: OLTP, want: Type("OLTP")},
+		{name: "Simple string", mbtype: "simple", want: Type("SIMPLE")},
+		{name: "Empty string", mbtype: "", want: Type("")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -203,7 +203,7 @@ func (qps QPS) OtherStr() string {
 // GetResultsForLastDays returns a slice MacroBenchmarkDetails based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays int, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
+func GetResultsForLastDays(macroType Type, source string, lastDays int, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
@@ -235,7 +235,7 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 	return macrodetails, nil
 }
 
-func GetResultsForGitRef(macroType MacroBenchmarkType, ref string, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
+func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
