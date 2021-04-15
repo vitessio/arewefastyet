@@ -26,14 +26,14 @@ import (
 	"strings"
 )
 
-// MacroBenchConfig defines a configuration used to execute macro benchmark.
-// For instance, the MacroBench method uses MacroBenchConfig.
-type MacroBenchConfig struct {
+// Config defines a configuration used to execute macro benchmark.
+// For instance, the Run method uses MacroBenchConfig.
+type Config struct {
 	// SysbenchExec defines the path to sysbench binary
-	SysbenchExec   string
+	SysbenchExec string
 
 	// WorkloadPath defines the path to the lua file used by sysbench.
-	WorkloadPath   string
+	WorkloadPath string
 
 	// DatabaseConfig points to the required configuration to create
 	// a *mysql.Client. If no configuration, results and reports will
@@ -42,14 +42,14 @@ type MacroBenchConfig struct {
 
 	// M contains all metadata used to parameter sysbench execution.
 	// This key value map stores the value of each CLI parameters.
-	M              map[string]string
+	M map[string]string
 
 	// SkipSteps is a slice of string that is used to skip some of
 	// sysbench steps.
-	SkipSteps      []string
+	SkipSteps []string
 
 	// Type will be used to differentiate macro benchmarks.
-	Type           MacroBenchmarkType
+	Type MacroBenchmarkType
 
 	// Source defines from where the macro benchmark is triggered.
 	// This field is used to distinguish runs triggered by webhooks,
@@ -77,7 +77,7 @@ const (
 
 // AddToCommand will add the different CLI flags used by MacroBenchConfig into
 // the given *cobra.Command.
-func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
+func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	mabcfg.DatabaseConfig.AddToCommand(cmd)
 
 	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "Path to the workload used by sysbench.")
@@ -97,7 +97,7 @@ func (mabcfg *MacroBenchConfig) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagWorkingDirectory, cmd.Flags().Lookup(flagWorkingDirectory))
 }
 
-func (mabcfg *MacroBenchConfig) parseIntoMap(prefix string) {
+func (mabcfg *Config) parseIntoMap(prefix string) {
 	mabcfg.M = map[string]string{}
 	keys := viper.AllKeys()
 	for _, key := range keys {
@@ -109,7 +109,7 @@ func (mabcfg *MacroBenchConfig) parseIntoMap(prefix string) {
 
 // insertBenchmarkToSQL will insert a new row in the benchmark table based on
 // the given MacroBenchConfig. The newly created row's unique ID is returned.
-func (mabcfg MacroBenchConfig) insertBenchmarkToSQL(client *mysql.Client) (newMacroBenchmarkID int, err error) {
+func (mabcfg Config) insertBenchmarkToSQL(client *mysql.Client) (newMacroBenchmarkID int, err error) {
 	if client == nil {
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}

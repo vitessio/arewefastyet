@@ -25,14 +25,14 @@ import (
 )
 
 func run() *cobra.Command {
-	mabcfg := macrobench.MacroBenchConfig{
+	mabcfg := macrobench.Config{
 		DatabaseConfig: &mysql.ConfigDB{},
 	}
 
 	cmd := &cobra.Command{
 		Use: "run",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := macrobench.MacroBench(mabcfg)
+			err := macrobench.Run(mabcfg)
 			if err != nil {
 				return err
 			}

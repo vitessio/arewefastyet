@@ -60,7 +60,7 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 	return results
 }
 
-// MacroBench executes a macro benchmark by using sysbench.
+// Run executes a macro benchmark by using sysbench.
 // Based on the given MacroBenchConfig, the function will
 // parse the configuration to send down to sysbench (size of tables
 // duration of benchmark, mysql targets, etc...).
@@ -74,7 +74,7 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 //
 // Regular Sysbench: https://github.com/planetscale/sysbench
 // Sysbench-TPCC: https://github.com/planetscale/sysbench-tpcc
-func MacroBench(mabcfg MacroBenchConfig) error {
+func Run(mabcfg Config) error {
 	var err error
 	var sqlClient *mysql.Client
 
