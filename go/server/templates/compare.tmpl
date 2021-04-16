@@ -67,9 +67,13 @@
                         {{ end }}
                         </tbody>
                     </table>
-                    {{ end }}
-                {{ else if not .macrobenchmark }}
+                <canvas id="{{$key}}-bar-chart" height="75"></canvas>
 
+                {{ end }}
+                {{ else if not .macrobenchmark }}
+                    <div class="alert alert-warning" role="alert">
+                        No macro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=macrobench">request</a> a run.
+                    </div>
                 {{ end }}
 
                 {{ if .microbenchmark }}
@@ -112,6 +116,10 @@
                         {{end}}
                     </tbody>
                 </table>
+                {{ else if not .microbenchmark }}
+                <div class="alert alert-warning" role="alert">
+                    No micro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=microbench">request</a> a run.
+                </div>
                 {{ end }}
             {{ end }}
         </div>
@@ -121,6 +129,91 @@
 
 
   {{template "footerHTML" .}}
+
+<script>
+    function macroCmpBarCharts(type, macro) {
+        for (const macroKey in macro) {
+            var compareMacros = macro[macroKey]["Compare"]
+            var referenceMacros = macro[macroKey]["Reference"]
+
+            var labels = []
+            var dataCmp = []
+            var dataRef = []
+            var wants = ["Total", "Reads", "Writes", "Other"]
+            for (var x in referenceMacros) {
+                if (wants.includes(x)) {
+                    labels.push(x)
+                    dataCmp.push(compareMacros[x])
+                    dataRef.push(referenceMacros[x])
+                }
+            }
+            const data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Compare',
+                        data: dataCmp,
+                        color: 'black',
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Reference',
+                        data: dataRef,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                        ],
+                    }
+                ]
+            };
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Chart.js Bar Chart'
+                        }
+                    }
+                },
+            };
+            var ctx = document.getElementById(type+"-bar-chart").getContext('2d');
+            var chart = new Chart(ctx, config)
+
+        }
+    }
+
+    var macro = {{ .macrobenchmark }}
+
+    for (const macroKey in macro) {
+        macroCmpBarCharts(macroKey, macro[macroKey])
+    }
+
+</script>
 
 </body>
 
