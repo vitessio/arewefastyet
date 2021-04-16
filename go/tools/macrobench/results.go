@@ -105,6 +105,8 @@ func newMacroBenchmarkResult(QPS QPS, TPS float64, latency float64, errors float
 	return &MacroBenchmarkResult{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
 }
 
+// newPercentageResult returns a MacroBenchmarkResult with fields set
+// to 100, representing a percentage.
 func newPercentageResult() MacroBenchmarkResult {
 	return MacroBenchmarkResult{
 		QPS:        QPS{
@@ -122,6 +124,8 @@ func newPercentageResult() MacroBenchmarkResult {
 	}
 }
 
+// CompareDetailsArrays compare two MacroBenchmarkDetailsArray and return
+// their comparison in a ComparisonArray.
 func CompareDetailsArrays(references, compares MacroBenchmarkDetailsArray) (compared ComparisonArray) {
 	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
 		var cmp Comparison
@@ -151,6 +155,8 @@ func CompareDetailsArrays(references, compares MacroBenchmarkDetailsArray) (comp
 	return compared
 }
 
+// mergeMedian will merge a MacroBenchmarkResultsArray into a single MacroBenchmarkResult
+// by calculating the median of all elements in the array.
 func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmarkResult) {
 	inter := struct {
 		total      []float64
@@ -291,6 +297,8 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 	return macrodetails, nil
 }
 
+// GetResultsForGitRef returns a slice of MacroBenchmarkDetails based on the given git ref
+// and macro benchmark Type. The type must be either OLTP or TPCC.
 func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)

@@ -36,7 +36,7 @@
 
                     <h4>{{ $key.ToUpper }}</h4>
                     {{ if $val }}
-                    <table class="table table-striped table-hover table-sm table-bordered">
+                    <table class="table table-striped table-hover table-sm table-bordered" >
                         <thead>
                         <tr>
                             <th scope="col"></th>
@@ -84,15 +84,15 @@
 
                 {{ if .microbenchmark }}
                 <h3>Micro benchmarks</h3>
-
-                <table class="table table-striped table-hover table-sm table-bordered">
+                <div>
+                <table class="table table-striped table-hover table-sm table-bordered" style="width: max-content;">
                     <thead>
                         <tr>
-                            <th scope="col">Package</th>
-                            <th scope="col">Benchmark Name</th>
-                            <th scope="col" colspan="2" class="text-center">number of iterations</th>
+                            <th scope="col">Pkg</th>
+                            <th scope="col">Name</th>
                             <th scope="col" colspan="1" class="text-center">Diff</th>
-                            <th scope="col" colspan="2" class="text-center">nanosecond/op</th>
+                            <th scope="col" colspan="2" class="text-center">Number of Op</th>
+                            <th scope="col" colspan="2" class="text-center">ns/op</th>
                             <th scope="col" colspan="2" class="text-center">B/op</th>
                             <th scope="col" colspan="2" class="text-center">MB/s</th>
                             <th scope="col" colspan="2" class="text-center">Allocs/op</th>
@@ -103,10 +103,10 @@
                         <tr>
                             <td>{{ $val.PkgName }}</td>
                             <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
+                            <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-danger {{ else if ge $val.CurrLastDiff 1.10 }} bg-success {{ end }}">{{ $val.CurrLastDiffStr }}</td>
                             <td class="text-right">{{ $val.Current.OpsStr }}</td>
                             <td class="text-right">{{ $val.Last.OpsStr }}</td>
 
-                            <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-success {{ else if ge $val.CurrLastDiff 1.10 }} bg-danger {{ end }}">{{ $val.CurrLastDiffStr }}</td>
                             <td class="text-right">{{ $val.Current.NSPerOpStr }}</td>
                             <td class="text-right">{{ $val.Last.NSPerOpStr }}</td>
 
@@ -122,6 +122,7 @@
                         {{end}}
                     </tbody>
                 </table>
+                </div>
                 {{ else if not .microbenchmark }}
                 <div class="alert alert-warning" role="alert">
                     No micro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=microbench">request</a> a run.
