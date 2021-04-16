@@ -28,6 +28,8 @@
 
             {{ if .compare }}
                 <h2>Comparing <a href="https://github.com/vitessio/vitess/commit/{{ .compare.SHA }}" target="_blank">{{.compare.short}}</a> with <a href="https://github.com/vitessio/vitess/commit/{{ .reference.SHA }}" target="_blank">{{.reference.short}}</a>.</h2>
+                {{ $compareSHAs := .compare }}
+                {{ $referenceSHAs := .reference }}
 
                 {{ if .macrobenchmark }}
                     {{ range $key, $val := .macrobenchmark }}
@@ -35,6 +37,7 @@
                     <table class="table table-striped table-hover table-sm table-bordered">
                         <thead>
                         <tr>
+                            <th scope="col"></th>
                             <th scope="col" class="text-center">QPS Total</th>
                             <th scope="col" class="text-center">QPS Reads</th>
                             <th scope="col" class="text-center">QPS Writes</th>
@@ -50,16 +53,43 @@
                         <tbody>
                         {{ range $elem := $val }}
                         <tr>
-                            <td class="text-right">{{ $elem.Diff.QPS.TotalStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.QPS.ReadsStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.QPS.WritesStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.QPS.OtherStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.TPSStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.LatencyStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.ErrorsStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.ReconnectsStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.TimeStr }}</td>
-                            <td class="text-right">{{ $elem.Diff.ThreadsStr }}</td>
+                            <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $compareSHAs.SHA }}" target="_blank">{{$compareSHAs.short}}</a></th>
+                            <td class="text-center">{{ $elem.Compare.QPS.TotalStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.QPS.ReadsStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.QPS.WritesStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.QPS.OtherStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.TPSStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.LatencyStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.ErrorsStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.ReconnectsStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.TimeStr }}</td>
+                            <td class="text-center">{{ $elem.Compare.ThreadsStr }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $referenceSHAs.SHA }}" target="_blank">{{$referenceSHAs.short}}</a></th>
+                            <td class="text-center">{{ $elem.Reference.QPS.TotalStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.QPS.ReadsStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.QPS.WritesStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.QPS.OtherStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.TPSStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.LatencyStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.ErrorsStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.ReconnectsStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.TimeStr }}</td>
+                            <td class="text-center">{{ $elem.Reference.ThreadsStr }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">%</th>
+                            <td class="text-center">{{ $elem.Diff.QPS.TotalStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.QPS.ReadsStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.QPS.WritesStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.QPS.OtherStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.TPSStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.LatencyStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.ErrorsStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.ReconnectsStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.TimeStr }}</td>
+                            <td class="text-center">{{ $elem.Diff.ThreadsStr }}</td>
                         </tr>
                         {{ end }}
                         </tbody>

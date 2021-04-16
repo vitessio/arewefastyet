@@ -89,7 +89,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 	}
 	macrosMatrixes := map[macrobench.Type]interface{}{}
 	for _, mtype := range macrobench.Types {
-		macrosMatrixes[mtype] = macrobench.CompareDetailsArrays(macros[reference][mtype], macros[reference][mtype])
+		macrosMatrixes[mtype] = macrobench.CompareDetailsArrays(macros[reference][mtype], macros[compare][mtype])
 	}
 
 	// compare micro benchmarks
