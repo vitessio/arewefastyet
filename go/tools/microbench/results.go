@@ -195,7 +195,7 @@ func (r MicroBenchmarkResult) NSPerOpStr() string {
 	i := strings.IndexFunc(str, func(r rune) bool {
 		return !unicode.IsNumber(r) && r != '.'
 	})
-	durStr := str[:i-1]
+	durStr := str[:i]
 	durUnit := str[i:]
 	durFloat, _ := strconv.ParseFloat(durStr, 64)
 	return fmt.Sprintf("%.2f %s", durFloat, durUnit)
