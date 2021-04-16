@@ -157,6 +157,22 @@
                 labels: labels,
                 datasets: [
                     {
+                        label: 'Reference',
+                        data: dataRef,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                        ],
+                    },
+                    {
                         label: 'Compare',
                         data: dataCmp,
                         color: 'black',
@@ -171,22 +187,6 @@
                             'rgba(255, 99, 132, 1)',
                             'rgba(255, 99, 132, 1)',
                             'rgba(255, 99, 132, 1)',
-                        ],
-                    },
-                    {
-                        label: 'Reference',
-                        data: dataRef,
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                        ],
-                        borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
                         ],
                     }
                 ]
