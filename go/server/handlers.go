@@ -74,6 +74,24 @@ func (s *Server) compareHandler(c *gin.Context) {
 
 	SHAs := []string{reference, compare}
 
+	// Get macro benchmarks from all the different types
+	macros := map[string]map[macrobench.Type]macrobench.MacroBenchmarkDetailsArray{}
+	for _, sha := range SHAs {
+		macros[sha] = map[macrobench.Type]macrobench.MacroBenchmarkDetailsArray{}
+		for _, mtype := range macrobench.Types {
+			macro, err := macrobench.GetResultsForGitRef(mtype, sha, s.dbClient)
+			if err != nil {
+				handleRenderErrors(c, err)
+				return
+			}
+			macros[sha][mtype] = macro.ReduceSimpleMedian()
+		}
+	}
+	macrosMatrixes := map[macrobench.Type]interface{}{}
+	for _, mtype := range macrobench.Types {
+		macrosMatrixes[mtype] = macrobench.CompareDetailsArrays(macros[reference][mtype], macros[reference][mtype])
+	}
+
 	// compare micro benchmarks
 	micros := map[string]microbench.MicroBenchmarkDetailsArray{}
 	for _, sha := range SHAs {
@@ -108,6 +126,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 			"short": shortCmp,
 		},
 		"microbenchmark": microsMatrix,
+		"macrobenchmark": macrosMatrixes,
 	})
 }
 

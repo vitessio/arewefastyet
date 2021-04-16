@@ -23,7 +23,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
-	"github.com/vitessio/arewefastyet/go/tools/math"
+	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 	"sort"
 	"strings"
 	"time"
@@ -123,6 +123,8 @@ func CompareDetailsArrays(references, compares MacroBenchmarkDetailsArray) (comp
 				cmp.Diff.Errors = cmp.Reference.Errors / cmp.Compare.Errors
 				cmp.Diff.Time = cmp.Reference.Time / cmp.Compare.Time
 				cmp.Diff.Threads = cmp.Reference.Threads / cmp.Compare.Threads
+				awftmath.CheckForNaN(&cmp.Diff, 1)
+				awftmath.CheckForNaN(&cmp.Diff.QPS, 1)
 				break
 			}
 		}
@@ -158,16 +160,16 @@ func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmark
 		inter.threads = append(inter.threads, mr.Threads)
 	}
 
-	mergedResult.QPS.Total = math.MedianFloat(inter.total)
-	mergedResult.QPS.Reads = math.MedianFloat(inter.reads)
-	mergedResult.QPS.Writes = math.MedianFloat(inter.writes)
-	mergedResult.QPS.Other = math.MedianFloat(inter.other)
-	mergedResult.TPS = math.MedianFloat(inter.tps)
-	mergedResult.Latency = math.MedianFloat(inter.latency)
-	mergedResult.Errors = math.MedianFloat(inter.errors)
-	mergedResult.Reconnects = math.MedianFloat(inter.reconnects)
-	mergedResult.Time = int(math.MedianInt(inter.time))
-	mergedResult.Threads = math.MedianFloat(inter.threads)
+	mergedResult.QPS.Total = awftmath.MedianFloat(inter.total)
+	mergedResult.QPS.Reads = awftmath.MedianFloat(inter.reads)
+	mergedResult.QPS.Writes = awftmath.MedianFloat(inter.writes)
+	mergedResult.QPS.Other = awftmath.MedianFloat(inter.other)
+	mergedResult.TPS = awftmath.MedianFloat(inter.tps)
+	mergedResult.Latency = awftmath.MedianFloat(inter.latency)
+	mergedResult.Errors = awftmath.MedianFloat(inter.errors)
+	mergedResult.Reconnects = awftmath.MedianFloat(inter.reconnects)
+	mergedResult.Time = int(awftmath.MedianInt(inter.time))
+	mergedResult.Threads = awftmath.MedianFloat(inter.threads)
 	return mergedResult
 }
 

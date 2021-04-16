@@ -29,6 +29,46 @@
             {{ if .compare }}
                 <h2>Comparing <a href="https://github.com/vitessio/vitess/commit/{{ .compare.SHA }}" target="_blank">{{.compare.short}}</a> with <a href="https://github.com/vitessio/vitess/commit/{{ .reference.SHA }}" target="_blank">{{.reference.short}}</a>.</h2>
 
+                {{ if .macrobenchmark }}
+                    {{ range $key, $val := .macrobenchmark }}
+                    <h4>{{ $key.ToUpper }}</h4>
+                    <table class="table table-striped table-hover table-sm table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="text-center">QPS Total</th>
+                            <th scope="col" class="text-center">QPS Reads</th>
+                            <th scope="col" class="text-center">QPS Writes</th>
+                            <th scope="col" class="text-center">QPS Other</th>
+                            <th scope="col" class="text-center">TPS</th>
+                            <th scope="col" class="text-center">Latency</th>
+                            <th scope="col" class="text-center">Errors</th>
+                            <th scope="col" class="text-center">Reconnects</th>
+                            <th scope="col" class="text-center">Time</th>
+                            <th scope="col" class="text-center">Threads</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $elem := $val }}
+                        <tr>
+                            <td class="text-right">{{ $elem.Diff.QPS.TotalStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.QPS.ReadsStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.QPS.WritesStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.QPS.OtherStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.TPSStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.LatencyStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.ErrorsStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.ReconnectsStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.TimeStr }}</td>
+                            <td class="text-right">{{ $elem.Diff.ThreadsStr }}</td>
+                        </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                    {{ end }}
+                {{ else if not .macrobenchmark }}
+
+                {{ end }}
+
                 {{ if .microbenchmark }}
                 <h3>Micro benchmarks</h3>
 
