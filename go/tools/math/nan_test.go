@@ -19,18 +19,32 @@
 package math
 
 import (
+	qt "github.com/frankban/quicktest"
 	"math"
-	"reflect"
+	"testing"
 )
 
-// CheckForNaN walks through the given interface and set any float64 value that
-// are NaN to the value of setTo.
-func CheckForNaN(data interface{}, setTo float64) {
-	v := reflect.ValueOf(data).Elem()
-	for i := 0; i < v.NumField(); i++ {
-		field := v.Field(i)
-		if field.Kind() == reflect.Float64 && math.IsNaN(field.Float()) {
-			v.Field(i).SetFloat(setTo)
-		}
+func TestCheckForNaN(t *testing.T) {
+	type s struct {
+		Vf float64
+	}
+
+	type args struct {
+		data  s
+		setTo float64
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{name: "Float NaN", args: args{data: s{Vf: math.NaN()}, setTo: 100}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+
+			CheckForNaN(&tt.args.data, tt.args.setTo)
+			c.Assert(tt.args.data.Vf, qt.Equals, tt.args.setTo)
+		})
 	}
 }
