@@ -25,6 +25,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 	"math"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -79,8 +80,7 @@ type (
 	// Comparison contains two MacroBenchmarkDetails and their difference in a
 	// MacroBenchmarkResult field.
 	Comparison struct {
-		GitRef string
-		Reference, Compare MacroBenchmarkResult
+		Reference, Compare MacroBenchmarkDetails
 		Diff MacroBenchmarkResult
 	}
 
@@ -107,51 +107,45 @@ func newMacroBenchmarkResult(QPS QPS, TPS float64, latency float64, errors float
 }
 
 func CompareDetailsArrays(references, compares MacroBenchmarkDetailsArray) (compared ComparisonArray) {
-	refI := 0
 	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
 		var cmp Comparison
-		if refI < len(references) {
-			cmp.Reference = references[i].Result
-			cmp.GitRef = references[i].GitRef
-			refI++
+		if i < len(references) {
+			cmp.Reference = references[i]
 		}
-		if cmp.GitRef != "" {
-			for j := 0; j < len(compares); j++ {
-				if compares[j].GitRef == cmp.GitRef {
-					cmp.Compare = compares[j].Result
-					cmp.Diff.QPS.Total = cmp.Reference.QPS.Total / cmp.Compare.QPS.Total
-					cmp.Diff.QPS.Reads = cmp.Reference.QPS.Reads / cmp.Compare.QPS.Reads
-					cmp.Diff.QPS.Writes = cmp.Reference.QPS.Writes / cmp.Compare.QPS.Writes
-					cmp.Diff.QPS.Other = cmp.Reference.QPS.Other / cmp.Compare.QPS.Other
-					cmp.Diff.TPS = cmp.Reference.TPS / cmp.Compare.TPS
-					cmp.Diff.Latency = cmp.Reference.Latency / cmp.Compare.Latency
-					cmp.Diff.Reconnects = cmp.Reference.Reconnects / cmp.Compare.Reconnects
-					cmp.Diff.Errors = cmp.Reference.Errors / cmp.Compare.Errors
-					cmp.Diff.Time = cmp.Reference.Time / cmp.Compare.Time
-					cmp.Diff.Threads = cmp.Reference.Threads / cmp.Compare.Threads
-					awftmath.CheckForNaN(&cmp.Diff, 1)
-					awftmath.CheckForNaN(&cmp.Diff.QPS, 1)
-					break
-				}
-			}
+		if i < len(compares) {
+			cmp.Compare = compares[i]
+		}
+		if cmp.Compare.GitRef != "" && cmp.Reference.GitRef != "" {
+			cmp.Diff.QPS.Total = 100 * (cmp.Reference.Result.QPS.Total / cmp.Compare.Result.QPS.Total)
+			cmp.Diff.QPS.Reads = 100 * (cmp.Reference.Result.QPS.Reads / cmp.Compare.Result.QPS.Reads)
+			cmp.Diff.QPS.Writes = 100 * (cmp.Reference.Result.QPS.Writes / cmp.Compare.Result.QPS.Writes)
+			cmp.Diff.QPS.Other = 100 * (cmp.Reference.Result.QPS.Other / cmp.Compare.Result.QPS.Other)
+			cmp.Diff.TPS = 100 * (cmp.Reference.Result.TPS / cmp.Compare.Result.TPS)
+			cmp.Diff.Latency = 100 * (cmp.Compare.Result.Latency / cmp.Reference.Result.Latency)
+			cmp.Diff.Reconnects = 100 * (cmp.Reference.Result.Reconnects / cmp.Compare.Result.Reconnects)
+			cmp.Diff.Errors = 100 * (cmp.Reference.Result.Errors / cmp.Compare.Result.Errors)
+			cmp.Diff.Time = int(100 * (float64(cmp.Reference.Result.Time) / float64(cmp.Compare.Result.Time)))
+			cmp.Diff.Threads = 100 * (cmp.Reference.Result.Threads / cmp.Compare.Result.Threads)
+			awftmath.CheckForNaN(&cmp.Diff, 100)
+			awftmath.CheckForNaN(&cmp.Diff.QPS, 100)
 		} else {
-			for j := 0; j < len(compares); j++ {
-				found := false
-				for _, ref := range references {
-					if ref.GitRef == compares[j].GitRef {
-						found = true
-						break
-					}
-				}
-				if !found {
-					cmp.GitRef = compares[j].GitRef
-					cmp.Compare = compares[j].Result
-				}
-			}
+			setFieldTo100(reflect.ValueOf(&cmp.Diff).Elem())
+			setFieldTo100(reflect.ValueOf(&cmp.Diff.QPS).Elem())
 		}
 		compared = append(compared, cmp)
 	}
 	return compared
+}
+
+func setFieldTo100(v reflect.Value) {
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if field.Kind() == reflect.Float64 {
+			v.Field(i).SetFloat(100)
+		} else if field.Kind() == reflect.Int {
+			v.Field(i).SetInt(100)
+		}
+	}
 }
 
 func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmarkResult) {

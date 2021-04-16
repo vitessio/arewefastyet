@@ -157,10 +157,9 @@ func TestCompareDetailsArrays(t *testing.T) {
 			},
 		}, wantCompared: ComparisonArray{
 			Comparison{
-				GitRef:    "11bbAAA",
-				Reference: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-				Compare:   *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
-				Diff:      *newMacroBenchmarkResult(*newQPS(0.5, 0.5, 0.5, 0.5), 0.5, 0.5, 0.5, 0.5, 0, 0.5),
+				Reference: *newMacroBenchmarkDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+				Compare:   *newMacroBenchmarkDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+				Diff:      *newMacroBenchmarkResult(*newQPS(50, 50, 50, 50), 50, 200, 50, 50, 50, 50),
 			},
 		}},
 
@@ -175,16 +174,14 @@ func TestCompareDetailsArrays(t *testing.T) {
 			},
 		}, wantCompared: ComparisonArray{
 			Comparison{
-				GitRef:    "11bbAAA",
-				Reference: *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-				Compare:   *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
-				Diff:      *newMacroBenchmarkResult(*newQPS(0.5, 0.5, 0.5, 0.5), 0.5, 0.5, 0.5, 0.5, 0, 0.5),
+				Reference: *newMacroBenchmarkDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+				Compare:   *newMacroBenchmarkDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+				Diff:      *newMacroBenchmarkResult(*newQPS(50, 50, 50, 50), 50, 200, 50, 50, 50, 50),
 			},
 			Comparison{
-				GitRef:    "f78gh1p",
-				Reference: *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0),
-				Compare:   *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0),
-				Diff:      *newMacroBenchmarkResult(*newQPS(2, 2, 2, 2), 2, 2, 2, 2, 2, 2),
+				Reference: *newMacroBenchmarkDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(2.0, 2.0, 2.0, 2.0), 2.0, 2.0, 2.0, 2.0, 2, 2.0)),
+				Compare:   *newMacroBenchmarkDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", *newMacroBenchmarkResult(*newQPS(1.0, 1.0, 1.0, 1.0), 1.0, 1.0, 1.0, 1.0, 1, 1.0)),
+				Diff:      *newMacroBenchmarkResult(*newQPS(200, 200, 200, 200), 200, 50, 200, 200, 200, 200),
 			},
 		}},
 	}

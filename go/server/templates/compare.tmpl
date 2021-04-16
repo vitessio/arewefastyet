@@ -33,7 +33,9 @@
 
                 {{ if .macrobenchmark }}
                     {{ range $key, $val := .macrobenchmark }}
+
                     <h4>{{ $key.ToUpper }}</h4>
+                    {{ if $val }}
                     <table class="table table-striped table-hover table-sm table-bordered">
                         <thead>
                         <tr>
@@ -54,11 +56,11 @@
                         {{ range $elem := $val }}
                         <tr>
                             <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $compareSHAs.SHA }}" target="_blank">{{$compareSHAs.short}}</a></th>
-                            {{ template "rowMacro" $elem.Compare }}
+                            {{ template "rowMacro" $elem.Compare.Result }}
                         </tr>
                         <tr>
                             <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $referenceSHAs.SHA }}" target="_blank">{{$referenceSHAs.short}}</a></th>
-                            {{ template "rowMacro" $elem.Reference }}
+                            {{ template "rowMacro" $elem.Reference.Result }}
                         </tr>
                         <tr>
                             <th scope="row" class="text-center">%</th>
@@ -67,8 +69,12 @@
                         {{ end }}
                         </tbody>
                     </table>
-                <canvas id="{{$key}}-bar-chart" height="75"></canvas>
-
+                    <canvas id="{{$key}}-bar-chart" height="75"></canvas>
+                    {{ else if not $val }}
+                        <div class="alert alert-warning" role="alert">
+                            No {{ $key.ToUpper }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$referenceSHAs.SHA}},{{ $compareSHAs.SHA }}]&type=macrobench-{{$key}}">request</a> a run.
+                        </div>
+                    {{ end }}
                 {{ end }}
                 {{ else if not .macrobenchmark }}
                     <div class="alert alert-warning" role="alert">
@@ -133,8 +139,8 @@
 <script>
     function macroCmpBarCharts(type, macro) {
         for (const macroKey in macro) {
-            var compareMacros = macro[macroKey]["Compare"]
-            var referenceMacros = macro[macroKey]["Reference"]
+            var compareMacros = macro[macroKey]["Compare"]["Result"]
+            var referenceMacros = macro[macroKey]["Reference"]["Result"]
 
             var labels = []
             var dataCmp = []
