@@ -20,6 +20,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 	"net/http"
@@ -107,23 +108,15 @@ func (s *Server) compareHandler(c *gin.Context) {
 		return !(microsMatrix[i].Current.NSPerOp < microsMatrix[j].Current.NSPerOp)
 	})
 
-	shortRef := reference
-	if len(reference) > 7 {
-		shortRef = reference[:7]
-	}
-	shortCmp := compare
-	if len(compare) > 7 {
-		shortCmp = compare[:7]
-	}
 	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
 		"title": "Vitess benchmark",
 		"reference": map[string]interface{}{
 			"SHA":   reference,
-			"short": shortRef,
+			"short": git.ShortenSHA(reference),
 		},
 		"compare": map[string]interface{}{
 			"SHA":   compare,
-			"short": shortCmp,
+			"short": git.ShortenSHA(compare),
 		},
 		"microbenchmark": microsMatrix,
 		"macrobenchmark": macrosMatrixes,
@@ -157,14 +150,10 @@ func (s *Server) searchHandler(c *gin.Context) {
 	}
 	micro = micro.ReduceSimpleMedian()
 
-	shortSHA := search
-	if len(search) > 7 {
-		shortSHA = search[:7]
-	}
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
 		"title":          "Vitess benchmark",
 		"search":         search,
-		"shortSHA":       shortSHA,
+		"shortSHA":       git.ShortenSHA(search),
 		"microbenchmark": micro,
 		"macrobenchmark": macros,
 	})

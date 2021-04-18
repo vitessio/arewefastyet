@@ -56,3 +56,12 @@ func GetCommitHash(repoDir string) (hash string, err error) {
 	hash = ref.Hash().String()
 	return hash, nil
 }
+
+// ShortenSHA will return the first 7 characters of a SHA.
+// If the given SHA is too short, it will be returned untouched.
+func ShortenSHA(sha string) string {
+	if len(sha) > 7 {
+		return sha[:7]
+	}
+	return sha
+}
