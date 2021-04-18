@@ -42,10 +42,10 @@ type (
 		Other  float64 `json:"other"`
 	}
 
-	// MacroBenchmarkResult represents both OLTP and TPCC tables.
+	// Result represents both OLTP and TPCC tables.
 	// The two tables share the same schema and can thus be grouped
 	// under an unique go struct.
-	MacroBenchmarkResult struct {
+	Result struct {
 		ID         int
 		QPS        QPS     `json:"qps"`
 		TPS        float64 `json:"tps"`
@@ -64,27 +64,27 @@ type (
 		CreatedAt *time.Time
 	}
 
-	// MacroBenchmarkDetails represents the entire macro benchmark and its sub
+	// Details represents the entire macro benchmark and its sub
 	// components. It has a BenchmarkID (ID, creation date, source of the benchmark),
-	// the git reference that was used, and its results represented by a MacroBenchmarkResult.
+	// the git reference that was used, and its results represented by a Result.
 	// This struct encapsulates the "benchmark", "qps" and ("OLTP" or "TPCC") database tables.
-	MacroBenchmarkDetails struct {
+	Details struct {
 		BenchmarkID
 
 		// refers to commit
 		GitRef string
-		Result MacroBenchmarkResult
+		Result Result
 	}
 
-	// Comparison contains two MacroBenchmarkDetails and their difference in a
-	// MacroBenchmarkResult field.
+	// Comparison contains two Details and their difference in a
+	// Result field.
 	Comparison struct {
-		Reference, Compare MacroBenchmarkDetails
-		Diff MacroBenchmarkResult
+		Reference, Compare Details
+		Diff               Result
 	}
 
-	MacroBenchmarkResultsArray []MacroBenchmarkResult
-	MacroBenchmarkDetailsArray []MacroBenchmarkDetails
+	ResultsArray []Result
+	DetailsArray []Details
 
 	ComparisonArray []Comparison
 )
@@ -93,22 +93,22 @@ func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
 	return &BenchmarkID{ID: ID, Source: source, CreatedAt: createdAt}
 }
 
-func newMacroBenchmarkDetails(benchmarkID BenchmarkID, gitRef string, result MacroBenchmarkResult) *MacroBenchmarkDetails {
-	return &MacroBenchmarkDetails{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result}
+func newDetails(benchmarkID BenchmarkID, gitRef string, result Result) *Details {
+	return &Details{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result}
 }
 
 func newQPS(total float64, reads float64, writes float64, other float64) *QPS {
 	return &QPS{Total: total, Reads: reads, Writes: writes, Other: other}
 }
 
-func newMacroBenchmarkResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *MacroBenchmarkResult {
-	return &MacroBenchmarkResult{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
+func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *Result {
+	return &Result{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
 }
 
-// newPercentageResult returns a MacroBenchmarkResult with fields set
+// newPercentageResult returns a Result with fields set
 // to 100, representing a percentage.
-func newPercentageResult() MacroBenchmarkResult {
-	return MacroBenchmarkResult{
+func newPercentageResult() Result {
+	return Result{
 		QPS:        QPS{
 			Total:  100,
 			Reads:  100,
@@ -124,9 +124,9 @@ func newPercentageResult() MacroBenchmarkResult {
 	}
 }
 
-// CompareDetailsArrays compare two MacroBenchmarkDetailsArray and return
+// CompareDetailsArrays compare two DetailsArray and return
 // their comparison in a ComparisonArray.
-func CompareDetailsArrays(references, compares MacroBenchmarkDetailsArray) (compared ComparisonArray) {
+func CompareDetailsArrays(references, compares DetailsArray) (compared ComparisonArray) {
 	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
 		var cmp Comparison
 		if i < len(references) {
@@ -155,9 +155,9 @@ func CompareDetailsArrays(references, compares MacroBenchmarkDetailsArray) (comp
 	return compared
 }
 
-// mergeMedian will merge a MacroBenchmarkResultsArray into a single MacroBenchmarkResult
+// mergeMedian will merge a ResultsArray into a single Result
 // by calculating the median of all elements in the array.
-func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmarkResult) {
+func (mrs ResultsArray) mergeMedian() (mergedResult Result) {
 	inter := struct {
 		total      []float64
 		reads      []float64
@@ -197,23 +197,23 @@ func (mrs MacroBenchmarkResultsArray) mergeMedian() (mergedResult MacroBenchmark
 	return mergedResult
 }
 
-// ReduceSimpleMedian reduces the given MacroBenchmarkDetailsArray by
+// ReduceSimpleMedian reduces the given DetailsArray by
 // merging altogether the elements that share the same GitRef.
 // During the reduce, the math.MedianFloat and math.MedianInt methods
-// are applied on the different MacroBenchmarkResult.
-func (mabd MacroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMabd MacroBenchmarkDetailsArray) {
+// are applied on the different Result.
+func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
 	sort.SliceStable(mabd, func(i, j int) bool {
 		return mabd[i].GitRef < mabd[j].GitRef
 	})
 	for i := 0; i < len(mabd); {
 		var j int
-		interResults := MacroBenchmarkResultsArray{}
+		interResults := ResultsArray{}
 		for j = i; j < len(mabd) && mabd[i].GitRef == mabd[j].GitRef; j++ {
 			interResults = append(interResults, mabd[j].Result)
 		}
 
 		reducedResult := interResults.mergeMedian()
-		reduceMabd = append(reduceMabd, MacroBenchmarkDetails{
+		reduceMabd = append(reduceMabd, Details{
 			GitRef: mabd[i].GitRef,
 			Result: reducedResult,
 		})
@@ -222,27 +222,27 @@ func (mabd MacroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMabd MacroBen
 	return reduceMabd
 }
 
-func (mbr MacroBenchmarkResult) TPSStr() string {
+func (mbr Result) TPSStr() string {
 	return humanize.FormatFloat("#,###.#", mbr.TPS)
 }
 
-func (mbr MacroBenchmarkResult) LatencyStr() string {
+func (mbr Result) LatencyStr() string {
 	return humanize.FormatFloat("#,###.#", mbr.Latency)
 }
 
-func (mbr MacroBenchmarkResult) ErrorsStr() string {
+func (mbr Result) ErrorsStr() string {
 	return humanize.FormatFloat("#,###.#", mbr.Errors)
 }
 
-func (mbr MacroBenchmarkResult) ReconnectsStr() string {
+func (mbr Result) ReconnectsStr() string {
 	return humanize.FormatFloat("#,###.#", mbr.Reconnects)
 }
 
-func (mbr MacroBenchmarkResult) TimeStr() string {
+func (mbr Result) TimeStr() string {
 	return humanize.Comma(int64(mbr.Time))
 }
 
-func (mbr MacroBenchmarkResult) ThreadsStr() string {
+func (mbr Result) ThreadsStr() string {
 	return humanize.FormatFloat("#,###.#", mbr.Threads)
 }
 
@@ -262,10 +262,10 @@ func (qps QPS) OtherStr() string {
 	return humanize.FormatFloat("#,###.#", qps.Other)
 }
 
-// GetResultsForLastDays returns a slice MacroBenchmarkDetails based on a given macro benchmark type.
+// GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType Type, source string, lastDays int, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
+func GetResultsForLastDays(macroType Type, source string, lastDays int, client *mysql.Client) (macrodetails DetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
@@ -285,7 +285,7 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 		return nil, err
 	}
 	for rows.Next() {
-		var res MacroBenchmarkDetails
+		var res Details
 		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
@@ -297,9 +297,9 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 	return macrodetails, nil
 }
 
-// GetResultsForGitRef returns a slice of MacroBenchmarkDetails based on the given git ref
+// GetResultsForGitRef returns a slice of Details based on the given git ref
 // and macro benchmark Type. The type must be either OLTP or TPCC.
-func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macrodetails MacroBenchmarkDetailsArray, err error) {
+func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macrodetails DetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
@@ -317,7 +317,7 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 		return nil, err
 	}
 	for rows.Next() {
-		var res MacroBenchmarkDetails
+		var res Details
 		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
@@ -333,7 +333,7 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 // The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
 // Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
 // The children table QPS is also inserted.
-func (mbr *MacroBenchmarkResult) insertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
+func (mbr *Result) insertToMySQL(benchmarkType Type, macrobenchmarkID int, client *mysql.Client) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}

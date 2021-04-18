@@ -75,9 +75,9 @@ func (s *Server) compareHandler(c *gin.Context) {
 	SHAs := []string{reference, compare}
 
 	// Get macro benchmarks from all the different types
-	macros := map[string]map[macrobench.Type]macrobench.MacroBenchmarkDetailsArray{}
+	macros := map[string]map[macrobench.Type]macrobench.DetailsArray{}
 	for _, sha := range SHAs {
-		macros[sha] = map[macrobench.Type]macrobench.MacroBenchmarkDetailsArray{}
+		macros[sha] = map[macrobench.Type]macrobench.DetailsArray{}
 		for _, mtype := range macrobench.Types {
 			macro, err := macrobench.GetResultsForGitRef(mtype, sha, s.dbClient)
 			if err != nil {
