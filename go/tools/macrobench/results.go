@@ -109,7 +109,7 @@ func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects
 // to 100, representing a percentage.
 func newPercentageResult() Result {
 	return Result{
-		QPS:        QPS{
+		QPS: QPS{
 			Total:  100,
 			Reads:  100,
 			Writes: 100,
