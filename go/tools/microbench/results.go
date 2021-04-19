@@ -185,7 +185,16 @@ func (r MicroBenchmarkResult) OpsStr() string {
 	}
 	return humanize.Comma(int64(r.Ops))
 }
+
 func (r MicroBenchmarkResult) NSPerOpStr() string {
+	if r.NSPerOp == 0 {
+		return ""
+	}
+
+	return humanize.FormatFloat("#,###.#",r.NSPerOp)
+}
+
+func (r MicroBenchmarkResult) NSPerOpToDurationStr() string {
 	if r.NSPerOp == 0 {
 		return ""
 	}
