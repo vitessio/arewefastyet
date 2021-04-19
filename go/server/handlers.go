@@ -66,9 +66,19 @@ func (s *Server) compareHandler(c *gin.Context) {
 	reference := c.Query("r")
 	compare := c.Query("c")
 
+	compareSHA := map[string]interface{}{
+		"SHA":   compare,
+		"short": git.ShortenSHA(compare),
+	}
+	referenceSHA := map[string]interface{}{
+		"SHA":   reference,
+		"short": git.ShortenSHA(reference),
+	}
 	if reference == "" || compare == "" {
 		c.HTML(http.StatusOK, "compare.tmpl", gin.H{
-			"title": "Vitess benchmark",
+			"title":     "Vitess benchmark",
+			"reference": referenceSHA,
+			"compare":   compareSHA,
 		})
 		return
 	}
@@ -109,15 +119,9 @@ func (s *Server) compareHandler(c *gin.Context) {
 	})
 
 	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
-		"title": "Vitess benchmark",
-		"reference": map[string]interface{}{
-			"SHA":   reference,
-			"short": git.ShortenSHA(reference),
-		},
-		"compare": map[string]interface{}{
-			"SHA":   compare,
-			"short": git.ShortenSHA(compare),
-		},
+		"title":          "Vitess benchmark",
+		"reference":      referenceSHA,
+		"compare":        compareSHA,
 		"microbenchmark": microsMatrix,
 		"macrobenchmark": macrosMatrixes,
 	})

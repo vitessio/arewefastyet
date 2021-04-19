@@ -26,7 +26,7 @@
                 </form>
             </div>
 
-            {{ if .compare }}
+            {{ if and .compare.SHA .reference.SHA }}
                 <h2>Comparing <a href="https://github.com/vitessio/vitess/commit/{{ .compare.SHA }}" target="_blank">{{.compare.short}}</a> with <a href="https://github.com/vitessio/vitess/commit/{{ .reference.SHA }}" target="_blank">{{.reference.short}}</a>.</h2>
                 {{ $compareSHAs := .compare }}
                 {{ $referenceSHAs := .reference }}
@@ -91,8 +91,8 @@
                             <th scope="col">Pkg</th>
                             <th scope="col">Name</th>
                             <th scope="col" colspan="1" class="text-center">Diff</th>
-                            <th scope="col" colspan="2" class="text-center">Number of Op</th>
-                            <th scope="col" colspan="2" class="text-center">ns/op</th>
+                            <th scope="col" colspan="2" class="text-center">Number of Iterations</th>
+                            <th scope="col" colspan="2" class="text-center">Time/op</th>
                             <th scope="col" colspan="2" class="text-center">B/op</th>
                             <th scope="col" colspan="2" class="text-center">MB/s</th>
                             <th scope="col" colspan="2" class="text-center">Allocs/op</th>
@@ -146,12 +146,12 @@
             var labels = []
             var dataCmp = []
             var dataRef = []
-            var wants = ["Total", "Reads", "Writes", "Other"]
-            for (var x in referenceMacros) {
+            var wants = ["total", "reads", "writes", "other"]
+            for (var x in referenceMacros["qps"]) {
                 if (wants.includes(x)) {
                     labels.push(x)
-                    dataCmp.push(compareMacros[x])
-                    dataRef.push(referenceMacros[x])
+                    dataCmp.push(compareMacros["qps"][x])
+                    dataRef.push(referenceMacros["qps"][x])
                 }
             }
             const data = {
@@ -203,14 +203,12 @@
                         },
                         title: {
                             display: true,
-                            text: 'Chart.js Bar Chart'
                         }
                     }
                 },
             };
             var ctx = document.getElementById(type+"-bar-chart").getContext('2d');
             var chart = new Chart(ctx, config)
-
         }
     }
 
