@@ -35,6 +35,16 @@ const (
 	IncorrectMacroBenchmarkType = "incorrect macrobenchmark type"
 )
 
+// Type implements Cobra flag.Value interface.
+func (mbtype *MacroBenchmarkType) Type() string {
+	return "MacroBenchmarkType"
+}
+
+// Set implements Cobra flag.Value interface.
+func (mbtype *MacroBenchmarkType) Set(s string) error {
+	*mbtype = MacroBenchmarkType(s)
+	return nil
+}
 
 // ToUpper returns a new MacroBenchmarkType in upper case.
 func (mbtype MacroBenchmarkType) ToUpper() MacroBenchmarkType {
@@ -42,6 +52,7 @@ func (mbtype MacroBenchmarkType) ToUpper() MacroBenchmarkType {
 }
 
 // String returns the given MacroBenchmarkType as a string.
+// It also implements the flag.Value interface.
 func (mbtype MacroBenchmarkType) String() string {
 	return string(mbtype)
 }

@@ -1,0 +1,47 @@
+# Copyright 2021 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: Install arewefastyet
+  become: yes
+  become_user: root
+  block:
+    - name: git clone arewefastyet
+      git:
+        repo: "{{ arewefastyet_git_repo }}"
+        dest: /go/src/github.com/vitessio/arewefastyet
+        version: "{{ arewefastyet_git_version }}"
+        refspec: "{{ arewefastyet_git_version_fetch_pr if arewefastyet_git_version_pr_nb is defined | default('') }}"
+        force: true
+
+    - name: Build arewefastyet CLI
+      shell: |
+        cd /go/src/github.com/vitessio/arewefastyet
+        go build -o arewefastyetcli ./go/main.go
+      changed_when: false
+
+    - name: Install arewefastyet CLI
+      shell: |
+        cd /go/src/github.com/vitessio/arewefastyet
+        cp arewefastyetcli /usr/bin/arewefastyetcli
+      changed_when: false
+
+- name: Get macrobenchmarks config.yaml
+  ansible.builtin.copy:
+    src: "{{ macrobenchmarks_local_config }}"
+    dest: /tmp/config.yaml
+    mode: '0644'
+
+- name: Run macrobenchmarks
+  shell: |
+    arewefastyetcli macrobench run --config /tmp/config.yaml
+  register: arewefastyetcli
+  changed_when: False

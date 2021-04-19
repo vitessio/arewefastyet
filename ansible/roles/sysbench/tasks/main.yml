@@ -81,7 +81,7 @@
   changed_when: false
 
 - name: Set up VTGate Loadbalancing
-  shell: iptables -t nat -A OUTPUT -p tcp --dport 3306 -m state --state NEW -m statistic --mode nth --every {{ ((gateways | length) - index) }} --packet 0 -j DNAT --to-destination {{ gateway }}
+  shell: iptables -t nat -A OUTPUT -p tcp --dport 13306 -m state --state NEW -m statistic --mode nth --every {{ ((gateways | length) - index) }} --packet 0 -j DNAT --to-destination {{ gateway }}
   with_items: '{{ gateways }}'
   changed_when: false
   loop_control:

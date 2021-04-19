@@ -20,6 +20,7 @@ package macrobench
 
 import (
 	"errors"
+	"fmt"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"strings"
 	"time"
@@ -31,23 +32,24 @@ type (
 	QPS struct {
 		ID     int
 		RefID  int
-		Total  float64
-		Reads  float64
-		Writes float64
-		Other  float64
+		Total  float64 `json:"total"`
+		Reads  float64 `json:"reads"`
+		Writes float64 `json:"writes"`
+		Other  float64 `json:"other"`
 	}
 
 	// MacroBenchmarkResult represents both OLTP and TPCC tables.
 	// The two tables share the same schema and can thus be grouped
 	// under an unique go struct.
 	MacroBenchmarkResult struct {
-		QPS
-		TPS        float64
-		Latency    float64
-		Errors     float64
-		Reconnects float64
-		Time       int
-		Threads    float64
+		ID         int
+		QPS        QPS     `json:"qps"`
+		TPS        float64 `json:"tps"`
+		Latency    float64 `json:"latency"`
+		Errors     float64 `json:"errors"`
+		Reconnects float64 `json:"reconnects"`
+		Time       int     `json:"time"`
+		Threads    float64 `json:"threads"`
 	}
 
 	// BenchmarkID is used to identify a macro benchmark using its database's ID, the
@@ -106,4 +108,32 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 		macrodetails = append(macrodetails, res)
 	}
 	return macrodetails, nil
+}
+
+// insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
+// The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
+// Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
+// The children table QPS is also inserted.
+func (mbr *MacroBenchmarkResult) insertToMySQL(benchmarkType MacroBenchmarkType, macrobenchmarkID int, client *mysql.Client) error {
+	if client == nil {
+		return errors.New(mysql.ErrorClientConnectionNotInitialized)
+	}
+	if benchmarkType == "" {
+		return errors.New(IncorrectMacroBenchmarkType)
+	}
+
+	// insert Result
+	queryResult := fmt.Sprintf("INSERT INTO %s(test_no, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
+	resultID, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
+	if err != nil {
+		return err
+	}
+
+	// insert QPS
+	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String() + "_no")
+	_, err = client.Insert(queryQPS, resultID, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
+	if err != nil {
+		return err
+	}
+	return nil
 }
