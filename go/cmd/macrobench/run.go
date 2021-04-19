@@ -32,11 +32,7 @@ func run() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "run",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := macrobench.Run(mabcfg)
-			if err != nil {
-				return err
-			}
-			return nil
+			return macrobench.Run(mabcfg)
 		},
 	}
 	mabcfg.AddToCommand(cmd)
