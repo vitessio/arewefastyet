@@ -15,8 +15,8 @@
             <div class="main">
                 <form type="GET" action="/compare">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Reference commit SHA" name="r">
-                        <input type="text" class="form-control" placeholder="Compare commit SHA" name="c">
+                        <input type="text" class="form-control" value="{{.reference.SHA}}" placeholder="Reference commit SHA" name="r">
+                        <input type="text" class="form-control" value="{{.compare.SHA}}" placeholder="Compare commit SHA" name="c">
                         <div class="input-group-append">
                             <button class="btn btn-secondary" type="submit">
                                 Compare
