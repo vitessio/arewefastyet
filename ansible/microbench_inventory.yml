@@ -22,5 +22,5 @@ all:
     vitess_git_version: "HEAD"
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "HEAD"
-    microbenchmarks_vitess_package: "./go/vt/sqlparser/..."
+    microbenchmarks_vitess_package: "./go/vt/..."
     microbenchmarks_local_config: "LOCAL_CONFIG_PATH_0"
