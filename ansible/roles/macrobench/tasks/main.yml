@@ -10,21 +10,6 @@
 # limitations under the License.
 
 ---
-- name: Install base dependencies
-  include_role:
-    name: "host"
-    tasks_from: install_deps
-
-- name: Install Golang
-  include_role:
-    name: "vitess_build"
-    tasks_from: golang
-
-- name: Install Vitess
-  include_role:
-    name: "vitess_build"
-    tasks_from: install_vitess
-
 - name: Install arewefastyet
   become: yes
   become_user: root
@@ -34,7 +19,7 @@
         repo: "{{ arewefastyet_git_repo }}"
         dest: /go/src/github.com/vitessio/arewefastyet
         version: "{{ arewefastyet_git_version }}"
-        refspec: "{{ arewefastyet_git_version_fetch_pr if arewefastyet_git_version_pr_nb is defined else '' | default('') }}"
+        refspec: "{{ arewefastyet_git_version_fetch_pr if arewefastyet_git_version_pr_nb is defined | default('') }}"
         force: true
 
     - name: Build arewefastyet CLI
@@ -49,19 +34,14 @@
         cp arewefastyetcli /usr/bin/arewefastyetcli
       changed_when: false
 
-
-# TODO: fix this hacky trick to get config.yaml into Ansible.
-# There is perhaps something better and safer to do from Terraform
-# or directly from arewefastyet's code.
-- name: Get microbenchmarks config.yaml
+- name: Get macrobenchmarks config.yaml
   ansible.builtin.copy:
-    src: "{{ microbenchmarks_local_config }}"
+    src: "{{ macrobenchmarks_local_config }}"
     dest: /tmp/config.yaml
     mode: '0644'
 
-- name: Run microbenchmarks
+- name: Run macrobenchmarks
   shell: |
-    cd /go/src/vitess.io/vitess
-    arewefastyetcli microbench run {{ microbenchmarks_vitess_package }} output.txt --config /tmp/config.yaml --microbench-exec-uuid {{ arewefastyet_exec_uuid }}
+    arewefastyetcli macrobench run --config /tmp/config.yaml
   register: arewefastyetcli
   changed_when: False

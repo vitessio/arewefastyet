@@ -148,7 +148,7 @@ func (e *Equinix) Prepare() error {
 		return err
 	}
 
-	err = tf.Init(context.Background(), tfexec.Upgrade(true), tfexec.LockTimeout("60s"))
+	err = tf.Init(context.Background(), tfexec.Upgrade(true))
 	if err != nil {
 		return err
 	}
