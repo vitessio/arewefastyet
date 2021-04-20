@@ -148,11 +148,11 @@ func (e *Exec) Prepare() error {
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
 func (e *Exec) Execute() (err error) {
 	defer func() {
+		status := statusFinished
 		if err != nil {
-			_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", statusFailed, e.UUID.String())
-			return
+			status = statusFailed
 		}
-		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", statusFinished, e.UUID.String())
+		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", status, e.UUID.String())
 	}()
 
 	if !e.prepared {

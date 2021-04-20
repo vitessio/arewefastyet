@@ -1,3 +1,4 @@
+DROP DATABASE benchmark;
 CREATE DATABASE IF NOT EXISTS benchmark;
 
 USE benchmark;
@@ -5,8 +6,8 @@ USE benchmark;
 CREATE TABLE IF NOT EXISTS execution (
     `uuid` VARCHAR(100) NOT NULL,
     `status` VARCHAR(100) DEFAULT 'created',
-    `started_at` TIMESTAMP DEFAULT NULL,
-    `finished_at` TIMESTAMP DEFAULT NULL,
+    `started_at` DATETIME NULL,
+    `finished_at` DATETIME NULL,
     `source` VARCHAR(100) DEFAULT NULL,
     `git_ref` VARCHAR(100) DEFAULT NULL,
     PRIMARY KEY (`uuid`)
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS macrobenchmark (
   `macrobenchmark_id` int(11) NOT NULL AUTO_INCREMENT,
   `exec_uuid` VARCHAR(100) DEFAULT NULL,
   `commit` varchar(100) DEFAULT NULL,
-  `DateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `DateTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `source` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`macrobenchmark_id`),
   KEY `exec_uuid` (`exec_uuid`),
