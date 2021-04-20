@@ -1,0 +1,44 @@
+# Copyright 2021 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- hosts: all
+  tasks:
+    - name: Import InfluxDB GPG signing key
+      apt_key:
+        url: https://repos.influxdata.com/influxdb.key
+        state: present
+
+    - name: Add InfluxDB repository
+      apt_repository:
+        repo: 'deb https://repos.influxdata.com/ubuntu xenial stable'
+        state: present
+
+    - name: Install InfluxDB packages
+      apt:
+        name: influxdb
+        state: present
+
+    - name: Modify InfluxDB hostname
+      replace:
+        dest: /etc/influxdb/influxdb.conf
+        regexp: '^# hostname = "localhost"$'
+        replace: 'hostname = \"{{ ansible_hostname }}\"'
+        backup: yes
+
+    - name: Start Service
+      service:
+        name: influxdb
+        state: restarted
+        enabled: yes
+
+    - name: Create Prometheus Database
+      command: /usr/bin/influx -execute 'CREATE DATABASE prometheus'
