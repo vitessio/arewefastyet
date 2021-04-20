@@ -49,7 +49,7 @@ type MicroBenchConfig struct {
 }
 
 func (mbc *MicroBenchConfig) AddToCommand(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&mbc.execUUID, flagExecUUID, "", "UUID of the parent execution, empty string will set to NULL")
+	cmd.Flags().StringVar(&mbc.execUUID, flagExecUUID, "", "UUID of the parent execution, an empty string will set to NULL.")
 
 	_ = viper.BindPFlag(flagExecUUID, cmd.Flags().Lookup(flagExecUUID))
 

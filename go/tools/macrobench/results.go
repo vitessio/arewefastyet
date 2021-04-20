@@ -87,7 +87,7 @@ func GetResultsForLastDays(macroType MacroBenchmarkType, source string, lastDays
 	query := "SELECT b.test_no, b.commit, b.source, b.DateTime, " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
-		"FROM benchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
+		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
 		"WHERE b.DateTime BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW()) " +
 		"AND b.source = ? AND b.test_no = macrotype.test_no AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
 
@@ -123,7 +123,7 @@ func (mbr *MacroBenchmarkResult) insertToMySQL(benchmarkType MacroBenchmarkType,
 	}
 
 	// insert Result
-	queryResult := fmt.Sprintf("INSERT INTO %s(test_no, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
+	queryResult := fmt.Sprintf("INSERT INTO %s(macrobenchmark_id, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
 	resultID, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
 	if err != nil {
 		return err

@@ -14,7 +14,7 @@ arewefastyet microbench run [root dir] <pkg> <output path> [flags]
       --db-password string            Password to authenticate the database.
       --db-user string                User used to connect to the database
   -h, --help                          help for run
-      --microbench-exec-uuid string   UUID of the parent execution, empty string will set to NULL
+      --microbench-exec-uuid string   UUID of the parent execution, an empty string will set to NULL.
 ```
 
 ### Options inherited from parent commands

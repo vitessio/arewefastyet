@@ -14,6 +14,7 @@ arewefastyet macrobench run [flags]
       --db-password string                      Password to authenticate the database.
       --db-user string                          User used to connect to the database
   -h, --help                                    help for run
+      --macrobench-exec-uuid string             UUID of the parent execution, an empty string will set to NULL.
       --macrobench-git-ref string               Git SHA referring to the macro benchmark.
       --macrobench-skip-steps strings           Slice of sysbench steps to skip.
       --macrobench-source string                The source or origin of the macro benchmark trigger.
