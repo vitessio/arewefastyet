@@ -141,7 +141,8 @@ cython_debug/
 *.pyc
 
 # Config files
-config/*.yaml
+config/**/*.yaml
+!config/macro/*.yaml
 
 # hide config-lock.json
 config-lock.json
