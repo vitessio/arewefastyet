@@ -59,6 +59,9 @@ func (s *Server) webhookHandler(c *gin.Context) {
 		slog.Warn(errorStr)
 		c.JSON(http.StatusBadRequest, newResponseErrorFromString(errorStr))
 		return
+	} else if wbhPayload.Ref != "refs/heads/master" {
+		c.JSON(http.StatusBadRequest, newResponseErrorFromString("not a runnable reference"))
+		return
 	}
 
 	pathConfig := wbhPayload.PathConfig
@@ -104,5 +107,5 @@ func (s *Server) webhookHandler(c *gin.Context) {
 		Started bool   `json:"started"`
 		UUID    string `json:"uuid"`
 	}
-	c.JSON(http.StatusOK, webhookResponse{Started: true, UUID: e.UUID.String()})
+	c.JSON(http.StatusCreated, webhookResponse{Started: true, UUID: e.UUID.String()})
 }
