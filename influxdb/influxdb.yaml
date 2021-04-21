@@ -40,5 +40,27 @@
         state: restarted
         enabled: yes
 
+    - name: Create Admin User
+      command: /usr/bin/influx -execute "CREATE USER admin WITH PASSWORD '{{ admin_password }}' WITH ALL PRIVILEGES;"
+
+    - name: Create Prometheus User
+      command: /usr/bin/influx -execute "CREATE USER prometheus WITH PASSWORD '{{ prometheus_password }}';"
+
     - name: Create Prometheus Database
-      command: /usr/bin/influx -execute 'CREATE DATABASE prometheus'
+      command: /usr/bin/influx -execute "CREATE DATABASE 'prometheus';"
+
+    - name: Grant Prometheus User
+      command: /usr/bin/influx -execute "GRANT ALL ON 'prometheus' TO 'prometheus';"
+
+    - name: Enable Auth
+      replace:
+        dest: /etc/influxdb/influxdb.conf
+        regexp: '^# auth-enabled = false$'
+        replace: 'auth-enabled = true'
+        backup: yes
+
+    - name: Restart Service
+      service:
+        name: influxdb
+        state: restarted
+        enabled: yes
