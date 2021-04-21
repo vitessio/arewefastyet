@@ -47,15 +47,15 @@
       command: /usr/bin/influx -execute "CREATE USER prometheus WITH PASSWORD '{{ prometheus_password }}';"
 
     - name: Create Prometheus Database
-      command: /usr/bin/influx -execute "CREATE DATABASE 'prometheus';"
+      command: /usr/bin/influx -execute "CREATE DATABASE prometheus;"
 
     - name: Grant Prometheus User
-      command: /usr/bin/influx -execute "GRANT ALL ON 'prometheus' TO 'prometheus';"
+      command: /usr/bin/influx -execute "GRANT ALL ON prometheus TO prometheus;"
 
     - name: Enable Auth
       replace:
         dest: /etc/influxdb/influxdb.conf
-        regexp: '^# auth-enabled = false$'
+        regexp: '# auth-enabled = false'
         replace: 'auth-enabled = true'
         backup: yes
 
