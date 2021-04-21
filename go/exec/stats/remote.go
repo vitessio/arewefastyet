@@ -21,6 +21,8 @@ package stats
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/infra/ansible"
+	"strings"
 )
 
 const (
@@ -51,4 +53,21 @@ func (rdbcfg *RemoteDBConfig) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(statsRemoteDBDatabase, cmd.Flags().Lookup(statsRemoteDBDatabase))
 	_ = viper.BindPFlag(statsRemoteDBUser, cmd.Flags().Lookup(statsRemoteDBUser))
 	_ = viper.BindPFlag(statsRemoteDBPassword, cmd.Flags().Lookup(statsRemoteDBPassword))
+}
+
+func (rdbcfg RemoteDBConfig) valid() bool {
+	return rdbcfg.host != "" && rdbcfg.port != "" && rdbcfg.dbName != ""
+}
+
+// AddToAnsible will add the stats remote database configuration
+// to the list of Ansible ExtraVars.
+func (rdbcfg RemoteDBConfig) AddToAnsible(ansibleCfg *ansible.Config) {
+	if !rdbcfg.valid() {
+		return
+	}
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBHost, "-", "_")] = rdbcfg.host
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBDatabase, "-", "_")] = rdbcfg.dbName
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPort, "-", "_")] = rdbcfg.port
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBUser, "-", "_")] = rdbcfg.user
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPassword, "-", "_")] = rdbcfg.password
 }

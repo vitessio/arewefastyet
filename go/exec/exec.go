@@ -146,6 +146,8 @@ func (e *Exec) Prepare() error {
 	if err != nil {
 		return err
 	}
+	e.AnsibleConfig.ExtraVars = map[string]interface{}{}
+	e.statsRemoteDBConfig.AddToAnsible(&e.AnsibleConfig)
 	e.prepared = true
 	return nil
 }

@@ -51,7 +51,7 @@
   tags:
     - prometheus
   roles:
-    - cloudalchemy.prometheus
+    - { role: cloudalchemy.prometheus, when: stats_remote_db_host is defined }
   vars:
     vitess_cluster: 'main'
     mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
@@ -117,6 +117,10 @@
         file_sd_configs:
           - files:
               - "{{ prometheus_config_dir }}/file_sd/gateways.yml"
+    prometheus_remote_write:
+      - url: "http://{{ stats_remote_db_host }}:{{ stats_remote_db_port }}/api/v1/prom/write?db={{ stats_remote_db_database }}&u={{ stats_remote_db_user }}&p={{ stats_remote_db_password }}"
+    prometheus_external_labels:
+      exec_uuid: "{{ arewefastyet_exec_uuid }}"
 
 
 - hosts: vtctld
