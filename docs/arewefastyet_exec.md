@@ -24,6 +24,11 @@ arewefastyet exec [flags]
       --exec-source string                Name of the source that triggered the execution
   -h, --help                              help for exec
       --infra-path string                 Path to the infra directory
+      --stats-remote-db-database string   Name of the stats remote database.
+      --stats-remote-db-host string       Hostname of the stats remote database.
+      --stats-remote-db-password string   Password to authenticate the stats remote database.
+      --stats-remote-db-port string       Port of the stats remote database.
+      --stats-remote-db-user string       User used to connect to the stats remote database
 ```
 
 ### Options inherited from parent commands
