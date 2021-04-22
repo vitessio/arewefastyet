@@ -18,13 +18,9 @@
 
 package exec
 
-type (
-	status string
-)
-
-var (
-	statusCreated  = status("created")
-	statusStarted  = status("started")
-	statusFailed   = status("failed")
-	statusFinished = status("finished")
+const (
+	statusCreated  = "created"
+	statusStarted  = "started"
+	statusFailed   = "failed"
+	statusFinished = "finished"
 )
