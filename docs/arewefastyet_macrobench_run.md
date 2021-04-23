@@ -19,7 +19,7 @@ arewefastyet macrobench run [flags]
       --macrobench-skip-steps strings           Slice of sysbench steps to skip.
       --macrobench-source string                The source or origin of the macro benchmark trigger.
       --macrobench-sysbench-executable string   Path to the sysbench binary.
-      --macrobench-type MacroBenchmarkType      Type of macro benchmark.
+      --macrobench-type Type                    Type of macro benchmark.
       --macrobench-working-directory string     Directory on which to execute sysbench.
       --macrobench-workload-path string         Path to the workload used by sysbench.
 ```
