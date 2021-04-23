@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 	"net/http"
 )
 
@@ -60,6 +61,7 @@ func (s *Server) webhookHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, newResponseErrorFromString(errorStr))
 		return
 	} else if wbhPayload.Ref != "refs/heads/master" {
+		slog.Warn("not a runnable reference")
 		c.JSON(http.StatusBadRequest, newResponseErrorFromString("not a runnable reference"))
 		return
 	}
@@ -75,6 +77,16 @@ func (s *Server) webhookHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, newResponseError(err))
 		return
 	}
+
+	ref, err := git.GetCommitHashFromClonedRef(wbhPayload.Ref, "https://github.com/vitessio/vitess")
+	if err != nil {
+		slog.Warn(err.Error())
+		c.JSON(http.StatusInternalServerError, newResponseError(err))
+		return
+	}
+
+	e.Source = "webhook"
+	e.GitRef = ref
 
 	// Start a goroutine with the running execution
 	go func() {
