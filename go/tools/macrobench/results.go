@@ -20,8 +20,8 @@ package macrobench
 
 import (
 	"errors"
-	"github.com/dustin/go-humanize"
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 	"math"
@@ -304,11 +304,11 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.test_no, b.commit, b.source, b.DateTime, " +
+	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
-		"FROM benchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
-		"WHERE b.commit = ? AND b.test_no = macrotype.test_no AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
+		"WHERE b.commit = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 

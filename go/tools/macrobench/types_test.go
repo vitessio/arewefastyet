@@ -64,11 +64,11 @@ func TestMacroBenchmarkType_ToUpper(t *testing.T) {
 func TestMacroBenchmarkType_Set(t *testing.T) {
 	tests := []struct {
 		name   string
-		mbtype MacroBenchmarkType
+		mbtype Type
 		s      string
-		want   MacroBenchmarkType
+		want   Type
 	}{
-		{name: "Simple string", mbtype: "", s: "TPCC", want: MacroBenchmarkType("TPCC")},
+		{name: "Simple string", mbtype: "", s: "TPCC", want: Type("TPCC")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
