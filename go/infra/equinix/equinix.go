@@ -162,8 +162,8 @@ func (e *Equinix) Prepare() error {
 	return nil
 }
 
-func (e *Equinix) Run(ansibleConfig *ansible.Config) error {
-	return ansible.Run(ansibleConfig)
+func (e *Equinix) Run(ansibleCfg *ansible.Config) error {
+	return ansible.Run(ansibleCfg)
 }
 
 func (e *Equinix) SetConfig(config *infra.Config) {

@@ -42,6 +42,6 @@
 
 - name: Run macrobenchmarks
   shell: |
-    arewefastyetcli macrobench run --config /tmp/config.yaml
+    arewefastyetcli macrobench run --config /tmp/config.yaml --macrobench-git-ref {{ vitess_git_version }} --macrobench-exec-uuid {{ arewefastyet_exec_uuid }} --macrobench-source {{ arewefastyet_source }}
   register: arewefastyetcli
   changed_when: False

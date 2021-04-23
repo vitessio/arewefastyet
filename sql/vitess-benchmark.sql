@@ -1,6 +1,31 @@
-CREATE TABLE `OLTP` (
+CREATE DATABASE IF NOT EXISTS benchmark;
+
+USE benchmark;
+
+CREATE TABLE IF NOT EXISTS execution (
+    `uuid` VARCHAR(100) NOT NULL,
+    `status` VARCHAR(100) DEFAULT 'created',
+    `started_at` DATETIME NULL,
+    `finished_at` DATETIME NULL,
+    `source` VARCHAR(100) DEFAULT NULL,
+    `git_ref` VARCHAR(100) DEFAULT NULL,
+    PRIMARY KEY (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS macrobenchmark (
+  `macrobenchmark_id` int(11) NOT NULL AUTO_INCREMENT,
+  `exec_uuid` VARCHAR(100) DEFAULT NULL,
+  `commit` varchar(100) DEFAULT NULL,
+  `DateTime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `source` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`macrobenchmark_id`),
+  KEY `exec_uuid` (`exec_uuid`),
+  CONSTRAINT `macrobenchmark_ibfk_1` FOREIGN KEY (`exec_uuid`) REFERENCES execution (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `OLTP` (
   `OLTP_no` int(11) NOT NULL AUTO_INCREMENT,
-  `test_no` int(11) DEFAULT NULL,
+  `macrobenchmark_id` int(11) DEFAULT NULL,
   `tps` decimal(8,2) DEFAULT NULL,
   `latency` decimal(8,2) DEFAULT NULL,
   `errors` decimal(8,2) DEFAULT NULL,
@@ -8,13 +33,13 @@ CREATE TABLE `OLTP` (
   `time` int(11) DEFAULT NULL,
   `threads` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`OLTP_no`),
-  KEY `test_no` (`test_no`),
-  CONSTRAINT `OLTP_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES `benchmark` (`test_no`)
+  KEY `macrobenchmark_id` (`macrobenchmark_id`),
+  CONSTRAINT `OLTP_ibfk_1` FOREIGN KEY (`macrobenchmark_id`) REFERENCES macrobenchmark (`macrobenchmark_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `TPCC` (
+CREATE TABLE IF NOT EXISTS `TPCC` (
   `TPCC_no` int(11) NOT NULL AUTO_INCREMENT,
-  `test_no` int(11) DEFAULT NULL,
+  `macrobenchmark_id` int(11) DEFAULT NULL,
   `tps` decimal(8,2) DEFAULT NULL,
   `latency` decimal(8,2) DEFAULT NULL,
   `errors` decimal(8,2) DEFAULT NULL,
@@ -22,19 +47,12 @@ CREATE TABLE `TPCC` (
   `time` int(11) DEFAULT NULL,
   `threads` decimal(8,2) DEFAULT NULL,
   PRIMARY KEY (`TPCC_no`),
-  KEY `test_no` (`test_no`),
-  CONSTRAINT `TPCC_ibfk_1` FOREIGN KEY (`test_no`) REFERENCES `benchmark` (`test_no`)
+  KEY `macrobenchmark_id` (`macrobenchmark_id`),
+  CONSTRAINT `TPCC_ibfk_1` FOREIGN KEY (`macrobenchmark_id`) REFERENCES macrobenchmark (`macrobenchmark_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `benchmark` (
-  `test_no` int(11) NOT NULL AUTO_INCREMENT,
-  `commit` varchar(100) DEFAULT NULL,
-  `DateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `source` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`test_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `qps` (
+CREATE TABLE IF NOT EXISTS `qps` (
   `qps_no` int(11) NOT NULL AUTO_INCREMENT,
   `TPCC_no` int(11) DEFAULT NULL,
   `total_qps` decimal(8,2) DEFAULT NULL,
@@ -49,15 +67,18 @@ CREATE TABLE `qps` (
   CONSTRAINT `qps_ibfk_2` FOREIGN KEY (`OLTP_no`) REFERENCES `OLTP` (`OLTP_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `microbenchmark` (
+CREATE TABLE IF NOT EXISTS `microbenchmark` (
     `microbenchmark_no` INT AUTO_INCREMENT,
-    `test_no` INT NOT NULL,
+    `exec_uuid` VARCHAR(100) DEFAULT NULL,
     `pkg_name` VARCHAR(255),
     `name` VARCHAR(255),
-    PRIMARY KEY (`microbenchmark_no`)
+    `git_ref` VARCHAR(255),
+    PRIMARY KEY (`microbenchmark_no`),
+    KEY `exec_uuid` (`exec_uuid`),
+    CONSTRAINT `microbenchmark_ibfk_1` FOREIGN KEY (`exec_uuid`) REFERENCES execution (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `microbenchmark_details` (
+CREATE TABLE IF NOT EXISTS `microbenchmark_details` (
     `detail_no` INT AUTO_INCREMENT,
     `microbenchmark_no` INT,
     `name` VARCHAR(255),

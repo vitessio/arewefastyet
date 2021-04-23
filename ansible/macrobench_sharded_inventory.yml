@@ -17,9 +17,8 @@ all:
         device: nvme0n1
         partition: nvme0n1p1
   vars:
-    vitess_git_version: "HEAD"
-    arewefastyet_git_repo: "https://github.com/frouioui/arewefastyet.git"
-    arewefastyet_git_version: "macrobench-cmd"
+    arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
+    arewefastyet_git_version: "HEAD"
     macrobenchmark_vschema: "./vitess-benchmark/sysbench.json"
     macrobenchmarks_local_config: "LOCAL_CONFIG_PATH_0"
     cell: local

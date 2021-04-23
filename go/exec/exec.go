@@ -26,12 +26,25 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
+	"github.com/vitessio/arewefastyet/go/mysql"
 	"io"
 	"os"
 	"path"
 )
 
 const (
+	// keyExecUUID is the name of the key passed to each Ansible playbook
+	// the value of the key points to an Execution UUID.
+	keyExecUUID = "arewefastyet_exec_uuid"
+
+	// keyExecSource is the name of the key that stores the name of the
+	// execution's trigger.
+	keyExecSource = "arewefastyet_source"
+
+	// keyVitessVersion is the name of the key that stores the git reference
+	// or SHA on which benchmarks will be executed.
+	keyVitessVersion = "vitess_git_version"
+
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
 
@@ -43,6 +56,14 @@ type Exec struct {
 	InfraConfig   infra.Config
 	AnsibleConfig ansible.Config
 	Infra         infra.Infra
+	Source        string
+	GitRef        string
+
+	// Configuration used to interact with the SQL database.
+	configDB *mysql.ConfigDB
+
+	// Client to communicate with the SQL database.
+	clientDB *mysql.Client
 
 	// rootDir represents the parent directory of the Exec.
 	// From there, the Exec's unique directory named Exec.dirPath will
@@ -77,12 +98,12 @@ func (e *Exec) SetOutputToDefaultPath() error {
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
 	}
-	outFile, err := os.OpenFile(path.Join(e.dirPath, stdoutFile), os.O_RDWR | os.O_CREATE, 0755)
+	outFile, err := os.OpenFile(path.Join(e.dirPath, stdoutFile), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
 
-	errFile, err := os.OpenFile(path.Join(e.dirPath, stderrFile), os.O_RDWR | os.O_CREATE, 0755)
+	errFile, err := os.OpenFile(path.Join(e.dirPath, stderrFile), os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
@@ -99,7 +120,19 @@ func (e *Exec) Prepare() error {
 	if e.prepared {
 		return nil
 	}
-	err := e.prepareDirectories()
+
+	var err error
+	e.clientDB, err = mysql.New(*e.configDB)
+	if err != nil {
+		return err
+	}
+
+	// insert new exec in SQL
+	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref) VALUES(?, ?, ?, ?)", e.UUID.String(), statusCreated, e.Source, e.GitRef); err != nil {
+		return err
+	}
+
+	err = e.prepareDirectories()
 	if err != nil {
 		return err
 	}
@@ -113,7 +146,22 @@ func (e *Exec) Prepare() error {
 }
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
-func (e *Exec) Execute() error {
+func (e *Exec) Execute() (err error) {
+	defer func() {
+		status := statusFinished
+		if err != nil {
+			status = statusFailed
+		}
+		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", status, e.UUID.String())
+	}()
+
+	if !e.prepared {
+		return errors.New(ErrorNotPrepared)
+	}
+	if _, err := e.clientDB.Insert("UPDATE execution SET started_at = CURRENT_TIME, status = ? WHERE uuid = ?", statusStarted, e.UUID.String()); err != nil {
+		return err
+	}
+
 	IPs, err := provision(e.Infra)
 	if err != nil {
 		return err
@@ -127,6 +175,12 @@ func (e *Exec) Execute() error {
 	err = ansible.AddLocalConfigPathToFiles(viper.ConfigFileUsed(), e.AnsibleConfig)
 	if err != nil {
 		return err
+	}
+
+	e.AnsibleConfig.ExtraVars = map[string]interface{}{
+		keyExecUUID:      e.UUID.String(),
+		keyVitessVersion: e.GitRef,
+		keyExecSource:    e.Source,
 	}
 
 	// Infra will run the given config.
@@ -165,6 +219,9 @@ func NewExec() (*Exec, error) {
 		// exec.SetStdout and exec.SetStderr, or SetOutputToDefaultPath.
 		stdout: os.Stdout,
 		stderr: os.Stderr,
+
+		configDB: &mysql.ConfigDB{},
+		clientDB: nil,
 	}
 
 	// ex.AnsibleConfig.SetOutputs(ex.stdout, ex.stderr)

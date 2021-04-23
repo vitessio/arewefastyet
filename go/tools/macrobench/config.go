@@ -63,6 +63,11 @@ type Config struct {
 	// WorkingDirectory defines from where sysbench commands will be executed.
 	// This parameter
 	WorkingDirectory string
+
+	// execUUID refers to the parent execution for this macro benchmark.
+	// If this field if empty, the corresponding column in SQL will be set
+	// to NULL.
+	execUUID string
 }
 
 const (
@@ -73,6 +78,7 @@ const (
 	flagSource             = "macrobench-source"
 	flagGitRef             = "macrobench-git-ref"
 	flagWorkingDirectory   = "macrobench-working-directory"
+	flagExecUUID           = "macrobench-exec-uuid"
 )
 
 // AddToCommand will add the different CLI flags used by MacroBenchConfig into
@@ -87,6 +93,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&mabcfg.Source, flagSource, "", "The source or origin of the macro benchmark trigger.")
 	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "Git SHA referring to the macro benchmark.")
 	cmd.Flags().StringVar(&mabcfg.WorkingDirectory, flagWorkingDirectory, "", "Directory on which to execute sysbench.")
+	cmd.Flags().StringVar(&mabcfg.execUUID, flagExecUUID, "", "UUID of the parent execution, an empty string will set to NULL.")
 
 	_ = viper.BindPFlag(flagSysbenchPath, cmd.Flags().Lookup(flagSysbenchPath))
 	_ = viper.BindPFlag(flagSysbenchExecutable, cmd.Flags().Lookup(flagSysbenchExecutable))
@@ -95,6 +102,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagSource, cmd.Flags().Lookup(flagSource))
 	_ = viper.BindPFlag(flagGitRef, cmd.Flags().Lookup(flagGitRef))
 	_ = viper.BindPFlag(flagWorkingDirectory, cmd.Flags().Lookup(flagWorkingDirectory))
+	_ = viper.BindPFlag(flagExecUUID, cmd.Flags().Lookup(flagExecUUID))
 }
 
 func (mabcfg *Config) parseIntoMap(prefix string) {
@@ -113,8 +121,8 @@ func (mabcfg Config) insertBenchmarkToSQL(client *mysql.Client) (newMacroBenchma
 	if client == nil {
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
-	query := "INSERT INTO benchmark(commit, source) VALUES(?, ?)"
-	id, err := client.Insert(query, mabcfg.GitRef, mabcfg.Source)
+	query := "INSERT INTO macrobenchmark(exec_uuid, commit, source) VALUES(NULLIF(?, ''), ?, ?)"
+	id, err := client.Insert(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.Source)
 	if err != nil {
 		return 0, err
 	}

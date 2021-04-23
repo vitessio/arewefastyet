@@ -47,6 +47,10 @@ type Config struct {
 
 	stdout io.Writer
 	stderr io.Writer
+
+	// ExtraVars is a key value map that will be passed to Ansible
+	// as extra variable using --extra-vars.
+	ExtraVars map[string]interface{}
 }
 
 func (c *Config) AddToViper(v *viper.Viper) {
@@ -95,6 +99,7 @@ func Run(c *Config) error {
 
 	ansiblePlaybookOptions := &playbook.AnsiblePlaybookOptions{
 		Inventory: inventoryFilesToString(c.InventoryFiles),
+		ExtraVars: c.ExtraVars,
 	}
 
 	ansiblePlaybookPrivilegeEscalationOptions := &options.AnsiblePrivilegeEscalationOptions{

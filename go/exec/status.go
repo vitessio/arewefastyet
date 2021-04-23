@@ -16,15 +16,11 @@
  * /
  */
 
-package mysql
+package exec
 
-type ConfigDB struct {
-	Host     string
-	User     string
-	Password string
-	Database string
-}
-
-func (cfg ConfigDB) IsValid() bool {
-	return !(cfg.Database == "" || cfg.User == "" || cfg.Host == "")
-}
+const (
+	statusCreated  = "created"
+	statusStarted  = "started"
+	statusFailed   = "failed"
+	statusFinished = "finished"
+)

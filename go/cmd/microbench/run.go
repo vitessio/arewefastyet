@@ -49,7 +49,7 @@ func run() *cobra.Command {
 		},
 	}
 
-	mbcfg.DatabaseConfig.AddToCommand(cmd)
+	mbcfg.AddToCommand(cmd)
 
 	return cmd
 }
