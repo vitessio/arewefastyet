@@ -1,4 +1,3 @@
-DROP DATABASE benchmark;
 CREATE DATABASE IF NOT EXISTS benchmark;
 
 USE benchmark;
