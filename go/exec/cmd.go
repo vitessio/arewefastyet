@@ -37,6 +37,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	e.AnsibleConfig.AddToViper(v)
 	e.InfraConfig.AddToViper(v)
 	e.Infra.AddToViper(v)
+	e.configDB.AddToViper(v)
 	return nil
 }
 

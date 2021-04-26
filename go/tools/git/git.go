@@ -18,7 +18,29 @@
 
 package git
 
-import "github.com/go-git/go-git/v5"
+import (
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/storage/memory"
+)
+
+func GetCommitHashFromClonedRef(ref, repo string) (hash string, err error) {
+	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
+		URL:           repo,
+		ReferenceName: plumbing.ReferenceName(ref),
+		SingleBranch:  true,
+		Depth:         1,
+		Tags:          git.NoTags,
+	})
+	if err != nil {
+		return "", err
+	}
+	head, err := r.Head()
+	if err != nil {
+		return "", err
+	}
+	return head.Hash().String(), nil
+}
 
 func GetCommitHash(repoDir string) (hash string, err error) {
 	r, err := git.PlainOpen(repoDir)

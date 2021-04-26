@@ -23,14 +23,29 @@ import (
 	"github.com/spf13/viper"
 )
 
-func (cfg *ConfigDB) AddToCommand(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&cfg.Database, "db-database", "", "Database to use.")
-	cmd.Flags().StringVar(&cfg.Host, "db-host", "", "Hostname of the database")
-	cmd.Flags().StringVar(&cfg.Password, "db-password", "", "Password to authenticate the database.")
-	cmd.Flags().StringVar(&cfg.User, "db-user", "", "User used to connect to the database")
+const (
+	flagDatabaseName     = "db-database"
+	flagDatabaseHost     = "db-host"
+	flagDatabasePassword = "db-password"
+	flagDatabaseUser     = "db-user"
+)
 
-	_ = viper.BindPFlag("db-database", cmd.Flags().Lookup("db-database"))
-	_ = viper.BindPFlag("db-host", cmd.Flags().Lookup("db-host"))
-	_ = viper.BindPFlag("db-password", cmd.Flags().Lookup("db-password"))
-	_ = viper.BindPFlag("db-user", cmd.Flags().Lookup("db-user"))
+func (cfg *ConfigDB) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(flagDatabaseName, &cfg.Database)
+	_ = v.UnmarshalKey(flagDatabaseHost, &cfg.Host)
+	_ = v.UnmarshalKey(flagDatabasePassword, &cfg.Password)
+	_ = v.UnmarshalKey(flagDatabaseUser, &cfg.User)
+}
+
+func (cfg *ConfigDB) AddToCommand(cmd *cobra.Command) {
+	cmd.Flags().StringVar(&cfg.Database, flagDatabaseName, "", "Database to use.")
+	cmd.Flags().StringVar(&cfg.Host, flagDatabaseHost, "", "Hostname of the database")
+	cmd.Flags().StringVar(&cfg.Password, flagDatabasePassword, "", "Password to authenticate the database.")
+
+	cmd.Flags().StringVar(&cfg.User, flagDatabaseUser, "", "User used to connect to the database")
+
+	_ = viper.BindPFlag(flagDatabaseName, cmd.Flags().Lookup(flagDatabaseName))
+	_ = viper.BindPFlag(flagDatabaseHost, cmd.Flags().Lookup(flagDatabaseHost))
+	_ = viper.BindPFlag(flagDatabasePassword, cmd.Flags().Lookup(flagDatabasePassword))
+	_ = viper.BindPFlag(flagDatabaseUser, cmd.Flags().Lookup(flagDatabaseUser))
 }
