@@ -184,11 +184,9 @@ func (e *Exec) Execute() (err error) {
 		return err
 	}
 
-	e.AnsibleConfig.ExtraVars = map[string]interface{}{
-		keyExecUUID:      e.UUID.String(),
-		keyVitessVersion: e.GitRef,
-		keyExecSource:    e.Source,
-	}
+	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
+	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
+	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
