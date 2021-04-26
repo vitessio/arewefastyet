@@ -83,19 +83,19 @@ func (s *Server) compareHandler(c *gin.Context) {
 		return
 	}
 
+	var err error
 	SHAs := []string{reference, compare}
 
 	// Get macro benchmarks from all the different types
 	macros := map[string]map[macrobench.Type]macrobench.DetailsArray{}
 	for _, sha := range SHAs {
-		macros[sha] = map[macrobench.Type]macrobench.DetailsArray{}
-		for _, mtype := range macrobench.Types {
-			macro, err := macrobench.GetResultsForGitRef(mtype, sha, s.dbClient)
-			if err != nil {
-				handleRenderErrors(c, err)
-				return
-			}
-			macros[sha][mtype] = macro.ReduceSimpleMedian()
+		macros[sha], err = macrobench.GetDetailsArraysFromAllTypes(sha, s.dbClient)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		for mtype := range macros[sha] {
+			macros[sha][mtype] = macros[sha][mtype].ReduceSimpleMedian()
 		}
 	}
 	macrosMatrixes := map[macrobench.Type]interface{}{}
@@ -136,15 +136,10 @@ func (s *Server) searchHandler(c *gin.Context) {
 		return
 	}
 
-	// Get macro benchmarks from all the different types
-	macros := map[macrobench.Type]interface{}{}
-	for _, mtype := range macrobench.Types {
-		macro, err := macrobench.GetResultsForGitRef(mtype, search, s.dbClient)
-		if err != nil {
-			handleRenderErrors(c, err)
-			return
-		}
-		macros[mtype] = macro.ReduceSimpleMedian()
+	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
 	}
 
 	micro, err := microbench.GetResultsForGitRef(search, s.dbClient)

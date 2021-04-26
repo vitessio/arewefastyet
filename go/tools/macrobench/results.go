@@ -262,6 +262,19 @@ func (qps QPS) OtherStr() string {
 	return humanize.FormatFloat("#,###.#", qps.Other)
 }
 
+// GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
+func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client) (map[Type]DetailsArray, error) {
+	macros := map[Type]DetailsArray{}
+	for _, mtype := range Types {
+		macro, err := GetResultsForGitRef(mtype, sha, dbClient)
+		if err != nil {
+			return nil, err
+		}
+		macros[mtype] = macro.ReduceSimpleMedian()
+	}
+	return macros, nil
+}
+
 // GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
