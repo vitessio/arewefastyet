@@ -30,12 +30,12 @@ CREATE TABLE IF NOT EXISTS execution (
 
 alter table benchmark rename to macrobenchmark;
 
-alter table macrobenchmark rename column test_no to macrobenchmark_id;
+alter table macrobenchmark change column test_no macrobenchmark_id int(11) NOT NULL AUTO_INCREMENT;
 alter table macrobenchmark add column exec_uuid VARCHAR(100) DEFAULT NULL;
 alter table macrobenchmark add constraint  macrobenchmark_ibfk_1 FOREIGN KEY (exec_uuid) REFERENCES execution (uuid);
 
-alter table OLTP rename column test_no to macrobenchmark_id;
-alter table TPCC rename column test_no to macrobenchmark_id;
+alter table OLTP change column test_no macrobenchmark_id int(11) DEFAULT NULL;
+alter table TPCC change column test_no macrobenchmark_id int(11) DEFAULT NULL;
 
 alter table microbenchmark add column exec_uuid VARCHAR(100) DEFAULT NULL;
 alter table microbenchmark add constraint  microbenchmark_ibfk_1 FOREIGN KEY (exec_uuid) REFERENCES execution (uuid);
