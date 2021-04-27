@@ -11,7 +11,16 @@
 
 ---
 - hosts: all
+  vars:
+    htpasswd_credentials:
+      - path: /etc/nginx/.htpasswd_prom
+        name: prometheus
+        password: "{{ prometheus_password }}"
+        owner: root
+        group: www-data
+        mode: 'u+rw,g+r'
   roles:
+    - role: geerlingguy.htpasswd
     - role: common
 
 - hosts: storage
