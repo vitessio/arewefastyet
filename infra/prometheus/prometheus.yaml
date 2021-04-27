@@ -16,19 +16,15 @@
   roles:
     - role: cloudalchemy.prometheus
   vars:
-    node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
     prometheus_version: 2.26.0
     prometheus_config_flags_extra:
       enable-feature: remote-write-receiver
-    prometheus_targets:
-      nodes:
-        - targets: '{{ node_targets }}'
-          labels:
-            component: node
-            app: master_server
-            cluster: admin
-    prometheus_scrape_configs:
-      - job_name: "node"
-        file_sd_configs:
-          - files:
-              - "{{ prometheus_config_dir }}/file_sd/nodes.yml"
+    prometheus_remote_write:
+      - url: "http://{{ influxdb_host }}:{{ influxdb_port }}/api/v1/prom/write?db={{ influxdb_db }}&u={{ influxdb_user }}&p={{ influxdb_password }}"
+    prometheus_remote_read:
+      - url: "http://{{ influxdb_host }}:{{ influxdb_port }}/api/v1/prom/read?db={{ influxdb_db }}&u={{ influxdb_user }}&p={{ influxdb_password }}"
+    prometheus_global:
+      evaluation_interval: 15s
+      scrape_interval: 15s
+      scrape_timeout: 10s
+    prometheus_scrape_configs: []

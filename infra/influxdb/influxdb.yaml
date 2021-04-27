@@ -24,7 +24,7 @@
 
     - name: Install InfluxDB packages
       apt:
-        name: influxdb2
+        name: influxdb
         state: present
 
     - name: Modify InfluxDB hostname
@@ -40,8 +40,17 @@
         state: restarted
         enabled: yes
 
-    - name: Setup Influx
-      command: /usr/bin/influx setup -b prometheus -u admin -p '{{ admin_password }}' -o vitess -r 0 -f
+    - name: Create Admin User
+      command: /usr/bin/influx -execute "CREATE USER admin WITH PASSWORD '{{ admin_password }}' WITH ALL PRIVILEGES;"
+
+    - name: Create Prometheus User
+      command: /usr/bin/influx -execute "CREATE USER prometheus WITH PASSWORD '{{ prometheus_password }}';"
+
+    - name: Create Prometheus Database
+      command: /usr/bin/influx -execute "CREATE DATABASE prometheus;"
+
+    - name: Grant Prometheus User
+      command: /usr/bin/influx -execute "GRANT ALL ON prometheus TO prometheus;"
 
     - name: Enable Auth
       replace:
