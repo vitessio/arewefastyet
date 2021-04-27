@@ -10,9 +10,23 @@
 # limitations under the License.
 
 ---
-- hosts: all
-  roles:
-    - role: cloudalchemy.grafana
+all:
+  hosts:
+    147.75.101.103:
+  children:
+    storage:
+      hosts:
+        147.75.101.103:
+    metrics:
+      hosts:
+        147.75.101.103:
+      vars:
+        prometheus_version: 2.26.0
+        prometheus_config_flags_extra:
+          enable-feature: remote-write-receiver
+    frontend:
+      hosts:
+        147.75.101.103:
       vars:
         grafana_security:
           admin_user: admin
