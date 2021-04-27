@@ -119,7 +119,10 @@
           - files:
               - "{{ prometheus_config_dir }}/file_sd/gateways.yml"
     prometheus_remote_write:
-      - url: "http://{{ stats_remote_db_host }}:9090/api/v1/write"
+      - url: "http://{{ stats_remote_db_host }}/prom/api/v1/write"
+        basic_auth:
+          username: "{{ stats_remote_db_user }}"
+          password: "{{ stats_remote_db_password }}"
       - url: "http://{{ stats_remote_db_host }}:{{ stats_remote_db_port }}/api/v1/prom/write?db={{ stats_remote_db_database }}&u={{ stats_remote_db_user }}&p={{ stats_remote_db_password }}"
     prometheus_external_labels:
       exec_uuid: "{{ arewefastyet_exec_uuid }}"
