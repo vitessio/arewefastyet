@@ -21,6 +21,7 @@ all:
       hosts:
         147.75.101.103:
       vars:
+        prometheus_web_external_url: "http://{{ ansible_host }}/prom/"
         prometheus_version: 2.26.0
         prometheus_config_flags_extra:
           enable-feature: remote-write-receiver
@@ -28,6 +29,10 @@ all:
       hosts:
         147.75.101.103:
       vars:
+        grafana_server:
+          serve_from_sub_path: True
+        grafana_domain: 147.75.101.103
+        grafana_url: "http://{{ ansible_host }}/grafana/"
         grafana_security:
           admin_user: admin
           admin_password: "{{ grafana_password }}"

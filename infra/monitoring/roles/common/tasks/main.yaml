@@ -10,19 +10,33 @@
 # limitations under the License.
 
 ---
-- hosts: all
-  roles:
-    - role: common
+- name: ensure nginx is at the latest version
+  apt:
+    name: nginx
+    state: latest
+  become: yes
 
-- hosts: storage
-  roles:
-    - role: influxdb
-      when: influxdb is defined
+- name: start nginx
+  service:
+    name: nginx
+    state: started
+  become: yes
 
-- hosts: metrics
-  roles:
-    - role: cloudalchemy.prometheus
+- name: copy the nginx config file and restart nginx
+  copy:
+    src: config.cfg
+    dest: /etc/nginx/sites-available/static_site.cfg
+  become: yes
 
-- hosts: frontend
-  roles:
-    - role: cloudalchemy.grafana
+- name: create symlink
+  file:
+    src: /etc/nginx/sites-available/static_site.cfg
+    dest: /etc/nginx/sites-enabled/default
+    state: link
+  become: yes
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+  become: yes
