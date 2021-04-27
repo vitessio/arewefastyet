@@ -36,3 +36,22 @@ all:
         grafana_security:
           admin_user: admin
           admin_password: "{{ grafana_password }}"
+        grafana_datasources:
+          - name: "Prometheus"
+            type: "prometheus"
+            access: "proxy"
+            url: "http://{{ ansible_host }}/prom"
+            isDefault: true
+            basicAuth: true
+            basicAuthUser: prometheus
+            basicAuthPassword: "{{ prometheus_password }}"
+        grafana_dashboards:
+          - dashboard_id: 1860
+            revision_id: 22
+            datasource: Prometheus
+          - dashboard_id: 10826
+            revision_id: 1
+            datasource: Prometheus
+          - dashboard_id: 7362
+            revision_id: 5
+            datasource: Prometheus
