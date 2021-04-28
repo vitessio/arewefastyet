@@ -111,8 +111,11 @@ func (s *Server) Run() error {
 	// Home page
 	s.router.GET("/", s.homeHandler)
 
-	// Search and compare page
-	s.router.GET("/search_compare", s.searchCompareHandler)
+	// Compare page
+	s.router.GET("/compare", s.compareHandler)
+
+	// Search page
+	s.router.GET("/search", s.searchHandler)
 
 	// Request benchmark page
 	s.router.GET("/request_benchmark", s.requestBenchmarkHandler)

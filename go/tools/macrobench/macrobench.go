@@ -119,7 +119,7 @@ func Run(mabcfg Config) error {
 	}
 
 	// Parse results
-	var results []MacroBenchmarkResult
+	var results []Result
 	err = json.Unmarshal(resStr, &results)
 	if err != nil {
 		return fmt.Errorf("unmarshal results: %+v\n", err)

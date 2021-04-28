@@ -20,6 +20,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 	"net/http"
@@ -32,8 +33,8 @@ func handleRenderErrors(c *gin.Context, err error) {
 	}
 	slog.Error(err.Error())
 	c.HTML(http.StatusOK, "error.tmpl", gin.H{
-		"title":    "Vitess benchmark - Error",
-		"url":      c.FullPath(),
+		"title": "Vitess benchmark - Error",
+		"url":   c.FullPath(),
 	})
 }
 
@@ -61,9 +62,99 @@ func (s *Server) homeHandler(c *gin.Context) {
 	})
 }
 
-func (s *Server) searchCompareHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "search_compare.tmpl", gin.H{
-		"title": "Vitess benchmark",
+func (s *Server) compareHandler(c *gin.Context) {
+	reference := c.Query("r")
+	compare := c.Query("c")
+
+	compareSHA := map[string]interface{}{
+		"SHA":   compare,
+		"short": git.ShortenSHA(compare),
+	}
+	referenceSHA := map[string]interface{}{
+		"SHA":   reference,
+		"short": git.ShortenSHA(reference),
+	}
+	if reference == "" || compare == "" {
+		c.HTML(http.StatusOK, "compare.tmpl", gin.H{
+			"title":     "Vitess benchmark",
+			"reference": referenceSHA,
+			"compare":   compareSHA,
+		})
+		return
+	}
+
+	var err error
+	SHAs := []string{reference, compare}
+
+	// Get macro benchmarks from all the different types
+	macros := map[string]map[macrobench.Type]macrobench.DetailsArray{}
+	for _, sha := range SHAs {
+		macros[sha], err = macrobench.GetDetailsArraysFromAllTypes(sha, s.dbClient)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		for mtype := range macros[sha] {
+			macros[sha][mtype] = macros[sha][mtype].ReduceSimpleMedian()
+		}
+	}
+	macrosMatrixes := map[macrobench.Type]interface{}{}
+	for _, mtype := range macrobench.Types {
+		macrosMatrixes[mtype] = macrobench.CompareDetailsArrays(macros[reference][mtype], macros[compare][mtype])
+	}
+
+	// compare micro benchmarks
+	micros := map[string]microbench.MicroBenchmarkDetailsArray{}
+	for _, sha := range SHAs {
+		micro, err := microbench.GetResultsForGitRef(sha, s.dbClient)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		micros[sha] = micro.ReduceSimpleMedian()
+	}
+	microsMatrix := microbench.MergeMicroBenchmarkDetails(micros[reference], micros[compare])
+	sort.SliceStable(microsMatrix, func(i, j int) bool {
+		return !(microsMatrix[i].Current.NSPerOp < microsMatrix[j].Current.NSPerOp)
+	})
+
+	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
+		"title":          "Vitess benchmark",
+		"reference":      referenceSHA,
+		"compare":        compareSHA,
+		"microbenchmark": microsMatrix,
+		"macrobenchmark": macrosMatrixes,
+	})
+}
+
+func (s *Server) searchHandler(c *gin.Context) {
+	search := c.Query("s")
+	if search == "" {
+		c.HTML(http.StatusOK, "search.tmpl", gin.H{
+			"title": "Vitess benchmark",
+		})
+		return
+	}
+
+	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+
+	micro, err := microbench.GetResultsForGitRef(search, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	micro = micro.ReduceSimpleMedian()
+
+	c.HTML(http.StatusOK, "search.tmpl", gin.H{
+		"title":          "Vitess benchmark",
+		"search":         search,
+		"shortSHA":       git.ShortenSHA(search),
+		"microbenchmark": micro,
+		"macrobenchmark": macros,
 	})
 }
 
