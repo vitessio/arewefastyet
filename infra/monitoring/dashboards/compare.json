@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 14,
-  "iteration": 1619603756669,
+  "iteration": 1619624619563,
   "links": [],
   "panels": [
     {
@@ -40,7 +40,9 @@
       "dashes": false,
       "datasource": null,
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "unit": "percent"
+        },
         "overrides": []
       },
       "fill": 1,
@@ -74,7 +76,11 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [],
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:106"
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
@@ -83,7 +89,7 @@
           "exemplar": true,
           "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_1\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))",
           "interval": "",
-          "legendFormat": "CPU busy Exec UUID 2",
+          "legendFormat": "CPU busy Exec UUID 1",
           "refId": "A"
         },
         {
@@ -115,7 +121,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "percent",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -367,7 +373,7 @@
               },
               {
                 "color": "red",
-                "value": 100
+                "value": 0
               }
             ]
           },
@@ -440,7 +446,7 @@
       "gridPos": {
         "h": 4,
         "w": 5,
-        "x": 9,
+        "x": 8,
         "y": 8
       },
       "id": 16,
@@ -494,6 +500,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
               }
             ]
           },
@@ -504,7 +514,7 @@
       "gridPos": {
         "h": 4,
         "w": 3,
-        "x": 14,
+        "x": 13,
         "y": 8
       },
       "id": 22,
@@ -515,7 +525,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "min"
+            "lastNotNull"
           ],
           "fields": "",
           "values": false
@@ -560,7 +570,7 @@
       "gridPos": {
         "h": 4,
         "w": 3,
-        "x": 17,
+        "x": 16,
         "y": 8
       },
       "id": 25,
@@ -591,6 +601,156 @@
       ],
       "title": "CPU duration VTGate difference",
       "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 2,
+        "x": 19,
+        "y": 8
+      },
+      "id": 28,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "values": []
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {}
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "VTGate",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "VTTablet",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Time spent Exec UUID 1",
+      "type": "piechart"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 2,
+        "x": 21,
+        "y": 8
+      },
+      "id": 29,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "values": []
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {}
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vtgate\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "VTGate",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "VTTablet",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Time spent Exec UUID 2",
+      "type": "piechart"
     },
     {
       "datasource": null,
@@ -683,7 +843,7 @@
       "gridPos": {
         "h": 4,
         "w": 5,
-        "x": 9,
+        "x": 8,
         "y": 12
       },
       "id": 17,
@@ -737,6 +897,14 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           },
@@ -747,7 +915,7 @@
       "gridPos": {
         "h": 4,
         "w": 3,
-        "x": 14,
+        "x": 13,
         "y": 12
       },
       "id": 23,
@@ -758,7 +926,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "min"
+            "lastNotNull"
           ],
           "fields": "",
           "values": false
@@ -771,6 +939,7 @@
         {
           "exemplar": true,
           "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})",
+          "hide": false,
           "interval": "",
           "legendFormat": "Exec UUID 1",
           "refId": "A"
@@ -803,7 +972,7 @@
       "gridPos": {
         "h": 4,
         "w": 3,
-        "x": 17,
+        "x": 16,
         "y": 12
       },
       "id": 26,
@@ -1071,7 +1240,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
           "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
         },
@@ -1128,7 +1297,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
           "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
         },
@@ -1184,7 +1353,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "0m",
           "value": "0m"
         },
@@ -1209,7 +1378,7 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "1m",
           "value": "1m"
         },
@@ -1279,12 +1448,12 @@
     ]
   },
   "time": {
-    "from": "2021-04-27T16:43:06.054Z",
-    "to": "2021-04-27T18:03:15.429Z"
+    "from": "2021-04-27T16:45:01.583Z",
+    "to": "2021-04-27T17:40:00.900Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Compare Benchmark",
   "uid": "rDsgp2rMz",
-  "version": 14
+  "version": 19
 }
