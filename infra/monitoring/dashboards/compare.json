@@ -1,0 +1,1290 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 14,
+  "iteration": 1619603756669,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 19,
+      "panels": [],
+      "title": "CPU",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 0,
+        "y": 1
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "maxDataPoints": 2000,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.4",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_1\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))",
+          "interval": "",
+          "legendFormat": "CPU busy Exec UUID 2",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_2\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "CPU busy Exec UUID 2",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU Busy",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "rgb(255, 255, 255)",
+            "mode": "continuous-GrYlRd"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 16,
+        "y": 1
+      },
+      "hideTimeOverride": false,
+      "id": 10,
+      "interval": "15s",
+      "maxDataPoints": -1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_1\"}[1m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_2\"}[1m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Exec UUID 2",
+          "refId": "B"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Average CPU busy",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": -100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 3,
+        "x": 21,
+        "y": 1
+      },
+      "id": 11,
+      "interval": "15s",
+      "maxDataPoints": -1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_2\"}[1m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))-(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_1\"}[1m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Average CPU busy difference",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 0,
+        "y": 8
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"})",
+          "interval": "",
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Exec UUID 2",
+          "refId": "B"
+        }
+      ],
+      "title": "CPU busy duration",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 5,
+        "y": 8
+      },
+      "id": 14,
+      "interval": "15s",
+      "maxDataPoints": -1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "(sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"})-sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}))/sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"})*100",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "CPU busy duration difference %",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 9,
+        "y": 8
+      },
+      "id": 16,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"})",
+          "interval": "",
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vtgate\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Exec UUID 2",
+          "refId": "B"
+        }
+      ],
+      "title": "CPU duration VTGate",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 14,
+        "y": 8
+      },
+      "id": 22,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "min"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vtgate\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"})",
+          "interval": "",
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU duration VTGate difference",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 17,
+        "y": 8
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "min"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "(sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vtgate\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"}))/sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"})*100",
+          "interval": "",
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU duration VTGate difference",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 5,
+        "y": 12
+      },
+      "id": 24,
+      "interval": "15s",
+      "maxDataPoints": -1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"})-sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"})",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "CPU busy duration difference",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 9,
+        "y": 12
+      },
+      "id": 17,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})",
+          "interval": "",
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Exec UUID 2",
+          "refId": "B"
+        }
+      ],
+      "title": "CPU duration VTTablet",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 14,
+        "y": 12
+      },
+      "id": 23,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "min"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})",
+          "interval": "",
+          "legendFormat": "Exec UUID 1",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU duration VTTablet difference",
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 17,
+        "y": 12
+      },
+      "id": 26,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "min"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.4",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "(sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"}))/sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})*100",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU duration VTTablet difference",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 21,
+      "panels": [],
+      "title": "QPS",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "decimals": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.4",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg(rate(vtgate_api_count{exec_uuid=\"f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c\"}[1m]))",
+          "interval": "",
+          "legendFormat": "QPS Exec UUID 1",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg(rate(vtgate_api_count{exec_uuid=\"c9efa934-a1da-4811-9f9f-4d7ee893f10d\"}[1m]))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "QPS Exec UUID 2",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "VTGate average QPS",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:64",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:65",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.4",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "sum(vtgate_queries_processed{exec_uuid=\"$exec_uuid_1\"})",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum(vtgate_queries_processed{exec_uuid=\"$exec_uuid_2\"})",
+          "format": "time_series",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "VTGate Queries Processed",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transformations": [],
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
+          "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
+        },
+        "datasource": null,
+        "definition": "label_values(exec_uuid)",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "exec_uuid_1",
+        "multi": false,
+        "name": "exec_uuid_1",
+        "options": [
+          {
+            "selected": false,
+            "text": "2a96d3e3-48a6-43e1-9984-a054e9a72424",
+            "value": "2a96d3e3-48a6-43e1-9984-a054e9a72424"
+          },
+          {
+            "selected": false,
+            "text": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b",
+            "value": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b"
+          },
+          {
+            "selected": false,
+            "text": "b38f9299-1a2f-496a-8898-a2d9c094b198",
+            "value": "b38f9299-1a2f-496a-8898-a2d9c094b198"
+          },
+          {
+            "selected": true,
+            "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
+            "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
+          },
+          {
+            "selected": false,
+            "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
+            "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
+          }
+        ],
+        "query": {
+          "query": "label_values(exec_uuid)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
+          "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
+        },
+        "datasource": null,
+        "definition": "label_values(exec_uuid)",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "exec_uuid_2",
+        "multi": false,
+        "name": "exec_uuid_2",
+        "options": [
+          {
+            "selected": false,
+            "text": "2a96d3e3-48a6-43e1-9984-a054e9a72424",
+            "value": "2a96d3e3-48a6-43e1-9984-a054e9a72424"
+          },
+          {
+            "selected": false,
+            "text": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b",
+            "value": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b"
+          },
+          {
+            "selected": false,
+            "text": "b38f9299-1a2f-496a-8898-a2d9c094b198",
+            "value": "b38f9299-1a2f-496a-8898-a2d9c094b198"
+          },
+          {
+            "selected": false,
+            "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
+            "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
+          },
+          {
+            "selected": true,
+            "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
+            "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
+          }
+        ],
+        "query": {
+          "query": "label_values(exec_uuid)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "0m",
+          "value": "0m"
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "time_shift",
+        "options": [
+          {
+            "selected": true,
+            "text": "0m",
+            "value": "0m"
+          }
+        ],
+        "query": "0m",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "selected": false,
+          "text": "1m",
+          "value": "1m"
+        },
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "label": null,
+        "name": "interval",
+        "options": [
+          {
+            "selected": true,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          },
+          {
+            "selected": false,
+            "text": "30m",
+            "value": "30m"
+          },
+          {
+            "selected": false,
+            "text": "1h",
+            "value": "1h"
+          },
+          {
+            "selected": false,
+            "text": "6h",
+            "value": "6h"
+          },
+          {
+            "selected": false,
+            "text": "12h",
+            "value": "12h"
+          },
+          {
+            "selected": false,
+            "text": "1d",
+            "value": "1d"
+          },
+          {
+            "selected": false,
+            "text": "7d",
+            "value": "7d"
+          },
+          {
+            "selected": false,
+            "text": "14d",
+            "value": "14d"
+          },
+          {
+            "selected": false,
+            "text": "30d",
+            "value": "30d"
+          }
+        ],
+        "query": "1m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+        "queryValue": "",
+        "refresh": 2,
+        "skipUrlSync": false,
+        "type": "interval"
+      }
+    ]
+  },
+  "time": {
+    "from": "2021-04-27T16:43:06.054Z",
+    "to": "2021-04-27T18:03:15.429Z"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Compare Benchmark",
+  "uid": "rDsgp2rMz",
+  "version": 14
+}
