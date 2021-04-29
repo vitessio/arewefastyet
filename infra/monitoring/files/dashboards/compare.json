@@ -15,8 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 14,
-  "iteration": 1619624619563,
+  "iteration": 1619685236166,
   "links": [],
   "panels": [
     {
@@ -72,7 +71,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -194,7 +193,7 @@
         "text": {},
         "textMode": "value_and_name"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
@@ -274,7 +273,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
@@ -334,7 +333,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
@@ -372,8 +371,12 @@
                 "value": null
               },
               {
-                "color": "red",
+                "color": "blue",
                 "value": 0
+              },
+              {
+                "color": "red",
+                "value": 0.01
               }
             ]
           },
@@ -388,8 +391,8 @@
         "y": 8
       },
       "id": 14,
-      "interval": "15s",
-      "maxDataPoints": -1,
+      "interval": null,
+      "maxDataPoints": null,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -405,11 +408,11 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
-          "expr": "(sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"})-sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}))/sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"})*100",
+          "expr": "(sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"}[1d]))-sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1d])))/sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1d]))*100",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -465,7 +468,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
@@ -502,8 +505,12 @@
                 "value": null
               },
               {
-                "color": "red",
+                "color": "blue",
                 "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           },
@@ -518,6 +525,8 @@
         "y": 8
       },
       "id": 22,
+      "interval": null,
+      "maxDataPoints": null,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -533,14 +542,15 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vtgate\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"})",
+          "expr": "sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h]))\n",
+          "hide": false,
           "interval": "",
-          "legendFormat": "Exec UUID 1",
-          "refId": "A"
+          "legendFormat": "Time Difference Between Exec UUID 1 and Exec UUID 2",
+          "refId": "B"
         }
       ],
       "title": "CPU duration VTGate difference",
@@ -560,6 +570,14 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "blue",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 0.01
               }
             ]
           },
@@ -581,7 +599,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "min"
+            "lastNotNull"
           ],
           "fields": "",
           "values": false
@@ -589,11 +607,11 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
-          "expr": "(sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vtgate\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"}))/sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"})*100",
+          "expr": "(sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h])))/sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))*100",
           "interval": "",
           "legendFormat": "Exec UUID 1",
           "refId": "A"
@@ -769,8 +787,12 @@
                 "value": null
               },
               {
-                "color": "red",
+                "color": "blue",
                 "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           },
@@ -785,8 +807,8 @@
         "y": 12
       },
       "id": 24,
-      "interval": "15s",
-      "maxDataPoints": -1,
+      "interval": null,
+      "maxDataPoints": null,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -802,11 +824,11 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"})-sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"})",
+          "expr": "sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"}[1d]))-sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1d]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -862,7 +884,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
@@ -899,7 +921,7 @@
                 "value": null
               },
               {
-                "color": "#EAB839",
+                "color": "blue",
                 "value": 0
               },
               {
@@ -934,11 +956,11 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})",
+          "expr": "sum(increase(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"}[1d]))-sum(increase(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"}[1d]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Exec UUID 1",
@@ -962,6 +984,14 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "blue",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 0.01
               }
             ]
           },
@@ -983,7 +1013,7 @@
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
-            "min"
+            "lastNotNull"
           ],
           "fields": "",
           "values": false
@@ -991,7 +1021,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "targets": [
         {
           "exemplar": true,
@@ -1055,7 +1085,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1066,14 +1096,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "avg(rate(vtgate_api_count{exec_uuid=\"f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c\"}[1m]))",
+          "expr": "avg(rate(vtgate_api_count{exec_uuid=\"$exec_uuid_1\"}[1m]))",
           "interval": "",
           "legendFormat": "QPS Exec UUID 1",
           "refId": "A"
         },
         {
           "exemplar": true,
-          "expr": "avg(rate(vtgate_api_count{exec_uuid=\"c9efa934-a1da-4811-9f9f-4d7ee893f10d\"}[1m]))",
+          "expr": "avg(rate(vtgate_api_count{exec_uuid=\"$exec_uuid_2\"}[1m]))",
           "hide": false,
           "interval": "",
           "legendFormat": "QPS Exec UUID 2",
@@ -1160,7 +1190,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "7.5.5",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1241,8 +1271,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
-          "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
+          "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
+          "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
         },
         "datasource": null,
         "definition": "label_values(exec_uuid)",
@@ -1253,38 +1283,12 @@
         "label": "exec_uuid_1",
         "multi": false,
         "name": "exec_uuid_1",
-        "options": [
-          {
-            "selected": false,
-            "text": "2a96d3e3-48a6-43e1-9984-a054e9a72424",
-            "value": "2a96d3e3-48a6-43e1-9984-a054e9a72424"
-          },
-          {
-            "selected": false,
-            "text": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b",
-            "value": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b"
-          },
-          {
-            "selected": false,
-            "text": "b38f9299-1a2f-496a-8898-a2d9c094b198",
-            "value": "b38f9299-1a2f-496a-8898-a2d9c094b198"
-          },
-          {
-            "selected": true,
-            "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
-            "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
-          },
-          {
-            "selected": false,
-            "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
-            "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
-          }
-        ],
+        "options": [],
         "query": {
           "query": "label_values(exec_uuid)",
           "refId": "StandardVariableQuery"
         },
-        "refresh": 0,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -1298,8 +1302,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
-          "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
+          "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
+          "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
         },
         "datasource": null,
         "definition": "label_values(exec_uuid)",
@@ -1310,38 +1314,12 @@
         "label": "exec_uuid_2",
         "multi": false,
         "name": "exec_uuid_2",
-        "options": [
-          {
-            "selected": false,
-            "text": "2a96d3e3-48a6-43e1-9984-a054e9a72424",
-            "value": "2a96d3e3-48a6-43e1-9984-a054e9a72424"
-          },
-          {
-            "selected": false,
-            "text": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b",
-            "value": "6c5e4e49-166d-4e42-a163-0c5ecc72bb0b"
-          },
-          {
-            "selected": false,
-            "text": "b38f9299-1a2f-496a-8898-a2d9c094b198",
-            "value": "b38f9299-1a2f-496a-8898-a2d9c094b198"
-          },
-          {
-            "selected": false,
-            "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
-            "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
-          },
-          {
-            "selected": true,
-            "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
-            "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
-          }
-        ],
+        "options": [],
         "query": {
           "query": "label_values(exec_uuid)",
           "refId": "StandardVariableQuery"
         },
-        "refresh": 0,
+        "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
@@ -1448,12 +1426,12 @@
     ]
   },
   "time": {
-    "from": "2021-04-27T16:45:01.583Z",
-    "to": "2021-04-27T17:40:00.900Z"
+    "from": "2021-04-27T16:50:12.091Z",
+    "to": "2021-04-27T17:32:34.738Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Compare Benchmark",
   "uid": "rDsgp2rMz",
-  "version": 19
+  "version": 25
 }
