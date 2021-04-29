@@ -15,7 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1619685236166,
+  "id": 14,
+  "iteration": 1619687895870,
   "links": [],
   "panels": [
     {
@@ -240,8 +241,12 @@
                 "value": null
               },
               {
-                "color": "red",
+                "color": "blue",
                 "value": 0
+              },
+              {
+                "color": "red",
+                "value": 0.01
               }
             ]
           },
@@ -611,7 +616,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "(sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h])))/sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))*100",
+          "expr": "(sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h])))/sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h]))*100",
           "interval": "",
           "legendFormat": "Exec UUID 1",
           "refId": "A"
@@ -1270,9 +1275,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
-          "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
-          "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
+          "selected": true,
+          "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
+          "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
         },
         "datasource": null,
         "definition": "label_values(exec_uuid)",
@@ -1301,9 +1306,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": false,
-          "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
-          "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
+          "selected": true,
+          "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
+          "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
         },
         "datasource": null,
         "definition": "label_values(exec_uuid)",
@@ -1328,110 +1333,16 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
-      },
-      {
-        "current": {
-          "selected": true,
-          "text": "0m",
-          "value": "0m"
-        },
-        "description": null,
-        "error": null,
-        "hide": 0,
-        "label": null,
-        "name": "time_shift",
-        "options": [
-          {
-            "selected": true,
-            "text": "0m",
-            "value": "0m"
-          }
-        ],
-        "query": "0m",
-        "skipUrlSync": false,
-        "type": "textbox"
-      },
-      {
-        "auto": false,
-        "auto_count": 30,
-        "auto_min": "10s",
-        "current": {
-          "selected": true,
-          "text": "1m",
-          "value": "1m"
-        },
-        "description": null,
-        "error": null,
-        "hide": 0,
-        "label": null,
-        "name": "interval",
-        "options": [
-          {
-            "selected": true,
-            "text": "1m",
-            "value": "1m"
-          },
-          {
-            "selected": false,
-            "text": "10m",
-            "value": "10m"
-          },
-          {
-            "selected": false,
-            "text": "30m",
-            "value": "30m"
-          },
-          {
-            "selected": false,
-            "text": "1h",
-            "value": "1h"
-          },
-          {
-            "selected": false,
-            "text": "6h",
-            "value": "6h"
-          },
-          {
-            "selected": false,
-            "text": "12h",
-            "value": "12h"
-          },
-          {
-            "selected": false,
-            "text": "1d",
-            "value": "1d"
-          },
-          {
-            "selected": false,
-            "text": "7d",
-            "value": "7d"
-          },
-          {
-            "selected": false,
-            "text": "14d",
-            "value": "14d"
-          },
-          {
-            "selected": false,
-            "text": "30d",
-            "value": "30d"
-          }
-        ],
-        "query": "1m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
-        "queryValue": "",
-        "refresh": 2,
-        "skipUrlSync": false,
-        "type": "interval"
       }
     ]
   },
   "time": {
-    "from": "2021-04-27T16:50:12.091Z",
-    "to": "2021-04-27T17:32:34.738Z"
+    "from": "2021-04-27T16:49:01.046Z",
+    "to": "2021-04-27T17:33:25.265Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Compare Benchmark",
   "uid": "rDsgp2rMz",
-  "version": 25
+  "version": 29
 }
