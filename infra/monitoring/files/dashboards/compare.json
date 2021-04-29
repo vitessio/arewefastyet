@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 14,
-  "iteration": 1619687895870,
+  "iteration": 1619717783441,
   "links": [],
   "panels": [
     {
@@ -49,7 +49,7 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 16,
+        "w": 19,
         "x": 0,
         "y": 1
       },
@@ -89,7 +89,7 @@
           "exemplar": true,
           "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_1\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))",
           "interval": "",
-          "legendFormat": "CPU busy Exec UUID 1",
+          "legendFormat": "Exec 1 - $exec_uuid_1",
           "refId": "A"
         },
         {
@@ -97,7 +97,7 @@
           "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_2\"}[5m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))",
           "hide": false,
           "interval": "",
-          "legendFormat": "CPU busy Exec UUID 2",
+          "legendFormat": "Exec 2 - $exec_uuid_2",
           "refId": "B"
         }
       ],
@@ -105,7 +105,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "CPU Busy",
+      "title": "CPU usage",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -172,7 +172,7 @@
       "gridPos": {
         "h": 7,
         "w": 5,
-        "x": 16,
+        "x": 19,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -219,80 +219,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Average CPU busy",
-      "type": "stat"
-    },
-    {
-      "datasource": null,
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": -100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "blue",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 0.01
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 3,
-        "x": 21,
-        "y": 1
-      },
-      "id": 11,
-      "interval": "15s",
-      "maxDataPoints": -1,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.5.5",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_2\"}[1m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\"}) by (cpu))-(((count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))) - avg(sum by (mode)(irate(node_cpu_seconds_total{mode='idle',exec_uuid=\"$exec_uuid_1\"}[1m])))) * 100) / count(count(node_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\"}) by (cpu))",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "Exec UUID 1",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Average CPU busy difference",
+      "title": "Average CPU usage",
       "type": "stat"
     },
     {
@@ -344,7 +271,7 @@
           "exemplar": true,
           "expr": "sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"})",
           "interval": "",
-          "legendFormat": "Exec UUID 1",
+          "legendFormat": "Exec 1",
           "refId": "A"
         },
         {
@@ -352,11 +279,11 @@
           "expr": "sum(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Exec UUID 2",
+          "legendFormat": "Exec 2",
           "refId": "B"
         }
       ],
-      "title": "CPU busy duration",
+      "title": "Busy CPU time",
       "type": "stat"
     },
     {
@@ -417,7 +344,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "(sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"}[1d]))-sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1d])))/sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1d]))*100",
+          "expr": "(sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"}[1y]))-sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1y])))/sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1y]))*100",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -427,7 +354,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "CPU busy duration difference %",
+      "title": "CPU busy time difference %",
       "type": "stat"
     },
     {
@@ -479,7 +406,7 @@
           "exemplar": true,
           "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vtgate\"})",
           "interval": "",
-          "legendFormat": "Exec UUID 1",
+          "legendFormat": "Exec 1",
           "refId": "A"
         },
         {
@@ -487,11 +414,11 @@
           "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vtgate\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Exec UUID 2",
+          "legendFormat": "Exec 2",
           "refId": "B"
         }
       ],
-      "title": "CPU duration VTGate",
+      "title": "CPU time VTGate",
       "type": "stat"
     },
     {
@@ -551,14 +478,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h]))\n",
+          "expr": "sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[1y]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[1y]))\n",
           "hide": false,
           "interval": "",
           "legendFormat": "Time Difference Between Exec UUID 1 and Exec UUID 2",
           "refId": "B"
         }
       ],
-      "title": "CPU duration VTGate difference",
+      "title": "CPU time VTGate difference",
       "type": "stat"
     },
     {
@@ -616,13 +543,13 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "(sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[24h]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h])))/sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[24h]))*100",
+          "expr": "(sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_2\"}[1y]))-sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[1y])))/sum(increase(process_cpu_seconds_total{component=\"vtgate\", exec_uuid=\"$exec_uuid_1\"}[1y]))*100",
           "interval": "",
           "legendFormat": "Exec UUID 1",
           "refId": "A"
         }
       ],
-      "title": "CPU duration VTGate difference",
+      "title": "CPU time VTGate difference",
       "type": "stat"
     },
     {
@@ -645,8 +572,7 @@
                 "value": 80
               }
             ]
-          },
-          "unit": "short"
+          }
         },
         "overrides": []
       },
@@ -697,7 +623,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Time spent Exec UUID 1",
+      "title": "CPU usage Exec 1",
       "type": "piechart"
     },
     {
@@ -772,7 +698,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Time spent Exec UUID 2",
+      "title": "CPU usage Exec 2",
       "type": "piechart"
     },
     {
@@ -833,7 +759,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"}[1d]))-sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1d]))",
+          "expr": "sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_2\"}[1y]))-sum(increase(node_cpu_seconds_total{mode!=\"idle\",exec_uuid=\"$exec_uuid_1\"}[1y]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -843,7 +769,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "CPU busy duration difference",
+      "title": "CPU busy time difference",
       "type": "stat"
     },
     {
@@ -895,7 +821,7 @@
           "exemplar": true,
           "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})",
           "interval": "",
-          "legendFormat": "Exec UUID 1",
+          "legendFormat": "Exec 1",
           "refId": "A"
         },
         {
@@ -903,11 +829,11 @@
           "expr": "sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Exec UUID 2",
+          "legendFormat": "Exec 2",
           "refId": "B"
         }
       ],
-      "title": "CPU duration VTTablet",
+      "title": "CPU time VTTablet",
       "type": "stat"
     },
     {
@@ -965,14 +891,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(increase(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"}[1d]))-sum(increase(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"}[1d]))",
+          "expr": "sum(increase(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"}[1y]))-sum(increase(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"}[1y]))",
           "hide": false,
           "interval": "",
           "legendFormat": "Exec UUID 1",
           "refId": "A"
         }
       ],
-      "title": "CPU duration VTTablet difference",
+      "title": "CPU time VTTablet difference",
       "type": "stat"
     },
     {
@@ -1030,13 +956,13 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "(sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_2\", component=\"vttablet\"})-sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"}))/sum(process_cpu_seconds_total{exec_uuid=\"$exec_uuid_1\", component=\"vttablet\"})*100",
+          "expr": "(sum(increase(process_cpu_seconds_total{component=\"vttablet\", exec_uuid=\"$exec_uuid_2\"}[1y]))-sum(increase(process_cpu_seconds_total{component=\"vttablet\", exec_uuid=\"$exec_uuid_1\"}[1y])))/sum(increase(process_cpu_seconds_total{component=\"vttablet\", exec_uuid=\"$exec_uuid_1\"}[1y]))*100",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "CPU duration VTTablet difference",
+      "title": "CPU time VTTablet difference",
       "type": "stat"
     },
     {
@@ -1103,7 +1029,7 @@
           "exemplar": true,
           "expr": "avg(rate(vtgate_api_count{exec_uuid=\"$exec_uuid_1\"}[1m]))",
           "interval": "",
-          "legendFormat": "QPS Exec UUID 1",
+          "legendFormat": "Exec 1 - $exec_uuid_1",
           "refId": "A"
         },
         {
@@ -1111,7 +1037,7 @@
           "expr": "avg(rate(vtgate_api_count{exec_uuid=\"$exec_uuid_2\"}[1m]))",
           "hide": false,
           "interval": "",
-          "legendFormat": "QPS Exec UUID 2",
+          "legendFormat": "Exec 2 - $exec_uuid_2",
           "refId": "B"
         }
       ],
@@ -1210,7 +1136,7 @@
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "",
+          "legendFormat": "Exec 1 - $exec_uuid_1",
           "refId": "A"
         },
         {
@@ -1219,7 +1145,7 @@
           "format": "time_series",
           "hide": false,
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "Exec 2 - $exec_uuid_2",
           "refId": "B"
         }
       ],
@@ -1275,9 +1201,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "c9efa934-a1da-4811-9f9f-4d7ee893f10d",
-          "value": "c9efa934-a1da-4811-9f9f-4d7ee893f10d"
+          "selected": false,
+          "text": "a32adfb2-189f-4bb3-b0c2-23d6a0edc468",
+          "value": "a32adfb2-189f-4bb3-b0c2-23d6a0edc468"
         },
         "datasource": null,
         "definition": "label_values(exec_uuid)",
@@ -1306,9 +1232,9 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
-          "text": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c",
-          "value": "f38ac3d1-6af9-4639-8a7b-6049b6cc1c7c"
+          "selected": false,
+          "text": "f95d0e7c-4c4b-4485-a019-d301900cabe8",
+          "value": "f95d0e7c-4c4b-4485-a019-d301900cabe8"
         },
         "datasource": null,
         "definition": "label_values(exec_uuid)",
@@ -1337,12 +1263,12 @@
     ]
   },
   "time": {
-    "from": "2021-04-27T16:49:01.046Z",
-    "to": "2021-04-27T17:33:25.265Z"
+    "from": "2021-04-28T19:01:04.701Z",
+    "to": "2021-04-28T20:38:58.144Z"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Compare Benchmark",
   "uid": "rDsgp2rMz",
-  "version": 29
+  "version": 33
 }
