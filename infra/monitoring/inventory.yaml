@@ -24,7 +24,7 @@ all:
         prometheus_web_external_url: "http://{{ ansible_host }}/prom/"
         prometheus_version: 2.26.0
         prometheus_config_flags_extra:
-          enable-feature: remote-write-receiver
+          enable-feature: remote-write-receiver,promql-at-modifier
     frontend:
       hosts:
         147.75.101.103:
