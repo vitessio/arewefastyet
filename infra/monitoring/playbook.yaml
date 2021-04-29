@@ -33,5 +33,15 @@
     - role: cloudalchemy.prometheus
 
 - hosts: frontend
+  tasks:
+    - name: copy dashboard provision configuration
+      copy:
+        src: "provisioning/ansible.yaml"
+        dest: /etc/grafana/provisioning/dashboards/ansible.yaml
+        mode: 0755
+        owner: root
+        group: root
+
+- hosts: frontend
   roles:
     - role: cloudalchemy.grafana

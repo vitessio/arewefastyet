@@ -45,6 +45,7 @@ all:
             basicAuth: true
             basicAuthUser: prometheus
             basicAuthPassword: "{{ prometheus_password }}"
+        grafana_dashboards_dir: "dashboards"
         grafana_dashboards:
           - dashboard_id: 1860
             revision_id: 22
