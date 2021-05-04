@@ -172,6 +172,7 @@ ansible/artifacts/*
 
 report/
 !report/sample
+!go/tools/report
 
 exec/*
 
