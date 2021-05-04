@@ -46,6 +46,7 @@ func (cfg Config) IsValid() bool {
 	return cfg.Host != ""
 }
 
+// AddToCommand adds Config to the given cobra.Command.
 func (cfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&cfg.Host, flagInfluxHostname, "", "Hostname of InfluxDB.")
 	cmd.Flags().StringVar(&cfg.Port, flagInfluxPort, "8086", "Port on which to InfluxDB listens.")
