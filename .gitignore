@@ -173,6 +173,7 @@ ansible/artifacts/*
 report/
 !report/sample
 !go/tools/report
+!go/cmd/gen/report
 
 exec/*
 
