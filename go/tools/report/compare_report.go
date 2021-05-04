@@ -20,15 +20,50 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vitessio/arewefastyet/go/tools/microbench"
+
 	"github.com/jung-kurt/gofpdf"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
-	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
 // pdfMargin is the margin that is used while creating the pdf. It is used as the left, right, top and bottom margin.
 const pdfMargin = 15.0
+
+// cellStyle is a struct that has the elements used for styling a cell in gofpdf
+type cellStyle struct {
+	textCol   [3]int // RGB colors of the text
+	fillCol   [3]int // RGB colors of the background
+	borderStr string // border style string
+	alignStr  string // alignment style string
+}
+
+// cellStyles contains the different cell styles that we use in the pdf
+var cellStyles = []cellStyle{
+	{
+		textCol:   [3]int{224, 224, 224},
+		fillCol:   [3]int{64, 64, 64},
+		borderStr: "1",
+		alignStr:  "CM",
+	}, {
+		textCol:   [3]int{24, 24, 24},
+		fillCol:   [3]int{255, 255, 255},
+		borderStr: "",
+		alignStr:  "C",
+	}, {
+		textCol:   [3]int{255, 255, 255},
+		fillCol:   [3]int{0, 0, 0},
+		borderStr: "1",
+		alignStr:  "CM",
+	},
+}
+
+// tableCell contains the string value along with the styling index to use
+type tableCell struct {
+	value      string
+	styleIndex int
+}
 
 // GenerateCompareReport is used to generate a comparison report between the 2 SHAs provided. It uses the client connection
 // to read the results. It also takes as an argument the name of the report that will be generated
@@ -61,8 +96,8 @@ func GenerateCompareReport(client *mysql.Client, fromSHA, toSHA, reportFile stri
 	if len(macrosMatrices) != 0 {
 		// Print the subtitle
 		writeSubtitle(pdf, "Macro-benchmarks")
-		macroTable := [][]string{
-			{"Metric", git.ShortenSHA(fromSHA), git.ShortenSHA(toSHA)},
+		macroTable := [][]tableCell{
+			{tableCell{value: "Metric", styleIndex: 2}, tableCell{value: git.ShortenSHA(fromSHA), styleIndex: 2}, tableCell{value: git.ShortenSHA(toSHA), styleIndex: 2}},
 		}
 		// range over all the macrobenchmarks
 		for key, value := range macrosMatrices {
@@ -70,38 +105,39 @@ func GenerateCompareReport(client *mysql.Client, fromSHA, toSHA, reportFile stri
 			macroCompArr := value.(macrobench.ComparisonArray)
 			if len(macroCompArr) > 0 {
 				macroComp := macroCompArr[0]
-				macroTable = append(macroTable, []string{strings.ToUpper(key.String())})
-				macroTable = append(macroTable, []string{"TPS", convertFloatToString(macroComp.Reference.Result.TPS), convertFloatToString(macroComp.Compare.Result.TPS)})
-				macroTable = append(macroTable, []string{"QPS Reads", convertFloatToString(macroComp.Reference.Result.QPS.Reads), convertFloatToString(macroComp.Compare.Result.QPS.Reads)})
-				macroTable = append(macroTable, []string{"QPS Writes", convertFloatToString(macroComp.Reference.Result.QPS.Writes), convertFloatToString(macroComp.Compare.Result.QPS.Writes)})
-				macroTable = append(macroTable, []string{"QPS Total", convertFloatToString(macroComp.Reference.Result.QPS.Total), convertFloatToString(macroComp.Compare.Result.QPS.Total)})
-				macroTable = append(macroTable, []string{"QPS Others", convertFloatToString(macroComp.Reference.Result.QPS.Other), convertFloatToString(macroComp.Compare.Result.QPS.Other)})
-				macroTable = append(macroTable, []string{"Latency", convertFloatToString(macroComp.Reference.Result.Latency), convertFloatToString(macroComp.Compare.Result.Latency)})
-				macroTable = append(macroTable, []string{"Errors", convertFloatToString(macroComp.Reference.Result.Errors), convertFloatToString(macroComp.Compare.Result.Errors)})
-				macroTable = append(macroTable, []string{"Reconnects", convertFloatToString(macroComp.Reference.Result.Reconnects), convertFloatToString(macroComp.Compare.Result.Reconnects)})
-				macroTable = append(macroTable, []string{"Time", strconv.Itoa(macroComp.Reference.Result.Time), strconv.Itoa(macroComp.Compare.Result.Time)})
-				macroTable = append(macroTable, []string{"Threads", convertFloatToString(macroComp.Reference.Result.Threads), convertFloatToString(macroComp.Compare.Result.Threads)})
+				macroTable = append(macroTable, []tableCell{{value: strings.ToUpper(key.String()), styleIndex: 2}})
+				macroTable = append(macroTable, []tableCell{{value: "TPS", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.TPS), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.TPS), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Reads", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Reads), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Reads), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Writes", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Writes), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Writes), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Total", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Total), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Total), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Others", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Other), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Other), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Latency", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Latency), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Latency), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Errors", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Errors), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Errors), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Reconnects", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Reconnects), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Reconnects), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Time", styleIndex: 0}, {value: strconv.Itoa(macroComp.Reference.Result.Time), styleIndex: 1}, {value: strconv.Itoa(macroComp.Compare.Result.Time), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Threads", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Threads), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Threads), styleIndex: 1}})
 			}
 		}
 		// write the table to pdf
 		writeTableToPdf(pdf, macroTable)
+		pdf.AddPage()
 	}
 
 	if len(microsMatrix) != 0 {
 		// Print the subtitle
 		writeSubtitle(pdf, "Micro-benchmarks")
-		microTable := [][]string{
-			{"Metric", git.ShortenSHA(fromSHA), git.ShortenSHA(toSHA)},
+		microTable := [][]tableCell{
+			{tableCell{value: "Metric", styleIndex: 2}, tableCell{value: git.ShortenSHA(fromSHA), styleIndex: 2}, tableCell{value: git.ShortenSHA(toSHA), styleIndex: 2}},
 		}
 		// range over all the microbenchmarks
 		for _, microComp := range microsMatrix {
-			microTable = append(microTable, []string{microComp.PkgName + "." + microComp.Name})
-			microTable = append(microTable, []string{"Ops", strconv.Itoa(microComp.Current.Ops), strconv.Itoa(microComp.Last.Ops)})
-			microTable = append(microTable, []string{"NSPerOp", convertFloatToString(microComp.Current.NSPerOp), convertFloatToString(microComp.Last.NSPerOp)})
-			microTable = append(microTable, []string{"MBPerSec", convertFloatToString(microComp.Current.MBPerSec), convertFloatToString(microComp.Last.MBPerSec)})
-			microTable = append(microTable, []string{"BytesPerOp", convertFloatToString(microComp.Current.BytesPerOp), convertFloatToString(microComp.Last.BytesPerOp)})
-			microTable = append(microTable, []string{"AllocsPerOp", convertFloatToString(microComp.Current.AllocsPerOp), convertFloatToString(microComp.Last.AllocsPerOp)})
-			microTable = append(microTable, []string{"Ratio of NSPerOp", convertFloatToString(microComp.CurrLastDiff)})
+			microTable = append(microTable, []tableCell{{value: microComp.PkgName + "." + microComp.Name, styleIndex: 2}})
+			microTable = append(microTable, []tableCell{{value: "Ops", styleIndex: 0}, {value: strconv.Itoa(microComp.Current.Ops), styleIndex: 1}, {value: strconv.Itoa(microComp.Last.Ops), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.NSPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.NSPerOp), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "MBPerSec", styleIndex: 0}, {value: convertFloatToString(microComp.Current.MBPerSec), styleIndex: 1}, {value: convertFloatToString(microComp.Last.MBPerSec), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "BytesPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.BytesPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.BytesPerOp), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "AllocsPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.AllocsPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.AllocsPerOp), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "Ratio of NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.CurrLastDiff), styleIndex: 1}})
 		}
 		// write the table to pdf
 		writeTableToPdf(pdf, microTable)
@@ -124,7 +160,7 @@ func writeSubtitle(pdf *gofpdf.Fpdf, subtitle string) {
 }
 
 // writeTableToPdf is used to write a table to the pdf provided
-func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]string) {
+func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]tableCell) {
 	pageWidth, pageHeight := pdf.GetPageSize()
 	colCount := len(table[0])
 	colWd := (pageWidth - pdfMargin - pdfMargin) / float64(colCount)
@@ -141,30 +177,19 @@ func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]string) {
 		cell     cellType
 	)
 
-	header := table[0]
-
 	pdf.SetFont("Arial", "", 14)
-
-	// Headers
-	pdf.SetTextColor(224, 224, 224)
-	pdf.SetFillColor(64, 64, 64)
-	for colJ := 0; colJ < colCount; colJ++ {
-		pdf.CellFormat(colWd, 10, header[colJ], "1", 0, "CM", true, 0, "")
-	}
-	pdf.Ln(-1)
-	pdf.SetTextColor(24, 24, 24)
-	pdf.SetFillColor(255, 255, 255)
 
 	// Rows
 	y := pdf.GetY()
-	for rowJ := 1; rowJ < len(table); rowJ++ {
+	for rowJ := 0; rowJ < len(table); rowJ++ {
 		cellList = nil
 		colCount = len(table[rowJ])
 		colWd = 180.0 / float64(colCount)
 		maxHt := lineHt
 		// Cell height calculation loop
+		// required because a cell might span multiple lines but then the entire row must span that many lines
 		for colJ := 0; colJ < colCount; colJ++ {
-			cell.str = table[rowJ][colJ]
+			cell.str = table[rowJ][colJ].value
 			cell.list = pdf.SplitLines([]byte(cell.str), colWd-cellGap-cellGap)
 			cell.ht = float64(len(cell.list)) * lineHt
 			if cell.ht > maxHt {
@@ -182,10 +207,15 @@ func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]string) {
 			pdf.Rect(x, y, colWd, maxHt+cellGap+cellGap, "D")
 			cell = cellList[colJ]
 			cellY := y + cellGap + (maxHt-cell.ht)/2
+			// Get the styling from the index
+			styling := cellStyles[table[rowJ][colJ].styleIndex]
+			// Use it to set the colours
+			pdf.SetTextColor(styling.textCol[0], styling.textCol[1], styling.textCol[2])
+			pdf.SetFillColor(styling.fillCol[0], styling.fillCol[1], styling.fillCol[2])
 			for splitJ := 0; splitJ < len(cell.list); splitJ++ {
 				pdf.SetXY(x+cellGap, cellY)
-				pdf.CellFormat(colWd-cellGap-cellGap, lineHt, string(cell.list[splitJ]), "", 0,
-					"C", false, 0, "")
+				pdf.CellFormat(colWd-cellGap-cellGap, lineHt, string(cell.list[splitJ]), styling.borderStr, 0,
+					styling.alignStr, true, 0, "")
 				cellY += lineHt
 			}
 			x += colWd
