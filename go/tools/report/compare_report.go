@@ -27,32 +27,46 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
+// pdfMargin is the margin that is used while creating the pdf. It is used as the left, right, top and bottom margin.
 const pdfMargin = 15.0
 
+// GenerateCompareReport is used to generate a comparison report between the 2 SHAs provided. It uses the client connection
+// to read the results. It also takes as an argument the name of the report that will be generated
 func GenerateCompareReport(client *mysql.Client, fromSHA, toSHA, reportFile string) error {
+	// Compare macrobenchmark results for the 2 SHAs
 	macrosMatrices, err := macrobench.CompareMacroBenchmarks(client, fromSHA, toSHA)
 	if err != nil {
 		return err
 	}
+
+	// Compare microbenchmark results for the 2 SHAs
 	microsMatrix, err := microbench.CompareMicroBenchmarks(client, fromSHA, toSHA)
 	if err != nil {
 		return err
 	}
+
+	// Create a new pdf and set the margins
 	pdf := gofpdf.New(gofpdf.OrientationPortrait, "mm", "A4", "")
 	pdf.SetMargins(pdfMargin, pdfMargin, pdfMargin)
+	// Add a page to start
 	pdf.AddPage()
 	pdf.SetAutoPageBreak(true, pdfMargin)
+	// Set the font for the title
 	pdf.SetFont("Arial", "B", 28)
+	// Print the title
 	pdf.WriteAligned(0, 10, "Comparison Results", "C")
 	pdf.Ln(-1)
 	pdf.Ln(2)
 
 	if len(macrosMatrices) != 0 {
+		// Print the subtitle
 		writeSubtitle(pdf, "Macro-benchmarks")
 		macroTable := [][]string{
 			{"Metric", git.ShortenSHA(fromSHA), git.ShortenSHA(toSHA)},
 		}
+		// range over all the macrobenchmarks
 		for key, value := range macrosMatrices {
+			// the map stores the comparisonArrays
 			macroCompArr := value.(macrobench.ComparisonArray)
 			if len(macroCompArr) > 0 {
 				macroComp := macroCompArr[0]
@@ -69,14 +83,17 @@ func GenerateCompareReport(client *mysql.Client, fromSHA, toSHA, reportFile stri
 				macroTable = append(macroTable, []string{"Threads", convertFloatToString(macroComp.Reference.Result.Threads), convertFloatToString(macroComp.Compare.Result.Threads)})
 			}
 		}
+		// write the table to pdf
 		writeTableToPdf(pdf, macroTable)
 	}
 
 	if len(microsMatrix) != 0 {
+		// Print the subtitle
 		writeSubtitle(pdf, "Micro-benchmarks")
 		microTable := [][]string{
 			{"Metric", git.ShortenSHA(fromSHA), git.ShortenSHA(toSHA)},
 		}
+		// range over all the microbenchmarks
 		for _, microComp := range microsMatrix {
 			microTable = append(microTable, []string{microComp.PkgName + "." + microComp.Name})
 			microTable = append(microTable, []string{"Ops", strconv.Itoa(microComp.Current.Ops), strconv.Itoa(microComp.Last.Ops)})
@@ -86,16 +103,19 @@ func GenerateCompareReport(client *mysql.Client, fromSHA, toSHA, reportFile stri
 			microTable = append(microTable, []string{"AllocsPerOp", convertFloatToString(microComp.Current.AllocsPerOp), convertFloatToString(microComp.Last.AllocsPerOp)})
 			microTable = append(microTable, []string{"Ratio of NSPerOp", convertFloatToString(microComp.CurrLastDiff)})
 		}
+		// write the table to pdf
 		writeTableToPdf(pdf, microTable)
 	}
 	err = pdf.OutputFileAndClose(reportFile)
 	return err
 }
 
+// convertFloatToString converts the float input into a string so that it can be printed
 func convertFloatToString(in float64) string {
 	return strconv.FormatFloat(in, 'f', -1, 64)
 }
 
+// writeSubtitle is used to write a subtitle in the pdf provided
 func writeSubtitle(pdf *gofpdf.Fpdf, subtitle string) {
 	pdf.SetFont("Arial", "B", 20)
 	pdf.WriteAligned(0, 10, subtitle, "C")
@@ -103,6 +123,7 @@ func writeSubtitle(pdf *gofpdf.Fpdf, subtitle string) {
 	pdf.Ln(2)
 }
 
+// writeTableToPdf is used to write a table to the pdf provided
 func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]string) {
 	pageWidth, pageHeight := pdf.GetPageSize()
 	colCount := len(table[0])

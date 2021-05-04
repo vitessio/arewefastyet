@@ -19,10 +19,13 @@
 package microbench
 
 import (
-	"github.com/vitessio/arewefastyet/go/mysql"
 	"sort"
+
+	"github.com/vitessio/arewefastyet/go/mysql"
 )
 
+// CompareMicroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the microbenchmark
+// results for the 2 SHAs and compares them. The result is a comparison array.
 func CompareMicroBenchmarks(dbClient *mysql.Client, reference string, compare string) (MicroBenchmarkComparisonArray, error) {
 	// compare micro benchmarks
 	SHAs := []string{reference, compare}

@@ -20,7 +20,8 @@ package macrobench
 
 import "github.com/vitessio/arewefastyet/go/mysql"
 
-// CompareMacroBenchmarks is used to compare the results of the
+// CompareMacroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the macrobenchmark
+// results for the 2 SHAs and compares them. The result is a map with the key being the macrobenchmark name.
 func CompareMacroBenchmarks(dbClient *mysql.Client, reference string, compare string) (map[Type]interface{}, error) {
 	// Get macro benchmarks from all the different types
 	SHAs := []string{reference, compare}

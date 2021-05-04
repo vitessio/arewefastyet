@@ -19,12 +19,13 @@
 package server
 
 import (
+	"net/http"
+	"sort"
+
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
-	"net/http"
-	"sort"
 )
 
 func handleRenderErrors(c *gin.Context, err error) {
@@ -83,15 +84,17 @@ func (s *Server) compareHandler(c *gin.Context) {
 		return
 	}
 
+	// Compare Macrobenchmarks for the two given SHAs.
 	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, reference, compare)
 	if err != nil {
-		handleRenderErrors(c,err)
+		handleRenderErrors(c, err)
 		return
 	}
 
-	microsMatrix, err:= microbench.CompareMicroBenchmarks(s.dbClient, reference, compare)
+	// Compare Microbenchmarks for the two given SHAs.
+	microsMatrix, err := microbench.CompareMicroBenchmarks(s.dbClient, reference, compare)
 	if err != nil {
-		handleRenderErrors(c,err)
+		handleRenderErrors(c, err)
 		return
 	}
 
