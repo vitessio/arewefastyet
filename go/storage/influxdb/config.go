@@ -25,6 +25,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage"
+	"regexp"
 )
 
 const (
@@ -52,6 +53,14 @@ func (cfg Config) NewClient() (storage.Client, error) {
 	if cfg.Port == "" {
 		cfg.Port = "8086"
 	}
+
+	if matched, err := regexp.Match(`http(s?)://.+`, []byte(cfg.Host)); !matched || err != nil {
+		if err != nil {
+			return nil, err
+		}
+		cfg.Host = "http://"+cfg.Host
+	}
+
 	client := Client{
 		config: &cfg,
 	}

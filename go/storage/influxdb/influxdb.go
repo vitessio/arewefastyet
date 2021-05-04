@@ -44,8 +44,7 @@ func (c *Client) Insert(query string, args ...interface{}) (storage.Insertion, e
 
 func (c *Client) Select(query string, args ...interface{}) (storage.Selection, error) {
 	queryAPI := c.influx.QueryAPI("")
-	// Supply string in a form database/retention-policy as a bucket. Skip retention policy for the default one, use just a database name (without the slash character)
-	result, err := queryAPI.Query(context.Background(), `from(bucket:"test")|> range(start: -1h) |> filter(fn: (r) => r._measurement == "stat")`)
+	result, err := queryAPI.Query(context.Background(), query)
 	if err == nil {
 		for result.Next() {
 			if result.TableChanged() {
