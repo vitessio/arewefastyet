@@ -11,8 +11,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/uuid v1.2.0
 	github.com/hashicorp/terraform-exec v0.13.0
-	github.com/influxdata/flux v0.0.0-20190620184636-886e3c28388d // indirect
-	github.com/influxdata/influxdb-client-go v1.4.0 // indirect
+	github.com/influxdata/influxdb-client-go v1.4.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.5.0
 	github.com/slack-go/slack v0.8.1
