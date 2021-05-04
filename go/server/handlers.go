@@ -20,6 +20,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
@@ -46,7 +47,8 @@ func (s *Server) informationHandler(c *gin.Context) {
 
 func (s *Server) homeHandler(c *gin.Context) {
 	// WIP
-	s.executionMetricsDBClient.Select(`from(bucket:"prometheus") |> range(start:-48h) |> filter(fn:(r) => r._measurement == "process_cpu_seconds_total")`)
+	metrics.GetCPU(*s.executionMetricsDBClient, "666519ad-bb49-4b27-9d2e-e3cf40371f2b")
+
 
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
 	if err != nil {

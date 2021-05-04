@@ -31,7 +31,7 @@ const (
 
 type Client struct {
 	influx influxdb2.Client
-	config *Config
+	Config *Config
 }
 
 func (c *Client) Close() error {

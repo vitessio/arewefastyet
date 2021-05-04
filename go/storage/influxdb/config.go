@@ -62,7 +62,7 @@ func (cfg Config) NewClient() (storage.Client, error) {
 	}
 
 	client := Client{
-		config: &cfg,
+		Config: &cfg,
 	}
 	influxclient := influxdb2.NewClient(cfg.Host+":"+cfg.Port, fmt.Sprintf("%s:%s", cfg.User, cfg.Password))
 	client.influx = influxclient
