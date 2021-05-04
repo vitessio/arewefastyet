@@ -83,47 +83,24 @@ func (s *Server) compareHandler(c *gin.Context) {
 		return
 	}
 
-	var err error
-	SHAs := []string{reference, compare}
-
-	// Get macro benchmarks from all the different types
-	macros := map[string]map[macrobench.Type]macrobench.DetailsArray{}
-	for _, sha := range SHAs {
-		macros[sha], err = macrobench.GetDetailsArraysFromAllTypes(sha, s.dbClient)
-		if err != nil {
-			handleRenderErrors(c, err)
-			return
-		}
-		for mtype := range macros[sha] {
-			macros[sha][mtype] = macros[sha][mtype].ReduceSimpleMedian()
-		}
-	}
-	macrosMatrixes := map[macrobench.Type]interface{}{}
-	for _, mtype := range macrobench.Types {
-		macrosMatrixes[mtype] = macrobench.CompareDetailsArrays(macros[reference][mtype], macros[compare][mtype])
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, reference, compare)
+	if err != nil {
+		handleRenderErrors(c,err)
+		return
 	}
 
-	// compare micro benchmarks
-	micros := map[string]microbench.MicroBenchmarkDetailsArray{}
-	for _, sha := range SHAs {
-		micro, err := microbench.GetResultsForGitRef(sha, s.dbClient)
-		if err != nil {
-			handleRenderErrors(c, err)
-			return
-		}
-		micros[sha] = micro.ReduceSimpleMedian()
+	microsMatrix, err:= microbench.CompareMicroBenchmarks(s.dbClient, reference, compare)
+	if err != nil {
+		handleRenderErrors(c,err)
+		return
 	}
-	microsMatrix := microbench.MergeMicroBenchmarkDetails(micros[reference], micros[compare])
-	sort.SliceStable(microsMatrix, func(i, j int) bool {
-		return !(microsMatrix[i].Current.NSPerOp < microsMatrix[j].Current.NSPerOp)
-	})
 
 	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
 		"title":          "Vitess benchmark",
 		"reference":      referenceSHA,
 		"compare":        compareSHA,
 		"microbenchmark": microsMatrix,
-		"macrobenchmark": macrosMatrixes,
+		"macrobenchmark": macrosMatrices,
 	})
 }
 
