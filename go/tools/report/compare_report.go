@@ -61,8 +61,11 @@ var cellStyles = []cellStyle{
 
 // tableCell contains the string value along with the styling index to use
 type tableCell struct {
-	value      string
+	value string
+	// styleIndex is the index of cellStyles to use for styling
 	styleIndex int
+	// linkUrl if non empty, will make the cell a clickable link to the given URL
+	linkUrl string
 }
 
 // GenerateCompareReport is used to generate a comparison report between the 2 SHAs provided. It uses the client connection
@@ -97,7 +100,11 @@ func GenerateCompareReport(client *mysql.Client, fromSHA, toSHA, reportFile stri
 		// Print the subtitle
 		writeSubtitle(pdf, "Macro-benchmarks")
 		macroTable := [][]tableCell{
-			{tableCell{value: "Metric", styleIndex: 2}, tableCell{value: git.ShortenSHA(fromSHA), styleIndex: 2}, tableCell{value: git.ShortenSHA(toSHA), styleIndex: 2}},
+			{
+				tableCell{value: "Metric", styleIndex: 2},
+				tableCell{value: git.ShortenSHA(fromSHA), styleIndex: 2, linkUrl: "https://github.com/vitessio/vitess/tree/" + fromSHA + "/"},
+				tableCell{value: git.ShortenSHA(toSHA), styleIndex: 2, linkUrl: "https://github.com/vitessio/vitess/tree/" + toSHA + "/"},
+			},
 		}
 		// range over all the macrobenchmarks
 		for key, value := range macrosMatrices {
@@ -127,7 +134,11 @@ func GenerateCompareReport(client *mysql.Client, fromSHA, toSHA, reportFile stri
 		// Print the subtitle
 		writeSubtitle(pdf, "Micro-benchmarks")
 		microTable := [][]tableCell{
-			{tableCell{value: "Metric", styleIndex: 2}, tableCell{value: git.ShortenSHA(fromSHA), styleIndex: 2}, tableCell{value: git.ShortenSHA(toSHA), styleIndex: 2}},
+			{
+				tableCell{value: "Metric", styleIndex: 2},
+				tableCell{value: git.ShortenSHA(fromSHA), styleIndex: 2, linkUrl: "https://github.com/vitessio/vitess/tree/" + fromSHA + "/"},
+				tableCell{value: git.ShortenSHA(toSHA), styleIndex: 2, linkUrl: "https://github.com/vitessio/vitess/tree/" + toSHA + "/"},
+			},
 		}
 		// range over all the microbenchmarks
 		for _, microComp := range microsMatrix {
@@ -162,8 +173,6 @@ func writeSubtitle(pdf *gofpdf.Fpdf, subtitle string) {
 // writeTableToPdf is used to write a table to the pdf provided
 func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]tableCell) {
 	pageWidth, pageHeight := pdf.GetPageSize()
-	colCount := len(table[0])
-	colWd := (pageWidth - pdfMargin - pdfMargin) / float64(colCount)
 	lineHt := 5.5
 	cellGap := 2.0
 
@@ -183,8 +192,8 @@ func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]tableCell) {
 	y := pdf.GetY()
 	for rowJ := 0; rowJ < len(table); rowJ++ {
 		cellList = nil
-		colCount = len(table[rowJ])
-		colWd = 180.0 / float64(colCount)
+		colCount := len(table[rowJ])
+		colWd := (pageWidth - pdfMargin - pdfMargin) / float64(colCount)
 		maxHt := lineHt
 		// Cell height calculation loop
 		// required because a cell might span multiple lines but then the entire row must span that many lines
@@ -215,7 +224,7 @@ func writeTableToPdf(pdf *gofpdf.Fpdf, table [][]tableCell) {
 			for splitJ := 0; splitJ < len(cell.list); splitJ++ {
 				pdf.SetXY(x+cellGap, cellY)
 				pdf.CellFormat(colWd-cellGap-cellGap, lineHt, string(cell.list[splitJ]), styling.borderStr, 0,
-					styling.alignStr, true, 0, "")
+					styling.alignStr, true, 0, table[rowJ][colJ].linkUrl)
 				cellY += lineHt
 			}
 			x += colWd
