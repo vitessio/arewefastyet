@@ -293,13 +293,14 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	rows, err := client.Select(query, lastDays, source)
+	resClient, err := client.Select(query, lastDays, source)
 	if err != nil {
 		return nil, err
 	}
-	for rows.Next() {
+	resMySQL := resClient.(mysql.SelectResult)
+	for resMySQL.Rows.Next() {
 		var res Details
-		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+		err = resMySQL.Rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
@@ -325,13 +326,14 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	rows, err := client.Select(query, ref)
+	resClient, err := client.Select(query, ref)
 	if err != nil {
 		return nil, err
 	}
-	for rows.Next() {
+	resMySQL := resClient.(mysql.SelectResult)
+	for resMySQL.Rows.Next() {
 		var res Details
-		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+		err = resMySQL.Rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
@@ -356,10 +358,11 @@ func (mbr *Result) insertToMySQL(benchmarkType Type, macrobenchmarkID int, clien
 
 	// insert Result
 	queryResult := fmt.Sprintf("INSERT INTO %s(macrobenchmark_id, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
-	resultID, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
+	resClient, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
 	if err != nil {
 		return err
 	}
+	resultID := resClient.(mysql.InsertResult)
 
 	// insert QPS
 	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String() + "_no")

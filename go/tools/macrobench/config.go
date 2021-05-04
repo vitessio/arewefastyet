@@ -122,10 +122,11 @@ func (mabcfg Config) insertBenchmarkToSQL(client *mysql.Client) (newMacroBenchma
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
 	query := "INSERT INTO macrobenchmark(exec_uuid, commit, source) VALUES(NULLIF(?, ''), ?, ?)"
-	id, err := client.Insert(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.Source)
+	resClient, err := client.Insert(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.Source)
 	if err != nil {
 		return 0, err
 	}
-	newMacroBenchmarkID = int(id)
+	res := resClient.(mysql.InsertResult)
+	newMacroBenchmarkID = int(res.ID)
 	return newMacroBenchmarkID, nil
 }

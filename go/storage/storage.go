@@ -27,9 +27,18 @@ const (
 	ErrorInvalidConfiguration = "invalid configuration"
 )
 
+type Insertion interface {
+	Empty() bool
+}
+
+type Selection interface {
+	Empty() bool
+}
+
 type Client interface {
 	Close() error
-	Insert(query string, args ...interface{}) (int64, error)
+	Insert(query string, args ...interface{}) (Insertion, error)
+	Select(query string, args ...interface{}) (Selection, error)
 }
 
 type Configuration interface {

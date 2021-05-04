@@ -20,6 +20,7 @@ package influxdb
 
 import (
 	influxdb2 "github.com/influxdata/influxdb-client-go"
+	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 const (
@@ -35,6 +36,11 @@ func (c *Client) Close() error {
 	panic("implement me")
 }
 
-func (c Client) Insert(query string, args ...interface{}) (int64, error) {
+func (c *Client) Insert(query string, args ...interface{}) (storage.Insertion, error) {
 	panic("implement me")
 }
+
+func (c *Client) Select(query string, args ...interface{}) (storage.Selection, error) {
+	panic("implement me")
+}
+
