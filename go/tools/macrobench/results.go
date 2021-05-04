@@ -22,7 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dustin/go-humanize"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 	"math"
 	"sort"

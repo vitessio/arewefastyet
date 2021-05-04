@@ -18,7 +18,7 @@
 
 package server
 
-import "github.com/vitessio/arewefastyet/go/mysql"
+import "github.com/vitessio/arewefastyet/go/storage/mysql"
 
 func (s *Server) setupMySQL() (err error) {
 	if s.dbCfg == nil {

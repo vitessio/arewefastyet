@@ -21,7 +21,7 @@ package microbench
 import (
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"regexp"
 	"strconv"
 	"time"

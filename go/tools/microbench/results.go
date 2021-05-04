@@ -21,7 +21,7 @@ package microbench
 import (
 	"fmt"
 	"github.com/dustin/go-humanize"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/math"
 	"sort"
 	"strconv"
