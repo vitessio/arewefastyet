@@ -23,17 +23,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
 const (
 	ErrorIncorrectConfiguration = "incorrect configuration"
 
-	flagPort         = "web-port"
-	flagTemplatePath = "web-template-path"
-	flagStaticPath   = "web-static-path"
-	flagAPIKey       = "web-api-key"
-	flagMode         = "web-mode"
+	flagPort                     = "web-port"
+	flagTemplatePath             = "web-template-path"
+	flagStaticPath               = "web-static-path"
+	flagAPIKey                   = "web-api-key"
+	flagMode                     = "web-mode"
 	flagDefaultWebhookConfigFile = "web-webhook-config"
 )
 
@@ -43,8 +44,12 @@ type Server struct {
 	staticPath   string
 	apiKey       string
 	router       *gin.Engine
-	dbCfg        *mysql.ConfigDB
-	dbClient     *mysql.Client
+
+	dbCfg    *mysql.ConfigDB
+	dbClient *mysql.Client
+
+	executionMetricsDBConfig *influxdb.Config
+	_                        *influxdb.Client
 
 	defaultExecConfigFile string
 
@@ -71,6 +76,11 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 		s.dbCfg = &mysql.ConfigDB{}
 	}
 	s.dbCfg.AddToCommand(cmd)
+
+	if s.executionMetricsDBConfig == nil {
+		s.executionMetricsDBConfig = &influxdb.Config{}
+	}
+	s.executionMetricsDBConfig.AddToCommand(cmd)
 }
 
 func (s Server) isReady() bool {
