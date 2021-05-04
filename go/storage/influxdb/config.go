@@ -19,8 +19,12 @@
 package influxdb
 
 import (
+	"errors"
+	"fmt"
+	influxdb2 "github.com/influxdata/influxdb-client-go"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 const (
@@ -39,6 +43,21 @@ type Config struct {
 	User     string
 	Password string
 	Database string
+}
+
+func (cfg Config) NewClient() (storage.Client, error) {
+	if !cfg.IsValid() {
+		return nil, errors.New(ErrorInvalidConfiguration)
+	}
+	if cfg.Port == "" {
+		cfg.Port = "8086"
+	}
+	client := &Client{
+		config: &cfg,
+	}
+	influxclient := influxdb2.NewClient(cfg.Host+":"+cfg.Port, fmt.Sprintf("%s:%s", cfg.User, cfg.Password))
+	client.influx = &influxclient
+	return client, nil
 }
 
 // IsValid return true if Config is ready to be used, and false otherwise.

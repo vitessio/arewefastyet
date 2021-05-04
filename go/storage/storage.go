@@ -16,25 +16,40 @@
  * /
  */
 
-package influxdb
+package storage
 
 import (
-	influxdb2 "github.com/influxdata/influxdb-client-go"
+	"errors"
+	"github.com/spf13/cobra"
 )
 
 const (
 	ErrorInvalidConfiguration = "invalid configuration"
 )
 
-type Client struct {
-	influx *influxdb2.Client
-	config *Config
+type Client interface {
+	Close() error
+	Insert(query string, args ...interface{}) (int64, error)
 }
 
-func (c *Client) Close() error {
-	panic("implement me")
+type Configuration interface {
+	AddToCommand(cmd *cobra.Command)
+	NewClient() (Client, error)
+	IsValid() bool
 }
 
-func (c Client) Insert(query string, args ...interface{}) (int64, error) {
-	panic("implement me")
+func Create(config Configuration) (client Client, err error) {
+	if config == nil {
+		return
+	}
+
+	if config.IsValid() {
+		client, err = config.NewClient()
+		if err != nil {
+			return
+		}
+	} else {
+		return nil, errors.New(ErrorInvalidConfiguration)
+	}
+	return
 }

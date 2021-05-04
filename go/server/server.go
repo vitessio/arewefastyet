@@ -49,7 +49,7 @@ type Server struct {
 	dbClient *mysql.Client
 
 	executionMetricsDBConfig *influxdb.Config
-	_                        *influxdb.Client
+	executionMetricsDBClient *influxdb.Client
 
 	defaultExecConfigFile string
 
@@ -106,7 +106,7 @@ func (s *Server) Run() error {
 		return errors.New(ErrorIncorrectConfiguration)
 	}
 
-	if err := s.setupMySQL(); err != nil {
+	if err := s.createStorages(); err != nil {
 		return err
 	}
 

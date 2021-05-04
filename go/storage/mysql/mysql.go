@@ -31,6 +31,8 @@ type Client struct {
 	db *sql.DB
 }
 
+// New creates a new Client based on the given ConfigDB.
+// Will soon be deprecated, replaced by ConfigDB.NewClient.
 func New(config ConfigDB) (client *Client, err error) {
 	client = &Client{}
 	client.db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", config.User, config.Password, config.Host, config.Database))

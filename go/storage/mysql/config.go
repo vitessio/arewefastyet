@@ -18,6 +18,12 @@
 
 package mysql
 
+import (
+	"database/sql"
+	"fmt"
+	"github.com/vitessio/arewefastyet/go/storage"
+)
+
 type ConfigDB struct {
 	Host     string
 	User     string
@@ -25,6 +31,17 @@ type ConfigDB struct {
 	Database string
 }
 
+func (cfg ConfigDB) NewClient() (storage.Client, error) {
+	var err error
+	client := &Client{}
+	client.db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", cfg.User, cfg.Password, cfg.Host, cfg.Database))
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
 func (cfg ConfigDB) IsValid() bool {
 	return !(cfg.Database == "" || cfg.User == "" || cfg.Host == "")
 }
+
