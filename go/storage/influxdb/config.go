@@ -18,6 +18,19 @@
 
 package influxdb
 
+import (
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+)
+
+const (
+	flagInfluxHostname = "influx-hostname"
+	flagInfluxPort     = "influx-port"
+	flagInfluxUsername = "influx-username"
+	flagInfluxPassword = "influx-password"
+	flagInfluxDatabase = "influx-database"
+)
+
 // Config defines the required configuration used to authenticate
 // to an InfluxDB database.
 type Config struct {
@@ -31,4 +44,20 @@ type Config struct {
 // IsValid return true if Config is ready to be used, and false otherwise.
 func (cfg Config) IsValid() bool {
 	return cfg.Host != ""
+}
+
+func (cfg *Config) AddToCommand(cmd *cobra.Command) {
+	cmd.Flags().StringVar(&cfg.Host, flagInfluxHostname, "", "Hostname of InfluxDB.")
+	cmd.Flags().StringVar(&cfg.Port, flagInfluxPort, "8086", "Port on which to InfluxDB listens.")
+	cmd.Flags().StringVar(&cfg.User, flagInfluxUsername, "", "Username used to connect to InfluxDB.")
+	cmd.Flags().StringVar(&cfg.Password, flagInfluxPassword, "", "Password used to connect to InfluxDB.")
+	cmd.Flags().StringVar(&cfg.Database, flagInfluxDatabase, "", "Name of the database to use in InfluxDB.")
+
+	_ = cmd.MarkFlagRequired(flagInfluxHostname)
+
+	_ = viper.BindPFlag(flagInfluxHostname, cmd.Flags().Lookup(flagInfluxHostname))
+	_ = viper.BindPFlag(flagInfluxPort, cmd.Flags().Lookup(flagInfluxPort))
+	_ = viper.BindPFlag(flagInfluxUsername, cmd.Flags().Lookup(flagInfluxUsername))
+	_ = viper.BindPFlag(flagInfluxPassword, cmd.Flags().Lookup(flagInfluxPassword))
+	_ = viper.BindPFlag(flagInfluxDatabase, cmd.Flags().Lookup(flagInfluxDatabase))
 }
