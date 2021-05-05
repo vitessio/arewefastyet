@@ -20,11 +20,13 @@ package server
 
 import (
 	"errors"
+	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"html/template"
 )
 
 const (
@@ -111,6 +113,10 @@ func (s *Server) Run() error {
 	}
 
 	s.router = gin.Default()
+	s.router.SetFuncMap(template.FuncMap{
+		"formatFloat": func(f float64) string {return humanize.FormatFloat("#,###.##", f)},
+	})
+
 	s.router.Static("/static", s.staticPath)
 
 	s.router.LoadHTMLGlob(s.templatePath + "/*")

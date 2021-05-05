@@ -33,8 +33,8 @@ var (
 
 type (
 	ExecutionMetrics struct {
-		TotalComponentsCPUTime int
-		ComponentsCPUTime      map[string]int
+		TotalComponentsCPUTime float64
+		ComponentsCPUTime      map[string]float64
 	}
 
 	ExecutionMetricsArray []ExecutionMetrics
@@ -42,7 +42,7 @@ type (
 
 func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
 	execMetrics := ExecutionMetrics{
-		ComponentsCPUTime: map[string]int{},
+		ComponentsCPUTime: map[string]float64{},
 	}
 
 	for _, component := range components {
@@ -50,8 +50,8 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
-		execMetrics.ComponentsCPUTime[component] = int(cpuTimeForComponent)
-		execMetrics.TotalComponentsCPUTime += int(cpuTimeForComponent)
+		execMetrics.ComponentsCPUTime[component] = cpuTimeForComponent
+		execMetrics.TotalComponentsCPUTime += cpuTimeForComponent
 	}
 	return execMetrics, nil
 }
@@ -75,10 +75,10 @@ func getCPUTimeForComponent(client influxdb.Client, start, end, execUUID, compon
 
 func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 	interResults := struct {
-		totalComponentsCPUTime []int
-		componentsCPUTime      map[string][]int
+		totalComponentsCPUTime []float64
+		componentsCPUTime      map[string][]float64
 	}{
-		componentsCPUTime: map[string][]int{},
+		componentsCPUTime: map[string][]float64{},
 	}
 
 	for _, metrics := range metricsArray {
@@ -88,11 +88,27 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 		}
 	}
 	result := ExecutionMetrics{
-		ComponentsCPUTime: map[string]int{},
+		ComponentsCPUTime: map[string]float64{},
 	}
-	result.TotalComponentsCPUTime = int(awftmath.MedianInt(interResults.totalComponentsCPUTime))
+	result.TotalComponentsCPUTime = awftmath.MedianFloat(interResults.totalComponentsCPUTime)
 	for component, value := range interResults.componentsCPUTime {
-		result.ComponentsCPUTime[component] = int(awftmath.MedianInt(value))
+		result.ComponentsCPUTime[component] = awftmath.MedianFloat(value)
 	}
+	return result
+}
+
+func CompareTwo(left, right ExecutionMetrics) ExecutionMetrics {
+	result := ExecutionMetrics{
+		ComponentsCPUTime: map[string]float64{},
+	}
+	result.TotalComponentsCPUTime = (right.TotalComponentsCPUTime - left.TotalComponentsCPUTime) / right.TotalComponentsCPUTime * 100
+	for component, value := range right.ComponentsCPUTime {
+		result.ComponentsCPUTime[component] = 0
+		if _, ok := left.ComponentsCPUTime[component]; !ok {
+			continue
+		}
+		result.ComponentsCPUTime[component] = (value - left.ComponentsCPUTime[component]) / value * 100
+	}
+	awftmath.CheckForNaN(&result, 0)
 	return result
 }

@@ -85,6 +85,7 @@ type (
 	Comparison struct {
 		Reference, Compare Details
 		Diff               Result
+		DiffMetrics        metrics.ExecutionMetrics
 	}
 
 	ResultsArray []Result
@@ -153,6 +154,7 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 			cmp.Diff.Threads *= cmp.Reference.Result.Threads / cmp.Compare.Result.Threads
 			awftmath.CheckForNaN(&cmp.Diff, 100)
 			awftmath.CheckForNaN(&cmp.Diff.QPS, 100)
+			cmp.DiffMetrics = metrics.CompareTwo(cmp.Reference.Metrics, cmp.Compare.Metrics)
 		}
 		compared = append(compared, cmp)
 	}
