@@ -18,4 +18,5 @@ Generate things
 
 * [arewefastyet](arewefastyet.md)	 - 
 * [arewefastyet gen doc](arewefastyet_gen_doc.md)	 - Generate documentation for the CLI
+* [arewefastyet gen report](arewefastyet_gen_report.md)	 - Generate comparison between two sha commits of Vitess
 
