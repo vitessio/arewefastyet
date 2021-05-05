@@ -110,25 +110,6 @@ func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects
 	return &Result{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
 }
 
-// newPercentageResult returns a Result with fields set
-// to 100, representing a percentage.
-func newPercentageResult() Result {
-	return Result{
-		QPS: QPS{
-			Total:  100,
-			Reads:  100,
-			Writes: 100,
-			Other:  100,
-		},
-		TPS:        100,
-		Latency:    100,
-		Errors:     100,
-		Reconnects: 100,
-		Time:       100,
-		Threads:    100,
-	}
-}
-
 // CompareDetailsArrays compare two DetailsArray and return
 // their comparison in a ComparisonArray.
 func CompareDetailsArrays(references, compares DetailsArray) (compared ComparisonArray) {
@@ -140,18 +121,17 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 		if i < len(compares) {
 			cmp.Compare = compares[i]
 		}
-		cmp.Diff = newPercentageResult()
 		if cmp.Compare.GitRef != "" && cmp.Reference.GitRef != "" {
-			cmp.Diff.QPS.Total = (cmp.Compare.Result.QPS.Total - cmp.Reference.Result.QPS.Total) / cmp.Compare.Result.QPS.Total * 100
-			cmp.Diff.QPS.Reads = (cmp.Compare.Result.QPS.Reads - cmp.Reference.Result.QPS.Reads) / cmp.Compare.Result.QPS.Reads * 100
-			cmp.Diff.QPS.Writes = (cmp.Compare.Result.QPS.Writes - cmp.Reference.Result.QPS.Writes) / cmp.Compare.Result.QPS.Writes * 100
-			cmp.Diff.QPS.Other = (cmp.Compare.Result.QPS.Other - cmp.Reference.Result.QPS.Other) / cmp.Compare.Result.QPS.Other * 100
-			cmp.Diff.TPS =  (cmp.Compare.Result.TPS - cmp.Reference.Result.TPS) / cmp.Compare.Result.TPS * 100
-			cmp.Diff.Latency = (cmp.Reference.Result.Latency - cmp.Compare.Result.Latency) / cmp.Reference.Result.Latency * 100
-			cmp.Diff.Reconnects = (cmp.Compare.Result.Reconnects- cmp.Reference.Result.Reconnects) / cmp.Compare.Result.Reconnects * 100
-			cmp.Diff.Errors = (cmp.Compare.Result.Errors - cmp.Reference.Result.Errors) / cmp.Compare.Result.Errors * 100
-			cmp.Diff.Time = int((float64(cmp.Compare.Result.Time) - float64(cmp.Reference.Result.Time)) / float64(cmp.Compare.Result.Time) * 100)
-			cmp.Diff.Threads = (cmp.Compare.Result.Threads - cmp.Reference.Result.Threads) / cmp.Compare.Result.Threads * 100
+			cmp.Diff.QPS.Total = (cmp.Reference.Result.QPS.Total - cmp.Compare.Result.QPS.Total) / cmp.Reference.Result.QPS.Total * 100
+			cmp.Diff.QPS.Reads = (cmp.Reference.Result.QPS.Reads - cmp.Compare.Result.QPS.Reads) / cmp.Reference.Result.QPS.Reads * 100
+			cmp.Diff.QPS.Writes = (cmp.Reference.Result.QPS.Writes - cmp.Compare.Result.QPS.Writes) / cmp.Reference.Result.QPS.Writes * 100
+			cmp.Diff.QPS.Other = (cmp.Reference.Result.QPS.Other - cmp.Compare.Result.QPS.Other) / cmp.Reference.Result.QPS.Other * 100
+			cmp.Diff.TPS = (cmp.Reference.Result.TPS - cmp.Compare.Result.TPS) / cmp.Reference.Result.TPS * 100
+			cmp.Diff.Latency = (cmp.Compare.Result.Latency - cmp.Reference.Result.Latency) / cmp.Compare.Result.Latency * 100
+			cmp.Diff.Reconnects = (cmp.Reference.Result.Reconnects - cmp.Compare.Result.Reconnects) / cmp.Reference.Result.Reconnects * 100
+			cmp.Diff.Errors = (cmp.Reference.Result.Errors - cmp.Compare.Result.Errors) / cmp.Reference.Result.Errors * 100
+			cmp.Diff.Time = int((float64(cmp.Reference.Result.Time) - float64(cmp.Compare.Result.Time)) / float64(cmp.Reference.Result.Time) * 100)
+			cmp.Diff.Threads = (cmp.Reference.Result.Threads - cmp.Compare.Result.Threads) / cmp.Reference.Result.Threads * 100
 			awftmath.CheckForNaN(&cmp.Diff, 0)
 			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
 			cmp.DiffMetrics = metrics.CompareTwo(cmp.Reference.Metrics, cmp.Compare.Metrics)

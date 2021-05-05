@@ -42,7 +42,7 @@
                             <th scope="col"></th>
                             <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $compareSHAs.SHA }}" target="_blank">{{$compareSHAs.short}}</a></th>
                             <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $referenceSHAs.SHA }}" target="_blank">{{$referenceSHAs.short}}</a></th>
-                            <th scope="col" class="text-center">%</th>
+                            <th scope="col" class="text-center">Improved by %</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -213,23 +213,7 @@
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Reference',
-                        data: dataRef,
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                        ],
-                        borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                        ],
-                    },
-                    {
-                        label: 'Compare',
+                        label: '{{.compare.short}}',
                         data: dataCmp,
                         color: 'black',
                         backgroundColor: [
@@ -243,6 +227,22 @@
                             'rgba(255, 99, 132, 1)',
                             'rgba(255, 99, 132, 1)',
                             'rgba(255, 99, 132, 1)',
+                        ],
+                    },
+                    {
+                        label: '{{.reference.short}}',
+                        data: dataRef,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
                         ],
                     }
                 ]
