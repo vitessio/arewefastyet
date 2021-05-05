@@ -170,10 +170,8 @@ ansible/artifacts/*
 #For Mac OS
 .DS_Store
 
-report/
-!report/sample
-!go/tools/report
-!go/cmd/gen/report
+./report/
+!./report/sample
 
 exec/*
 
