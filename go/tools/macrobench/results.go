@@ -22,6 +22,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dustin/go-humanize"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 	"math"
@@ -62,6 +64,7 @@ type (
 		ID        int
 		Source    string
 		CreatedAt *time.Time
+		ExecUUID  string
 	}
 
 	// Details represents the entire macro benchmark and its sub
@@ -72,8 +75,9 @@ type (
 		BenchmarkID
 
 		// refers to commit
-		GitRef string
-		Result Result
+		GitRef  string
+		Result  Result
+		Metrics metrics.ExecutionMetrics
 	}
 
 	// Comparison contains two Details and their difference in a
@@ -222,6 +226,11 @@ func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
 	return reduceMabd
 }
 
+func (mabd Details) GetMetrics(client *influxdb.Client) error {
+
+	return nil
+}
+
 func (mbr Result) TPSStr() string {
 	return humanize.FormatFloat("#,###.#", mbr.TPS)
 }
@@ -263,12 +272,18 @@ func (qps QPS) OtherStr() string {
 }
 
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
-func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client) (map[Type]DetailsArray, error) {
+func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client, metricsClient *influxdb.Client) (map[Type]DetailsArray, error) {
 	macros := map[Type]DetailsArray{}
 	for _, mtype := range Types {
 		macro, err := GetResultsForGitRef(mtype, sha, dbClient)
 		if err != nil {
 			return nil, err
+		}
+		for _, details := range macro {
+			err = details.GetMetrics(metricsClient)
+			if err != nil {
+				return nil, err
+			}
 		}
 		macros[mtype] = macro.ReduceSimpleMedian()
 	}
@@ -284,7 +299,7 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 	}
 
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, " +
+	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, b.exec_uuid, " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
@@ -293,14 +308,13 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	resClient, err := client.Select(query, lastDays, source)
+	result, err := client.Select(query, lastDays, source)
 	if err != nil {
 		return nil, err
 	}
-	resMySQL := resClient.(mysql.SelectResult)
-	for resMySQL.Rows.Next() {
+	for result.Next() {
 		var res Details
-		err = resMySQL.Rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
@@ -318,7 +332,7 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, " +
+	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, b.exec_uuid, " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
@@ -326,14 +340,13 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	resClient, err := client.Select(query, ref)
+	result, err := client.Select(query, ref)
 	if err != nil {
 		return nil, err
 	}
-	resMySQL := resClient.(mysql.SelectResult)
-	for resMySQL.Rows.Next() {
+	for result.Next() {
 		var res Details
-		err = resMySQL.Rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
@@ -358,14 +371,13 @@ func (mbr *Result) insertToMySQL(benchmarkType Type, macrobenchmarkID int, clien
 
 	// insert Result
 	queryResult := fmt.Sprintf("INSERT INTO %s(macrobenchmark_id, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
-	resClient, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
+	resultID, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
 	if err != nil {
 		return err
 	}
-	resultID := resClient.(mysql.InsertResult)
 
 	// insert QPS
-	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String() + "_no")
+	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String()+"_no")
 	_, err = client.Insert(queryQPS, resultID, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
 	if err != nil {
 		return err

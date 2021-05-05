@@ -21,26 +21,15 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 const (
 	ErrorClientConnectionNotInitialized = "the client connection to the database is not initialized"
 )
 
-type (
-	Client struct {
-		db *sql.DB
-	}
-
-	SelectResult struct {
-		Rows *sql.Rows
-	}
-
-	InsertResult struct {
-		ID int64
-	}
-)
+type Client struct {
+	db *sql.DB
+}
 
 // New creates a new Client based on the given ConfigDB.
 // Will soon be deprecated, replaced by ConfigDB.NewClient.
@@ -60,42 +49,30 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
-func (c *Client) Insert(query string, args ...interface{}) (storage.Insertion, error) {
+func (c *Client) Insert(query string, args ...interface{}) (int64, error) {
 	if c.db == nil {
-		return InsertResult{}, errors.New(ErrorClientConnectionNotInitialized)
+		return 0, errors.New(ErrorClientConnectionNotInitialized)
 	}
 	stms, err := c.db.Prepare(query)
 	if err != nil {
-		return InsertResult{}, err
+		return 0, err
 	}
 	defer stms.Close()
 
 	res, err := stms.Exec(args...)
 	if err != nil {
-		return InsertResult{}, err
+		return 0, err
 	}
-	var insertRes InsertResult
-	insertRes.ID, err = res.LastInsertId()
-	return insertRes, err
+	return res.LastInsertId()
 }
 
-func (c *Client) Select(query string, args ...interface{}) (storage.Selection, error) {
+func (c *Client) Select(query string, args ...interface{}) (*sql.Rows, error) {
 	if c.db == nil {
-		return SelectResult{}, errors.New(ErrorClientConnectionNotInitialized)
+		return nil, errors.New(ErrorClientConnectionNotInitialized)
 	}
 	rows, err := c.db.Query(query, args...)
 	if err != nil {
-		return SelectResult{}, err
+		return nil, err
 	}
-	var selectRes SelectResult
-	selectRes.Rows = rows
-	return selectRes, nil
-}
-
-func (m InsertResult) Empty() bool {
-	return m.ID != 0
-}
-
-func (m SelectResult) Empty() bool {
-	return m.Rows != nil
+	return rows, nil
 }

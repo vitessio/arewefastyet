@@ -251,21 +251,3 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 
 	return e, nil
 }
-
-// GetUUIDsFromGitRef returns a slice of all exec_uuid that match the given git ref.
-func GetUUIDsFromGitRef(gitRef string, client *mysql.Client) (execUUIDs []string, err error) {
-	resClient, err := client.Select("SELECT uuid FROM execution WHERE git_ref = ?", gitRef)
-	if err != nil {
-		return nil, err
-	}
-	res := resClient.(mysql.SelectResult)
-	for res.Rows.Next() {
-		var execUUID string
-		err = res.Rows.Scan(&execUUID)
-		if err != nil {
-			return nil, err
-		}
-		execUUIDs = append(execUUIDs, execUUID)
-	}
-	return execUUIDs, nil
-}

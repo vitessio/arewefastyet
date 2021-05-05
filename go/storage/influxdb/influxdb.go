@@ -22,41 +22,24 @@ import (
 	"context"
 	"fmt"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 const (
 	ErrorInvalidConfiguration = "invalid configuration"
 )
 
-type (
-	Client struct {
-		influx influxdb2.Client
-		Config *Config
-	}
-
-	SelectResult struct {
-		Values []map[string]interface{}
-	}
-)
-
-func (c *Client) Close() error {
-	panic("implement me")
+type Client struct {
+	influx influxdb2.Client
+	Config *Config
 }
 
-func (c *Client) Insert(query string, args ...interface{}) (storage.Insertion, error) {
-	panic("implement me")
-}
-
-func (c *Client) Select(query string, args ...interface{}) (storage.Selection, error) {
-	result := SelectResult{
-		Values: []map[string]interface{}{},
-	}
+func (c *Client) Select(query string, args ...interface{}) ([]map[string]interface{}, error) {
+	var result []map[string]interface{}
 	queryAPI := c.influx.QueryAPI("")
 	queryResult, err := queryAPI.Query(context.Background(), query)
 	if err == nil {
 		for queryResult.Next() {
-			result.Values = append(result.Values, queryResult.Record().Values())
+			result = append(result, queryResult.Record().Values())
 		}
 		if queryResult.Err() != nil {
 			return result, fmt.Errorf("Query error: %s\n", queryResult.Err().Error())
@@ -65,8 +48,4 @@ func (c *Client) Select(query string, args ...interface{}) (storage.Selection, e
 		return result, fmt.Errorf("Query error: %s\n", err.Error())
 	}
 	return result, nil
-}
-
-func (s SelectResult) Empty() bool {
-	return len(s.Values) == 0
 }

@@ -21,7 +21,6 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 type ConfigDB struct {
@@ -31,7 +30,7 @@ type ConfigDB struct {
 	Database string
 }
 
-func (cfg ConfigDB) NewClient() (storage.Client, error) {
+func (cfg ConfigDB) NewClient() (*Client, error) {
 	var err error
 	client := &Client{}
 	client.db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", cfg.User, cfg.Password, cfg.Host, cfg.Database))

@@ -24,7 +24,6 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vitessio/arewefastyet/go/storage"
 	"regexp"
 )
 
@@ -46,7 +45,7 @@ type Config struct {
 	Database string
 }
 
-func (cfg Config) NewClient() (storage.Client, error) {
+func (cfg Config) NewClient() (*Client, error) {
 	if !cfg.IsValid() {
 		return nil, errors.New(ErrorInvalidConfiguration)
 	}

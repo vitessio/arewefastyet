@@ -159,18 +159,17 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBench
 // GetResultsForGitRef will fetch and return a MicroBenchmarkDetailsArray
 // containing all the MicroBenchmarkDetails linked to the given git commit SHA.
 func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
-	resClient, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op, md.bytes_per_op,"+
+	result, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op, md.bytes_per_op,"+
 		" md.allocs_per_op, md.mb_per_sec FROM microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
 		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc", ref)
 	if err != nil {
 		return nil, err
 	}
-	resMySQL := resClient.(mysql.SelectResult)
 
-	for resMySQL.Rows.Next() {
+	for result.Next() {
 		var res MicroBenchmarkDetails
 		res.GitRef = ref
-		err = resMySQL.Rows.Scan(&res.PkgName, &res.Name, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
+		err = result.Scan(&res.PkgName, &res.Name, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
 			&res.Result.AllocsPerOp, &res.Result.MBPerSec)
 		if err != nil {
 			return nil, err

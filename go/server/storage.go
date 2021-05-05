@@ -18,23 +18,15 @@
 
 package server
 
-import (
-	"github.com/vitessio/arewefastyet/go/storage"
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
-)
-
-func (s *Server) createStorages() error {
-	dbClient, err := storage.Create(s.dbCfg)
+func (s *Server) createStorages() (err error) {
+	s.dbClient, err = s.dbCfg.NewClient()
 	if err != nil {
-		return err
+		return
 	}
-	s.dbClient = dbClient.(*mysql.Client)
 
-	execMetricsClient, err := storage.Create(s.executionMetricsDBConfig)
+	s.executionMetricsDBClient, err = s.executionMetricsDBConfig.NewClient()
 	if err != nil {
-		return err
+		return
 	}
-	s.executionMetricsDBClient = execMetricsClient.(*influxdb.Client)
-	return nil
+	return
 }
