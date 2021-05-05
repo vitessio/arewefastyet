@@ -212,23 +212,21 @@ func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
 	for i := 0; i < len(mabd); {
 		var j int
 		interResults := ResultsArray{}
+		interMetrics := metrics.ExecutionMetricsArray{}
 		for j = i; j < len(mabd) && mabd[i].GitRef == mabd[j].GitRef; j++ {
 			interResults = append(interResults, mabd[j].Result)
+			interMetrics = append(interMetrics, mabd[j].Metrics)
 		}
 
 		reducedResult := interResults.mergeMedian()
 		reduceMabd = append(reduceMabd, Details{
-			GitRef: mabd[i].GitRef,
-			Result: reducedResult,
+			GitRef:  mabd[i].GitRef,
+			Result:  reducedResult,
+			Metrics: interMetrics.Median(),
 		})
 		i = j
 	}
 	return reduceMabd
-}
-
-func (mabd Details) GetMetrics(client *influxdb.Client) error {
-
-	return nil
 }
 
 func (mbr Result) TPSStr() string {
@@ -279,12 +277,15 @@ func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client, metricsCli
 		if err != nil {
 			return nil, err
 		}
-		for _, details := range macro {
-			err = details.GetMetrics(metricsClient)
+
+		// Get the execution metrics of each macrobenchmark details
+		for i, details := range macro {
+			macro[i].Metrics, err = metrics.GetExecutionMetrics(*metricsClient, details.ExecUUID)
 			if err != nil {
 				return nil, err
 			}
 		}
+
 		macros[mtype] = macro.ReduceSimpleMedian()
 	}
 	return macros, nil

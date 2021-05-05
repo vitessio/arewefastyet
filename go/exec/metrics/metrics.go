@@ -21,6 +21,7 @@ package metrics
 import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
+	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 )
 
 var (
@@ -30,10 +31,14 @@ var (
 	}
 )
 
-type ExecutionMetrics struct {
-	TotalComponentsCPUTime int
-	ComponentsCPUTime      map[string]int
-}
+type (
+	ExecutionMetrics struct {
+		TotalComponentsCPUTime int
+		ComponentsCPUTime      map[string]int
+	}
+
+	ExecutionMetricsArray []ExecutionMetrics
+)
 
 func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
 	execMetrics := ExecutionMetrics{
@@ -66,4 +71,28 @@ func getCPUTimeForComponent(client influxdb.Client, start, end, execUUID, compon
 		time += value["_value"].(float64)
 	}
 	return time, nil
+}
+
+func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
+	interResults := struct {
+		totalComponentsCPUTime []int
+		componentsCPUTime      map[string][]int
+	}{
+		componentsCPUTime: map[string][]int{},
+	}
+
+	for _, metrics := range metricsArray {
+		interResults.totalComponentsCPUTime = append(interResults.totalComponentsCPUTime, metrics.TotalComponentsCPUTime)
+		for component, value := range metrics.ComponentsCPUTime {
+			interResults.componentsCPUTime[component] = append(interResults.componentsCPUTime[component], value)
+		}
+	}
+	result := ExecutionMetrics{
+		ComponentsCPUTime: map[string]int{},
+	}
+	result.TotalComponentsCPUTime = int(awftmath.MedianInt(interResults.totalComponentsCPUTime))
+	for component, value := range interResults.componentsCPUTime {
+		result.ComponentsCPUTime[component] = int(awftmath.MedianInt(value))
+	}
+	return result
 }
