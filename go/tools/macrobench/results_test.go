@@ -20,6 +20,7 @@ package macrobench
 
 import (
 	qt "github.com/frankban/quicktest"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"testing"
 )
 
@@ -68,20 +69,20 @@ func TestMacroBenchmarkDetailsArray_ReduceSimpleMedian(t *testing.T) {
 		wantReduceMabd DetailsArray
 	}{
 		{name: "Few elements with same git ref", mabd: []Details{
-			*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne),
-			*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo),
+			*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+			*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 		}, wantReduceMabd: []Details{
-			*newDetails(BenchmarkID{}, "11bbAAA", resultOfOneHalf),
+			*newDetails(BenchmarkID{}, "11bbAAA", resultOfOneHalf, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 		}},
 
 		{name: "Few elements with different git refs", mabd: []Details{
-			*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne),
-			*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo),
-			*newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne),
-			*newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo),
+			*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+			*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+			*newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+			*newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 		}, wantReduceMabd: []Details{
-			*newDetails(BenchmarkID{}, "11bbAAA", resultOfOneHalf),
-			*newDetails(BenchmarkID{}, "f78gh1p", resultOfOneHalf),
+			*newDetails(BenchmarkID{}, "11bbAAA", resultOfOneHalf, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+			*newDetails(BenchmarkID{}, "f78gh1p", resultOfOneHalf, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 		}},
 	}
 	for _, tt := range tests {
@@ -101,10 +102,10 @@ func BenchmarkReduceSimpleMedian(b *testing.B) {
 	resultOfTwo := *newResult(qpsOfTwo, 2.0, 2.0, 2.0, 2.0, 2, 2.0)
 
 	mabd := DetailsArray{
-		*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne),
-		*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo),
-		*newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne),
-		*newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo),
+		*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+		*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+		*newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+		*newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 	}
 
 	b.ReportAllocs()
@@ -163,37 +164,37 @@ func TestCompareDetailsArrays(t *testing.T) {
 	}{
 		{name: "Simple comparison array", args: args{
 			references: DetailsArray{
-				*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne),
+				*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 			},
 			compares: DetailsArray{
-				*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo),
+				*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 			},
 		}, wantCompared: ComparisonArray{
 			Comparison{
-				Reference: *newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne),
-				Compare:   *newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo),
+				Reference: *newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+				Compare:   *newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 				Diff:      resultOfFifty,
 			},
 		}},
 
 		{name: "Simple comparison array with multiple sources", args: args{
 			references: DetailsArray{
-				*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne),
-				*newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo),
+				*newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+				*newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 			},
 			compares: DetailsArray{
-				*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo),
-				*newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne),
+				*newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+				*newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 			},
 		}, wantCompared: ComparisonArray{
 			Comparison{
-				Reference: *newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne),
-				Compare:   *newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo),
+				Reference: *newDetails(*newBenchmarkID(1, "webhook", nil), "11bbAAA", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+				Compare:   *newDetails(*newBenchmarkID(2, "webhook", nil), "11bbAAA", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 				Diff:      resultOfFifty,
 			},
 			Comparison{
-				Reference: *newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo),
-				Compare:   *newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne),
+				Reference: *newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
+				Compare:   *newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]int{}}),
 				Diff:      *newResult(*newQPS(200, 200, 200, 200), 200, 50, 200, 200, 200, 200),
 			},
 		}},

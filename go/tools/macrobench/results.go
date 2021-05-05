@@ -97,8 +97,8 @@ func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
 	return &BenchmarkID{ID: ID, Source: source, CreatedAt: createdAt}
 }
 
-func newDetails(benchmarkID BenchmarkID, gitRef string, result Result) *Details {
-	return &Details{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result}
+func newDetails(benchmarkID BenchmarkID, gitRef string, result Result, metrics metrics.ExecutionMetrics) *Details {
+	return &Details{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result, Metrics: metrics}
 }
 
 func newQPS(total float64, reads float64, writes float64, other float64) *QPS {
