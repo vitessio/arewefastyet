@@ -22,6 +22,9 @@ import "sort"
 
 // MedianInt computes the median of the given int array.
 func MedianInt(values []int) float64 {
+	if len(values) == 0 {
+		return 0
+	}
 	sort.Ints(values)
 	middle := len(values) / 2
 	if len(values)%2 == 1 {
@@ -32,6 +35,9 @@ func MedianInt(values []int) float64 {
 
 // MedianFloat computes the median of the given float64 array.
 func MedianFloat(values []float64) float64 {
+	if len(values) == 0 {
+		return 0
+	}
 	sort.Float64s(values)
 	middle := len(values) / 2
 	if len(values)%2 == 1 {

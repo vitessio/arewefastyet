@@ -29,6 +29,7 @@ func TestMedianFloat(t *testing.T) {
 		arr []float64
 		want float64
 	}{
+		{name: "No element array", arr: []float64{0}, want: 0},
 		{name: "Single element array", arr: []float64{5.00}, want: 5.00},
 		{name: "Two elements array", arr: []float64{5.00, 10.00}, want: 7.50},
 
@@ -54,6 +55,7 @@ func TestMedianInt(t *testing.T) {
 		arr []int
 		want float64
 	}{
+		{name: "No element array", arr: []int{}, want: 0},
 		{name: "Single element array", arr: []int{5}, want: 5},
 		{name: "Two elements array", arr: []int{5.00, 10.00}, want: 7.5},
 

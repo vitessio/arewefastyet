@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
+	"math"
 )
 
 var (
@@ -78,10 +79,15 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 		totalComponentsCPUTime []float64
 		componentsCPUTime      map[string][]float64
 	}{
-		componentsCPUTime: map[string][]float64{},
+		totalComponentsCPUTime: []float64{},
+		componentsCPUTime:      map[string][]float64{},
 	}
 
 	for _, metrics := range metricsArray {
+		// skipping empty metrics
+		if metrics.TotalComponentsCPUTime == 0 {
+			continue
+		}
 		interResults.totalComponentsCPUTime = append(interResults.totalComponentsCPUTime, metrics.TotalComponentsCPUTime)
 		for component, value := range metrics.ComponentsCPUTime {
 			interResults.componentsCPUTime[component] = append(interResults.componentsCPUTime[component], value)
@@ -108,7 +114,11 @@ func CompareTwo(left, right ExecutionMetrics) ExecutionMetrics {
 			continue
 		}
 		result.ComponentsCPUTime[component] = (value - left.ComponentsCPUTime[component]) / value * 100
+		if math.IsNaN(result.ComponentsCPUTime[component]) || math.IsInf(result.ComponentsCPUTime[component], 0) {
+			result.ComponentsCPUTime[component] = 0
+		}
 	}
 	awftmath.CheckForNaN(&result, 0)
+	awftmath.CheckForInf(&result, 0)
 	return result
 }

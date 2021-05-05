@@ -142,18 +142,18 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 		}
 		cmp.Diff = newPercentageResult()
 		if cmp.Compare.GitRef != "" && cmp.Reference.GitRef != "" {
-			cmp.Diff.QPS.Total *= cmp.Reference.Result.QPS.Total / cmp.Compare.Result.QPS.Total
-			cmp.Diff.QPS.Reads *= cmp.Reference.Result.QPS.Reads / cmp.Compare.Result.QPS.Reads
-			cmp.Diff.QPS.Writes *= cmp.Reference.Result.QPS.Writes / cmp.Compare.Result.QPS.Writes
-			cmp.Diff.QPS.Other *= cmp.Reference.Result.QPS.Other / cmp.Compare.Result.QPS.Other
-			cmp.Diff.TPS *= cmp.Reference.Result.TPS / cmp.Compare.Result.TPS
-			cmp.Diff.Latency *= cmp.Compare.Result.Latency / cmp.Reference.Result.Latency
-			cmp.Diff.Reconnects *= cmp.Reference.Result.Reconnects / cmp.Compare.Result.Reconnects
-			cmp.Diff.Errors *= cmp.Reference.Result.Errors / cmp.Compare.Result.Errors
-			cmp.Diff.Time = int(100 * (float64(cmp.Reference.Result.Time) / float64(cmp.Compare.Result.Time)))
-			cmp.Diff.Threads *= cmp.Reference.Result.Threads / cmp.Compare.Result.Threads
-			awftmath.CheckForNaN(&cmp.Diff, 100)
-			awftmath.CheckForNaN(&cmp.Diff.QPS, 100)
+			cmp.Diff.QPS.Total = (cmp.Compare.Result.QPS.Total - cmp.Reference.Result.QPS.Total) / cmp.Compare.Result.QPS.Total * 100
+			cmp.Diff.QPS.Reads = (cmp.Compare.Result.QPS.Reads - cmp.Reference.Result.QPS.Reads) / cmp.Compare.Result.QPS.Reads * 100
+			cmp.Diff.QPS.Writes = (cmp.Compare.Result.QPS.Writes - cmp.Reference.Result.QPS.Writes) / cmp.Compare.Result.QPS.Writes * 100
+			cmp.Diff.QPS.Other = (cmp.Compare.Result.QPS.Other - cmp.Reference.Result.QPS.Other) / cmp.Compare.Result.QPS.Other * 100
+			cmp.Diff.TPS =  (cmp.Compare.Result.TPS - cmp.Reference.Result.TPS) / cmp.Compare.Result.TPS * 100
+			cmp.Diff.Latency = (cmp.Reference.Result.Latency - cmp.Compare.Result.Latency) / cmp.Reference.Result.Latency * 100
+			cmp.Diff.Reconnects = (cmp.Compare.Result.Reconnects- cmp.Reference.Result.Reconnects) / cmp.Compare.Result.Reconnects * 100
+			cmp.Diff.Errors = (cmp.Compare.Result.Errors - cmp.Reference.Result.Errors) / cmp.Compare.Result.Errors * 100
+			cmp.Diff.Time = int((float64(cmp.Compare.Result.Time) - float64(cmp.Reference.Result.Time)) / float64(cmp.Compare.Result.Time) * 100)
+			cmp.Diff.Threads = (cmp.Compare.Result.Threads - cmp.Reference.Result.Threads) / cmp.Compare.Result.Threads * 100
+			awftmath.CheckForNaN(&cmp.Diff, 0)
+			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
 			cmp.DiffMetrics = metrics.CompareTwo(cmp.Reference.Metrics, cmp.Compare.Metrics)
 		}
 		compared = append(compared, cmp)
@@ -302,7 +302,7 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 	}
 
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, b.exec_uuid, " +
+	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
@@ -335,7 +335,7 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, b.exec_uuid, " +
+	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
