@@ -21,8 +21,18 @@ package metrics
 import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
+	"log"
 )
 
-func GetCPU(client influxdb.Client, execUUID string) {
-	client.Select(fmt.Sprintf(`from(bucket:"%s") |> range(start:-48h) |> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s")`, client.Config.Database, execUUID))
+func GetCPU(client influxdb.Client, start, end, execUUID, component string) error {
+	resultClient, err := client.Select(fmt.Sprintf(`from(bucket:"%s")
+			|> range(start: %s, stop: %s)
+			|> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s" and r.component == "%s")`,
+		client.Config.Database, start, end, execUUID, component))
+	if err != nil {
+		return err
+	}
+	result := resultClient.(influxdb.SelectResult)
+	log.Println(len(result.Values))
+	return nil
 }

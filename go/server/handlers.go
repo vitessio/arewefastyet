@@ -46,10 +46,6 @@ func (s *Server) informationHandler(c *gin.Context) {
 }
 
 func (s *Server) homeHandler(c *gin.Context) {
-	// WIP
-	metrics.GetCPU(*s.executionMetricsDBClient, "666519ad-bb49-4b27-9d2e-e3cf40371f2b")
-
-
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
@@ -207,4 +203,20 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		"lastReleaseSHA": lastReleaseSHA,
 		"resultMatrix":   matrix,
 	})
+}
+
+func (s *Server) viewExecutionHandler(c *gin.Context) {
+	uuid := c.Query("e")
+	if uuid == "" {
+		c.HTML(http.StatusOK, "search.tmpl", gin.H{
+			"title": "Vitess benchmark",
+		})
+		return
+	}
+
+	err := metrics.GetCPU(*s.executionMetricsDBClient, "-48h", "now()", uuid, "vtgate")
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
 }

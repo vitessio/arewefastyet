@@ -29,10 +29,16 @@ const (
 	ErrorInvalidConfiguration = "invalid configuration"
 )
 
-type Client struct {
-	influx influxdb2.Client
-	Config *Config
-}
+type (
+	Client struct {
+		influx influxdb2.Client
+		Config *Config
+	}
+
+	SelectResult struct {
+		Values []map[string]interface{}
+	}
+)
 
 func (c *Client) Close() error {
 	panic("implement me")
@@ -43,21 +49,24 @@ func (c *Client) Insert(query string, args ...interface{}) (storage.Insertion, e
 }
 
 func (c *Client) Select(query string, args ...interface{}) (storage.Selection, error) {
+	result := SelectResult{
+		Values: []map[string]interface{}{},
+	}
 	queryAPI := c.influx.QueryAPI("")
-	result, err := queryAPI.Query(context.Background(), query)
+	queryResult, err := queryAPI.Query(context.Background(), query)
 	if err == nil {
-		for result.Next() {
-			if result.TableChanged() {
-				fmt.Printf("table: %s\n", result.TableMetadata().String())
-			}
-			fmt.Printf("row: %s\n", result.Record().String())
+		for queryResult.Next() {
+			result.Values = append(result.Values, queryResult.Record().Values())
 		}
-		if result.Err() != nil {
-			fmt.Printf("Query error: %s\n", result.Err().Error())
+		if queryResult.Err() != nil {
+			return result, fmt.Errorf("Query error: %s\n", queryResult.Err().Error())
 		}
 	} else {
-		fmt.Printf("Query error: %s\n", err.Error())
+		return result, fmt.Errorf("Query error: %s\n", err.Error())
 	}
-	return nil, nil
+	return result, nil
 }
 
+func (s SelectResult) Empty() bool {
+	return len(s.Values) == 0
+}
