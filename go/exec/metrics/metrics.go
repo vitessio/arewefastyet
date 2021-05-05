@@ -23,12 +23,35 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 )
 
+var (
+	components = []string{
+		"vtgate",
+		"vttablet",
+	}
+)
+
 type ExecutionMetrics struct {
-	TotalCPUTime int
-	TotalComponentsCPUTime map[string]int
+	TotalComponentsCPUTime int
+	ComponentsCPUTime      map[string]int
 }
 
-func GetCPUTimeForComponent(client influxdb.Client, start, end, execUUID, component string) (float64, error) {
+func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
+	execMetrics := ExecutionMetrics{
+		ComponentsCPUTime: map[string]int{},
+	}
+
+	for _, component := range components {
+		cpuTimeForComponent, err := getCPUTimeForComponent(client, "0", "now()", execUUID, component)
+		if err != nil {
+			return ExecutionMetrics{}, err
+		}
+		execMetrics.ComponentsCPUTime[component] = int(cpuTimeForComponent)
+		execMetrics.TotalComponentsCPUTime += int(cpuTimeForComponent)
+	}
+	return execMetrics, nil
+}
+
+func getCPUTimeForComponent(client influxdb.Client, start, end, execUUID, component string) (float64, error) {
 	result, err := client.Select(fmt.Sprintf(`from(bucket:"%s")
 			|> range(start: %s, stop: %s)
 			|> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s" and r.component == "%s")
@@ -42,10 +65,5 @@ func GetCPUTimeForComponent(client influxdb.Client, start, end, execUUID, compon
 	for _, value := range result {
 		time += value["_value"].(float64)
 	}
-
 	return time, nil
-}
-
-func GetTotalComponentsCPUTime(client influxdb.Client, execUUID string) {
-
 }

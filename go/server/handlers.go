@@ -195,7 +195,7 @@ func (s *Server) viewExecutionHandler(c *gin.Context) {
 		return
 	}
 
-	time, err := metrics.GetCPUTimeForComponent(*s.executionMetricsDBClient, "0", "now()", uuid, "vtgate")
+	time, err := metrics.GetExecutionMetrics(*s.executionMetricsDBClient, uuid)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
