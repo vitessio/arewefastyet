@@ -21,6 +21,7 @@ package gen
 import (
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/cmd/gen/doc"
+	"github.com/vitessio/arewefastyet/go/cmd/gen/report"
 )
 
 func GenCmd() *cobra.Command {
@@ -30,6 +31,6 @@ func GenCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(doc.GenerateDoc())
-
+	cmd.AddCommand(report.GenerateReport())
 	return cmd
 }

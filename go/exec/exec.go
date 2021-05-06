@@ -22,6 +22,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
+	"github.com/vitessio/arewefastyet/go/exec/stats"
 	"github.com/vitessio/arewefastyet/go/infra"
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
@@ -64,6 +65,10 @@ type Exec struct {
 
 	// Client to communicate with the SQL database.
 	clientDB *mysql.Client
+
+	// Configuration used to authenticate and insert execution stats
+	// data to a remote database system.
+	statsRemoteDBConfig stats.RemoteDBConfig
 
 	// rootDir represents the parent directory of the Exec.
 	// From there, the Exec's unique directory named Exec.dirPath will
@@ -141,6 +146,8 @@ func (e *Exec) Prepare() error {
 	if err != nil {
 		return err
 	}
+	e.AnsibleConfig.ExtraVars = map[string]interface{}{}
+	e.statsRemoteDBConfig.AddToAnsible(&e.AnsibleConfig)
 	e.prepared = true
 	return nil
 }
@@ -177,11 +184,9 @@ func (e *Exec) Execute() (err error) {
 		return err
 	}
 
-	e.AnsibleConfig.ExtraVars = map[string]interface{}{
-		keyExecUUID:      e.UUID.String(),
-		keyVitessVersion: e.GitRef,
-		keyExecSource:    e.Source,
-	}
+	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
+	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
+	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
