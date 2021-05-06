@@ -51,7 +51,7 @@
   tags:
     - prometheus
   roles:
-    - cloudalchemy.prometheus
+    - { role: cloudalchemy.prometheus, when: stats_remote_db_host is defined }
   vars:
     vitess_cluster: 'main'
     mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
@@ -59,6 +59,7 @@
     gateway_targets: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (gateway.port | default(15001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
     vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port | default(15000) | string )) }}{% endfor -%}{{ targets }}"
     node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
+    prometheus_version: 2.26.0
     prometheus_targets:
       tablets:
       - targets: '{{ tablet_targets }}'
@@ -117,6 +118,14 @@
         file_sd_configs:
           - files:
               - "{{ prometheus_config_dir }}/file_sd/gateways.yml"
+    prometheus_remote_write:
+      - url: "http://{{ stats_remote_db_host }}/prom/api/v1/write"
+        basic_auth:
+          username: "{{ stats_remote_db_user }}"
+          password: "{{ stats_remote_db_password }}"
+      - url: "http://{{ stats_remote_db_host }}:{{ stats_remote_db_port }}/api/v1/prom/write?db={{ stats_remote_db_database }}&u={{ stats_remote_db_user }}&p={{ stats_remote_db_password }}"
+    prometheus_external_labels:
+      exec_uuid: "{{ arewefastyet_exec_uuid }}"
 
 
 - hosts: vtctld
