@@ -12,14 +12,14 @@
 ---
 all:
   hosts:
-    147.75.101.103:
+    HOST_IP_0:
   children:
     storage:
       hosts:
-        147.75.101.103:
+        HOST_IP_0:
     metrics:
       hosts:
-        147.75.101.103:
+        HOST_IP_0:
       vars:
         prometheus_web_external_url: "http://{{ ansible_host }}/prom/"
         prometheus_version: 2.26.0
@@ -27,7 +27,7 @@ all:
           enable-feature: remote-write-receiver,promql-at-modifier
     frontend:
       hosts:
-        147.75.101.103:
+        HOST_IP_0:
       vars:
         grafana_server:
           serve_from_sub_path: True
