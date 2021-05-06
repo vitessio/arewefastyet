@@ -33,7 +33,7 @@ type Client struct {
 	Config *Config
 }
 
-func (c *Client) Select(query string, args ...interface{}) ([]map[string]interface{}, error) {
+func (c *Client) Select(query string) ([]map[string]interface{}, error) {
 	var result []map[string]interface{}
 	queryAPI := c.influx.QueryAPI("")
 	queryResult, err := queryAPI.Query(context.Background(), query)
