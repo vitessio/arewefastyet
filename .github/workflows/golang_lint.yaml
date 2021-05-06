@@ -25,4 +25,4 @@ jobs:
         run: $(go env GOPATH)/bin/golangci-lint --version
 
       - name: Run golangci-lint
-        run: $(go env GOPATH)/bin/golangci-lint run ./go/...
+        run: $(go env GOPATH)/bin/golangci-lint run ./go/... --timeout 5m
