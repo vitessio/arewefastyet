@@ -49,10 +49,13 @@ func (cfg Config) NewClient() (*Client, error) {
 	if !cfg.IsValid() {
 		return nil, errors.New(ErrorInvalidConfiguration)
 	}
+
+	// Default influxdb port
 	if cfg.Port == "" {
 		cfg.Port = "8086"
 	}
 
+	// Add the prefix http:// to the host if it is not already present
 	if matched, err := regexp.Match(`http(s?)://.+`, []byte(cfg.Host)); !matched || err != nil {
 		if err != nil {
 			return nil, err

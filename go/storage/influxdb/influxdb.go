@@ -28,11 +28,14 @@ const (
 	ErrorInvalidConfiguration = "invalid configuration"
 )
 
+// Client used to query and interact with an influxdb server.
 type Client struct {
 	influx influxdb2.Client
 	Config *Config
 }
 
+// Select issues the given query to the Client and parses the results into a key/value
+// map with the name of the field as key and its interface{} as value.
 func (c *Client) Select(query string) ([]map[string]interface{}, error) {
 	var result []map[string]interface{}
 	queryAPI := c.influx.QueryAPI("")
