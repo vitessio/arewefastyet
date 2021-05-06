@@ -95,7 +95,7 @@
                         {{range $val := .microbenchmark}}
                         <tr>
                             <td>{{ $val.PkgName }}</td>
-                            <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
+                            <td><a href="/microbench/{{ $val.Name }}">{{ $val.Name }}</a></td>
                             <td class="text-right">{{ $val.Result.OpsStr }}</td>
                             <td class="text-right">{{ $val.Result.NSPerOpToDurationStr }}</td>
                             <td class="text-right">{{ $val.Result.MBPerSecStr }}</td>

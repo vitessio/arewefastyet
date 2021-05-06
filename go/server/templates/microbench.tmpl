@@ -35,7 +35,7 @@
                 {{range $val := .resultMatrix}}
                     <tr>
                         <td>{{ $val.PkgName }}</td>
-                        <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
+                        <td><a href="/microbench/{{ $val.Name }}">{{ $val.Name }}</a></td>
                         <td class="text-right">{{ $val.Current.OpsStr }}</td>
                         <td class="text-right">{{ $val.Last.OpsStr }}</td>
 

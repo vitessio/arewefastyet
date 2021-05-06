@@ -20,14 +20,15 @@ package microbench
 
 import (
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/vitessio/arewefastyet/go/mysql"
-	"github.com/vitessio/arewefastyet/go/tools/math"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/dustin/go-humanize"
+	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/tools/math"
 )
 
 type (
@@ -106,7 +107,7 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 		for j := 0; j < len(lastReleaseMbd); j++ {
 			if lastReleaseMbd[j].BenchmarkId == details.BenchmarkId {
 				compareMb.Last = lastReleaseMbd[j].Result
-				compareMb.CurrLastDiff =  compareMb.Last.NSPerOp / compareMb.Current.NSPerOp
+				compareMb.CurrLastDiff = compareMb.Last.NSPerOp / compareMb.Current.NSPerOp
 				break
 			}
 		}
@@ -115,16 +116,13 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 	return compareMbs
 }
 
-// ReduceSimpleMedian reduces a MicroBenchmarkDetailsArray by merging
+// ReduceSimpleMedianByName reduces a MicroBenchmarkDetailsArray by merging
 // all MicroBenchmarkDetails with the same benchmark name into a single
 // one. The results of each MicroBenchmarkDetails correspond to the median
 // of the merged elements.
-func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBenchmarkDetailsArray) {
+func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByName() (reduceMbd MicroBenchmarkDetailsArray) {
 	sort.SliceStable(mbd, func(i, j int) bool {
-		return mbd[i].Name < mbd[j].Name
-	})
-	sort.SliceStable(mbd, func(i, j int) bool {
-		return mbd[i].PkgName < mbd[j].PkgName
+		return mbd[i].PkgName < mbd[j].PkgName && mbd[i].Name < mbd[j].Name
 	})
 	for i := 0; i < len(mbd); {
 		var j int
@@ -134,6 +132,44 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedian() (reduceMbd MicroBench
 		var interBytesPerOp []float64
 		var interAllocsPerOp []float64
 		for j = i; j < len(mbd) && mbd[i].Name == mbd[j].Name; j++ {
+			interOps = append(interOps, mbd[j].Result.Ops)
+			interNSPerOp = append(interNSPerOp, mbd[j].Result.NSPerOp)
+			interMBPerSec = append(interMBPerSec, mbd[j].Result.MBPerSec)
+			interBytesPerOp = append(interBytesPerOp, mbd[j].Result.BytesPerOp)
+			interAllocsPerOp = append(interAllocsPerOp, mbd[j].Result.AllocsPerOp)
+		}
+
+		interOpsResult := int(math.MedianInt(interOps))
+		interNSPerOpResult := math.MedianFloat(interNSPerOp)
+		interMBPerSecResult := math.MedianFloat(interMBPerSec)
+		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)
+		interAllocsPerOpResult := math.MedianFloat(interAllocsPerOp)
+		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(
+			*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name),
+			mbd[i].GitRef,
+			*NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult),
+		))
+		i = j
+	}
+	return reduceMbd
+}
+
+// ReduceSimpleMedianByGitRef reduces a MicroBenchmarkDetailsArray by merging
+// all MicroBenchmarkDetails with the same git ref into a single
+// one. The results of each MicroBenchmarkDetails correspond to the median
+// of the merged elements.
+func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd MicroBenchmarkDetailsArray) {
+	sort.SliceStable(mbd, func(i, j int) bool {
+		return mbd[i].GitRef < mbd[j].GitRef
+	})
+	for i := 0; i < len(mbd); {
+		var j int
+		var interOps []int
+		var interNSPerOp []float64
+		var interMBPerSec []float64
+		var interBytesPerOp []float64
+		var interAllocsPerOp []float64
+		for j = i; j < len(mbd) && mbd[i].GitRef == mbd[j].GitRef; j++ {
 			interOps = append(interOps, mbd[j].Result.Ops)
 			interNSPerOp = append(interNSPerOp, mbd[j].Result.NSPerOp)
 			interMBPerSec = append(interMBPerSec, mbd[j].Result.MBPerSec)
@@ -179,6 +215,29 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 	return mrs, nil
 }
 
+// GetLatestResultsFor will fetch and return a MicroBenchmarkDetailsArray
+// containing all the MicroBenchmarkDetails linked to latest runs of the given benchmark name.
+func GetLatestResultsFor(name string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
+	rows, err := client.Select("select m.pkg_name, m.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op,"+
+		" md.allocs_per_op, md.mb_per_sec  from (select microbenchmark_no, pkg_name, name, git_ref"+
+		" from microbenchmark where name = ? order by microbenchmark_no limit 10) m, "+
+		"microbenchmark_details md where md.microbenchmark_no = m.microbenchmark_no", name)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var res MicroBenchmarkDetails
+		err = rows.Scan(&res.PkgName, &res.Name, &res.GitRef, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
+			&res.Result.AllocsPerOp, &res.Result.MBPerSec)
+		if err != nil {
+			return nil, err
+		}
+		mrs = append(mrs, res)
+	}
+	return mrs, nil
+}
+
 func (r MicroBenchmarkResult) OpsStr() string {
 	if r.Ops == 0 {
 		return ""
@@ -191,7 +250,7 @@ func (r MicroBenchmarkResult) NSPerOpStr() string {
 		return ""
 	}
 
-	return humanize.FormatFloat("#,###.#",r.NSPerOp)
+	return humanize.FormatFloat("#,###.#", r.NSPerOp)
 }
 
 func (r MicroBenchmarkResult) NSPerOpToDurationStr() string {

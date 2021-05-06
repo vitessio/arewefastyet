@@ -19,12 +19,13 @@
 package server
 
 import (
+	"net/http"
+	"sort"
+
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
-	"net/http"
-	"sort"
 )
 
 func handleRenderErrors(c *gin.Context, err error) {
@@ -111,7 +112,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 			handleRenderErrors(c, err)
 			return
 		}
-		micros[sha] = micro.ReduceSimpleMedian()
+		micros[sha] = micro.ReduceSimpleMedianByName()
 	}
 	microsMatrix := microbench.MergeMicroBenchmarkDetails(micros[reference], micros[compare])
 	sort.SliceStable(microsMatrix, func(i, j int) bool {
@@ -147,7 +148,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	micro = micro.ReduceSimpleMedian()
+	micro = micro.ReduceSimpleMedianByName()
 
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
 		"title":          "Vitess benchmark",
@@ -176,7 +177,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	currentMbd = currentMbd.ReduceSimpleMedian()
+	currentMbd = currentMbd.ReduceSimpleMedianByName()
 
 	// get last release results
 	lastReleaseSHA := c.Query("lrsh")
@@ -189,7 +190,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedian()
+	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedianByName()
 
 	matrix := microbench.MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd)
 	sort.SliceStable(matrix, func(i, j int) bool {
@@ -201,5 +202,22 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		"currentSHA":     currentSHA,
 		"lastReleaseSHA": lastReleaseSHA,
 		"resultMatrix":   matrix,
+	})
+}
+
+func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	results, err := microbench.GetLatestResultsFor(name, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	//results = results.ReduceSimpleMedianByGitRef()
+
+	c.HTML(http.StatusOK, "microbench_single.tmpl", gin.H{
+		"title":   "Vitess benchmark - microbenchmark - " + name,
+		"name":    name,
+		"results": results,
 	})
 }

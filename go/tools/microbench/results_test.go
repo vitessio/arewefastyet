@@ -19,11 +19,12 @@
 package microbench
 
 import (
-	qt "github.com/frankban/quicktest"
 	"testing"
+
+	qt "github.com/frankban/quicktest"
 )
 
-func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
+func TestMicroBenchmarkResults_ReduceSimpleMedianByName(t *testing.T) {
 	tests := []struct {
 		name string
 		mbd  MicroBenchmarkDetailsArray
@@ -88,13 +89,13 @@ func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
-			got := tt.mbd.ReduceSimpleMedian()
+			got := tt.mbd.ReduceSimpleMedianByName()
 			c.Assert(got, qt.DeepEquals, tt.want)
 		})
 	}
 }
 
-func BenchmarkReduceSimpleMedian(b *testing.B) {
+func BenchmarkReduceSimpleMedianByName(b *testing.B) {
 	mbd := MicroBenchmarkDetailsArray{
 		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
 		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
@@ -106,14 +107,14 @@ func BenchmarkReduceSimpleMedian(b *testing.B) {
 
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		got := mbd.ReduceSimpleMedian()
+		got := mbd.ReduceSimpleMedianByName()
 
 		// Must be reduced to two indexes (bench1-pkg1 AND bench2-pkg1).
 		if len(got) != 2 {
 			b.Error("must be reduced to two elements")
 		}
 		if got[0].Result.NSPerOp != 1.00 || got[1].Result.NSPerOp != 2.00 {
-			b.Error("wrong output from ReduceSimpleMedian")
+			b.Error("wrong output from ReduceSimpleMedianByName")
 		}
 	}
 }
@@ -253,7 +254,7 @@ func TestHumanReadableStrings(t *testing.T) {
 	c.Assert(r.BytesPerOpStr(), qt.Equals, "4.5 kB/s")
 
 	r = MicroBenchmarkResult{
-		NSPerOp:     2.5149999999999997,
+		NSPerOp: 2.5149999999999997,
 	}
 	c.Assert(r.NSPerOpStr(), qt.Equals, "2.5")
 	c.Assert(r.NSPerOpToDurationStr(), qt.Equals, "2.00 ns")

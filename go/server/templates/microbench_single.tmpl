@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "headHTML" .}}
+
+<body>
+
+<!-- Navigation -->
+{{ template "navigation" "/microbench" }}
+
+<!--------------------------------------------------------------------------- Information ---------------------------------------------------------------------------------------------->
+
+<section class="py-5">
+    <div class="container">
+        <h1>Microbenchmarks</h1>
+        <p class="lead">Displaying results for microbenchmark {{ .name }}</p>
+    </div>
+
+    <div class="container-xl">
+        <table class="table table-striped table-hover table-sm table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">Git Ref</th>
+                <th scope="col" class="text-center">Number of Iterations</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range $val := .results}}
+                <tr>
+                    <td>{{ $val.GitRef }}</td>
+                    <td class="text-right">{{ $val.Result.Ops }}</td>
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{{template "footerHTML" .}}
+
+</body>
+
+</html>
