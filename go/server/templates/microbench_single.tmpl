@@ -13,7 +13,7 @@
 <section class="py-5">
     <div class="container">
         <h1>Microbenchmarks</h1>
-        <p class="lead">Displaying results for microbenchmark {{ .name }}</p>
+        <p class="lead">Displaying last 10 runs results for microbenchmark <a href="https://github.com/vitessio/vitess/search?q={{ .name }}&type=code" target="_blank">{{ .name }}</a></p>
     </div>
 
     <div class="container-xl">
@@ -22,6 +22,10 @@
             <tr>
                 <th scope="col">Git Ref</th>
                 <th scope="col" class="text-center">Number of Iterations</th>
+                <th scope="col" class="text-center">Time/op</th>
+                <th scope="col" class="text-center">B/op</th>
+                <th scope="col" class="text-center">MB/s</th>
+                <th scope="col" class="text-center">Allocs/op</th>
             </tr>
             </thead>
             <tbody>
@@ -29,14 +33,193 @@
                 <tr>
                     <td>{{ $val.GitRef }}</td>
                     <td class="text-right">{{ $val.Result.Ops }}</td>
+                    <td class="text-right">{{ $val.Result.NSPerOpToDurationStr }}</td>
+                    <td class="text-right">{{ $val.Result.BytesPerOpStr }}</td>
+                    <td class="text-right">{{ $val.Result.MBPerSecStr }}</td>
+                    <td class="text-right">{{ $val.Result.AllocsPerOpStr }}</td>
                 </tr>
             {{end}}
             </tbody>
         </table>
     </div>
+
+    <!----------------------------------------------------------------------------- Number of Ops ------------------------------------------------------------------------------------------>
+
+    <section class="py-3">
+        <div class="container">
+            <h3>Number of Iterations</h3>
+            <p class="lead"></p>
+            <p></p>
+        </div>
+    </section>
+
+    <header class="py-1 bg-image-full" style="">
+        <div class="container">
+            {{ if not .results }}
+                <p class="text-center font-italic">The graph could not be rendered.</p>
+            {{ else }}
+                <canvas id="NumOps" height="80"></canvas>
+            {{ end }}
+        </div>
+    </header>
+
+    <!----------------------------------------------------------------------------- Time/op  ------------------------------------------------------------------------------------------>
+
+    <section class="py-3">
+        <div class="container">
+            <h3>Time/op</h3>
+            <p class="lead"></p>
+            <p></p>
+        </div>
+    </section>
+
+    <header class="py-1 bg-image-full" style="">
+        <div class="container">
+            {{ if not .results }}
+                <p class="text-center font-italic">The graph could not be rendered.</p>
+            {{ else }}
+                <canvas id="Time/op" height="80"></canvas>
+            {{ end }}
+        </div>
+    </header>
+
+    <!----------------------------------------------------------------------------- B/op  ------------------------------------------------------------------------------------------>
+
+    <section class="py-3">
+        <div class="container">
+            <h3>B/op</h3>
+            <p class="lead"></p>
+            <p></p>
+        </div>
+    </section>
+
+    <header class="py-1 bg-image-full" style="">
+        <div class="container">
+            {{ if not .results }}
+                <p class="text-center font-italic">The graph could not be rendered.</p>
+            {{ else }}
+                <canvas id="B/op" height="80"></canvas>
+            {{ end }}
+        </div>
+    </header>
+
+    <!----------------------------------------------------------------------------- MB/sec  ------------------------------------------------------------------------------------------>
+
+    <section class="py-3">
+        <div class="container">
+            <h3>MB/sec</h3>
+            <p class="lead"></p>
+            <p></p>
+        </div>
+    </section>
+
+    <header class="py-1 bg-image-full" style="">
+        <div class="container">
+            {{ if not .results }}
+                <p class="text-center font-italic">The graph could not be rendered.</p>
+            {{ else }}
+                <canvas id="MB/sec" height="80"></canvas>
+            {{ end }}
+        </div>
+    </header>
+
+    <!----------------------------------------------------------------------------- Allocs/op  ------------------------------------------------------------------------------------------>
+
+    <section class="py-3">
+        <div class="container">
+            <h3>Allocs/op</h3>
+            <p class="lead"></p>
+            <p></p>
+        </div>
+    </section>
+
+    <header class="py-1 bg-image-full" style="">
+        <div class="container">
+            {{ if not .results }}
+                <p class="text-center font-italic">The graph could not be rendered.</p>
+            {{ else }}
+                <canvas id="Allocs/op" height="80"></canvas>
+            {{ end }}
+        </div>
+    </header>
 </section>
 
 {{template "footerHTML" .}}
+
+<!-- Chart JS code -->
+
+<script>
+    function drawGraph(id, labels, data, labelName) {
+        let ctx = document.getElementById(id).getContext('2d');
+        // used to generate random color every time
+        let r = Math.round (Math.random () * 255);
+        let g = Math.round (Math.random () * 255);
+        let b = Math.round (Math.random () * 255);
+
+        var x = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: labelName,
+                    borderColor: `rgb(${r},${g},${b})`,
+                    data: data
+                },
+                ]
+            },
+
+            // Configuration options go here
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            display: false, // this will remove only the label
+                            padding: 4,
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0
+                        },
+                    }]
+                }
+            }
+        });
+    }
+
+
+    function plotGraphs(data) {
+        label_data = []
+        num_ops = []
+        time_ops = []
+        mb_sec = []
+        b_ops = []
+        allocs_ops = []
+
+        for (var i = 0; i < data.length; i++) {
+            num_ops.push(data[i].Result.Ops);
+            label_data.push(data[i].GitRef);
+            time_ops.push(data[i].Result.NSPerOp);
+            mb_sec.push(data[i].Result.MBPerSec);
+            b_ops.push(data[i].Result.BytesPerOp);
+            allocs_ops.push(data[i].Result.AllocsPerOp);
+        }
+        drawGraph("NumOps", label_data, num_ops, "Number of Iterations");
+        drawGraph("Time/op",label_data, time_ops, "Time/op");
+        drawGraph("B/op",label_data, b_ops, "B/op");
+        drawGraph("MB/sec",label_data, mb_sec, "MB/sec");
+        drawGraph("Allocs/op",label_data, allocs_ops, "Allocs/op");
+    }
+
+    {{ if .results }}
+    plotGraphs({{ .results }})
+    {{ end }}
+
+</script>
 
 </body>
 

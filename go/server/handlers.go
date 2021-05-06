@@ -213,7 +213,7 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	//results = results.ReduceSimpleMedianByGitRef()
+	results = results.ReduceSimpleMedianByGitRef()
 
 	c.HTML(http.StatusOK, "microbench_single.tmpl", gin.H{
 		"title":   "Vitess benchmark - microbenchmark - " + name,

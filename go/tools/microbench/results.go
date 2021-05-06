@@ -220,7 +220,7 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 func GetLatestResultsFor(name string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
 	rows, err := client.Select("select m.pkg_name, m.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op,"+
 		" md.allocs_per_op, md.mb_per_sec  from (select microbenchmark_no, pkg_name, name, git_ref"+
-		" from microbenchmark where name = ? order by microbenchmark_no limit 10) m, "+
+		" from microbenchmark where name = ? order by microbenchmark_no desc limit 10) m, "+
 		"microbenchmark_details md where md.microbenchmark_no = m.microbenchmark_no", name)
 	if err != nil {
 		return nil, err
@@ -281,7 +281,7 @@ func (r MicroBenchmarkResult) BytesPerOpStr() string {
 		return ""
 	}
 
-	return humanize.Bytes(uint64(r.BytesPerOp)) + "/s"
+	return humanize.Bytes(uint64(r.BytesPerOp)) + "/op"
 }
 func (r MicroBenchmarkResult) AllocsPerOpStr() string {
 	if r.AllocsPerOp == 0 {
