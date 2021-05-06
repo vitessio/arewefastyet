@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
-	"math"
 )
 
 var (
@@ -33,14 +32,24 @@ var (
 )
 
 type (
+	// ExecutionMetrics contains all the different system and service metrics
+	// that were gathered during the execution of a benchmark.
 	ExecutionMetrics struct {
+		// The sum of the time taken by every component.
 		TotalComponentsCPUTime float64
-		ComponentsCPUTime      map[string]float64
+
+		// Map of string/float that contains the name of the component as a key
+		// and the time taken by that component as a value.
+		ComponentsCPUTime map[string]float64
 	}
 
+	// ExecutionMetricsArray is a slice of ExecutionMetrics, it has a Median method
+	// to compute the overall median of the slice.
 	ExecutionMetricsArray []ExecutionMetrics
 )
 
+// GetExecutionMetrics fetches and computes a single execution's metrics.
+// Metrics are fetched using the given influxdb.Client and execUUID.
 func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
 	execMetrics := ExecutionMetrics{
 		ComponentsCPUTime: map[string]float64{},
@@ -57,6 +66,9 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 	return execMetrics, nil
 }
 
+// getCPUTimeForComponent return the CPU Time taken by a component (vtgate, vttablet, ...)
+// for the given execUUID. The range of the select is defined through the start and end
+// arguments, to select the whole span one can use: "start:0, end:now()".
 func getCPUTimeForComponent(client influxdb.Client, start, end, execUUID, component string) (float64, error) {
 	result, err := client.Select(fmt.Sprintf(`from(bucket:"%s")
 			|> range(start: %s, stop: %s)
@@ -74,6 +86,8 @@ func getCPUTimeForComponent(client influxdb.Client, start, end, execUUID, compon
 	return time, nil
 }
 
+// Median computes the median of the ExecutionMetricsArray.
+// It returns an ExecutionMetrics struct containing the medians.
 func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 	interResults := struct {
 		totalComponentsCPUTime []float64
@@ -83,8 +97,10 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 		componentsCPUTime:      map[string][]float64{},
 	}
 
+	// Append all the metrics into interResults
 	for _, metrics := range metricsArray {
-		// skipping empty metrics
+		// If an execution is missing metrics, we do not count it toward
+		// the median of all execution.
 		if metrics.TotalComponentsCPUTime == 0 {
 			continue
 		}
@@ -103,19 +119,27 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 	return result
 }
 
+// CompareTwo computes the percentage decrease between left and right.
+// If left is equal to 20 and right is equal to 10, then the decrease will be 50%.
+// The percentage are returned through ExecutionMetrics.
 func CompareTwo(left, right ExecutionMetrics) ExecutionMetrics {
 	result := ExecutionMetrics{
 		ComponentsCPUTime: map[string]float64{},
 	}
-	result.TotalComponentsCPUTime = (right.TotalComponentsCPUTime - left.TotalComponentsCPUTime) / right.TotalComponentsCPUTime * 100
-	for component, value := range right.ComponentsCPUTime {
+	if left.TotalComponentsCPUTime != 0 {
+		result.TotalComponentsCPUTime = (left.TotalComponentsCPUTime - right.TotalComponentsCPUTime) / left.TotalComponentsCPUTime * 100
+	} else if right.TotalComponentsCPUTime > 0 {
+		result.TotalComponentsCPUTime = -100
+	}
+	for component, value := range left.ComponentsCPUTime {
 		result.ComponentsCPUTime[component] = 0
-		if _, ok := left.ComponentsCPUTime[component]; !ok {
+		if _, ok := right.ComponentsCPUTime[component]; !ok {
 			continue
 		}
-		result.ComponentsCPUTime[component] = (value - left.ComponentsCPUTime[component]) / value * 100
-		if math.IsNaN(result.ComponentsCPUTime[component]) || math.IsInf(result.ComponentsCPUTime[component], 0) {
-			result.ComponentsCPUTime[component] = 0
+		if value != 0 {
+			result.ComponentsCPUTime[component] = (value - right.ComponentsCPUTime[component]) / value * 100
+		} else if right.ComponentsCPUTime[component] > 0 {
+			result.ComponentsCPUTime[component] = -100
 		}
 	}
 	awftmath.CheckForNaN(&result, 0)

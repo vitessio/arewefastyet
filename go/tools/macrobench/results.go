@@ -134,7 +134,7 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 			cmp.Diff.Threads = (cmp.Reference.Result.Threads - cmp.Compare.Result.Threads) / cmp.Reference.Result.Threads * 100
 			awftmath.CheckForNaN(&cmp.Diff, 0)
 			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
-			cmp.DiffMetrics = metrics.CompareTwo(cmp.Reference.Metrics, cmp.Compare.Metrics)
+			cmp.DiffMetrics = metrics.CompareTwo(cmp.Compare.Metrics, cmp.Reference.Metrics)
 		}
 		compared = append(compared, cmp)
 	}
