@@ -19,10 +19,15 @@
 package microbench
 
 import (
+	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/math"
 	"sort"
+	"strconv"
+	"strings"
+	"time"
+	"unicode"
 )
 
 type (
@@ -101,7 +106,7 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 		for j := 0; j < len(lastReleaseMbd); j++ {
 			if lastReleaseMbd[j].BenchmarkId == details.BenchmarkId {
 				compareMb.Last = lastReleaseMbd[j].Result
-				compareMb.CurrLastDiff = compareMb.Current.NSPerOp / compareMb.Last.NSPerOp
+				compareMb.CurrLastDiff =  compareMb.Last.NSPerOp / compareMb.Current.NSPerOp
 				break
 			}
 		}
@@ -180,6 +185,7 @@ func (r MicroBenchmarkResult) OpsStr() string {
 	}
 	return humanize.Comma(int64(r.Ops))
 }
+
 func (r MicroBenchmarkResult) NSPerOpStr() string {
 	if r.NSPerOp == 0 {
 		return ""
@@ -187,6 +193,23 @@ func (r MicroBenchmarkResult) NSPerOpStr() string {
 
 	return humanize.FormatFloat("#,###.#",r.NSPerOp)
 }
+
+func (r MicroBenchmarkResult) NSPerOpToDurationStr() string {
+	if r.NSPerOp == 0 {
+		return ""
+	}
+
+	dur, _ := time.ParseDuration(fmt.Sprintf("%fns", r.NSPerOp))
+	str := dur.String()
+	i := strings.IndexFunc(str, func(r rune) bool {
+		return !unicode.IsNumber(r) && r != '.'
+	})
+	durStr := str[:i]
+	durUnit := str[i:]
+	durFloat, _ := strconv.ParseFloat(durStr, 64)
+	return fmt.Sprintf("%.2f %s", durFloat, durUnit)
+}
+
 func (r MicroBenchmarkResult) MBPerSecStr() string {
 	if r.MBPerSec == 0 {
 		return ""

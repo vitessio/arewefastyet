@@ -49,7 +49,7 @@ type Config struct {
 	SkipSteps []string
 
 	// Type will be used to differentiate macro benchmarks.
-	Type MacroBenchmarkType
+	Type Type
 
 	// Source defines from where the macro benchmark is triggered.
 	// This field is used to distinguish runs triggered by webhooks,

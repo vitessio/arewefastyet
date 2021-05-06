@@ -16,21 +16,29 @@
  * /
  */
 
-package gen
+package git
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/cmd/gen/doc"
-	"github.com/vitessio/arewefastyet/go/cmd/gen/report"
+	qt "github.com/frankban/quicktest"
+	"testing"
 )
 
-func GenCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use: "gen <command>",
-		Short: "Generate things",
+func TestShortenSHA(t *testing.T) {
+	tests := []struct {
+		name string
+		sha string
+		want string
+	}{
+		{name: "Regular SHA", sha: "5a504473aec6176b2523bf935ffe4217f61e9928", want: "5a50447"},
+		{name: "Short SHA", sha: "5a504473", want: "5a50447"},
+		{name: "Tiny SHA", sha: "5a50", want: "5a50"},
+		{name: "Empty", sha: "", want: ""},
 	}
-
-	cmd.AddCommand(doc.GenerateDoc())
-	cmd.AddCommand(report.GenerateReport())
-	return cmd
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+			gotSHA := ShortenSHA(tt.sha)
+			c.Assert(gotSHA, qt.Equals, tt.want)
+		})
+	}
 }

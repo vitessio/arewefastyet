@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "headHTML" .}}
+
+<body>
+
+    <!-- Navigation -->
+    {{ template "navigation" "/compare" }}
+
+    <section class="py-5">
+        <div class="container">
+            <h1>Compare</h1>
+
+            <div class="main">
+                <form type="GET" action="/compare">
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="{{.reference.SHA}}" placeholder="Reference commit SHA" name="r">
+                        <input type="text" class="form-control" value="{{.compare.SHA}}" placeholder="Compare commit SHA" name="c">
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary" type="submit">
+                                Compare
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            {{ if and .compare.SHA .reference.SHA }}
+                <h2>Comparing <a href="https://github.com/vitessio/vitess/commit/{{ .compare.SHA }}" target="_blank">{{.compare.short}}</a> with <a href="https://github.com/vitessio/vitess/commit/{{ .reference.SHA }}" target="_blank">{{.reference.short}}</a>.</h2>
+                {{ $compareSHAs := .compare }}
+                {{ $referenceSHAs := .reference }}
+
+                {{ if .macrobenchmark }}
+                    {{ range $key, $val := .macrobenchmark }}
+
+                    <h4>{{ $key.ToUpper }}</h4>
+                    {{ if $val }}
+                    <table class="table table-striped table-hover table-sm table-bordered" >
+                        <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col" class="text-center">QPS Total</th>
+                            <th scope="col" class="text-center">QPS Reads</th>
+                            <th scope="col" class="text-center">QPS Writes</th>
+                            <th scope="col" class="text-center">QPS Other</th>
+                            <th scope="col" class="text-center">TPS</th>
+                            <th scope="col" class="text-center">Latency</th>
+                            <th scope="col" class="text-center">Errors</th>
+                            <th scope="col" class="text-center">Reconnects</th>
+                            <th scope="col" class="text-center">Time</th>
+                            <th scope="col" class="text-center">Threads</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{ range $elem := $val }}
+                        <tr>
+                            <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $compareSHAs.SHA }}" target="_blank">{{$compareSHAs.short}}</a></th>
+                            {{ template "rowMacro" $elem.Compare.Result }}
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $referenceSHAs.SHA }}" target="_blank">{{$referenceSHAs.short}}</a></th>
+                            {{ template "rowMacro" $elem.Reference.Result }}
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">%</th>
+                            {{ template "rowMacro" $elem.Diff }}
+                        </tr>
+                        {{ end }}
+                        </tbody>
+                    </table>
+                    <canvas id="{{$key}}-bar-chart" height="75"></canvas>
+                    {{ else if not $val }}
+                        <div class="alert alert-warning" role="alert">
+                            No {{ $key.ToUpper }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$referenceSHAs.SHA}},{{ $compareSHAs.SHA }}]&type=macrobench-{{$key}}">request</a> a run.
+                        </div>
+                    {{ end }}
+                {{ end }}
+                {{ else if not .macrobenchmark }}
+                    <div class="alert alert-warning" role="alert">
+                        No macro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=macrobench">request</a> a run.
+                    </div>
+                {{ end }}
+
+                {{ if .microbenchmark }}
+                <h3>Micro benchmarks</h3>
+                <div>
+                <table class="table table-striped table-hover table-sm table-bordered" style="width: max-content;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Pkg</th>
+                            <th scope="col">Name</th>
+                            <th scope="col" colspan="1" class="text-center">Diff</th>
+                            <th scope="col" colspan="2" class="text-center">Number of Iterations</th>
+                            <th scope="col" colspan="2" class="text-center">Time/op</th>
+                            <th scope="col" colspan="2" class="text-center">B/op</th>
+                            <th scope="col" colspan="2" class="text-center">MB/s</th>
+                            <th scope="col" colspan="2" class="text-center">Allocs/op</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range $val := .microbenchmark}}
+                        <tr>
+                            <td>{{ $val.PkgName }}</td>
+                            <td><a href="https://github.com/vitessio/vitess/search?q={{ $val.Name }}&type=code" target="_blank">{{ $val.Name }}</a></td>
+                            <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-danger {{ else if ge $val.CurrLastDiff 1.10 }} bg-success {{ end }}">{{ $val.CurrLastDiffStr }}</td>
+                            <td class="text-right">{{ $val.Current.OpsStr }}</td>
+                            <td class="text-right">{{ $val.Last.OpsStr }}</td>
+
+                            <td class="text-right">{{ $val.Current.NSPerOpToDurationStr }}</td>
+                            <td class="text-right">{{ $val.Last.NSPerOpToDurationStr }}</td>
+
+                            <td class="text-right">{{ $val.Current.MBPerSecStr }}</td>
+                            <td class="text-right">{{ $val.Last.MBPerSecStr }}</td>
+
+                            <td class="text-right">{{ $val.Current.BytesPerOpStr }}</td>
+                            <td class="text-right">{{ $val.Last.BytesPerOpStr }}</td>
+
+                            <td class="text-right">{{ $val.Current.AllocsPerOpStr }}</td>
+                            <td class="text-right">{{ $val.Last.AllocsPerOpStr }}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+                </div>
+                {{ else if not .microbenchmark }}
+                <div class="alert alert-warning" role="alert">
+                    No micro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=microbench">request</a> a run.
+                </div>
+                {{ end }}
+            {{ end }}
+        </div>
+    </section>
+
+    <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
+
+
+  {{template "footerHTML" .}}
+
+<script>
+    function macroCmpBarCharts(type, macro) {
+        for (const macroKey in macro) {
+            var compareMacros = macro[macroKey]["Compare"]["Result"]
+            var referenceMacros = macro[macroKey]["Reference"]["Result"]
+
+            var labels = []
+            var dataCmp = []
+            var dataRef = []
+            var wants = ["total", "reads", "writes", "other"]
+            for (var x in referenceMacros["qps"]) {
+                if (wants.includes(x)) {
+                    labels.push(x)
+                    dataCmp.push(compareMacros["qps"][x])
+                    dataRef.push(referenceMacros["qps"][x])
+                }
+            }
+            const data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Reference',
+                        data: dataRef,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                        ],
+                    },
+                    {
+                        label: 'Compare',
+                        data: dataCmp,
+                        color: 'black',
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                            'rgba(255, 99, 132, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 99, 132, 1)',
+                        ],
+                    }
+                ]
+            };
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                        }
+                    }
+                },
+            };
+            var ctx = document.getElementById(type+"-bar-chart").getContext('2d');
+            var chart = new Chart(ctx, config)
+        }
+    }
+
+    var macro = {{ .macrobenchmark }}
+
+    for (const macroKey in macro) {
+        macroCmpBarCharts(macroKey, macro[macroKey])
+    }
+
+</script>
+
+</body>
+
+</html>

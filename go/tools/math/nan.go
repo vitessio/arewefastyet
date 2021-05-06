@@ -16,21 +16,21 @@
  * /
  */
 
-package gen
+package math
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/cmd/gen/doc"
-	"github.com/vitessio/arewefastyet/go/cmd/gen/report"
+	"math"
+	"reflect"
 )
 
-func GenCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use: "gen <command>",
-		Short: "Generate things",
+// CheckForNaN walks through the given interface and set any float64 value that
+// are NaN to the value of setTo.
+func CheckForNaN(data interface{}, setTo float64) {
+	v := reflect.ValueOf(data).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if field.Kind() == reflect.Float64 && math.IsNaN(field.Float()) {
+			v.Field(i).SetFloat(setTo)
+		}
 	}
-
-	cmd.AddCommand(doc.GenerateDoc())
-	cmd.AddCommand(report.GenerateReport())
-	return cmd
 }

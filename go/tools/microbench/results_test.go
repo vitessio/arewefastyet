@@ -137,7 +137,7 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: MicroBenchmarkResult{NSPerOp: 1.00}, Last: MicroBenchmarkResult{NSPerOp: 5.00}, CurrLastDiff: 0.2},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: MicroBenchmarkResult{NSPerOp: 1.00}, Last: MicroBenchmarkResult{NSPerOp: 5.00}, CurrLastDiff: 5},
 		}},
 
 		// tc2
@@ -151,8 +151,8 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 0.2},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 1.101123595505618},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
 		}},
 
 		// tc3
@@ -168,9 +168,9 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 1.0357142857142858},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 0.2},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 1.101123595505618},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
 		}},
 
 		// tc4
@@ -192,12 +192,12 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 1.0357142857142858},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 0.2},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 1.101123595505618},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2-pkg2"}, Current: *NewMicroBenchmarkResult(0, 3.50, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 6.00, 0, 0, 0), CurrLastDiff: 0.5833333333333334},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"}, Current: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0), CurrLastDiff: 1.1904761904761905},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1-pkg3"}, Current: *NewMicroBenchmarkResult(0, 2385.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 2560.00, 0, 0, 0), CurrLastDiff: 0.931640625},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2-pkg2"}, Current: *NewMicroBenchmarkResult(0, 3.50, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 6.00, 0, 0, 0), CurrLastDiff: 1.7142857142857142},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"}, Current: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0), CurrLastDiff: 0.8400000000000001},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1-pkg3"}, Current: *NewMicroBenchmarkResult(0, 2385.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 2560.00, 0, 0, 0), CurrLastDiff: 1.0733752620545074},
 		}},
 
 		// tc5
@@ -217,11 +217,11 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 1.0357142857142858},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 0.2},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 1.101123595505618},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, Current: *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2-pkg2"}, Current: *NewMicroBenchmarkResult(0, 3.50, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 0, 0, 0, 0), CurrLastDiff: 1},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"}, Current: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0), CurrLastDiff: 1.1904761904761905},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1-pkg2"}, Current: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0), CurrLastDiff: 0.8400000000000001},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1-pkg3"}, Current: *NewMicroBenchmarkResult(0, 2385.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 0.00, 0, 0, 0), CurrLastDiff: 1},
 		}},
 	}
@@ -248,6 +248,7 @@ func TestHumanReadableStrings(t *testing.T) {
 	c.Assert(r.AllocsPerOpStr(), qt.Equals, "1.106456 M")
 	c.Assert(r.MBPerSecStr(), qt.Equals, "45 MB/s")
 	c.Assert(r.NSPerOpStr(), qt.Equals, "141,650,883.5")
+	c.Assert(r.NSPerOpToDurationStr(), qt.Equals, "141.65 ms")
 	c.Assert(r.OpsStr(), qt.Equals, "876,543")
 	c.Assert(r.BytesPerOpStr(), qt.Equals, "4.5 kB/s")
 
@@ -255,4 +256,5 @@ func TestHumanReadableStrings(t *testing.T) {
 		NSPerOp:     2.5149999999999997,
 	}
 	c.Assert(r.NSPerOpStr(), qt.Equals, "2.5")
+	c.Assert(r.NSPerOpToDurationStr(), qt.Equals, "2.00 ns")
 }

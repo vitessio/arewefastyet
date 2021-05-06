@@ -23,36 +23,39 @@ import (
 )
 
 type (
-	// MacroBenchmarkType determines the type of a macro benchmark.
+	// Type determines the type of a macro benchmark.
 	// For instance a macro benchmark can be OLTP or TPCC.
-	MacroBenchmarkType string
+	Type string
 )
 
 const (
-	OLTP = MacroBenchmarkType("oltp")
-	TPCC = MacroBenchmarkType("tpcc")
+	OLTP = Type("oltp")
+	TPCC = Type("tpcc")
 
 	IncorrectMacroBenchmarkType = "incorrect macrobenchmark type"
 )
 
+// Types lists all the macro benchmark types.
+var Types = []Type{OLTP, TPCC}
+
 // Type implements Cobra flag.Value interface.
-func (mbtype *MacroBenchmarkType) Type() string {
-	return "MacroBenchmarkType"
+func (mbtype *Type) Type() string {
+	return "Type"
 }
 
 // Set implements Cobra flag.Value interface.
-func (mbtype *MacroBenchmarkType) Set(s string) error {
-	*mbtype = MacroBenchmarkType(s)
+func (mbtype *Type) Set(s string) error {
+	*mbtype = Type(s)
 	return nil
 }
 
-// ToUpper returns a new MacroBenchmarkType in upper case.
-func (mbtype MacroBenchmarkType) ToUpper() MacroBenchmarkType {
-	return MacroBenchmarkType(strings.ToUpper(string(mbtype)))
+// ToUpper returns a new Type in upper case.
+func (mbtype Type) ToUpper() Type {
+	return Type(strings.ToUpper(string(mbtype)))
 }
 
-// String returns the given MacroBenchmarkType as a string.
+// String returns the given Type as a string.
 // It also implements the flag.Value interface.
-func (mbtype MacroBenchmarkType) String() string {
+func (mbtype Type) String() string {
 	return string(mbtype)
 }
