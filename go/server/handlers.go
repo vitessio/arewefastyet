@@ -85,7 +85,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 	}
 
 	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, reference, compare)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, reference, compare)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -116,7 +116,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 		return
 	}
 
-	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, s.dbClient)
+	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, s.dbClient, s.executionMetricsDBClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return

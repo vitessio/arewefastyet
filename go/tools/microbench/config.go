@@ -19,7 +19,7 @@ package microbench
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
 const (

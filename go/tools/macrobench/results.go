@@ -22,7 +22,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dustin/go-humanize"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 	"math"
 	"sort"
@@ -62,6 +64,7 @@ type (
 		ID        int
 		Source    string
 		CreatedAt *time.Time
+		ExecUUID  string
 	}
 
 	// Details represents the entire macro benchmark and its sub
@@ -72,8 +75,9 @@ type (
 		BenchmarkID
 
 		// refers to commit
-		GitRef string
-		Result Result
+		GitRef  string
+		Result  Result
+		Metrics metrics.ExecutionMetrics
 	}
 
 	// Comparison contains two Details and their difference in a
@@ -81,6 +85,7 @@ type (
 	Comparison struct {
 		Reference, Compare Details
 		Diff               Result
+		DiffMetrics        metrics.ExecutionMetrics
 	}
 
 	ResultsArray []Result
@@ -93,8 +98,8 @@ func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
 	return &BenchmarkID{ID: ID, Source: source, CreatedAt: createdAt}
 }
 
-func newDetails(benchmarkID BenchmarkID, gitRef string, result Result) *Details {
-	return &Details{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result}
+func newDetails(benchmarkID BenchmarkID, gitRef string, result Result, metrics metrics.ExecutionMetrics) *Details {
+	return &Details{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result, Metrics: metrics}
 }
 
 func newQPS(total float64, reads float64, writes float64, other float64) *QPS {
@@ -103,25 +108,6 @@ func newQPS(total float64, reads float64, writes float64, other float64) *QPS {
 
 func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *Result {
 	return &Result{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
-}
-
-// newPercentageResult returns a Result with fields set
-// to 100, representing a percentage.
-func newPercentageResult() Result {
-	return Result{
-		QPS: QPS{
-			Total:  100,
-			Reads:  100,
-			Writes: 100,
-			Other:  100,
-		},
-		TPS:        100,
-		Latency:    100,
-		Errors:     100,
-		Reconnects: 100,
-		Time:       100,
-		Threads:    100,
-	}
 }
 
 // CompareDetailsArrays compare two DetailsArray and return
@@ -135,20 +121,20 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 		if i < len(compares) {
 			cmp.Compare = compares[i]
 		}
-		cmp.Diff = newPercentageResult()
 		if cmp.Compare.GitRef != "" && cmp.Reference.GitRef != "" {
-			cmp.Diff.QPS.Total *= cmp.Reference.Result.QPS.Total / cmp.Compare.Result.QPS.Total
-			cmp.Diff.QPS.Reads *= cmp.Reference.Result.QPS.Reads / cmp.Compare.Result.QPS.Reads
-			cmp.Diff.QPS.Writes *= cmp.Reference.Result.QPS.Writes / cmp.Compare.Result.QPS.Writes
-			cmp.Diff.QPS.Other *= cmp.Reference.Result.QPS.Other / cmp.Compare.Result.QPS.Other
-			cmp.Diff.TPS *= cmp.Reference.Result.TPS / cmp.Compare.Result.TPS
-			cmp.Diff.Latency *= cmp.Compare.Result.Latency / cmp.Reference.Result.Latency
-			cmp.Diff.Reconnects *= cmp.Reference.Result.Reconnects / cmp.Compare.Result.Reconnects
-			cmp.Diff.Errors *= cmp.Reference.Result.Errors / cmp.Compare.Result.Errors
-			cmp.Diff.Time = int(100 * (float64(cmp.Reference.Result.Time) / float64(cmp.Compare.Result.Time)))
-			cmp.Diff.Threads *= cmp.Reference.Result.Threads / cmp.Compare.Result.Threads
-			awftmath.CheckForNaN(&cmp.Diff, 100)
-			awftmath.CheckForNaN(&cmp.Diff.QPS, 100)
+			cmp.Diff.QPS.Total = (cmp.Reference.Result.QPS.Total - cmp.Compare.Result.QPS.Total) / cmp.Reference.Result.QPS.Total * 100
+			cmp.Diff.QPS.Reads = (cmp.Reference.Result.QPS.Reads - cmp.Compare.Result.QPS.Reads) / cmp.Reference.Result.QPS.Reads * 100
+			cmp.Diff.QPS.Writes = (cmp.Reference.Result.QPS.Writes - cmp.Compare.Result.QPS.Writes) / cmp.Reference.Result.QPS.Writes * 100
+			cmp.Diff.QPS.Other = (cmp.Reference.Result.QPS.Other - cmp.Compare.Result.QPS.Other) / cmp.Reference.Result.QPS.Other * 100
+			cmp.Diff.TPS = (cmp.Reference.Result.TPS - cmp.Compare.Result.TPS) / cmp.Reference.Result.TPS * 100
+			cmp.Diff.Latency = (cmp.Compare.Result.Latency - cmp.Reference.Result.Latency) / cmp.Compare.Result.Latency * 100
+			cmp.Diff.Reconnects = (cmp.Reference.Result.Reconnects - cmp.Compare.Result.Reconnects) / cmp.Reference.Result.Reconnects * 100
+			cmp.Diff.Errors = (cmp.Reference.Result.Errors - cmp.Compare.Result.Errors) / cmp.Reference.Result.Errors * 100
+			cmp.Diff.Time = int((float64(cmp.Reference.Result.Time) - float64(cmp.Compare.Result.Time)) / float64(cmp.Reference.Result.Time) * 100)
+			cmp.Diff.Threads = (cmp.Reference.Result.Threads - cmp.Compare.Result.Threads) / cmp.Reference.Result.Threads * 100
+			awftmath.CheckForNaN(&cmp.Diff, 0)
+			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
+			cmp.DiffMetrics = metrics.CompareTwo(cmp.Compare.Metrics, cmp.Reference.Metrics)
 		}
 		compared = append(compared, cmp)
 	}
@@ -208,14 +194,17 @@ func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
 	for i := 0; i < len(mabd); {
 		var j int
 		interResults := ResultsArray{}
+		interMetrics := metrics.ExecutionMetricsArray{}
 		for j = i; j < len(mabd) && mabd[i].GitRef == mabd[j].GitRef; j++ {
 			interResults = append(interResults, mabd[j].Result)
+			interMetrics = append(interMetrics, mabd[j].Metrics)
 		}
 
 		reducedResult := interResults.mergeMedian()
 		reduceMabd = append(reduceMabd, Details{
-			GitRef: mabd[i].GitRef,
-			Result: reducedResult,
+			GitRef:  mabd[i].GitRef,
+			Result:  reducedResult,
+			Metrics: interMetrics.Median(),
 		})
 		i = j
 	}
@@ -263,13 +252,22 @@ func (qps QPS) OtherStr() string {
 }
 
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
-func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client) (map[Type]DetailsArray, error) {
+func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client, metricsClient *influxdb.Client) (map[Type]DetailsArray, error) {
 	macros := map[Type]DetailsArray{}
 	for _, mtype := range Types {
 		macro, err := GetResultsForGitRef(mtype, sha, dbClient)
 		if err != nil {
 			return nil, err
 		}
+
+		// Get the execution metrics of each macrobenchmark details
+		for i, details := range macro {
+			macro[i].Metrics, err = metrics.GetExecutionMetrics(*metricsClient, details.ExecUUID)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		macros[mtype] = macro.ReduceSimpleMedian()
 	}
 	return macros, nil
@@ -284,7 +282,7 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 	}
 
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, " +
+	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
@@ -293,13 +291,13 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	rows, err := client.Select(query, lastDays, source)
+	result, err := client.Select(query, lastDays, source)
 	if err != nil {
 		return nil, err
 	}
-	for rows.Next() {
+	for result.Next() {
 		var res Details
-		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
@@ -317,7 +315,7 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, " +
+	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
@@ -325,13 +323,13 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	rows, err := client.Select(query, ref)
+	result, err := client.Select(query, ref)
 	if err != nil {
 		return nil, err
 	}
-	for rows.Next() {
+	for result.Next() {
 		var res Details
-		err = rows.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.Result.TPS, &res.Result.Latency,
+		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
 			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
@@ -362,7 +360,7 @@ func (mbr *Result) insertToMySQL(benchmarkType Type, macrobenchmarkID int, clien
 	}
 
 	// insert QPS
-	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String() + "_no")
+	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String()+"_no")
 	_, err = client.Insert(queryQPS, resultID, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
 	if err != nil {
 		return err

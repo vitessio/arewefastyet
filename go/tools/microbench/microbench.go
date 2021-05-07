@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"go.uber.org/multierr"
 	"go/types"
@@ -51,11 +51,11 @@ type benchmark struct {
 
 func (b *benchmark) registerToMySQL(client *mysql.Client) error {
 	query := "INSERT INTO microbenchmark(exec_uuid, pkg_name, name, git_ref) VALUES(NULLIF(?, ''), ?, ?, ?)"
-	id, err := client.Insert(query, b.execUUID, b.pkgName, b.name, b.gitHash)
+	res, err := client.Insert(query, b.execUUID, b.pkgName, b.name, b.gitHash)
 	if err != nil {
 		return err
 	}
-	b.id = id
+	b.id = res
 	return nil
 }
 

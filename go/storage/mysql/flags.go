@@ -41,7 +41,6 @@ func (cfg *ConfigDB) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&cfg.Database, flagDatabaseName, "", "Database to use.")
 	cmd.Flags().StringVar(&cfg.Host, flagDatabaseHost, "", "Hostname of the database")
 	cmd.Flags().StringVar(&cfg.Password, flagDatabasePassword, "", "Password to authenticate the database.")
-
 	cmd.Flags().StringVar(&cfg.User, flagDatabaseUser, "", "User used to connect to the database")
 
 	_ = viper.BindPFlag(flagDatabaseName, cmd.Flags().Lookup(flagDatabaseName))

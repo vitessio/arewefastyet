@@ -31,6 +31,7 @@ type Client struct {
 	db *sql.DB
 }
 
+// New creates a new Client based on the given ConfigDB.
 func New(config ConfigDB) (client *Client, err error) {
 	client = &Client{}
 	client.db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", config.User, config.Password, config.Host, config.Database))
@@ -47,7 +48,7 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
-func (c Client) Insert(query string, args ...interface{}) (ID int64, err error) {
+func (c *Client) Insert(query string, args ...interface{}) (int64, error) {
 	if c.db == nil {
 		return 0, errors.New(ErrorClientConnectionNotInitialized)
 	}
@@ -64,11 +65,11 @@ func (c Client) Insert(query string, args ...interface{}) (ID int64, err error) 
 	return res.LastInsertId()
 }
 
-func (c Client) Select(query string, args ...interface{}) (rows *sql.Rows, err error) {
+func (c *Client) Select(query string, args ...interface{}) (*sql.Rows, error) {
 	if c.db == nil {
 		return nil, errors.New(ErrorClientConnectionNotInitialized)
 	}
-	rows, err = c.db.Query(query, args...)
+	rows, err := c.db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}

@@ -34,3 +34,15 @@ func CheckForNaN(data interface{}, setTo float64) {
 		}
 	}
 }
+
+// CheckForInf walks through the given interface and set any float64 value that
+// are InF (either positive or negative) to the value of setTo.
+func CheckForInf(data interface{}, setTo float64) {
+	v := reflect.ValueOf(data).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if field.Kind() == reflect.Float64 && math.IsInf(field.Float(), 0) {
+			v.Field(i).SetFloat(setTo)
+		}
+	}
+}

@@ -18,18 +18,15 @@
 
 package server
 
-import "github.com/vitessio/arewefastyet/go/mysql"
-
-func (s *Server) setupMySQL() (err error) {
-	if s.dbCfg == nil {
-		return nil
+func (s *Server) createStorages() (err error) {
+	s.dbClient, err = s.dbCfg.NewClient()
+	if err != nil {
+		return
 	}
 
-	if s.dbCfg.IsValid() {
-		s.dbClient, err = mysql.New(*s.dbCfg)
-		if err != nil {
-			return err
-		}
+	s.executionMetricsDBClient, err = s.executionMetricsDBConfig.NewClient()
+	if err != nil {
+		return
 	}
-	return nil
+	return
 }

@@ -18,7 +18,8 @@ package report
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/report"
 	"log"
 )
@@ -28,6 +29,7 @@ func GenerateReport() *cobra.Command {
 	var toSHA string
 	var fromSHA string
 	var dbClient mysql.ConfigDB
+	var metricsCfg influxdb.Config
 	cmd := &cobra.Command{
 		Use: "report",
 		Short: "Generate comparison between two sha commits of Vitess",
@@ -37,7 +39,12 @@ func GenerateReport() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			err = report.GenerateCompareReport(client,fromSHA,toSHA,reportFile)
+
+			metricsClient, err := metricsCfg.NewClient()
+			if err != nil {
+				return err
+			}
+			err = report.GenerateCompareReport(client, metricsClient, fromSHA,toSHA,reportFile)
 			if err != nil {
 				return err
 			}
@@ -51,5 +58,6 @@ func GenerateReport() *cobra.Command {
 	cmd.Flags().StringVar(&fromSHA, "compare-from", "", "SHA for Vitess that we want to compare from")
 	_ = cmd.MarkFlagRequired("compare-from")
 	dbClient.AddToCommand(cmd)
+	metricsCfg.AddToCommand(cmd)
 	return cmd
 }

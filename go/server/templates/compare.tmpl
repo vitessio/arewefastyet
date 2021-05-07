@@ -55,32 +55,87 @@ limitations under the License.
                         <thead>
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col" class="text-center">QPS Total</th>
-                            <th scope="col" class="text-center">QPS Reads</th>
-                            <th scope="col" class="text-center">QPS Writes</th>
-                            <th scope="col" class="text-center">QPS Other</th>
-                            <th scope="col" class="text-center">TPS</th>
-                            <th scope="col" class="text-center">Latency</th>
-                            <th scope="col" class="text-center">Errors</th>
-                            <th scope="col" class="text-center">Reconnects</th>
-                            <th scope="col" class="text-center">Time</th>
-                            <th scope="col" class="text-center">Threads</th>
+                            <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $compareSHAs.SHA }}" target="_blank">{{$compareSHAs.short}}</a></th>
+                            <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $referenceSHAs.SHA }}" target="_blank">{{$referenceSHAs.short}}</a></th>
+                            <th scope="col" class="text-center">Improved by %</th>
                         </tr>
                         </thead>
                         <tbody>
                         {{ range $elem := $val }}
-                        <tr>
-                            <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $compareSHAs.SHA }}" target="_blank">{{$compareSHAs.short}}</a></th>
-                            {{ template "rowMacro" $elem.Compare.Result }}
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $referenceSHAs.SHA }}" target="_blank">{{$referenceSHAs.short}}</a></th>
-                            {{ template "rowMacro" $elem.Reference.Result }}
-                        </tr>
-                        <tr>
-                            <th scope="row" class="text-center">%</th>
-                            {{ template "rowMacro" $elem.Diff }}
-                        </tr>
+                            <tr>
+                                <th scope="row" class="text-center">QPS Total</th>
+                                <td class="text-center">{{ $elem.Compare.Result.QPS.TotalStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.TotalStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.QPS.TotalStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">QPS Reads</th>
+                                <td class="text-center">{{ $elem.Compare.Result.QPS.ReadsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.ReadsStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.QPS.ReadsStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">QPS Writes</th>
+                                <td class="text-center">{{ $elem.Compare.Result.QPS.WritesStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.WritesStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.QPS.WritesStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">QPS Other</th>
+                                <td class="text-center">{{ $elem.Compare.Result.QPS.OtherStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.OtherStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.QPS.OtherStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">TPS</th>
+                                <td class="text-center">{{ $elem.Compare.Result.TPSStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.TPSStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.TPSStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">Latency</th>
+                                <td class="text-center">{{ $elem.Compare.Result.LatencyStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.LatencyStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.LatencyStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">Errors</th>
+                                <td class="text-center">{{ $elem.Compare.Result.ErrorsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.ErrorsStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.ErrorsStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">Reconnects</th>
+                                <td class="text-center">{{ $elem.Compare.Result.ReconnectsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.ReconnectsStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.ReconnectsStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">Time</th>
+                                <td class="text-center">{{ $elem.Compare.Result.TimeStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.TimeStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.TimeStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">Threads</th>
+                                <td class="text-center">{{ $elem.Compare.Result.ThreadsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.ThreadsStr }}</td>
+                                <td class="text-center">{{ $elem.Diff.ThreadsStr }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-center">Total CPU time</th>
+                                <td class="text-center">{{ formatFloat $elem.Compare.Metrics.TotalComponentsCPUTime }}</td>
+                                <td class="text-center">{{ formatFloat $elem.Reference.Metrics.TotalComponentsCPUTime }}</td>
+                                <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsCPUTime }}</td>
+                            </tr>
+                            {{ range $componentCPUName, $componentCPUValue := $elem.Compare.Metrics.ComponentsCPUTime }}
+                                <tr>
+                                    <th scope="row" class="text-center">CPU time {{$componentCPUName}}</th>
+                                    <td class="text-center">{{ formatFloat (index $elem.Compare.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                    <td class="text-center">{{ formatFloat (index $elem.Reference.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                    <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                </tr>
+                            {{ end }}
                         {{ end }}
                         </tbody>
                     </table>
@@ -173,23 +228,7 @@ limitations under the License.
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Reference',
-                        data: dataRef,
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                        ],
-                        borderColor: [
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(54, 162, 235, 1)',
-                        ],
-                    },
-                    {
-                        label: 'Compare',
+                        label: '{{.compare.short}}',
                         data: dataCmp,
                         color: 'black',
                         backgroundColor: [
@@ -203,6 +242,22 @@ limitations under the License.
                             'rgba(255, 99, 132, 1)',
                             'rgba(255, 99, 132, 1)',
                             'rgba(255, 99, 132, 1)',
+                        ],
+                    },
+                    {
+                        label: '{{.reference.short}}',
+                        data: dataRef,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(54, 162, 235, 0.5)',
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
                         ],
                     }
                 ]

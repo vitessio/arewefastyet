@@ -11,6 +11,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/uuid v1.2.0
 	github.com/hashicorp/terraform-exec v0.13.3
+	github.com/influxdata/influxdb-client-go/v2 v2.3.0
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.5.0

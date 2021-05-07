@@ -21,7 +21,7 @@ package microbench
 import (
 	"sort"
 
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
 // CompareMicroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the microbenchmark

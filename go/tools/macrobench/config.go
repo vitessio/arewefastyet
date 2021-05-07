@@ -22,7 +22,7 @@ import (
 	"errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vitessio/arewefastyet/go/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"strings"
 )
 
@@ -122,10 +122,10 @@ func (mabcfg Config) insertBenchmarkToSQL(client *mysql.Client) (newMacroBenchma
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
 	query := "INSERT INTO macrobenchmark(exec_uuid, commit, source) VALUES(NULLIF(?, ''), ?, ?)"
-	id, err := client.Insert(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.Source)
+	res, err := client.Insert(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.Source)
 	if err != nil {
 		return 0, err
 	}
-	newMacroBenchmarkID = int(id)
+	newMacroBenchmarkID = int(res)
 	return newMacroBenchmarkID, nil
 }
