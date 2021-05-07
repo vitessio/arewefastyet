@@ -19,12 +19,10 @@
 package server
 
 import (
-	"log"
 	"net/http"
 	"sort"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
@@ -184,21 +182,4 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		"lastReleaseSHA": lastReleaseSHA,
 		"resultMatrix":   matrix,
 	})
-}
-
-func (s *Server) viewExecutionHandler(c *gin.Context) {
-	uuid := c.Query("e")
-	if uuid == "" {
-		c.HTML(http.StatusOK, "search.tmpl", gin.H{
-			"title": "Vitess benchmark",
-		})
-		return
-	}
-
-	time, err := metrics.GetExecutionMetrics(*s.executionMetricsDBClient, uuid)
-	if err != nil {
-		handleRenderErrors(c, err)
-		return
-	}
-	log.Println(time)
 }

@@ -142,9 +142,6 @@ func (s *Server) Run() error {
 	// MacroBench webhook
 	s.router.POST("/webhook", s.webhookHandler)
 
-	// View single Execution
-	s.router.GET("/execution", s.viewExecutionHandler)
-
 	return s.router.Run(":" + s.port)
 }
 
