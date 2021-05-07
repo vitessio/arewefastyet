@@ -9,5 +9,6 @@ The following codebase:
 ## [Docs](docs/README.md)
 
 
+## Architecture
 
-
+![arewefastyet architecture](./docs/architecture/arewefastyet_architecture.png)
