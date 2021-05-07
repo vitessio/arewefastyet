@@ -1,9 +1,19 @@
 ## arewefastyet gen doc
 
-Generate documentation for the CLI
+Generates documentation for the CLI
+
+### Synopsis
+
+Generates documentation for the CLI
 
 ```
 arewefastyet gen doc [flags]
+```
+
+### Examples
+
+```
+arewefastyet gen doc --doc-dir ./arewefastyet/docs
 ```
 
 ### Options

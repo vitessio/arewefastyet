@@ -1,9 +1,20 @@
 ## arewefastyet microbench run
 
-Run micro benchmarks from the <root dir> on <pkg>, and outputs to <output path>.
+Run micro benchmarks from the <root dir> on <pkg>, and outputs to <output file>.
+
+### Synopsis
+
+Runs all the micro benchmarks from the <root dir> on <pkg>, and parses the output and saves it to mysql if the configuration is provided. 
+The output can also be outputted to <output file>.
 
 ```
-arewefastyet microbench run [root dir] <pkg> <output path> [flags]
+arewefastyet microbench run [root dir] <pkg> <output file> [flags]
+```
+
+### Examples
+
+```
+arewastyet microbenchmark run ~/vitess ./go/vt/sqlparser output.txt
 ```
 
 ### Options
@@ -25,5 +36,5 @@ arewefastyet microbench run [root dir] <pkg> <output path> [flags]
 
 ### SEE ALSO
 
-* [arewefastyet microbench](arewefastyet_microbench.md)	 - 
+* [arewefastyet microbench](arewefastyet_microbench.md)	 - Top level command to manage microbenchmarks
 

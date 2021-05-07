@@ -2,6 +2,10 @@
 
 Create a new instance
 
+### Synopsis
+
+Top level command to create infrastructure based on terraform configuration
+
 ### Options
 
 ```

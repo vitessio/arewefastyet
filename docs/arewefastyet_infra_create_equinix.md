@@ -2,8 +2,18 @@
 
 Create an Equinix Metal instance
 
+### Synopsis
+
+Command used to create a new equinix metal instance based on terraform configuration
+
 ```
 arewefastyet infra create equinix [flags]
+```
+
+### Examples
+
+```
+arewefastyet infra create equinix --infra-path ./infra --equinix-instance-type m2.xlarge.x86 --equinix-token tok --equinix-project-id id
 ```
 
 ### Options

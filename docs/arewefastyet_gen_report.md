@@ -2,8 +2,18 @@
 
 Generate comparison between two sha commits of Vitess
 
+### Synopsis
+
+Command to generate a pdf-report that compares the microbenchmark and macrobenchmark runs between the two sha commits of Vitess provided
+
 ```
 arewefastyet gen report [flags]
+```
+
+### Examples
+
+```
+arewefastyet gen report --compare-from sha1 --compare-to sha2 --report-file report.pdf
 ```
 
 ### Options

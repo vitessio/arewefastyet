@@ -1,6 +1,10 @@
 ## arewefastyet macrobench
 
+Top level command to manage macrobenchmarks
 
+### Synopsis
+
+Top level command to manage macrobenchmarks
 
 ### Options
 
@@ -16,6 +20,6 @@
 
 ### SEE ALSO
 
-* [arewefastyet](arewefastyet.md)	 - 
-* [arewefastyet macrobench run](arewefastyet_macrobench_run.md)	 - 
+* [arewefastyet](arewefastyet.md)	 - Nightly Benchmarks Project
+* [arewefastyet macrobench run](arewefastyet_macrobench_run.md)	 - Run macro benchmarks and store the output in the mysql configuration provided.
 

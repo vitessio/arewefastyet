@@ -1,9 +1,19 @@
 ## arewefastyet macrobench run
 
+Run macro benchmarks and store the output in the mysql configuration provided.
 
+### Synopsis
+
+Run macro benchmarks using a fork of sysbench (https://github.com/planetscale/sysbench for OLTP and https://github.com/planetscale/sysbench-TPCC for TPCC)  and store the output in the mysql configuration provided.
 
 ```
 arewefastyet macrobench run [flags]
+```
+
+### Examples
+
+```
+arewastyet macrobenchmark run --db-database benchmark --db-host localhost --db-password <db-password> --db-user <db-username>
 ```
 
 ### Options
@@ -32,5 +42,5 @@ arewefastyet macrobench run [flags]
 
 ### SEE ALSO
 
-* [arewefastyet macrobench](arewefastyet_macrobench.md)	 - 
+* [arewefastyet macrobench](arewefastyet_macrobench.md)	 - Top level command to manage macrobenchmarks
 
