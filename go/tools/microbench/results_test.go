@@ -84,6 +84,25 @@ func TestMicroBenchmarkResults_ReduceSimpleMedianByName(t *testing.T) {
 			// want bench 1
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
 		}},
+
+		// tc4
+		{name: "Few values in different packages and different benchmark names", mbd: MicroBenchmarkDetailsArray{
+			// input bench 1 in pkg 2
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 3.00, 0, 0, 0)),
+
+			// input bench 1 in pkg 1
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
+		}, want: MicroBenchmarkDetailsArray{
+			// want bench 1 from pkg1
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+
+			// want bench 1 from pkg2
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
