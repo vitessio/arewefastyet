@@ -20,6 +20,7 @@ package server
 
 import (
 	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,11 +30,11 @@ import (
 const (
 	ErrorIncorrectConfiguration = "incorrect configuration"
 
-	flagPort         = "web-port"
-	flagTemplatePath = "web-template-path"
-	flagStaticPath   = "web-static-path"
-	flagAPIKey       = "web-api-key"
-	flagMode         = "web-mode"
+	flagPort                     = "web-port"
+	flagTemplatePath             = "web-template-path"
+	flagStaticPath               = "web-static-path"
+	flagAPIKey                   = "web-api-key"
+	flagMode                     = "web-mode"
 	flagDefaultWebhookConfigFile = "web-webhook-config"
 )
 
@@ -122,6 +123,8 @@ func (s *Server) Run() error {
 
 	// Request benchmark page
 	s.router.GET("/microbench", s.microbenchmarkResultsHandler)
+
+	s.router.GET("/microbench/:name", s.microbenchmarkSingleResultsHandler)
 
 	// MacroBench webhook
 	s.router.POST("/webhook", s.webhookHandler)

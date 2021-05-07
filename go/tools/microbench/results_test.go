@@ -19,11 +19,12 @@
 package microbench
 
 import (
-	qt "github.com/frankban/quicktest"
 	"testing"
+
+	qt "github.com/frankban/quicktest"
 )
 
-func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
+func TestMicroBenchmarkResults_ReduceSimpleMedianByName(t *testing.T) {
 	tests := []struct {
 		name string
 		mbd  MicroBenchmarkDetailsArray
@@ -83,18 +84,89 @@ func TestMicroBenchmarkResults_ReduceSimpleMedian(t *testing.T) {
 			// want bench 1
 			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
 		}},
+
+		// tc4
+		{name: "Few values in different packages and different benchmark names", mbd: MicroBenchmarkDetailsArray{
+			// input bench 1 in pkg 2
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 3.00, 0, 0, 0)),
+
+			// input bench 1 in pkg 1
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
+		}, want: MicroBenchmarkDetailsArray{
+			// want bench 1 from pkg1
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+
+			// want bench 1 from pkg2
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
-			got := tt.mbd.ReduceSimpleMedian()
+			got := tt.mbd.ReduceSimpleMedianByName()
 			c.Assert(got, qt.DeepEquals, tt.want)
 		})
 	}
 }
 
-func BenchmarkReduceSimpleMedian(b *testing.B) {
+func TestMicroBenchmarkResults_ReduceSimpleMedianByGitRef(t *testing.T) {
+	tests := []struct {
+		name string
+		mbd  MicroBenchmarkDetailsArray
+		want MicroBenchmarkDetailsArray
+	}{
+		// tc1
+		{name: "Few simple values in same package with different git refs", mbd: MicroBenchmarkDetailsArray{
+			// input for git ref `abcd`
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 1.00, 1, 9)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 2.00, 50, 18)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 3.00, 100, 27)),
+
+			// input for git ref `efgh`
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(150, 2.00, 3.00, 55.00, 42)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(300, 2.00, 4.00, 55.00, 84)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(450, 2.00, 5.00, 55.00, 126)),
+		}, want: MicroBenchmarkDetailsArray{
+			// want git ref `abcd`
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 2, 50.00, 18)),
+
+			// want git ref `efgh`
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(300, 2.00, 4, 55.00, 84)),
+		}},
+
+		// tc2
+		{name: "More unordered values with same git ref", mbd: MicroBenchmarkDetailsArray{
+			// input bench 1
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 30.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 15.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 40.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 25.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 0.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 35.00, 0, 0, 0)),
+		}, want: MicroBenchmarkDetailsArray{
+			// want bench 1
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+
+			got := tt.mbd.ReduceSimpleMedianByGitRef()
+			c.Assert(got, qt.DeepEquals, tt.want)
+		})
+	}
+}
+
+func BenchmarkReduceSimpleMedianByName(b *testing.B) {
 	mbd := MicroBenchmarkDetailsArray{
 		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
 		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
@@ -106,14 +178,14 @@ func BenchmarkReduceSimpleMedian(b *testing.B) {
 
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		got := mbd.ReduceSimpleMedian()
+		got := mbd.ReduceSimpleMedianByName()
 
 		// Must be reduced to two indexes (bench1-pkg1 AND bench2-pkg1).
 		if len(got) != 2 {
 			b.Error("must be reduced to two elements")
 		}
 		if got[0].Result.NSPerOp != 1.00 || got[1].Result.NSPerOp != 2.00 {
-			b.Error("wrong output from ReduceSimpleMedian")
+			b.Error("wrong output from ReduceSimpleMedianByName")
 		}
 	}
 }
@@ -250,10 +322,10 @@ func TestHumanReadableStrings(t *testing.T) {
 	c.Assert(r.NSPerOpStr(), qt.Equals, "141,650,883.5")
 	c.Assert(r.NSPerOpToDurationStr(), qt.Equals, "141.65 ms")
 	c.Assert(r.OpsStr(), qt.Equals, "876,543")
-	c.Assert(r.BytesPerOpStr(), qt.Equals, "4.5 kB/s")
+	c.Assert(r.BytesPerOpStr(), qt.Equals, "4.5 kB/op")
 
 	r = MicroBenchmarkResult{
-		NSPerOp:     2.5149999999999997,
+		NSPerOp: 2.5149999999999997,
 	}
 	c.Assert(r.NSPerOpStr(), qt.Equals, "2.5")
 	c.Assert(r.NSPerOpToDurationStr(), qt.Equals, "2.00 ns")

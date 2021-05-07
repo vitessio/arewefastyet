@@ -35,7 +35,7 @@ func CompareMicroBenchmarks(dbClient *mysql.Client, reference string, compare st
 		if err != nil {
 			return nil, err
 		}
-		micros[sha] = micro.ReduceSimpleMedian()
+		micros[sha] = micro.ReduceSimpleMedianByName()
 	}
 	microsMatrix := MergeMicroBenchmarkDetails(micros[reference], micros[compare])
 	sort.SliceStable(microsMatrix, func(i, j int) bool {

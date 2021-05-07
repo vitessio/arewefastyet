@@ -127,7 +127,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	micro = micro.ReduceSimpleMedian()
+	micro = micro.ReduceSimpleMedianByName()
 
 	c.HTML(http.StatusOK, "search.tmpl", gin.H{
 		"title":          "Vitess benchmark",
@@ -156,7 +156,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	currentMbd = currentMbd.ReduceSimpleMedian()
+	currentMbd = currentMbd.ReduceSimpleMedianByName()
 
 	// get last release results
 	lastReleaseSHA := c.Query("lrsh")
@@ -169,7 +169,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedian()
+	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedianByName()
 
 	matrix := microbench.MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd)
 	sort.SliceStable(matrix, func(i, j int) bool {
@@ -181,5 +181,22 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		"currentSHA":     currentSHA,
 		"lastReleaseSHA": lastReleaseSHA,
 		"resultMatrix":   matrix,
+	})
+}
+
+func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	results, err := microbench.GetLatestResultsFor(name, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	results = results.ReduceSimpleMedianByGitRef()
+
+	c.HTML(http.StatusOK, "microbench_single.tmpl", gin.H{
+		"title":   "Vitess benchmark - microbenchmark - " + name,
+		"name":    name,
+		"results": results,
 	})
 }
