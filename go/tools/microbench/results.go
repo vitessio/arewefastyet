@@ -122,35 +122,15 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 // of the merged elements.
 func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByName() (reduceMbd MicroBenchmarkDetailsArray) {
 	sort.SliceStable(mbd, func(i, j int) bool {
-		return mbd[i].PkgName < mbd[j].PkgName && mbd[i].Name < mbd[j].Name
-	})
-	for i := 0; i < len(mbd); {
-		var j int
-		var interOps []int
-		var interNSPerOp []float64
-		var interMBPerSec []float64
-		var interBytesPerOp []float64
-		var interAllocsPerOp []float64
-		for j = i; j < len(mbd) && mbd[i].Name == mbd[j].Name; j++ {
-			interOps = append(interOps, mbd[j].Result.Ops)
-			interNSPerOp = append(interNSPerOp, mbd[j].Result.NSPerOp)
-			interMBPerSec = append(interMBPerSec, mbd[j].Result.MBPerSec)
-			interBytesPerOp = append(interBytesPerOp, mbd[j].Result.BytesPerOp)
-			interAllocsPerOp = append(interAllocsPerOp, mbd[j].Result.AllocsPerOp)
+		if mbd[i].PkgName == mbd[j].PkgName {
+			return mbd[i].Name < mbd[j].Name
 		}
+		return mbd[i].PkgName < mbd[j].PkgName
+	})
 
-		interOpsResult := int(math.MedianInt(interOps))
-		interNSPerOpResult := math.MedianFloat(interNSPerOp)
-		interMBPerSecResult := math.MedianFloat(interMBPerSec)
-		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)
-		interAllocsPerOpResult := math.MedianFloat(interAllocsPerOp)
-		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(
-			*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name),
-			mbd[i].GitRef,
-			*NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult),
-		))
-		i = j
-	}
+	reduceMbd = mbd.mergeUsingCondition(func(i, j int) bool {
+		return mbd[i].Name == mbd[j].Name
+	})
 	return reduceMbd
 }
 
@@ -162,6 +142,14 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd Mi
 	sort.SliceStable(mbd, func(i, j int) bool {
 		return mbd[i].GitRef < mbd[j].GitRef
 	})
+	reduceMbd = mbd.mergeUsingCondition(func(i, j int) bool {
+		return mbd[i].GitRef == mbd[j].GitRef
+	})
+	return reduceMbd
+}
+
+// mergeUsingCondition is used to merge the MicroBenchmarkDetailsArray based on the compare condition provided
+func (mbd MicroBenchmarkDetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool) (reduceMbd MicroBenchmarkDetailsArray) {
 	for i := 0; i < len(mbd); {
 		var j int
 		var interOps []int
@@ -169,7 +157,7 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd Mi
 		var interMBPerSec []float64
 		var interBytesPerOp []float64
 		var interAllocsPerOp []float64
-		for j = i; j < len(mbd) && mbd[i].GitRef == mbd[j].GitRef; j++ {
+		for j = i; j < len(mbd) && compareCondition(i, j); j++ {
 			interOps = append(interOps, mbd[j].Result.Ops)
 			interNSPerOp = append(interNSPerOp, mbd[j].Result.NSPerOp)
 			interMBPerSec = append(interMBPerSec, mbd[j].Result.MBPerSec)
