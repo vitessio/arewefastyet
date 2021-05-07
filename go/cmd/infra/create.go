@@ -19,10 +19,11 @@
 package infra
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/infra"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
-	"log"
 )
 
 func create(cfg *infra.Config) *cobra.Command {
@@ -30,6 +31,7 @@ func create(cfg *infra.Config) *cobra.Command {
 		Use:     "create",
 		Aliases: []string{"c"},
 		Short:   "Create a new instance",
+		Long:    "Top level command to create infrastructure based on terraform configuration",
 	}
 
 	cmd.AddCommand(createEquinix(cfg))
@@ -43,6 +45,8 @@ func createEquinix(cfg *infra.Config) *cobra.Command {
 		Use:     "equinix",
 		Aliases: []string{"e"},
 		Short:   "Create an Equinix Metal instance",
+		Long:    "Command used to create a new equinix metal instance based on terraform configuration",
+		Example: "arewefastyet infra create equinix --infra-path ./infra --equinix-instance-type m2.xlarge.x86 --equinix-token tok --equinix-project-id id",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			defer cfg.Close()
 

@@ -26,8 +26,9 @@ import (
 
 func GenCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "gen <command>",
+		Use:   "gen <command>",
 		Short: "Generate things",
+		Long:  "Top level command to generate files like documentation and reports",
 	}
 
 	cmd.AddCommand(doc.GenerateDoc())

@@ -2,8 +2,23 @@
 
 Starts the HTTP web server
 
+### Synopsis
+
+web command starts the HTTP web server, the credentials for which are provided as command line arguments or the configuration file. 
+It uses a MySQL and InfluxDB instances to read the metrics that will be displayed. It has an interface for macrobenchmark and microbenchmark runs.
+
 ```
 arewefastyet web [flags]
+```
+
+### Examples
+
+```
+arewefastyet web --db-database benchmark --db-host localhost --db-password <db-password> --db-user <db-username>  
+--influx-database benchmark-influx --influx-hostname localhost --influx-password <influx-password>
+--influx-port <influx-port> --influx-username <influx-username> --web-api-key <web-api-key>
+--web-mode production --web-port <web-port> --web-static-path ./server/static --web-template-path ./server/template
+--web-webhook-config ./config.yaml
 ```
 
 ### Options
@@ -35,5 +50,5 @@ arewefastyet web [flags]
 
 ### SEE ALSO
 
-* [arewefastyet](arewefastyet.md)	 - 
+* [arewefastyet](arewefastyet.md)	 - Nightly Benchmarks Project
 

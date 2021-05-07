@@ -19,16 +19,19 @@
 package doc
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
-	"log"
 )
 
 func GenerateDoc() *cobra.Command {
 	var docDir string
 	cmd := &cobra.Command{
-		Use: "doc",
-		Short: "Generate documentation for the CLI",
+		Use:     "doc",
+		Short:   "Generates documentation for the CLI",
+		Long:    "Generates documentation for the CLI",
+		Example: "arewefastyet gen doc --doc-dir ./arewefastyet/docs",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Println("Generating documentation.")
 			cmd.Root().DisableAutoGenTag = true

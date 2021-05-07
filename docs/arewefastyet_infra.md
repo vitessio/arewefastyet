@@ -2,6 +2,10 @@
 
 Manage infrastructure
 
+### Synopsis
+
+Top level command to manage infrastructure
+
 ### Options
 
 ```
@@ -17,6 +21,6 @@ Manage infrastructure
 
 ### SEE ALSO
 
-* [arewefastyet](arewefastyet.md)	 - 
+* [arewefastyet](arewefastyet.md)	 - Nightly Benchmarks Project
 * [arewefastyet infra create](arewefastyet_infra_create.md)	 - Create a new instance
 

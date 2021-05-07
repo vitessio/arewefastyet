@@ -17,6 +17,9 @@ limitations under the License.
 package cmd
 
 import (
+	"log"
+	"os"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/vitessio/arewefastyet/go/cmd/exec"
@@ -25,8 +28,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/cmd/macrobench"
 	"github.com/vitessio/arewefastyet/go/cmd/microbench"
 	"github.com/vitessio/arewefastyet/go/cmd/web"
-	"log"
-	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -36,9 +37,9 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use: "arewefastyet",
-	// Short: "",
-	// Long: ``,
+	Use:   "arewefastyet",
+	Short: "Nightly Benchmarks Project",
+	Long:  `Vitess has to ensure it's delivering flawless performance to its users. In order to meet this need, we created AreWeFastYet, a benchmarking monitoring tool for Vitess.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

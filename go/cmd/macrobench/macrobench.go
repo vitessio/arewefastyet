@@ -22,7 +22,9 @@ import "github.com/spf13/cobra"
 
 func MacroBenchCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "macrobench <command>",
+		Use:     "macrobench <command>",
+		Short:   "Top level command to manage macrobenchmarks",
+		Long:    "Top level command to manage macrobenchmarks",
 		Aliases: []string{"mab"},
 	}
 

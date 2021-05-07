@@ -17,11 +17,12 @@ limitations under the License.
 package report
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/report"
-	"log"
 )
 
 func GenerateReport() *cobra.Command {
@@ -31,8 +32,10 @@ func GenerateReport() *cobra.Command {
 	var dbClient mysql.ConfigDB
 	var metricsCfg influxdb.Config
 	cmd := &cobra.Command{
-		Use: "report",
-		Short: "Generate comparison between two sha commits of Vitess",
+		Use:     "report",
+		Short:   "Generate comparison between two sha commits of Vitess",
+		Long:    "Command to generate a pdf-report that compares the microbenchmark and macrobenchmark runs between the two sha commits of Vitess provided",
+		Example: "arewefastyet gen report --compare-from sha1 --compare-to sha2 --report-file report.pdf",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Println("Generating file.")
 			client, err := mysql.New(dbClient)
@@ -44,7 +47,7 @@ func GenerateReport() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			err = report.GenerateCompareReport(client, metricsClient, fromSHA,toSHA,reportFile)
+			err = report.GenerateCompareReport(client, metricsClient, fromSHA, toSHA, reportFile)
 			if err != nil {
 				return err
 			}

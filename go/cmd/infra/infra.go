@@ -29,6 +29,7 @@ func InfraCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "infra <command>",
 		Short:   "Manage infrastructure",
+		Long:    "Top level command to manage infrastructure",
 		Aliases: []string{"i"},
 	}
 

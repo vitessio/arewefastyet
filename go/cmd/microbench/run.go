@@ -27,9 +27,12 @@ func run() *cobra.Command {
 	mbcfg.DatabaseConfig = &mysql.ConfigDB{}
 
 	cmd := &cobra.Command{
-		Use:   "run [root dir] <pkg> <output path>",
+		Use:   "run [root dir] <pkg> <output file>",
 		Args:  cobra.RangeArgs(2, 3),
-		Short: "Run micro benchmarks from the <root dir> on <pkg>, and outputs to <output path>.",
+		Short: "Run micro benchmarks from the <root dir> on <pkg>, and outputs to <output file>.",
+		Long: `Runs all the micro benchmarks from the <root dir> on <pkg>, and parses the output and saves it to mysql if the configuration is provided. 
+The output can also be outputted to <output file>.`,
+		Example: "arewastyet microbenchmark run ~/vitess ./go/vt/sqlparser output.txt",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			idx := 0
 			if len(args) == 3 {
@@ -39,7 +42,7 @@ func run() *cobra.Command {
 				mbcfg.RootDir = "."
 			}
 			mbcfg.Package = args[idx]
-			mbcfg.Output = args[idx + 1]
+			mbcfg.Output = args[idx+1]
 
 			err := microbench.MicroBenchmark(mbcfg)
 			if err != nil {
