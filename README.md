@@ -12,3 +12,6 @@ The following codebase:
 ## Architecture
 
 ![arewefastyet architecture](./docs/architecture/arewefastyet_architecture.png)
+
+### SQL Schema
+![arewefastyet schema](./docs/architecture/sql/arewefastyet_schema.png)
