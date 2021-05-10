@@ -76,7 +76,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.microbenchConfigPath, flagMicroBenchConfigFile, "", "Path to the configuration file used to execute microbenchmark.")
 	cmd.Flags().StringVar(&s.macrobenchConfigPathOLTP, flagMacroBenchConfigFileOLTP, "", "Path to the configuration file used to execute OLTP macrobenchmark.")
 	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
-	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule, defaults to everyday at midnight. An empty string will result in no CRON.")
+	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON.")
 	_ = cmd.MarkFlagRequired(flagMicroBenchConfigFile)
 	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileOLTP)
 	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileTPCC)
