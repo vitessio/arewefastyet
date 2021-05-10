@@ -40,3 +40,13 @@ variable "facilities" {
   description = "Equinix Metal facility used to run the server"
   default = ["ams1"]
 }
+
+variable "execution_source" {
+  description = "The source or trigger of the execution"
+  default = ""
+}
+
+variable "execution_git_ref" {
+  description = "The git reference on which we execute benchmarks"
+  default = ""
+}

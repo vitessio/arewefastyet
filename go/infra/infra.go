@@ -21,6 +21,7 @@ package infra
 import (
 	"context"
 	"errors"
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/hashicorp/terraform-exec/tfinstall"
 	"github.com/spf13/cobra"
@@ -44,6 +45,8 @@ type Infra interface {
 	TerraformVarArray() (vars []*tfexec.VarOption)
 	Run(ansible *ansible.Config) error
 	SetConfig(config *Config)
+	SetTags(tags map[string]string)
+	SetExecUUID(uuid uuid.UUID)
 }
 
 func getTerraformExecPath(installPath string) (string, error) {

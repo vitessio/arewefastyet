@@ -20,11 +20,10 @@ package exec
 
 import (
 	"encoding/json"
-	"github.com/vitessio/arewefastyet/go/infra"
 )
 
-func provision(infra infra.Infra) (IPs []string, err error) {
-	out, err := infra.Create("device_public_ip")
+func (e Exec) provision() (IPs []string, err error) {
+	out, err := e.Infra.Create("device_public_ip")
 	if err != nil {
 		return nil, err
 	}
