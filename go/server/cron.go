@@ -25,6 +25,9 @@ import (
 )
 
 func (s *Server) createNewCron() error {
+	if s.cronSchedule == "" {
+		return nil
+	}
 	c := cron.New()
 
 	_, err := c.AddFunc(s.cronSchedule, s.cronMasterHandler)
