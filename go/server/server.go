@@ -37,7 +37,9 @@ const (
 	flagStaticPath               = "web-static-path"
 	flagAPIKey                   = "web-api-key"
 	flagMode                     = "web-mode"
-	flagDefaultWebhookConfigFile = "web-webhook-config"
+	flagMicroBenchConfigFile     = "web-microbench-config"
+	flagMacroBenchConfigFileOLTP = "web-macrobench-oltp-config"
+	flagMacroBenchConfigFileTPCC = "web-macrobench-tpcc-config"
 )
 
 type Server struct {
@@ -53,7 +55,9 @@ type Server struct {
 	executionMetricsDBConfig *influxdb.Config
 	executionMetricsDBClient *influxdb.Client
 
-	defaultExecConfigFile string
+	microbenchConfigPath     string
+	macrobenchConfigPathOLTP string
+	macrobenchConfigPathTPCC string
 
 	// Mode used to run the server.
 	Mode
@@ -65,14 +69,23 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.staticPath, flagStaticPath, "", "Path to the static directory")
 	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
 	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
-	cmd.Flags().StringVar(&s.defaultExecConfigFile, flagDefaultWebhookConfigFile, "", "Path to default config file used for Webhook")
+
+	// required execution configuration flags
+	cmd.Flags().StringVar(&s.microbenchConfigPath, flagMicroBenchConfigFile, "", "Path to the configuration file used to execute microbenchmark.")
+	cmd.Flags().StringVar(&s.macrobenchConfigPathOLTP, flagMacroBenchConfigFileOLTP, "", "Path to the configuration file used to execute OLTP macrobenchmark.")
+	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
+	_ = cmd.MarkFlagRequired(flagMicroBenchConfigFile)
+	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileOLTP)
+	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileTPCC)
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
 	_ = viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
 	_ = viper.BindPFlag(flagAPIKey, cmd.Flags().Lookup(flagAPIKey))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
-	_ = viper.BindPFlag(flagDefaultWebhookConfigFile, cmd.Flags().Lookup(flagDefaultWebhookConfigFile))
+	_ = viper.BindPFlag(flagMicroBenchConfigFile, cmd.Flags().Lookup(flagMicroBenchConfigFile))
+	_ = viper.BindPFlag(flagMacroBenchConfigFileOLTP, cmd.Flags().Lookup(flagMacroBenchConfigFileOLTP))
+	_ = viper.BindPFlag(flagMacroBenchConfigFileTPCC, cmd.Flags().Lookup(flagMacroBenchConfigFileTPCC))
 
 	if s.dbCfg == nil {
 		s.dbCfg = &mysql.ConfigDB{}
@@ -86,7 +99,8 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 }
 
 func (s Server) isReady() bool {
-	return s.port != "" && s.templatePath != "" && s.staticPath != "" && s.apiKey != ""
+	return s.port != "" && s.templatePath != "" && s.staticPath != "" && s.apiKey != "" &&
+		s.microbenchConfigPath != "" && s.macrobenchConfigPathOLTP != "" && s.macrobenchConfigPathTPCC != ""
 }
 
 func (s *Server) Run() error {
@@ -112,9 +126,14 @@ func (s *Server) Run() error {
 		return err
 	}
 
+	err := s.createNewCron()
+	if err != nil {
+		return err
+	}
+
 	s.router = gin.Default()
 	s.router.SetFuncMap(template.FuncMap{
-		"formatFloat": func(f float64) string {return humanize.FormatFloat("#,###.##", f)},
+		"formatFloat": func(f float64) string { return humanize.FormatFloat("#,###.##", f) },
 	})
 
 	s.router.Static("/static", s.staticPath)
@@ -140,9 +159,6 @@ func (s *Server) Run() error {
 	s.router.GET("/microbench", s.microbenchmarkResultsHandler)
 
 	s.router.GET("/microbench/:name", s.microbenchmarkSingleResultsHandler)
-
-	// MacroBench webhook
-	s.router.POST("/webhook", s.webhookHandler)
 
 	return s.router.Run(":" + s.port)
 }
