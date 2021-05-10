@@ -35,7 +35,7 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
       --influx-port string                  Port on which to InfluxDB listens. (default "8086")
       --influx-username string              Username used to connect to InfluxDB.
       --web-api-key string                  API key used to authenticate requests
-      --web-cron-schedule string            Execution CRON schedule, defaults to everyday at midnight. (default "@midnight")
+      --web-cron-schedule string            Execution CRON schedule, defaults to everyday at midnight. An empty string will result in no CRON. (default "@midnight")
       --web-macrobench-oltp-config string   Path to the configuration file used to execute OLTP macrobenchmark.
       --web-macrobench-tpcc-config string   Path to the configuration file used to execute TPCC macrobenchmark.
       --web-microbench-config string        Path to the configuration file used to execute microbenchmark.

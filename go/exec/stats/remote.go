@@ -41,6 +41,14 @@ type RemoteDBConfig struct {
 	dbName   string
 }
 
+func (rdbcfg *RemoteDBConfig) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(statsRemoteDBHost, &rdbcfg.host)
+	_ = v.UnmarshalKey(statsRemoteDBPort, &rdbcfg.port)
+	_ = v.UnmarshalKey(statsRemoteDBDatabase, &rdbcfg.dbName)
+	_ = v.UnmarshalKey(statsRemoteDBUser, &rdbcfg.user)
+	_ = v.UnmarshalKey(statsRemoteDBPassword, &rdbcfg.password)
+}
+
 func (rdbcfg *RemoteDBConfig) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&rdbcfg.host, statsRemoteDBHost, "", "Hostname of the stats remote database.")
 	cmd.Flags().StringVar(&rdbcfg.port, statsRemoteDBPort, "", "Port of the stats remote database.")
