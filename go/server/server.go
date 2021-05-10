@@ -40,6 +40,7 @@ const (
 	flagMicroBenchConfigFile     = "web-microbench-config"
 	flagMacroBenchConfigFileOLTP = "web-macrobench-oltp-config"
 	flagMacroBenchConfigFileTPCC = "web-macrobench-tpcc-config"
+	flagCronSchedule             = "web-cron-schedule"
 )
 
 type Server struct {
@@ -55,6 +56,7 @@ type Server struct {
 	executionMetricsDBConfig *influxdb.Config
 	executionMetricsDBClient *influxdb.Client
 
+	cronSchedule             string
 	microbenchConfigPath     string
 	macrobenchConfigPathOLTP string
 	macrobenchConfigPathTPCC string
@@ -70,10 +72,11 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
 	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
 
-	// required execution configuration flags
+	// execution configuration flags
 	cmd.Flags().StringVar(&s.microbenchConfigPath, flagMicroBenchConfigFile, "", "Path to the configuration file used to execute microbenchmark.")
 	cmd.Flags().StringVar(&s.macrobenchConfigPathOLTP, flagMacroBenchConfigFileOLTP, "", "Path to the configuration file used to execute OLTP macrobenchmark.")
 	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
+	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule, defaults to everyday at midnight.")
 	_ = cmd.MarkFlagRequired(flagMicroBenchConfigFile)
 	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileOLTP)
 	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileTPCC)
@@ -86,6 +89,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagMicroBenchConfigFile, cmd.Flags().Lookup(flagMicroBenchConfigFile))
 	_ = viper.BindPFlag(flagMacroBenchConfigFileOLTP, cmd.Flags().Lookup(flagMacroBenchConfigFileOLTP))
 	_ = viper.BindPFlag(flagMacroBenchConfigFileTPCC, cmd.Flags().Lookup(flagMacroBenchConfigFileTPCC))
+	_ = viper.BindPFlag(flagCronSchedule, cmd.Flags().Lookup(flagCronSchedule))
 
 	if s.dbCfg == nil {
 		s.dbCfg = &mysql.ConfigDB{}
