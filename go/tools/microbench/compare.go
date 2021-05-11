@@ -45,6 +45,12 @@ func CompareMicroBenchmarks(dbClient *mysql.Client, reference string, compare st
 	return microsMatrix, nil
 }
 
+// Regression returns a string containing the reason of the regression of the given MicroBenchmarkComparisonArray,
+// if no regression was evaluated, the reason will be an empty string.
+// The format of a single benchmark regression's reason is like this:
+//
+// "- {pkg name}/{benchmark name} decreased by {decrease percentage}%\n"
+//
 func (microsMatrix MicroBenchmarkComparisonArray) Regression() (reason string) {
 	for _, micro := range microsMatrix {
 		if micro.CurrLastDiff < 0.90 {
