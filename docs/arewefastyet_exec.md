@@ -33,9 +33,10 @@ arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --db-
       --equinix-instance-type string      Instance type to use for the creation of a new node
       --equinix-project-id string         Project ID to use for Equinix Metal
       --equinix-token string              Auth Token for Equinix Metal
-      --exec-git-ref string               Git reference on which the benchmarks will run
-      --exec-root-dir string              Path to the root directory of exec
-      --exec-source string                Name of the source that triggered the execution
+      --exec-git-ref string               Git reference on which the benchmarks will run.
+      --exec-root-dir string              Path to the root directory of exec.
+      --exec-source string                Name of the source that triggered the execution.
+      --exec-type string                  Defines the execution type (oltp, tpcc, micro).
   -h, --help                              help for exec
       --infra-path string                 Path to the infra directory
       --slack-channel string              Slack channel on which to post messages
