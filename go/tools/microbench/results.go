@@ -206,7 +206,7 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
 	query := "select m.pkg_name, m.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op," +
 		" md.allocs_per_op, md.mb_per_sec, m.started_at  from (select microbenchmark_no, pkg_name, name, microbenchmark.git_ref, started_at" +
-		" from microbenchmark join execution on exec_uuid = uuid where name = ? and source = \"cron\" order by started_at desc limit ?) m, " +
+		" from microbenchmark join execution on exec_uuid = uuid where name = ? and source = \"cron\" and status = \"finished\" order by started_at desc limit ?) m, " +
 		"microbenchmark_details md where md.microbenchmark_no = m.microbenchmark_no"
 	rows, err := client.Select(query, name, count)
 	if err != nil {
