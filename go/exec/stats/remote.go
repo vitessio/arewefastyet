@@ -34,27 +34,27 @@ const (
 )
 
 type RemoteDBConfig struct {
-	host     string
-	port     string
-	user     string
-	password string
-	dbName   string
+	Host     string
+	Port     string
+	User     string
+	Password string
+	DbName   string
 }
 
 func (rdbcfg *RemoteDBConfig) AddToViper(v *viper.Viper) {
-	_ = v.UnmarshalKey(statsRemoteDBHost, &rdbcfg.host)
-	_ = v.UnmarshalKey(statsRemoteDBPort, &rdbcfg.port)
-	_ = v.UnmarshalKey(statsRemoteDBDatabase, &rdbcfg.dbName)
-	_ = v.UnmarshalKey(statsRemoteDBUser, &rdbcfg.user)
-	_ = v.UnmarshalKey(statsRemoteDBPassword, &rdbcfg.password)
+	_ = v.UnmarshalKey(statsRemoteDBHost, &rdbcfg.Host)
+	_ = v.UnmarshalKey(statsRemoteDBPort, &rdbcfg.Port)
+	_ = v.UnmarshalKey(statsRemoteDBDatabase, &rdbcfg.DbName)
+	_ = v.UnmarshalKey(statsRemoteDBUser, &rdbcfg.User)
+	_ = v.UnmarshalKey(statsRemoteDBPassword, &rdbcfg.Password)
 }
 
 func (rdbcfg *RemoteDBConfig) AddToCommand(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&rdbcfg.host, statsRemoteDBHost, "", "Hostname of the stats remote database.")
-	cmd.Flags().StringVar(&rdbcfg.port, statsRemoteDBPort, "", "Port of the stats remote database.")
-	cmd.Flags().StringVar(&rdbcfg.dbName, statsRemoteDBDatabase, "", "Name of the stats remote database.")
-	cmd.Flags().StringVar(&rdbcfg.user, statsRemoteDBUser, "", "User used to connect to the stats remote database")
-	cmd.Flags().StringVar(&rdbcfg.password, statsRemoteDBPassword, "", "Password to authenticate the stats remote database.")
+	cmd.Flags().StringVar(&rdbcfg.Host, statsRemoteDBHost, "", "Hostname of the stats remote database.")
+	cmd.Flags().StringVar(&rdbcfg.Port, statsRemoteDBPort, "", "Port of the stats remote database.")
+	cmd.Flags().StringVar(&rdbcfg.DbName, statsRemoteDBDatabase, "", "Name of the stats remote database.")
+	cmd.Flags().StringVar(&rdbcfg.User, statsRemoteDBUser, "", "User used to connect to the stats remote database")
+	cmd.Flags().StringVar(&rdbcfg.Password, statsRemoteDBPassword, "", "Password to authenticate the stats remote database.")
 
 	_ = viper.BindPFlag(statsRemoteDBHost, cmd.Flags().Lookup(statsRemoteDBHost))
 	_ = viper.BindPFlag(statsRemoteDBPort, cmd.Flags().Lookup(statsRemoteDBPort))
@@ -64,7 +64,7 @@ func (rdbcfg *RemoteDBConfig) AddToCommand(cmd *cobra.Command) {
 }
 
 func (rdbcfg RemoteDBConfig) valid() bool {
-	return rdbcfg.host != "" && rdbcfg.port != "" && rdbcfg.dbName != ""
+	return rdbcfg.Host != "" && rdbcfg.Port != "" && rdbcfg.DbName != ""
 }
 
 // AddToAnsible will add the stats remote database configuration
@@ -73,9 +73,9 @@ func (rdbcfg RemoteDBConfig) AddToAnsible(ansibleCfg *ansible.Config) {
 	if !rdbcfg.valid() {
 		return
 	}
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBHost, "-", "_")] = rdbcfg.host
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBDatabase, "-", "_")] = rdbcfg.dbName
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPort, "-", "_")] = rdbcfg.port
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBUser, "-", "_")] = rdbcfg.user
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPassword, "-", "_")] = rdbcfg.password
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBHost, "-", "_")] = rdbcfg.Host
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBDatabase, "-", "_")] = rdbcfg.DbName
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPort, "-", "_")] = rdbcfg.Port
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBUser, "-", "_")] = rdbcfg.User
+	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPassword, "-", "_")] = rdbcfg.Password
 }

@@ -52,6 +52,11 @@ It handles the creation, configuration, and cleanup of the infrastructure.`,
 				return err
 			}
 
+			// send notification
+			if err := ex.SendNotification(); err != nil {
+				return err
+			}
+
 			// cleanup
 			if err := ex.CleanUp(); err != nil {
 				return err
