@@ -40,4 +40,4 @@ alter table TPCC change column test_no macrobenchmark_id int(11) DEFAULT NULL;
 alter table microbenchmark add column exec_uuid VARCHAR(100) DEFAULT NULL;
 alter table microbenchmark add constraint  microbenchmark_ibfk_1 FOREIGN KEY (exec_uuid) REFERENCES execution (uuid);
 
-alter table microbnechmark drop column test_no;
+alter table microbenchmark drop column test_no;
