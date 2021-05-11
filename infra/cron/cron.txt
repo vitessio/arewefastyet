@@ -1,0 +1,1 @@
+0 0 * * * find /exec/* -mtime +365 -exec rm -Rf {} \;
