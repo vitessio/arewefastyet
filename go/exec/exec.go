@@ -246,9 +246,11 @@ func (e Exec) SendNotification() error {
 		}
 		regression := macroResults[0].Regression()
 		if regression != "" {
-			header := `Comparing recent commit ` + git.ShortenSHA(e.GitRef) + ` with old commit ` + git.ShortenSHA(previousGitRef) + `.
-Benchmark UUIDs: recent: ` + e.UUID.String() + ` old: ` + previousExec + `
-Observed a regression:
+			header := `*Observed a regression.*
+Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
+Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
+
+
 `
 			content := header + regression
 			msg := slack.TextMessage{Content: content}
@@ -325,8 +327,8 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 }
 
 func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
-	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = '?' AND e.status = 'finished' AND " +
-		"e.type = '?' AND e.git_ref != '?' ORDER BY e.started_at DESC LIMIT 1"
+	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
+		"e.type = ? AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
 	result, err := e.clientDB.Select(query, e.Source, e.typeOf, e.GitRef)
 	if err != nil {
 		return

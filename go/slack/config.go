@@ -44,7 +44,7 @@ func (c *Config) AddToViper(v *viper.Viper) {
 // AddToCommand will add Config's CLI flags to the given *cobra.Command.
 func (c *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&c.Token, flagToken, "", "Token used to authenticate Slack")
-	cmd.Flags().StringVar(&c.Token, flagChannel, "", "Slack channel on which to post messages")
+	cmd.Flags().StringVar(&c.Channel, flagChannel, "", "Slack channel on which to post messages")
 
 	_ = viper.BindPFlag(flagToken, cmd.Flags().Lookup(flagToken))
 	_ = viper.BindPFlag(flagChannel, cmd.Flags().Lookup(flagChannel))
