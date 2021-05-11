@@ -36,6 +36,7 @@ limitations under the License.
             <thead>
             <tr>
                 <th scope="col">Git Ref</th>
+                <th scope="col">Started At</th>
                 <th scope="col" class="text-center">Number of Iterations</th>
                 <th scope="col" class="text-center">Time/op</th>
                 <th scope="col" class="text-center">B/op</th>
@@ -47,6 +48,7 @@ limitations under the License.
             {{range $val := .results}}
                 <tr>
                     <td>{{ $val.GitRef }}</td>
+                    <td>{{ $val.StartedAt }}</td>
                     <td class="text-right">{{ $val.Result.Ops }}</td>
                     <td class="text-right">{{ $val.Result.NSPerOpToDurationStr }}</td>
                     <td class="text-right">{{ $val.Result.BytesPerOpStr }}</td>

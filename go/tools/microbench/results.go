@@ -20,14 +20,15 @@ package microbench
 
 import (
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
-	"github.com/vitessio/arewefastyet/go/tools/math"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/dustin/go-humanize"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/tools/math"
 )
 
 type (
@@ -49,8 +50,9 @@ type (
 	// MicroBenchmarkDetails refers to a single microbenchmark.
 	MicroBenchmarkDetails struct {
 		BenchmarkId
-		GitRef string
-		Result MicroBenchmarkResult
+		GitRef    string
+		StartedAt string
+		Result    MicroBenchmarkResult
 	}
 
 	// MicroBenchmarkComparison allows comparison of two MicroBenchmarkResult
@@ -68,11 +70,12 @@ type (
 )
 
 // NewMicroBenchmarkDetails creates a new MicroBenchmarkDetails.
-func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, result MicroBenchmarkResult) *MicroBenchmarkDetails {
+func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, startedAt string, result MicroBenchmarkResult) *MicroBenchmarkDetails {
 	return &MicroBenchmarkDetails{
 		BenchmarkId: benchmarkId,
 		GitRef:      gitRef,
 		Result:      result,
+		StartedAt:   startedAt,
 	}
 }
 
@@ -169,11 +172,7 @@ func (mbd MicroBenchmarkDetailsArray) mergeUsingCondition(compareCondition func(
 		interMBPerSecResult := math.MedianFloat(interMBPerSec)
 		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)
 		interAllocsPerOpResult := math.MedianFloat(interAllocsPerOp)
-		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(
-			*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name),
-			mbd[i].GitRef,
-			*NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult),
-		))
+		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name), mbd[i].GitRef, mbd[i].StartedAt, *NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult)))
 		i = j
 	}
 	return reduceMbd
@@ -204,11 +203,12 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 
 // GetLatestResultsFor will fetch and return a MicroBenchmarkDetailsArray
 // containing all the MicroBenchmarkDetails linked to latest runs of the given benchmark name.
-func GetLatestResultsFor(name string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
-	rows, err := client.Select("select m.pkg_name, m.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op,"+
-		" md.allocs_per_op, md.mb_per_sec  from (select microbenchmark_no, pkg_name, name, git_ref"+
-		" from microbenchmark where name = ? order by microbenchmark_no desc limit 10) m, "+
-		"microbenchmark_details md where md.microbenchmark_no = m.microbenchmark_no", name)
+func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
+	query := "select m.pkg_name, m.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op," +
+		" md.allocs_per_op, md.mb_per_sec, m.started_at  from (select microbenchmark_no, pkg_name, name, microbenchmark.git_ref, started_at" +
+		" from microbenchmark join execution on exec_uuid = uuid where name = ? and source = \"cron\" order by started_at desc limit ?) m, " +
+		"microbenchmark_details md where md.microbenchmark_no = m.microbenchmark_no"
+	rows, err := client.Select(query, name, count)
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +216,7 @@ func GetLatestResultsFor(name string, client *mysql.Client) (mrs MicroBenchmarkD
 	for rows.Next() {
 		var res MicroBenchmarkDetails
 		err = rows.Scan(&res.PkgName, &res.Name, &res.GitRef, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
-			&res.Result.AllocsPerOp, &res.Result.MBPerSec)
+			&res.Result.AllocsPerOp, &res.Result.MBPerSec, &res.StartedAt)
 		if err != nil {
 			return nil, err
 		}

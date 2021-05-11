@@ -33,75 +33,75 @@ func TestMicroBenchmarkResults_ReduceSimpleMedianByName(t *testing.T) {
 		// tc1
 		{name: "Few simple values in same package but different benchmark names", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 1.00, 1, 9)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 2.00, 50, 18)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 3.00, 100, 27)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(100, 1.00, 1.00, 1, 9)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(100, 1.00, 2.00, 50, 18)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(100, 1.00, 3.00, 100, 27)),
 
 			// input bench 2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(150, 2.00, 3.00, 55.00, 42)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(300, 2.00, 4.00, 55.00, 84)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(450, 2.00, 5.00, 55.00, 126)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(150, 2.00, 3.00, 55.00, 42)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(300, 2.00, 4.00, 55.00, 84)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(450, 2.00, 5.00, 55.00, 126)),
 		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(100, 1.00, 2, 50.00, 18)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(100, 1.00, 2, 50.00, 18)),
 
 			// want bench 2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(300, 2.00, 4, 55.00, 84)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(300, 2.00, 4, 55.00, 84)),
 		}},
 
 		// tc2
 		{name: "Few values in different packages and different benchmark names", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1 in pkg 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
 
 			// input bench 1 in pkg 2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", *NewMicroBenchmarkResult(0, 3.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 3.00, 0, 0, 0)),
 		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1 from pkg1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
 
 			// want bench 1 from pkg2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "", "2021-05-10T13:20:11Z", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
 		}},
 
 		// tc3
 		{name: "More unordered values with single package and benchmark name", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 30.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 15.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 40.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 25.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 0.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 35.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 30.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 15.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 40.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 25.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 0.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 35.00, 0, 0, 0)),
 		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
 		}},
 
 		// tc4
 		{name: "Few values in different packages and different benchmark names", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1 in pkg 2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 3.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", "", *NewMicroBenchmarkResult(0, 3.00, 0, 0, 0)),
 
 			// input bench 1 in pkg 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
 		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1 from pkg1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2"), "", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
 
 			// want bench 1 from pkg2
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1"), "", "", *NewMicroBenchmarkResult(0, 2.50, 0, 0, 0)),
 		}},
 	}
 	for _, tt := range tests {
@@ -123,37 +123,37 @@ func TestMicroBenchmarkResults_ReduceSimpleMedianByGitRef(t *testing.T) {
 		// tc1
 		{name: "Few simple values in same package with different git refs", mbd: MicroBenchmarkDetailsArray{
 			// input for git ref `abcd`
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 1.00, 1, 9)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 2.00, 50, 18)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 3.00, 100, 27)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(100, 1.00, 1.00, 1, 9)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(100, 1.00, 2.00, 50, 18)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(100, 1.00, 3.00, 100, 27)),
 
 			// input for git ref `efgh`
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(150, 2.00, 3.00, 55.00, 42)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(300, 2.00, 4.00, 55.00, 84)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(450, 2.00, 5.00, 55.00, 126)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", "", *NewMicroBenchmarkResult(150, 2.00, 3.00, 55.00, 42)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", "", *NewMicroBenchmarkResult(300, 2.00, 4.00, 55.00, 84)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", "", *NewMicroBenchmarkResult(450, 2.00, 5.00, 55.00, 126)),
 		}, want: MicroBenchmarkDetailsArray{
 			// want git ref `abcd`
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(100, 1.00, 2, 50.00, 18)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(100, 1.00, 2, 50.00, 18)),
 
 			// want git ref `efgh`
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", *NewMicroBenchmarkResult(300, 2.00, 4, 55.00, 84)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "efgh", "", *NewMicroBenchmarkResult(300, 2.00, 4, 55.00, 84)),
 		}},
 
 		// tc2
 		{name: "More unordered values with same git ref", mbd: MicroBenchmarkDetailsArray{
 			// input bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 30.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 15.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 40.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 25.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 0.00, 0, 0, 0)),
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 35.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 30.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 15.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 10.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 40.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 25.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 0.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 35.00, 0, 0, 0)),
 		}, want: MicroBenchmarkDetailsArray{
 			// want bench 1
-			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
+			*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "abcd", "", *NewMicroBenchmarkResult(0, 20.00, 0, 0, 0)),
 		}},
 	}
 	for _, tt := range tests {
@@ -168,12 +168,12 @@ func TestMicroBenchmarkResults_ReduceSimpleMedianByGitRef(t *testing.T) {
 
 func BenchmarkReduceSimpleMedianByName(b *testing.B) {
 	mbd := MicroBenchmarkDetailsArray{
-		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
-		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
-		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
+		*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(0, 2.00, 0, 0, 0)),
 	}
 
 	b.ReportAllocs()
@@ -203,10 +203,10 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 		// tc1
 		{name: "Simple compare with ordered array of one elements", args: args{
 			currentMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
 			},
 			lastReleaseMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: MicroBenchmarkResult{NSPerOp: 1.00}, Last: MicroBenchmarkResult{NSPerOp: 5.00}, CurrLastDiff: 5},
@@ -215,12 +215,12 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 		// tc2
 		{name: "Simple compare with ordered array of two elements", args: args{
 			currentMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
 			},
 			lastReleaseMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "", "", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, Current: *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
@@ -230,14 +230,14 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 		// tc3
 		{name: "Compare with unordered array", args: args{
 			currentMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
 			},
 			lastReleaseMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
@@ -248,20 +248,20 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 		// tc4
 		{name: "Compare with unordered array from multiple package", args: args{
 			currentMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 3.50, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", *NewMicroBenchmarkResult(0, 2385.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", "", *NewMicroBenchmarkResult(0, 3.50, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", "", *NewMicroBenchmarkResult(0, 2385.00, 0, 0, 0)),
 			},
 			lastReleaseMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", *NewMicroBenchmarkResult(0, 2560.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 6.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", "", *NewMicroBenchmarkResult(0, 2560.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", "", *NewMicroBenchmarkResult(0, 6.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", "", *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
@@ -275,18 +275,18 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 		// tc5
 		{name: "Compare with unordered and different size array from multiple package", args: args{
 			currentMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 3.50, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", *NewMicroBenchmarkResult(0, 2385.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 1.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "aabb", "", *NewMicroBenchmarkResult(0, 98.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench2-pkg2"), "ppbb", "", *NewMicroBenchmarkResult(0, 3.50, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg3", "bench1-pkg3"), "ppbb", "", *NewMicroBenchmarkResult(0, 2385.00, 0, 0, 0)),
 			},
 			lastReleaseMbd: MicroBenchmarkDetailsArray{
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
-				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench2-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 89.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench3-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg1", "bench1-pkg1"), "ppbb", "", *NewMicroBenchmarkResult(0, 5.00, 0, 0, 0)),
+				*NewMicroBenchmarkDetails(*NewBenchmarkId("pkg2", "bench1-pkg2"), "ppbb", "", *NewMicroBenchmarkResult(0, 4.20, 0, 0, 0)),
 			},
 		}, want: MicroBenchmarkComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, Current: *NewMicroBenchmarkResult(0, 58.00, 0, 0, 0), Last: *NewMicroBenchmarkResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},

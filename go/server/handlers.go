@@ -187,7 +187,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 	name := c.Param("name")
 
-	results, err := microbench.GetLatestResultsFor(name, s.dbClient)
+	results, err := microbench.GetLatestResultsFor(name, 10, s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
