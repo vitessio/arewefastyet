@@ -33,6 +33,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
+	"github.com/vitessio/arewefastyet/go/tools/microbench"
 	"io"
 	"os"
 	"path"
@@ -223,42 +224,67 @@ func (e Exec) SendNotification() error {
 	}
 	if previousExec == "" {
 		return nil
-	} else if e.typeOf == "micro" {
+	}
 
-	} else {
-		influxClient, err := influxdb.Config{
-			Host:     e.statsRemoteDBConfig.Host,
-			Port:     e.statsRemoteDBConfig.Port,
-			User:     e.statsRemoteDBConfig.User,
-			Password: e.statsRemoteDBConfig.Password,
-			Database: e.statsRemoteDBConfig.DbName,
-		}.NewClient()
-		if err != nil {
-			return err
-		}
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(e.clientDB, influxClient, e.GitRef, previousGitRef)
-		if err != nil {
-			return err
-		}
-		macroResults := macrosMatrices[macrobench.Type(e.typeOf)].(macrobench.ComparisonArray)
-		if len(macroResults) == 0 {
-			return fmt.Errorf("no macrobenchmark result")
-		}
-		regression := macroResults[0].Regression()
-		if regression != "" {
-			header := `*Observed a regression.*
+	header := `*Observed a regression.*
 Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
 Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
 
 
 `
-			content := header + regression
-			msg := slack.TextMessage{Content: content}
-			err := msg.Send(e.slackConfig)
+
+	if e.typeOf == "micro" {
+		microBenchmarks, err := microbench.CompareMicroBenchmarks(e.clientDB, e.GitRef, previousGitRef)
+		if err != nil {
+			return err
+		}
+		regression := microBenchmarks.Regression()
+		if regression != "" {
+			err = e.sendSlackMessage(regression, header)
 			if err != nil {
 				return err
 			}
 		}
+	} else if e.typeOf == "oltp" || e.typeOf == "tpcc" {
+		influxCfg := influxdb.Config{
+			Host:     e.statsRemoteDBConfig.Host,
+			Port:     e.statsRemoteDBConfig.Port,
+			User:     e.statsRemoteDBConfig.User,
+			Password: e.statsRemoteDBConfig.Password,
+			Database: e.statsRemoteDBConfig.DbName,
+		}
+		influxClient, err := influxCfg.NewClient()
+		if err != nil {
+			return err
+		}
+
+		macrosMatrices, err := macrobench.CompareMacroBenchmarks(e.clientDB, influxClient, e.GitRef, previousGitRef)
+		if err != nil {
+			return err
+		}
+
+		macroResults := macrosMatrices[macrobench.Type(e.typeOf)].(macrobench.ComparisonArray)
+		if len(macroResults) == 0 {
+			return fmt.Errorf("no macrobenchmark result")
+		}
+
+		regression := macroResults[0].Regression()
+		if regression != "" {
+			err = e.sendSlackMessage(regression, header)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (e Exec) sendSlackMessage(regression, header string) error {
+	content := header + regression
+	msg := slack.TextMessage{Content: content}
+	err := msg.Send(e.slackConfig)
+	if err != nil {
+		return err
 	}
 	return nil
 }
