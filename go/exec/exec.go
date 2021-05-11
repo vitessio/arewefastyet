@@ -28,6 +28,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 	"io"
 	"os"
 	"path"
@@ -138,6 +139,11 @@ func (e *Exec) Prepare() error {
 		return err
 	}
 
+	e.Infra.SetTags(map[string]string{
+		"execution_git_ref": git.ShortenSHA(e.GitRef),
+		"execution_source": e.Source,
+	})
+
 	err = e.prepareDirectories()
 	if err != nil {
 		return err
@@ -173,7 +179,7 @@ func (e *Exec) Execute() (err error) {
 		return err
 	}
 
-	IPs, err := provision(e.Infra)
+	IPs, err := e.provision()
 	if err != nil {
 		return err
 	}
@@ -236,6 +242,7 @@ func NewExec() (*Exec, error) {
 
 	// ex.AnsibleConfig.SetOutputs(ex.stdout, ex.stderr)
 	ex.Infra.SetConfig(&ex.InfraConfig)
+	ex.Infra.SetExecUUID(ex.UUID)
 
 	return &ex, nil
 }

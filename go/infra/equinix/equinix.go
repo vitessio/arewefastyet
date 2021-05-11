@@ -21,6 +21,7 @@ package equinix
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -37,11 +38,14 @@ const (
 )
 
 type Equinix struct {
-	Token     string
-	ProjectID string
+	Token        string
+	ProjectID    string
 	InstanceType string
-	tf        *tfexec.Terraform
-	InfraCfg  *infra.Config
+	tf           *tfexec.Terraform
+	InfraCfg     *infra.Config
+
+	tags     map[string]string
+	execUUID uuid.UUID
 }
 
 func (e *Equinix) AddToCommand(cmd *cobra.Command) {
@@ -61,9 +65,15 @@ func (e *Equinix) AddToViper(v *viper.Viper) {
 }
 
 func (e Equinix) TerraformVarArray() (vars []*tfexec.VarOption) {
-	vars = append(vars, tfexec.Var("auth_token=" + e.Token), tfexec.Var("project_id=" + e.ProjectID))
+	vars = append(vars, tfexec.Var("auth_token="+e.Token), tfexec.Var("project_id="+e.ProjectID))
 	if e.InstanceType != "" {
 		vars = append(vars, tfexec.Var("instance_type="+e.InstanceType))
+	}
+	if execUUIDString := e.execUUID.String(); execUUIDString != "" {
+		vars = append(vars, tfexec.Var("hostname="+execUUIDString))
+	}
+	for key, value := range e.tags {
+		vars = append(vars, tfexec.Var(key+"="+value))
 	}
 	return vars
 }
@@ -168,4 +178,12 @@ func (e *Equinix) Run(ansibleCfg *ansible.Config) error {
 
 func (e *Equinix) SetConfig(config *infra.Config) {
 	e.InfraCfg = config
+}
+
+func (e *Equinix) SetTags(tags map[string]string) {
+	e.tags = tags
+}
+
+func (e *Equinix) SetExecUUID(uuid uuid.UUID) {
+	e.execUUID = uuid
 }
