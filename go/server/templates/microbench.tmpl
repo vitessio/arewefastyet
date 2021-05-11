@@ -28,8 +28,41 @@ limitations under the License.
     <section class="py-5">
         <div class="container">
             <h1>Microbenchmarks</h1>
-            <p class="lead">Displaying results for commit hash {{ .currentSHA }}</p>
-            <a href="https://github.com/vitessio/vitess/commit/{{ .currentSHA }}" target="_blank">See commit on GitHub.</a>
+            <p class="lead">Comparing results for <a href="https://github.com/vitessio/vitess/commit/{{ .leftSHA }}" target="_blank">{{ .leftTag }}</a> and <a href="https://github.com/vitessio/vitess/commit/{{ .rightSHA }}" target="_blank">{{ .rightTag }}</a> </p>
+        </div>
+
+        <div class="container" style="padding-bottom: 15px;">
+            <div class="btn-toolbar" role="toolbar" aria-label="Tags">
+                <div class="btn-group mr-2" role="group">
+                    <div class="dropdown">
+                        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="leftTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Left Tag
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="leftTagDropdownMenuButton">
+                            {{range $val := .allReleases}}
+                                <a class="dropdown-item" href="#">{{$val.Name}}</a>
+                                <div class="dropdown-divider"></div>
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group mr-2" role="group">
+                    <div class="dropdown">
+                        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="rightTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Right Tag
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="rightTagDropdownMenuButton">
+                            {{range $val := .allReleases}}
+                                <a class="dropdown-item" href="#">{{$val.Name}}</a>
+                                <div class="dropdown-divider"></div>
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-secondary" id="go-button">Go</button>
+                </div>
+            </div>
         </div>
 
         <div class="container-xl">
@@ -44,6 +77,21 @@ limitations under the License.
                         <th scope="col" colspan="2" class="text-center">B/op</th>
                         <th scope="col" colspan="2" class="text-center">MB/s</th>
                         <th scope="col" colspan="2" class="text-center">Allocs/op</th>
+                    </tr>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th class="text-center" scope="col">{{ .leftTag }}</th>
+                        <th class="text-center" scope="col">{{ .rightTag }}</th>
+                        <th class="text-center" scope="col"></th>
+                        <th class="text-center" scope="col">{{ .leftTag }}</th>
+                        <th class="text-center" scope="col">{{ .rightTag }}</th>
+                        <th class="text-center" scope="col">{{ .leftTag }}</th>
+                        <th class="text-center" scope="col">{{ .rightTag }}</th>
+                        <th class="text-center" scope="col">{{ .leftTag }}</th>
+                        <th class="text-center" scope="col">{{ .rightTag }}</th>
+                        <th class="text-center" scope="col">{{ .leftTag }}</th>
+                        <th class="text-center" scope="col">{{ .rightTag }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,6 +120,18 @@ limitations under the License.
             </table>
         </div>
     </section>
+
+    <script>
+        $(document).ready(function(){
+            $('.dropdown-item').click(function (){
+                $(this).parent().parent().find('.dropdown-toggle').text($(this).text());
+            })
+
+            $('#go-button').click(function (){
+                window.open("/microbench?ltag="+$('#leftTagDropdownMenuButton').text()+"&rtag="+$('#rightTagDropdownMenuButton').text(), '_self');
+            })
+        });
+    </script>
 
     {{template "footerHTML" .}}
 
