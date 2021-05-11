@@ -66,6 +66,7 @@ CREATE TABLE `execution` (
                              `finished_at` datetime DEFAULT NULL,
                              `source` varchar(100) DEFAULT NULL,
                              `git_ref` varchar(100) DEFAULT NULL,
+                             `type` varchar(100) DEFAULT '',
                              PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
