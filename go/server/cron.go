@@ -53,7 +53,7 @@ func (s *Server) cronMasterHandler() {
 		}
 		slog.Info("Created new execution: ", e.UUID.String())
 
-		ref, err := git.GetCommitHashFromClonedRef("refs/heads/master", "https://github.com/vitessio/vitess")
+		ref, err := git.GetLatestVitessCommitHash()
 		if err != nil {
 			slog.Warn(err.Error())
 			return
