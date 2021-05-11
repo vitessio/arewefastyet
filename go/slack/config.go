@@ -36,6 +36,11 @@ type Config struct {
 	Channel string
 }
 
+func (c *Config) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(flagToken, &c.Token)
+	_ = v.UnmarshalKey(flagChannel, &c.Channel)
+}
+
 // AddToCommand will add Config's CLI flags to the given *cobra.Command.
 func (c *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&c.Token, flagToken, "", "Token used to authenticate Slack")

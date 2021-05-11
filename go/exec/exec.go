@@ -27,6 +27,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
+	"github.com/vitessio/arewefastyet/go/slack"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"io"
@@ -70,6 +71,9 @@ type Exec struct {
 	// Configuration used to authenticate and insert execution stats
 	// data to a remote database system.
 	statsRemoteDBConfig stats.RemoteDBConfig
+
+	// Configuration used to send message to Slack.
+	slackConfig slack.Config
 
 	// rootDir represents the parent directory of the Exec.
 	// From there, the Exec's unique directory named Exec.dirPath will

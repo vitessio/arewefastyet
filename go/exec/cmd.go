@@ -39,6 +39,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	e.Infra.AddToViper(v)
 	e.configDB.AddToViper(v)
 	e.statsRemoteDBConfig.AddToViper(v)
+	e.slackConfig.AddToViper(v)
 	return nil
 }
 
@@ -56,4 +57,5 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	e.Infra.AddToCommand(cmd)
 	e.statsRemoteDBConfig.AddToCommand(cmd)
 	e.configDB.AddToCommand(cmd)
+	e.slackConfig.AddToCommand(cmd)
 }

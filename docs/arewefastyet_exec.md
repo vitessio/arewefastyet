@@ -38,6 +38,8 @@ arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --db-
       --exec-source string                Name of the source that triggered the execution
   -h, --help                              help for exec
       --infra-path string                 Path to the infra directory
+      --slack-channel string              Slack channel on which to post messages
+      --slack-token string                Token used to authenticate Slack
       --stats-remote-db-database string   Name of the stats remote database.
       --stats-remote-db-host string       Hostname of the stats remote database.
       --stats-remote-db-password string   Password to authenticate the stats remote database.
