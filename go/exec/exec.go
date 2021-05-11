@@ -82,7 +82,8 @@ type Exec struct {
 	stdout io.Writer
 	stderr io.Writer
 
-	prepared bool
+	prepared   bool
+	configPath string
 }
 
 // SetStdout sets the standard output of Exec.
@@ -146,6 +147,9 @@ func (e *Exec) Prepare() error {
 	if err != nil {
 		return err
 	}
+	if e.configPath == "" {
+		e.configPath = viper.ConfigFileUsed()
+	}
 	e.AnsibleConfig.ExtraVars = map[string]interface{}{}
 	e.statsRemoteDBConfig.AddToAnsible(&e.AnsibleConfig)
 	e.prepared = true
@@ -179,7 +183,7 @@ func (e *Exec) Execute() (err error) {
 	if err != nil {
 		return err
 	}
-	err = ansible.AddLocalConfigPathToFiles(viper.ConfigFileUsed(), e.AnsibleConfig)
+	err = ansible.AddLocalConfigPathToFiles(e.configPath, e.AnsibleConfig)
 	if err != nil {
 		return err
 	}
@@ -225,8 +229,9 @@ func NewExec() (*Exec, error) {
 		stdout: os.Stdout,
 		stderr: os.Stderr,
 
-		configDB: &mysql.ConfigDB{},
-		clientDB: nil,
+		configDB:   &mysql.ConfigDB{},
+		clientDB:   nil,
+		configPath: viper.ConfigFileUsed(),
 	}
 
 	// ex.AnsibleConfig.SetOutputs(ex.stdout, ex.stderr)
@@ -253,6 +258,6 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	e.configPath = pathConfig
 	return e, nil
 }

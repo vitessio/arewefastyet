@@ -38,6 +38,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	e.InfraConfig.AddToViper(v)
 	e.Infra.AddToViper(v)
 	e.configDB.AddToViper(v)
+	e.statsRemoteDBConfig.AddToViper(v)
 	return nil
 }
 
