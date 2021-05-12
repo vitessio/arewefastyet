@@ -30,7 +30,8 @@ func (s *Server) createNewCron() error {
 	}
 	c := cron.New()
 
-	_, err := c.AddFunc(s.cronSchedule, s.cronMasterHandler)
+	var err error
+	_, err = c.AddFunc(s.cronSchedule, s.cronMasterHandler)
 	if err != nil {
 		return err
 	}
@@ -45,6 +46,15 @@ func (s *Server) cronMasterHandler() {
 		s.macrobenchConfigPathTPCC,
 	}
 
+	ref, err := git.GetCommitHashFromClonedRef("refs/heads/master", "https://github.com/vitessio/vitess")
+	if err != nil {
+		slog.Warn(err.Error())
+		return
+	}
+	s.cronExecution(configs, ref)
+}
+
+func (s *Server) cronExecution(configs []string, ref string) {
 	for _, config := range configs {
 		e, err := exec.NewExecWithConfig(config)
 		if err != nil {
@@ -52,12 +62,6 @@ func (s *Server) cronMasterHandler() {
 			return
 		}
 		slog.Info("Created new execution: ", e.UUID.String())
-
-		ref, err := git.GetCommitHashFromClonedRef("refs/heads/master", "https://github.com/vitessio/vitess")
-		if err != nil {
-			slog.Warn(err.Error())
-			return
-		}
 
 		e.Source = "cron"
 		e.GitRef = ref
