@@ -29,6 +29,7 @@ import (
 func TestSetupLocalVitess(t *testing.T) {
 	// Create a temporary folder and try setup vitess
 	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	qt.Assert(t, err, qt.IsNil)
 	defer os.RemoveAll(tmpDir)
 	s := Server{
 		localVitessPath: tmpDir,
@@ -48,6 +49,7 @@ func TestSetupLocalVitess(t *testing.T) {
 
 	// Create a temporary directory and create a vitess folder manually
 	tmpDir, err = ioutil.TempDir("", "setup_vitess_*")
+	qt.Assert(t, err, qt.IsNil)
 	defer os.RemoveAll(tmpDir)
 	s = Server{
 		localVitessPath: tmpDir,
@@ -90,6 +92,7 @@ func TestGetVitessPath(t *testing.T) {
 func TestPullLocalVitess(t *testing.T) {
 	// Create a temporary folder and try setup vitess
 	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	qt.Assert(t, err, qt.IsNil)
 	defer os.RemoveAll(tmpDir)
 	s := Server{
 		localVitessPath: tmpDir,

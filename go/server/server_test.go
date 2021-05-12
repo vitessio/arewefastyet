@@ -87,14 +87,15 @@ func TestServer_isReady(t *testing.T) {
 		s    Server
 		want bool
 	}{
-		{name: "Server fully ready", s: Server{port: "8080", templatePath: "./", staticPath: "./", apiKey: "api_key", microbenchConfigPath: "micro/config.yaml", macrobenchConfigPathOLTP: "oltp/config.yaml", macrobenchConfigPathTPCC: "tpcc/config.yaml"}, want: true},
-		{name: "Missing port", s: Server{templatePath: "./", staticPath: "./", apiKey: "api_key"}},
-		{name: "Missing template path", s: Server{port: "8888", staticPath: "./", apiKey: "424242-848484-ABC"}},
-		{name: "Missing static path", s: Server{port: "9999", templatePath: "./", apiKey: "my key"}},
-		{name: "Missing api key", s: Server{port: "8080", templatePath: "./", staticPath: "./static"}},
-		{name: "Missing multiple elements (1)", s: Server{port: "8080", staticPath: "", apiKey: ""}},
-		{name: "Missing multiple elements (2)", s: Server{templatePath: "", staticPath: "./", apiKey: "428484242-4284842-IUN81B5465"}},
-		{name: "Missing execution configuration paths", s: Server{port: "8080", templatePath: "./", staticPath: "./", apiKey: "api_key"}},
+		{name: "Server fully ready", s: Server{port: "8080", templatePath: "./", staticPath: "./", localVitessPath: "~/", apiKey: "api_key", microbenchConfigPath: "micro/config.yaml", macrobenchConfigPathOLTP: "oltp/config.yaml", macrobenchConfigPathTPCC: "tpcc/config.yaml"}, want: true},
+		{name: "Missing port", s: Server{templatePath: "./", staticPath: "./", localVitessPath: "~/", apiKey: "api_key"}},
+		{name: "Missing template path", s: Server{port: "8888", staticPath: "./", localVitessPath: "~/", apiKey: "424242-848484-ABC"}},
+		{name: "Missing static path", s: Server{port: "9999", templatePath: "./", localVitessPath: "~/", apiKey: "my key"}},
+		{name: "Missing api key", s: Server{port: "8080", templatePath: "./", staticPath: "./static", localVitessPath: "~/"}},
+		{name: "Missing local vitess path", s: Server{port: "8080", templatePath: "./", staticPath: "./static", apiKey: "api_key"}},
+		{name: "Missing multiple elements (1)", s: Server{port: "8080", staticPath: "", localVitessPath: "~/", apiKey: ""}},
+		{name: "Missing multiple elements (2)", s: Server{templatePath: "", staticPath: "./", localVitessPath: "~/", apiKey: "428484242-4284842-IUN81B5465"}},
+		{name: "Missing execution configuration paths", s: Server{port: "8080", templatePath: "./", staticPath: "./", localVitessPath: "~/", apiKey: "api_key"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
