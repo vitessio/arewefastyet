@@ -63,8 +63,12 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 		CommitHash: "5f293938aa637e073231e24fe97448f3b6f2579a",
 	})
 	require.Contains(t, s, &Release{
+		Name:       "9.0.0",
+		CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8",
+	})
+	require.Contains(t, s, &Release{
 		Name:       "9.0.1",
-		CommitHash: "c970e775be7ec79066aeddd307d050107e66c698",
+		CommitHash: "42c38e56e4ae29012a5d603d8bc8c22c35b78b52",
 	})
 	require.Contains(t, s, &Release{
 		Name:       "7.0.2",
@@ -88,7 +92,7 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	})
 	require.Contains(t, s, &Release{
 		Name:       "2.1.0",
-		CommitHash: "5f18b1ed2140b1a7ffcf8d50df69f97cafe38f60",
+		CommitHash: "6c06e70a5d7828ad9f79488a704359661bdb996b",
 	})
 	require.Contains(t, s, &Release{
 		Name:       "10.0.0",
@@ -96,11 +100,11 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	})
 	require.Contains(t, s, &Release{
 		Name:       "2.1.1",
-		CommitHash: "405183279f617f941f42d7cbcb54259a3c1a6315",
+		CommitHash: "89cc312b4da3004d3b5382cf2b37d70e901b1c36",
 	})
 	require.Contains(t, s, &Release{
 		Name:       "10.0.1",
-		CommitHash: "05e745812189a3ebbf11b7ade0329510de47dcc3",
+		CommitHash: "f7304cd1893accfefee0525910098a8e0e68deec",
 	})
 	require.Contains(t, s, &Release{
 		Name:       "0.8.0",
@@ -116,7 +120,7 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	})
 	require.Contains(t, s, &Release{
 		Name:       "2.0.0",
-		CommitHash: "51ce1ea9e6c70d050be3111d209330885df9c7e3",
+		CommitHash: "d429f4015ace1f1366acb28e996172dc6693515c",
 	})
 	require.Contains(t, s, &Release{
 		Name:       "7.0.1",
@@ -124,7 +128,15 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	})
 	require.Contains(t, s, &Release{
 		Name:       "0.9.0",
-		CommitHash: "22d6fc0962e366f87b7039efd0f78e2a8c13091f",
+		CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8",
+	})
+	require.Contains(t, s, &Release{
+		Name:       "3.0",
+		CommitHash: "4f192d1003d128e6d399f0a3b37747d9b970d70c",
+	})
+	require.Contains(t, s, &Release{
+		Name:       "2.2",
+		CommitHash: "66e84fadcc1a7e956e7ffcebcaaba0b04132ca1f",
 	})
 }
 

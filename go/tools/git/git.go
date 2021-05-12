@@ -24,9 +24,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/plumbing"
 )
 
 type Release struct {
@@ -36,34 +33,53 @@ type Release struct {
 
 // GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes given the directory of the clone of vitess
 func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
-	r, err := git.PlainOpen(repoDir)
+	out, err := ExecCmd(repoDir, "git", "show-ref", "--tags", "-d")
 	if err != nil {
 		return nil, err
 	}
-	tagrefs, err := r.Tags()
-	if err != nil {
-		return nil, err
-	}
-
-	regexPattern := `^refs/tags/v\d+\.\d+\.\d+$`
+	releases := strings.Split(string(out), "\n")
 	var res []*Release
+	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
+	regexPattern := `^v\d+\.\d+(\.\d+)?$`
 
-	err = tagrefs.ForEach(func(t *plumbing.Reference) error {
-		tagName := t.Name().String()
-		commitHash := t.Hash().String()
-		isMatched, err := regexp.MatchString(regexPattern, tagName)
+	// prevMatched keeps track whether the last tag matched the regular expression or not
+	prevMatched := false
+
+	for _, release := range releases {
+		// if the length of the line is less than 55 then it cannot have a relese tag since
+		// 40 is commit hash length + 1 space + 11 for refs/tags/v + atleast 3 for num.num
+		if len(release) < 55 {
+			continue
+		}
+		commitHash := release[0:40]
+		tag := release[51:]
+
+		// tags ending with `^{}` show dereference pointers for the given tag, and these commit hashes must be used instead of the original
+		// so we check if the previous tag matched the regex and if the current tag has these 3 characters at the end, then we replace the
+		// last hash with the current one
+		// For example for the given input
+		// c970e775be7ec79066aeddd307d050107e66c698 refs/tags/v9.0.1
+		// 42c38e56e4ae29012a5d603d8bc8c22c35b78b52 refs/tags/v9.0.1^{}
+		// output should have
+		// tag = 9.0.1
+		// commitHash = 42c38e56e4ae29012a5d603d8bc8c22c35b78b52
+		if prevMatched && tag[len(tag)-3:] == "^{}" {
+			res[len(res)-1].CommitHash = commitHash
+		}
+
+		isMatched, err := regexp.MatchString(regexPattern, tag)
+		prevMatched = false
 		if isMatched {
 			res = append(res, &Release{
-				Name:       tagName[11:],
+				Name:       tag[1:],
 				CommitHash: commitHash,
 			})
+			prevMatched = true
 		}
-		return err
-	})
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
-
 	return res, nil
 }
 
