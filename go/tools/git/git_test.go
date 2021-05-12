@@ -19,6 +19,9 @@
 package git
 
 import (
+	"io/ioutil"
+	"os"
+	"path"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -183,4 +186,17 @@ func TestCompareReleaseNumbers(t *testing.T) {
 			require.Equal(t, s.expectedComparison, out)
 		})
 	}
+}
+
+func TestGetCommitHash(t *testing.T) {
+	// Create a temporary folder and clone vitess repo
+	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	defer os.RemoveAll(tmpDir)
+	_, err = ExecCmd(tmpDir, "git", "clone", "https://github.com/vitessio/vitess.git")
+	qt.Assert(t, err, qt.IsNil)
+	vitessPath := path.Join(tmpDir, "vitess")
+
+	out, err := GetCommitHash(vitessPath)
+	qt.Assert(t, err, qt.IsNil)
+	qt.Assert(t, len(out), qt.Equals, 40)
 }
