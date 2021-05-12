@@ -20,13 +20,14 @@ package server
 
 import (
 	"errors"
+	"html/template"
+
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
-	"html/template"
 )
 
 const (
@@ -35,6 +36,7 @@ const (
 	flagPort                     = "web-port"
 	flagTemplatePath             = "web-template-path"
 	flagStaticPath               = "web-static-path"
+	flagVitessPath               = "web-vitess-path"
 	flagAPIKey                   = "web-api-key"
 	flagMode                     = "web-mode"
 	flagMicroBenchConfigFile     = "web-microbench-config"
@@ -44,11 +46,12 @@ const (
 )
 
 type Server struct {
-	port         string
-	templatePath string
-	staticPath   string
-	apiKey       string
-	router       *gin.Engine
+	port            string
+	templatePath    string
+	staticPath      string
+	localVitessPath string
+	apiKey          string
+	router          *gin.Engine
 
 	dbCfg    *mysql.ConfigDB
 	dbClient *mysql.Client
@@ -69,6 +72,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.port, flagPort, "8080", "Port used for the HTTP server")
 	cmd.Flags().StringVar(&s.templatePath, flagTemplatePath, "", "Path to the template directory")
 	cmd.Flags().StringVar(&s.staticPath, flagStaticPath, "", "Path to the static directory")
+	cmd.Flags().StringVar(&s.localVitessPath, flagVitessPath, "/", "Path where the vitess directory is located or where it should be cloned")
 	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
 	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
 
@@ -84,6 +88,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
 	_ = viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
+	_ = viper.BindPFlag(flagVitessPath, cmd.Flags().Lookup(flagVitessPath))
 	_ = viper.BindPFlag(flagAPIKey, cmd.Flags().Lookup(flagAPIKey))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
 	_ = viper.BindPFlag(flagMicroBenchConfigFile, cmd.Flags().Lookup(flagMicroBenchConfigFile))
@@ -104,7 +109,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 
 func (s Server) isReady() bool {
 	return s.port != "" && s.templatePath != "" && s.staticPath != "" && s.apiKey != "" &&
-		s.microbenchConfigPath != "" && s.macrobenchConfigPathOLTP != "" && s.macrobenchConfigPathTPCC != ""
+		s.microbenchConfigPath != "" && s.macrobenchConfigPathOLTP != "" && s.macrobenchConfigPathTPCC != "" && s.localVitessPath != ""
 }
 
 func (s *Server) Run() error {
@@ -124,6 +129,10 @@ func (s *Server) Run() error {
 
 	if !s.isReady() {
 		return errors.New(ErrorIncorrectConfiguration)
+	}
+
+	if err := s.setupLocalVitess(); err != nil {
+		return err
 	}
 
 	if err := s.createStorages(); err != nil {
@@ -167,12 +176,16 @@ func (s *Server) Run() error {
 	return s.router.Run(":" + s.port)
 }
 
-func Run(port, templatePath, staticPath, apiKey string) error {
+func Run(port, templatePath, staticPath, localVitessPath, apiKey string) error {
 	s := Server{
-		port:         port,
-		templatePath: templatePath,
-		staticPath:   staticPath,
-		apiKey:       apiKey,
+		port:                     port,
+		templatePath:             templatePath,
+		staticPath:               staticPath,
+		localVitessPath:          localVitessPath,
+		apiKey:                   apiKey,
+		microbenchConfigPath:     "/",
+		macrobenchConfigPathOLTP: "/",
+		macrobenchConfigPathTPCC: "/",
 	}
 	return s.Run()
 }

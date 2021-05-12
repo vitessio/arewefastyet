@@ -18,10 +18,31 @@
 
 package server
 
-import "os"
+import (
+	"io/ioutil"
+	"path"
 
-func (s *Server) setupLocalVitess() {
-	if _, err := os.Stat("/vitess/"); os.IsNotExist(err) {
+	"github.com/go-git/go-git/v5"
+)
 
+// setupLocalVitess is used to setup the local clone of vitess
+func (s *Server) setupLocalVitess() error {
+	files, err := ioutil.ReadDir(s.localVitessPath)
+	if err != nil {
+		return err
 	}
+	for _, file := range files {
+		if file.Name() == "vitess" && file.IsDir() {
+			return nil
+		}
+	}
+	_, err = git.PlainClone(s.getVitessPath(), false, &git.CloneOptions{
+		URL: "https://github.com/vitessio/vitess",
+	})
+	return err
+}
+
+// getVitessPath is used to find the path of the directory where the local vitess clone should exits
+func (s *Server) getVitessPath() string {
+	return path.Join(s.localVitessPath, "vitess")
 }
