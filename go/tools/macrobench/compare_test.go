@@ -40,7 +40,6 @@ func TestComparison_Regression(t *testing.T) {
 		{name: "VTGate time increase (1)", cmp: Comparison{DiffMetrics: metrics.ExecutionMetrics{ComponentsCPUTime: map[string]float64{"vtgate": -11.98}}}, wantReason: "- vtgate CPU time increased by 11.98% \n"},
 		{name: "VTGate time increase (2)", cmp: Comparison{DiffMetrics: metrics.ExecutionMetrics{ComponentsCPUTime: map[string]float64{"vtgate": -5}}}, wantReason: "- vtgate CPU time increased by 5.00% \n"},
 		{name: "VTGate time no increase", cmp: Comparison{DiffMetrics: metrics.ExecutionMetrics{ComponentsCPUTime: map[string]float64{"vtgate": -4.99}}}, wantReason: ""},
-		{name: "VTGate and VTTablet times increase", cmp: Comparison{DiffMetrics: metrics.ExecutionMetrics{ComponentsCPUTime: map[string]float64{"vtgate": -5, "vttablet": -5}}}, wantReason: "- vtgate CPU time increased by 5.00% \n- vttablet CPU time increased by 5.00% \n"},
 		{name: "TPS decrease", cmp: Comparison{Diff: Result{TPS: -50}}, wantReason: "- TPS decreased by 50.00% \n"},
 		{name: "Latency increase", cmp: Comparison{Diff: Result{Latency: -15}}, wantReason: "- Latency increased by 15.00% \n"},
 		{name: "QPS decrease", cmp: Comparison{Diff: Result{QPS: QPS{Total: -10}}}, wantReason: "- QPS decreased by 10.00% \n"},
