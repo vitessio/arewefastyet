@@ -45,6 +45,12 @@ func (s *Server) cronMasterHandler() {
 		s.macrobenchConfigPathTPCC,
 	}
 
+	err := s.fetchLocalVitess()
+	if err != nil {
+		slog.Warn(err.Error())
+		return
+	}
+
 	for _, config := range configs {
 		e, err := exec.NewExecWithConfig(config)
 		if err != nil {

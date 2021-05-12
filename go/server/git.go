@@ -19,6 +19,7 @@
 package server
 
 import (
+	"errors"
 	"io/ioutil"
 	"path"
 
@@ -45,4 +46,22 @@ func (s *Server) setupLocalVitess() error {
 // getVitessPath is used to find the path of the directory where the local vitess clone should exits
 func (s *Server) getVitessPath() string {
 	return path.Join(s.localVitessPath, "vitess")
+}
+
+// fetchLocalVitess is used to execute
+func (s *Server) fetchLocalVitess() error {
+	r, err := git.PlainOpen(s.getVitessPath())
+	if err != nil {
+		return err
+	}
+	err = r.Fetch(&git.FetchOptions{
+		Tags: git.AllTags,
+	})
+	if err != nil {
+		if errors.Is(err, git.NoErrAlreadyUpToDate) {
+			return nil
+		}
+		return err
+	}
+	return nil
 }

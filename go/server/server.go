@@ -72,7 +72,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.port, flagPort, "8080", "Port used for the HTTP server")
 	cmd.Flags().StringVar(&s.templatePath, flagTemplatePath, "", "Path to the template directory")
 	cmd.Flags().StringVar(&s.staticPath, flagStaticPath, "", "Path to the static directory")
-	cmd.Flags().StringVar(&s.localVitessPath, flagVitessPath, "/", "Path where the vitess directory is located or where it should be cloned")
+	cmd.Flags().StringVar(&s.localVitessPath, flagVitessPath, "/", "Absolute path where the vitess directory is located or where it should be cloned")
 	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
 	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
 

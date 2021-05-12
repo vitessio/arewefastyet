@@ -86,3 +86,16 @@ func TestGetVitessPath(t *testing.T) {
 		})
 	}
 }
+
+func TestFetchLocalVitess(t *testing.T) {
+	// Create a temporary folder and try setup vitess
+	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	defer os.RemoveAll(tmpDir)
+	s := Server{
+		localVitessPath: tmpDir,
+	}
+	err = s.setupLocalVitess()
+	qt.Assert(t, err, qt.IsNil)
+	err = s.fetchLocalVitess()
+	qt.Assert(t, err, qt.IsNil)
+}
