@@ -38,7 +38,7 @@ limitations under the License.
                         <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="leftTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Left Tag
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="leftTagDropdownMenuButton">
+                        <div class="dropdown-menu" style="height:200px; overflow-y: scroll;"  aria-labelledby="leftTagDropdownMenuButton">
                             {{range $val := .allReleases}}
                                 <a class="dropdown-item" href="#">{{$val.Name}}</a>
                                 <div class="dropdown-divider"></div>
@@ -51,7 +51,7 @@ limitations under the License.
                         <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="rightTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Right Tag
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="rightTagDropdownMenuButton">
+                        <div class="dropdown-menu" style="height:200px; overflow-y: scroll;" aria-labelledby="rightTagDropdownMenuButton">
                             {{range $val := .allReleases}}
                                 <a class="dropdown-item" href="#">{{$val.Name}}</a>
                                 <div class="dropdown-divider"></div>
