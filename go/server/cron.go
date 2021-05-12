@@ -66,7 +66,7 @@ func (s Server) cronPRLabels() {
 		"tpcc":  s.macrobenchConfigPathTPCC,
 	}
 
-	SHAs, err := git.GetPullRequestHeadForLabels([]string{"\"Component: Query Serving\""}, "vitessio/vitess")
+	SHAs, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
 	if err != nil {
 		slog.Error(err)
 		return
