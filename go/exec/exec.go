@@ -146,7 +146,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type) VALUES(?, ?, ?, ?, ?)", e.UUID.String(), statusCreated, e.Source, e.GitRef, e.typeOf); err != nil {
+	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type) VALUES(?, ?, ?, ?, ?)", e.UUID.String(), StatusCreated, e.Source, e.GitRef, e.typeOf); err != nil {
 		return err
 	}
 
@@ -176,9 +176,9 @@ func (e *Exec) Prepare() error {
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
 func (e *Exec) Execute() (err error) {
 	defer func() {
-		status := statusFinished
+		status := StatusFinished
 		if err != nil {
-			status = statusFailed
+			status = StatusFailed
 		}
 		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", status, e.UUID.String())
 	}()
@@ -186,7 +186,7 @@ func (e *Exec) Execute() (err error) {
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
 	}
-	if _, err := e.clientDB.Insert("UPDATE execution SET started_at = CURRENT_TIME, status = ? WHERE uuid = ?", statusStarted, e.UUID.String()); err != nil {
+	if _, err := e.clientDB.Insert("UPDATE execution SET started_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusStarted, e.UUID.String()); err != nil {
 		return err
 	}
 
@@ -366,4 +366,13 @@ func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
 		}
 	}
 	return
+}
+
+func Exists(clientDB *mysql.Client, gitRef, source, typeOf, status string) (bool, error) {
+	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
+	result, err := clientDB.Select(query, status, gitRef, typeOf, source)
+	if err != nil {
+		return false, err
+	}
+	return result.Next(), nil
 }

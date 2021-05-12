@@ -19,8 +19,8 @@
 package exec
 
 const (
-	statusCreated  = "created"
-	statusStarted  = "started"
-	statusFailed   = "failed"
-	statusFinished = "finished"
+	StatusCreated  = "created"
+	StatusStarted  = "started"
+	StatusFailed   = "failed"
+	StatusFinished = "finished"
 )
