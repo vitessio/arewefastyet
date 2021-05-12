@@ -27,7 +27,6 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-git/go-git/v5/storage/memory"
 )
 
 type Release struct {
@@ -35,13 +34,9 @@ type Release struct {
 	CommitHash string
 }
 
-// GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes
-func GetAllVitessReleaseCommitHash() ([]*Release, error) {
-	repo := "https://github.com/vitessio/vitess"
-	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
-		URL:   repo,
-		Depth: 1,
-	})
+// GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes given the directory of the clone of vitess
+func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
+	r, err := git.PlainOpen(repoDir)
 	if err != nil {
 		return nil, err
 	}
@@ -72,9 +67,9 @@ func GetAllVitessReleaseCommitHash() ([]*Release, error) {
 	return res, nil
 }
 
-// GetLastReleaseAndCommitHash gets the last release number along with the commit hash
-func GetLastReleaseAndCommitHash() (*Release, error) {
-	res, err := GetAllVitessReleaseCommitHash()
+// GetLastReleaseAndCommitHash gets the last release number along with the commit hash given the directory of the clone of vitess
+func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
+	res, err := GetAllVitessReleaseCommitHash(repoDir)
 	if err != nil {
 		return nil, err
 	}

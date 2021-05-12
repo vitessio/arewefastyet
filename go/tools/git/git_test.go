@@ -49,7 +49,10 @@ func TestShortenSHA(t *testing.T) {
 }
 
 func TestGetAllVitessReleaseCommitHash(t *testing.T) {
-	s, err := GetAllVitessReleaseCommitHash()
+	tmpDir, vitessPath, err := createTemporaryVitessClone()
+	defer os.RemoveAll(tmpDir)
+	qt.Assert(t, err, qt.IsNil)
+	s, err := GetAllVitessReleaseCommitHash(vitessPath)
 	require.NoError(t, err)
 	require.Contains(t, s, &Release{
 		Name:       "5.0.1",
@@ -189,14 +192,22 @@ func TestCompareReleaseNumbers(t *testing.T) {
 }
 
 func TestGetCommitHash(t *testing.T) {
-	// Create a temporary folder and clone vitess repo
-	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	tmpDir, vitessPath, err := createTemporaryVitessClone()
 	defer os.RemoveAll(tmpDir)
-	_, err = ExecCmd(tmpDir, "git", "clone", "https://github.com/vitessio/vitess.git")
 	qt.Assert(t, err, qt.IsNil)
-	vitessPath := path.Join(tmpDir, "vitess")
-
 	out, err := GetCommitHash(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
 	qt.Assert(t, len(out), qt.Equals, 40)
+}
+
+// createTemporaryVitessClone creates a temporary vitess clone
+func createTemporaryVitessClone() (string, string, error) {
+	// Create a temporary folder and clone vitess repo
+	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	if err != nil {
+		return "", "", err
+	}
+	_, err = ExecCmd(tmpDir, "git", "clone", "https://github.com/vitessio/vitess.git")
+	vitessPath := path.Join(tmpDir, "vitess")
+	return tmpDir, vitessPath, err
 }

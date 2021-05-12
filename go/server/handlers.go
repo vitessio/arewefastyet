@@ -151,7 +151,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	var err error
 
 	// get all the releases and the last cron job for master
-	allReleases, err := git.GetAllVitessReleaseCommitHash()
+	allReleases, err := git.GetAllVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -186,7 +186,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	rightSHA := ""
 	if rightTag == "" {
 		// get the last release sha if rightSHA is not specified
-		rel, err := git.GetLastReleaseAndCommitHash()
+		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
 		if err != nil {
 			handleRenderErrors(c, err)
 			return
