@@ -23,6 +23,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/vitessio/arewefastyet/go/tools/git"
+
 	qt "github.com/frankban/quicktest"
 )
 
@@ -87,7 +89,7 @@ func TestGetVitessPath(t *testing.T) {
 	}
 }
 
-func TestFetchLocalVitess(t *testing.T) {
+func TestPullLocalVitess(t *testing.T) {
 	// Create a temporary folder and try setup vitess
 	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
 	defer os.RemoveAll(tmpDir)
@@ -96,6 +98,20 @@ func TestFetchLocalVitess(t *testing.T) {
 	}
 	err = s.setupLocalVitess()
 	qt.Assert(t, err, qt.IsNil)
-	err = s.fetchLocalVitess()
+	err = s.pullLocalVitess()
 	qt.Assert(t, err, qt.IsNil)
+}
+
+func TestGetCommitHash(t *testing.T) {
+	// Create a temporary folder and try setup vitess
+	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	defer os.RemoveAll(tmpDir)
+	s := Server{
+		localVitessPath: tmpDir,
+	}
+	err = s.setupLocalVitess()
+	qt.Assert(t, err, qt.IsNil)
+	out, err := git.GetCommitHash(s.getVitessPath())
+	qt.Assert(t, err, qt.IsNil)
+	qt.Assert(t, len(out), qt.Equals, 40)
 }

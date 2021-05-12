@@ -19,11 +19,10 @@
 package server
 
 import (
-	"errors"
 	"io/ioutil"
 	"path"
 
-	"github.com/go-git/go-git/v5"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 )
 
 // setupLocalVitess is used to setup the local clone of vitess
@@ -37,9 +36,9 @@ func (s *Server) setupLocalVitess() error {
 			return nil
 		}
 	}
-	_, err = git.PlainClone(s.getVitessPath(), false, &git.CloneOptions{
-		URL: "https://github.com/vitessio/vitess",
-	})
+
+	_, err = git.ExecCmd(s.localVitessPath, "git", "clone", "https://github.com/vitessio/vitess.git")
+
 	return err
 }
 
@@ -48,20 +47,12 @@ func (s *Server) getVitessPath() string {
 	return path.Join(s.localVitessPath, "vitess")
 }
 
-// fetchLocalVitess is used to execute
-func (s *Server) fetchLocalVitess() error {
-	r, err := git.PlainOpen(s.getVitessPath())
+// pullLocalVitess is used to execute
+func (s *Server) pullLocalVitess() error {
+	_, err := git.ExecCmd(s.getVitessPath(), "git", "fetch", "origin")
 	if err != nil {
 		return err
 	}
-	err = r.Fetch(&git.FetchOptions{
-		Tags: git.AllTags,
-	})
-	if err != nil {
-		if errors.Is(err, git.NoErrAlreadyUpToDate) {
-			return nil
-		}
-		return err
-	}
+	_, err = git.ExecCmd(s.getVitessPath(), "git", "reset", "--hard", "origin/master")
 	return nil
 }

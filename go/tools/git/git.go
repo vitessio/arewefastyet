@@ -19,6 +19,8 @@
 package git
 
 import (
+	"fmt"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -31,29 +33,6 @@ import (
 type Release struct {
 	Name       string
 	CommitHash string
-}
-
-func GetCommitHashFromClonedRef(ref, repo string) (hash string, err error) {
-	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
-		URL:           repo,
-		ReferenceName: plumbing.ReferenceName(ref),
-		SingleBranch:  true,
-		Depth:         1,
-		Tags:          git.NoTags,
-	})
-	if err != nil {
-		return "", err
-	}
-	head, err := r.Head()
-	if err != nil {
-		return "", err
-	}
-	return head.Hash().String(), nil
-}
-
-// GetLatestVitessCommitHash gets the latest Vitess commit hash on master
-func GetLatestVitessCommitHash() (hash string, err error) {
-	return GetCommitHashFromClonedRef("refs/heads/master", "https://github.com/vitessio/vitess")
 }
 
 // GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes
@@ -160,19 +139,11 @@ func getVersionNumbersFromString(s string) ([]int, error) {
 	return values, nil
 }
 
+// GetCommitHash gets the commit hash of the current branch
 func GetCommitHash(repoDir string) (hash string, err error) {
-	r, err := git.PlainOpen(repoDir)
-	if err != nil {
-		return "", err
-	}
-
-	ref, err := r.Head()
-	if err != nil {
-		return "", err
-	}
-
-	hash = ref.Hash().String()
-	return hash, nil
+	out, err := ExecCmd(repoDir, "git", "log", "-1", "--format=%H")
+	// Trimspace is used here to remove any whitespace characters after the hash
+	return strings.TrimSpace(string(out)), err
 }
 
 // ShortenSHA will return the first 7 characters of a SHA.
@@ -182,4 +153,22 @@ func ShortenSHA(sha string) string {
 		return sha[:7]
 	}
 	return sha
+}
+
+// ExecCmd is used to execute a git command in the given directory
+func ExecCmd(dir string, name string, arg ...string) ([]byte, error) {
+	cmd := exec.Command(name, arg...)
+	cmd.Dir = dir
+	out, err := cmd.Output()
+	if err != nil {
+		execErr, ok := err.(*exec.ExitError)
+		if ok {
+			return nil, fmt.Errorf("%s:\nstderr: %s\nstdout: %s", err.Error(), execErr.Stderr, out)
+		}
+		if strings.Contains(err.Error(), " executable file not found in") {
+			return nil, fmt.Errorf("the command `git` seems to be missing. Please install it first")
+		}
+		return nil, err
+	}
+	return out, nil
 }
