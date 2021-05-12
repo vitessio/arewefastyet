@@ -19,6 +19,7 @@
 package microbench
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
@@ -42,4 +43,19 @@ func CompareMicroBenchmarks(dbClient *mysql.Client, reference string, compare st
 		return !(microsMatrix[i].Current.NSPerOp < microsMatrix[j].Current.NSPerOp)
 	})
 	return microsMatrix, nil
+}
+
+// Regression returns a string containing the reason of the regression of the given MicroBenchmarkComparisonArray,
+// if no regression was evaluated, the reason will be an empty string.
+// The format of a single benchmark regression's reason is like this:
+//
+// "- {pkg name}/{benchmark name} decreased by {decrease percentage}%\n"
+//
+func (microsMatrix MicroBenchmarkComparisonArray) Regression() (reason string) {
+	for _, micro := range microsMatrix {
+		if micro.CurrLastDiff < 0.90 {
+			reason += fmt.Sprintf("- %s/%s decreased by %.2f%%\n", micro.PkgName, micro.Name, (1 - micro.CurrLastDiff) * 100)
+		}
+	}
+	return
 }

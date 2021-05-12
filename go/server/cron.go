@@ -89,6 +89,12 @@ func (s *Server) cronMasterHandler() {
 				return
 			}
 
+			err = e.SendNotificationForRegression()
+			if err != nil {
+				slog.Error("Send notification", err.Error())
+				return
+			}
+
 			err = e.CleanUp()
 			if err != nil {
 				slog.Error("Clean step", err.Error())

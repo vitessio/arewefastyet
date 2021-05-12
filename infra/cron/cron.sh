@@ -13,7 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mysql -u root < ./000_old_schema.sql
-mysql -u root < ./001_New_parent_table_for_executions_125.sql
-mysql -u root < ./002_add_foreign_key_to_microbenchmark_details.sql
-mysql -u root < ./003_add_type_to_execution.sql
+crontab ./cron.txt
