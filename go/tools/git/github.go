@@ -25,6 +25,9 @@ import (
 	"net/url"
 )
 
+// GetPullRequestHeadForLabels fetches every pull requests in the provided repo that have the
+// given set of labels. It then returns each pull request's head SHA.
+// The format for repo is: "{USERNAME}/{REPO_NAME}", i.e "vitessio/vitess".
 func GetPullRequestHeadForLabels(labels []string, repo string) ([]string, error) {
 	pulls, err := getPullRequestsForLabels(labelsToURL(labels), repo)
 	if err != nil {
