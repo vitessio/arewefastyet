@@ -30,10 +30,15 @@ func (s *Server) createNewCron() error {
 	}
 	c := cron.New()
 
-	var err error
-	_, err = c.AddFunc(s.cronSchedule, s.cronMasterHandler)
-	if err != nil {
-		return err
+	jobs := []func(){
+		s.cronMasterHandler,
+		s.cronPRLabels,
+	}
+	for _, job := range jobs {
+		_, err := c.AddFunc(s.cronSchedule, job)
+		if err != nil {
+			return err
+		}
 	}
 	c.Start()
 	return nil
@@ -52,6 +57,38 @@ func (s *Server) cronMasterHandler() {
 		return
 	}
 	s.cronExecution(configs, ref)
+}
+
+func (s Server) cronPRLabels() {
+	configs := map[string]string{
+		"micro": s.microbenchConfigPath,
+		"oltp":  s.macrobenchConfigPathOLTP,
+		"tpcc":  s.macrobenchConfigPathTPCC,
+	}
+
+	SHAs, err := git.GetPullRequestHeadForLabels([]string{"\"Component: Query Serving\""}, "vitessio/vitess")
+	if err != nil {
+		slog.Error(err)
+		return
+	}
+
+	// map with the git_ref as key and a slice of configuration file as value
+	toExec := map[string][]string{}
+	for _, sha := range SHAs {
+		for configType, configFile := range configs {
+			exist, err := exec.Exists(s.dbClient, sha, "cron", configType, exec.StatusFinished)
+			if err != nil {
+				slog.Error(err)
+				continue
+			}
+			if !exist {
+				toExec[sha] = append(toExec[sha], configFile)
+			}
+		}
+	}
+	for gitRef, configArray := range toExec {
+		s.cronExecution(configArray, gitRef)
+	}
 }
 
 func (s *Server) cronExecution(configs []string, ref string) {

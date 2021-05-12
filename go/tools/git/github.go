@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 func GetPullRequestHeadForLabels(labels []string, repo string) ([]string, error) {
@@ -44,7 +45,7 @@ func GetPullRequestHeadForLabels(labels []string, repo string) ([]string, error)
 func labelsToURL(labels []string) string {
 	result := ""
 	for i, label := range labels {
-		result += "label:"+label
+		result += "label:"+url.PathEscape(label)
 		if i + 1 < len(labels) {
 			result += "+"
 		}
