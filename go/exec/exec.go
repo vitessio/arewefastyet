@@ -217,7 +217,7 @@ func (e *Exec) Execute() (err error) {
 	return nil
 }
 
-func (e Exec) SendNotification() error {
+func (e Exec) SendNotificationForRegression() error {
 	previousExec, previousGitRef, err := e.getPreviousFromSameSource()
 	if err != nil {
 		return err

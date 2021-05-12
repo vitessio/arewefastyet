@@ -82,7 +82,7 @@ func (s *Server) cronMasterHandler() {
 				return
 			}
 
-			err = e.SendNotification()
+			err = e.SendNotificationForRegression()
 			if err != nil {
 				slog.Error("Send notification", err.Error())
 				return
