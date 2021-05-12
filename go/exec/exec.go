@@ -20,6 +20,7 @@ package exec
 
 import (
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/exec/stats"
@@ -27,8 +28,12 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
+	"github.com/vitessio/arewefastyet/go/slack"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
+	"github.com/vitessio/arewefastyet/go/tools/microbench"
 	"io"
 	"os"
 	"path"
@@ -61,6 +66,9 @@ type Exec struct {
 	Source        string
 	GitRef        string
 
+	// Defines the type of execution (oltp, tpcc, micro, ...)
+	typeOf string
+
 	// Configuration used to interact with the SQL database.
 	configDB *mysql.ConfigDB
 
@@ -70,6 +78,9 @@ type Exec struct {
 	// Configuration used to authenticate and insert execution stats
 	// data to a remote database system.
 	statsRemoteDBConfig stats.RemoteDBConfig
+
+	// Configuration used to send message to Slack.
+	slackConfig slack.Config
 
 	// rootDir represents the parent directory of the Exec.
 	// From there, the Exec's unique directory named Exec.dirPath will
@@ -135,13 +146,13 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref) VALUES(?, ?, ?, ?)", e.UUID.String(), statusCreated, e.Source, e.GitRef); err != nil {
+	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type) VALUES(?, ?, ?, ?, ?)", e.UUID.String(), statusCreated, e.Source, e.GitRef, e.typeOf); err != nil {
 		return err
 	}
 
 	e.Infra.SetTags(map[string]string{
 		"execution_git_ref": git.ShortenSHA(e.GitRef),
-		"execution_source": e.Source,
+		"execution_source":  e.Source,
 	})
 
 	err = e.prepareDirectories()
@@ -200,6 +211,78 @@ func (e *Exec) Execute() (err error) {
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e Exec) SendNotificationForRegression() error {
+	previousExec, previousGitRef, err := e.getPreviousFromSameSource()
+	if err != nil {
+		return err
+	}
+	if previousExec == "" {
+		return nil
+	}
+
+	header := `*Observed a regression.*
+Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
+Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
+
+
+`
+
+	if e.typeOf == "micro" {
+		microBenchmarks, err := microbench.CompareMicroBenchmarks(e.clientDB, e.GitRef, previousGitRef)
+		if err != nil {
+			return err
+		}
+		regression := microBenchmarks.Regression()
+		if regression != "" {
+			err = e.sendSlackMessage(regression, header)
+			if err != nil {
+				return err
+			}
+		}
+	} else if e.typeOf == "oltp" || e.typeOf == "tpcc" {
+		influxCfg := influxdb.Config{
+			Host:     e.statsRemoteDBConfig.Host,
+			Port:     e.statsRemoteDBConfig.Port,
+			User:     e.statsRemoteDBConfig.User,
+			Password: e.statsRemoteDBConfig.Password,
+			Database: e.statsRemoteDBConfig.DbName,
+		}
+		influxClient, err := influxCfg.NewClient()
+		if err != nil {
+			return err
+		}
+
+		macrosMatrices, err := macrobench.CompareMacroBenchmarks(e.clientDB, influxClient, e.GitRef, previousGitRef)
+		if err != nil {
+			return err
+		}
+
+		macroResults := macrosMatrices[macrobench.Type(e.typeOf)].(macrobench.ComparisonArray)
+		if len(macroResults) == 0 {
+			return fmt.Errorf("no macrobenchmark result")
+		}
+
+		regression := macroResults[0].Regression()
+		if regression != "" {
+			err = e.sendSlackMessage(regression, header)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (e Exec) sendSlackMessage(regression, header string) error {
+	content := header + regression
+	msg := slack.TextMessage{Content: content}
+	err := msg.Send(e.slackConfig)
 	if err != nil {
 		return err
 	}
@@ -267,4 +350,20 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	}
 	e.configPath = pathConfig
 	return e, nil
+}
+
+func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
+	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
+		"e.type = ? AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
+	result, err := e.clientDB.Select(query, e.Source, e.typeOf, e.GitRef)
+	if err != nil {
+		return
+	}
+	for result.Next() {
+		err = result.Scan(&execUUID, &gitRef)
+		if err != nil {
+			return
+		}
+	}
+	return
 }

@@ -60,7 +60,14 @@ func getFileType(f *FileUploadMessage) {
 func (t TextMessage) Send(config Config) (err error) {
 	api := slack.New(config.Token)
 
-	_, _, err = api.PostMessage(config.Channel, slack.MsgOptionText(t.Content, false))
+	msg := slack.MsgOptionBlocks(slack.SectionBlock{
+		Type:      slack.MBTSection,
+		Text:      &slack.TextBlockObject{
+			Type:     slack.MarkdownType,
+			Text:     t.Content,
+		},
+	})
+	_, _, err = api.PostMessage(config.Channel, msg)
 
 	if err != nil {
 		return err
