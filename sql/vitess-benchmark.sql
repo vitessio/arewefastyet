@@ -67,6 +67,7 @@ CREATE TABLE `execution` (
                              `source` varchar(100) DEFAULT NULL,
                              `git_ref` varchar(100) DEFAULT NULL,
                              `type` varchar(100) DEFAULT '',
+                             `pull_nb` int(11) DEFAULT 0,
                              PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
