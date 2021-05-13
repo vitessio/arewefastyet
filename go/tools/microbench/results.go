@@ -43,8 +43,9 @@ type (
 
 	// BenchmarkId represents the identification of a microbenchmark.
 	BenchmarkId struct {
-		PkgName string
-		Name    string
+		PkgName          string
+		Name             string
+		SubBenchmarkName string
 	}
 
 	// MicroBenchmarkDetails refers to a single microbenchmark.
@@ -80,10 +81,11 @@ func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, startedAt 
 }
 
 // NewBenchmarkId creates a new BenchmarkId.
-func NewBenchmarkId(pkgName string, name string) *BenchmarkId {
+func NewBenchmarkId(pkgName string, name string, subBenchmarkName string) *BenchmarkId {
 	return &BenchmarkId{
-		PkgName: pkgName,
-		Name:    name,
+		PkgName:          pkgName,
+		Name:             name,
+		SubBenchmarkName: subBenchmarkName,
 	}
 }
 
@@ -125,13 +127,16 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByName() (reduceMbd MicroBenchmarkDetailsArray) {
 	sort.SliceStable(mbd, func(i, j int) bool {
 		if mbd[i].PkgName == mbd[j].PkgName {
+			if mbd[i].Name == mbd[j].Name {
+				return mbd[i].SubBenchmarkName < mbd[j].SubBenchmarkName
+			}
 			return mbd[i].Name < mbd[j].Name
 		}
 		return mbd[i].PkgName < mbd[j].PkgName
 	})
 
 	reduceMbd = mbd.mergeUsingCondition(func(i, j int) bool {
-		return mbd[i].Name == mbd[j].Name
+		return mbd[i].Name == mbd[j].Name && mbd[i].PkgName == mbd[j].PkgName && mbd[i].SubBenchmarkName == mbd[j].SubBenchmarkName
 	})
 	return reduceMbd
 }
@@ -172,7 +177,7 @@ func (mbd MicroBenchmarkDetailsArray) mergeUsingCondition(compareCondition func(
 		interMBPerSecResult := math.MedianFloat(interMBPerSec)
 		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)
 		interAllocsPerOpResult := math.MedianFloat(interAllocsPerOp)
-		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name), mbd[i].GitRef, mbd[i].StartedAt, *NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult)))
+		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name, mbd[i].SubBenchmarkName), mbd[i].GitRef, mbd[i].StartedAt, *NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult)))
 		i = j
 	}
 	return reduceMbd
@@ -181,7 +186,7 @@ func (mbd MicroBenchmarkDetailsArray) mergeUsingCondition(compareCondition func(
 // GetResultsForGitRef will fetch and return a MicroBenchmarkDetailsArray
 // containing all the MicroBenchmarkDetails linked to the given git commit SHA.
 func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
-	result, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op, md.bytes_per_op,"+
+	result, err := client.Select("select m.pkg_name, m.name, md.name, md.n, md.ns_per_op, md.bytes_per_op,"+
 		" md.allocs_per_op, md.mb_per_sec FROM microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
 		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc", ref)
 	if err != nil {
@@ -191,7 +196,7 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 	for result.Next() {
 		var res MicroBenchmarkDetails
 		res.GitRef = ref
-		err = result.Scan(&res.PkgName, &res.Name, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
+		err = result.Scan(&res.PkgName, &res.Name, &res.SubBenchmarkName, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
 			&res.Result.AllocsPerOp, &res.Result.MBPerSec)
 		if err != nil {
 			return nil, err
@@ -204,7 +209,7 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 // GetLatestResultsFor will fetch and return a MicroBenchmarkDetailsArray
 // containing all the MicroBenchmarkDetails linked to latest runs of the given benchmark name.
 func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
-	query := "select m.pkg_name, m.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op," +
+	query := "select m.pkg_name, m.name, md.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op," +
 		" md.allocs_per_op, md.mb_per_sec, m.started_at  from (select microbenchmark_no, pkg_name, name, microbenchmark.git_ref, started_at" +
 		" from microbenchmark join execution on exec_uuid = uuid where name = ? and source = \"cron\" and status = \"finished\" order by started_at desc limit ?) m, " +
 		"microbenchmark_details md where md.microbenchmark_no = m.microbenchmark_no"
@@ -215,7 +220,7 @@ func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs Micr
 
 	for rows.Next() {
 		var res MicroBenchmarkDetails
-		err = rows.Scan(&res.PkgName, &res.Name, &res.GitRef, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
+		err = rows.Scan(&res.PkgName, &res.Name, &res.SubBenchmarkName, &res.GitRef, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
 			&res.Result.AllocsPerOp, &res.Result.MBPerSec, &res.StartedAt)
 		if err != nil {
 			return nil, err

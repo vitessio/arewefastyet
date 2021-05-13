@@ -21,7 +21,6 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"sort"
 
 	"github.com/vitessio/arewefastyet/go/exec"
 
@@ -216,9 +215,6 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	rightMbd = rightMbd.ReduceSimpleMedianByName()
 
 	matrix := microbench.MergeMicroBenchmarkDetails(leftMbd, rightMbd)
-	sort.SliceStable(matrix, func(i, j int) bool {
-		return !(matrix[i].Current.NSPerOp < matrix[j].Current.NSPerOp)
-	})
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
 		"title":        "Vitess benchmark - microbenchmark",
 		"leftSHA":      leftSHA,

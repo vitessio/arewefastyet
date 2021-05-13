@@ -17,9 +17,10 @@ limitations under the License.
 package report
 
 import (
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"strconv"
 	"strings"
+
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 
@@ -143,7 +144,7 @@ func GenerateCompareReport(client *mysql.Client, metricsClient *influxdb.Client,
 		}
 		// range over all the microbenchmarks
 		for _, microComp := range microsMatrix {
-			microTable = append(microTable, []tableCell{{value: microComp.PkgName + "." + microComp.Name, styleIndex: 2}})
+			microTable = append(microTable, []tableCell{{value: microComp.PkgName + "." + microComp.SubBenchmarkName, styleIndex: 2}})
 			microTable = append(microTable, []tableCell{{value: "Ops", styleIndex: 0}, {value: strconv.Itoa(microComp.Current.Ops), styleIndex: 1}, {value: strconv.Itoa(microComp.Last.Ops), styleIndex: 1}})
 			microTable = append(microTable, []tableCell{{value: "NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.NSPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.NSPerOp), styleIndex: 1}})
 			microTable = append(microTable, []tableCell{{value: "MBPerSec", styleIndex: 0}, {value: convertFloatToString(microComp.Current.MBPerSec), styleIndex: 1}, {value: convertFloatToString(microComp.Last.MBPerSec), styleIndex: 1}})
