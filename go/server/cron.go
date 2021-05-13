@@ -30,9 +30,15 @@ func (s *Server) createNewCron() error {
 	}
 	c := cron.New()
 
-	_, err := c.AddFunc(s.cronSchedule, s.cronMasterHandler)
-	if err != nil {
-		return err
+	jobs := []func(){
+		s.cronMasterHandler,
+		s.cronPRLabels,
+	}
+	for _, job := range jobs {
+		_, err := c.AddFunc(s.cronSchedule, job)
+		if err != nil {
+			return err
+		}
 	}
 	c.Start()
 	return nil
@@ -45,13 +51,53 @@ func (s *Server) cronMasterHandler() {
 		s.macrobenchConfigPathTPCC,
 	}
 
-	// pull the changes from origin to update the local vitess clone
 	err := s.pullLocalVitess()
 	if err != nil {
 		slog.Warn(err.Error())
 		return
 	}
 
+	ref, err := git.GetCommitHash(s.getVitessPath())
+	if err != nil {
+		slog.Warn(err.Error())
+		return
+	}
+	s.cronExecution(configs, ref, "cron")
+}
+
+func (s Server) cronPRLabels() {
+	configs := map[string]string{
+		"micro": s.microbenchConfigPath,
+		"oltp":  s.macrobenchConfigPathOLTP,
+		"tpcc":  s.macrobenchConfigPathTPCC,
+	}
+
+	SHAs, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
+	if err != nil {
+		slog.Error(err)
+		return
+	}
+
+	// map with the git_ref as key and a slice of configuration file as value
+	toExec := map[string][]string{}
+	for _, sha := range SHAs {
+		for configType, configFile := range configs {
+			exist, err := exec.Exists(s.dbClient, sha, "cron_pr", configType, exec.StatusFinished)
+			if err != nil {
+				slog.Error(err)
+				continue
+			}
+			if !exist {
+				toExec[sha] = append(toExec[sha], configFile)
+			}
+		}
+	}
+	for gitRef, configArray := range toExec {
+		s.cronExecution(configArray, gitRef, "cron_pr")
+	}
+}
+
+func (s *Server) cronExecution(configs []string, ref, source string) {
 	for _, config := range configs {
 		e, err := exec.NewExecWithConfig(config)
 		if err != nil {
@@ -59,13 +105,6 @@ func (s *Server) cronMasterHandler() {
 			return
 		}
 		slog.Info("Created new execution: ", e.UUID.String())
-
-		ref, err := git.GetCommitHash(s.getVitessPath())
-		if err != nil {
-			slog.Warn(err.Error())
-			return
-		}
-
 		e.Source = "cron"
 		e.GitRef = ref
 

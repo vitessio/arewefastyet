@@ -16,11 +16,26 @@
  * /
  */
 
-package exec
+package git
 
-const (
-	StatusCreated  = "created"
-	StatusStarted  = "started"
-	StatusFailed   = "failed"
-	StatusFinished = "finished"
+import (
+	qt "github.com/frankban/quicktest"
+	"testing"
 )
+
+func Test_labelsToURL(t *testing.T) {
+	tests := []struct {
+		name string
+		labels []string
+		want string
+	}{
+		{name: "Single label", labels: []string{"javascript"}, want: "label:javascript"},
+		{name: "Multiple labels", labels: []string{"javascript", "test"}, want: "label:javascript+label:test"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+			c.Assert(labelsToURL(tt.labels), qt.Equals, tt.want)
+		})
+	}
+}

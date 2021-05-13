@@ -41,6 +41,7 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
       --web-microbench-config string        Path to the configuration file used to execute microbenchmark.
       --web-mode string                     Specify the mode on which the server will run
       --web-port string                     Port used for the HTTP server (default "8080")
+      --web-pr-label-trigger string         GitHub Pull Request label that will trigger the execution of new execution. (default "Benchmark me")
       --web-static-path string              Path to the static directory
       --web-template-path string            Path to the template directory
       --web-vitess-path string              Absolute path where the vitess directory is located or where it should be cloned (default "/")
