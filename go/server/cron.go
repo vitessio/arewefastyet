@@ -62,7 +62,7 @@ func (s *Server) cronMasterHandler() {
 		slog.Warn(err.Error())
 		return
 	}
-	s.cronExecution(configs, ref)
+	s.cronExecution(configs, ref, "cron")
 }
 
 func (s Server) cronPRLabels() {
@@ -82,7 +82,7 @@ func (s Server) cronPRLabels() {
 	toExec := map[string][]string{}
 	for _, sha := range SHAs {
 		for configType, configFile := range configs {
-			exist, err := exec.Exists(s.dbClient, sha, "cron", configType, exec.StatusFinished)
+			exist, err := exec.Exists(s.dbClient, sha, "cron_pr", configType, exec.StatusFinished)
 			if err != nil {
 				slog.Error(err)
 				continue
@@ -93,11 +93,11 @@ func (s Server) cronPRLabels() {
 		}
 	}
 	for gitRef, configArray := range toExec {
-		s.cronExecution(configArray, gitRef)
+		s.cronExecution(configArray, gitRef, "cron_pr")
 	}
 }
 
-func (s *Server) cronExecution(configs []string, ref string) {
+func (s *Server) cronExecution(configs []string, ref, source string) {
 	for _, config := range configs {
 		e, err := exec.NewExecWithConfig(config)
 		if err != nil {
