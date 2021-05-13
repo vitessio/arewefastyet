@@ -37,7 +37,6 @@ const (
 	flagTemplatePath             = "web-template-path"
 	flagStaticPath               = "web-static-path"
 	flagVitessPath               = "web-vitess-path"
-	flagAPIKey                   = "web-api-key"
 	flagMode                     = "web-mode"
 	flagMicroBenchConfigFile     = "web-microbench-config"
 	flagMacroBenchConfigFileOLTP = "web-macrobench-oltp-config"
@@ -51,7 +50,6 @@ type Server struct {
 	templatePath    string
 	staticPath      string
 	localVitessPath string
-	apiKey          string
 	router          *gin.Engine
 
 	dbCfg    *mysql.ConfigDB
@@ -76,7 +74,6 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.templatePath, flagTemplatePath, "", "Path to the template directory")
 	cmd.Flags().StringVar(&s.staticPath, flagStaticPath, "", "Path to the static directory")
 	cmd.Flags().StringVar(&s.localVitessPath, flagVitessPath, "/", "Absolute path where the vitess directory is located or where it should be cloned")
-	cmd.Flags().StringVar(&s.apiKey, flagAPIKey, "", "API key used to authenticate requests")
 	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
 
 	// execution configuration flags
@@ -93,7 +90,6 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
 	_ = viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
 	_ = viper.BindPFlag(flagVitessPath, cmd.Flags().Lookup(flagVitessPath))
-	_ = viper.BindPFlag(flagAPIKey, cmd.Flags().Lookup(flagAPIKey))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
 	_ = viper.BindPFlag(flagMicroBenchConfigFile, cmd.Flags().Lookup(flagMicroBenchConfigFile))
 	_ = viper.BindPFlag(flagMacroBenchConfigFileOLTP, cmd.Flags().Lookup(flagMacroBenchConfigFileOLTP))
@@ -113,7 +109,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 }
 
 func (s Server) isReady() bool {
-	return s.port != "" && s.templatePath != "" && s.staticPath != "" && s.apiKey != "" &&
+	return s.port != "" && s.templatePath != "" && s.staticPath != "" &&
 		s.microbenchConfigPath != "" && s.macrobenchConfigPathOLTP != "" && s.macrobenchConfigPathTPCC != "" && s.localVitessPath != ""
 }
 
@@ -181,13 +177,12 @@ func (s *Server) Run() error {
 	return s.router.Run(":" + s.port)
 }
 
-func Run(port, templatePath, staticPath, localVitessPath, apiKey string) error {
+func Run(port, templatePath, staticPath, localVitessPath string) error {
 	s := Server{
 		port:                     port,
 		templatePath:             templatePath,
 		staticPath:               staticPath,
 		localVitessPath:          localVitessPath,
-		apiKey:                   apiKey,
 		microbenchConfigPath:     "/",
 		macrobenchConfigPathOLTP: "/",
 		macrobenchConfigPathTPCC: "/",
