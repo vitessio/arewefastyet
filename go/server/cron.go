@@ -51,7 +51,13 @@ func (s *Server) cronMasterHandler() {
 		s.macrobenchConfigPathTPCC,
 	}
 
-	ref, err := git.GetCommitHashFromClonedRef("refs/heads/master", "https://github.com/vitessio/vitess")
+	err := s.pullLocalVitess()
+	if err != nil {
+		slog.Warn(err.Error())
+		return
+	}
+
+	ref, err := git.GetCommitHash(s.getVitessPath())
 	if err != nil {
 		slog.Warn(err.Error())
 		return
@@ -99,7 +105,6 @@ func (s *Server) cronExecution(configs []string, ref string) {
 			return
 		}
 		slog.Info("Created new execution: ", e.UUID.String())
-
 		e.Source = "cron"
 		e.GitRef = ref
 
