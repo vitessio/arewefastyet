@@ -98,7 +98,7 @@ limitations under the License.
                 {{range $val := .resultMatrix}}
                     <tr>
                         <td>{{ $val.PkgName }}</td>
-                        <td><a href="/microbench/{{ $val.Name }}">{{ $val.Name }}</a></td>
+                        <td><a href="/microbench/{{ $val.Name }}">{{ $val.SubBenchmarkName }}</a></td>
                         <td class="text-right">{{ $val.Current.OpsStr }}</td>
                         <td class="text-right">{{ $val.Last.OpsStr }}</td>
 
