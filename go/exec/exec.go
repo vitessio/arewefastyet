@@ -21,6 +21,10 @@ package exec
 import (
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"path"
+
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/exec/stats"
@@ -34,9 +38,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
-	"io"
-	"os"
-	"path"
 )
 
 const (
@@ -366,4 +367,20 @@ func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
 		}
 	}
 	return
+}
+
+// GetLatestCronJobForMicrobenchmarks will fetch and return the commit sha for which
+// the last cron job for microbenchmarks was run
+func GetLatestCronJobForMicrobenchmarks(client *mysql.Client) (gitSha string, err error) {
+	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" order by started_at desc limit 1"
+	rows, err := client.Select(query)
+	if err != nil {
+		return "", err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&gitSha)
+		return gitSha, err
+	}
+	return "", nil
 }

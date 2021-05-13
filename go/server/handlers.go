@@ -19,8 +19,11 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"sort"
+
+	"github.com/vitessio/arewefastyet/go/exec"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/tools/git"
@@ -145,49 +148,101 @@ func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 }
 
 func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
-	// get current results
-	currentSHA := c.Query("csh")
-	if currentSHA == "" {
-		// https://github.com/vitessio/vitess/commit/92584e9bf60f354a6b980717c86a336465ab0354
-		currentSHA = "92584e9bf60f354a6b980717c86a336465ab0354" // todo: dynamic value
-	}
-	currentMbd, err := microbench.GetResultsForGitRef(currentSHA, s.dbClient)
+	var err error
+
+	// get all the releases and the last cron job for master
+	allReleases, err := git.GetAllVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
-	currentMbd = currentMbd.ReduceSimpleMedianByName()
-
-	// get last release results
-	lastReleaseSHA := c.Query("lrsh")
-	if lastReleaseSHA == "" {
-		// https://github.com/vitessio/vitess/commit/daa60859822ff85ce18e2d10c61a27b7797ec6b8
-		lastReleaseSHA = "daa60859822ff85ce18e2d10c61a27b7797ec6b8" // todo: dynamic value
-	}
-	lastReleaseMbd, err := microbench.GetResultsForGitRef(lastReleaseSHA, s.dbClient)
+	lastrunCronSHA, err := exec.GetLatestCronJobForMicrobenchmarks(s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
-	lastReleaseMbd = lastReleaseMbd.ReduceSimpleMedianByName()
+	allReleases = append(allReleases, &git.Release{
+		Name:       "master",
+		CommitHash: lastrunCronSHA,
+	})
 
-	matrix := microbench.MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd)
+	// initialize left tag and the corresponding sha
+	leftTag := c.Query("ltag")
+	leftSHA := ""
+	if leftTag == "" {
+		// get the latest cron job if leftTag is not specified
+		leftTag = "master"
+		leftSHA = lastrunCronSHA
+	} else {
+		leftSHA, err = findSHA(allReleases, leftTag)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+	}
+
+	// initialize right tag and the corresponding sha
+	rightTag := c.Query("rtag")
+	rightSHA := ""
+	if rightTag == "" {
+		// get the last release sha if rightSHA is not specified
+		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		rightSHA = rel.CommitHash
+		rightTag = rel.Name
+	} else {
+		rightSHA, err = findSHA(allReleases, rightTag)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+	}
+
+	// Get the results from the SHAs
+	leftMbd, err := microbench.GetResultsForGitRef(leftSHA, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	leftMbd = leftMbd.ReduceSimpleMedianByName()
+	rightMbd, err := microbench.GetResultsForGitRef(rightSHA, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	rightMbd = rightMbd.ReduceSimpleMedianByName()
+
+	matrix := microbench.MergeMicroBenchmarkDetails(leftMbd, rightMbd)
 	sort.SliceStable(matrix, func(i, j int) bool {
 		return !(matrix[i].Current.NSPerOp < matrix[j].Current.NSPerOp)
 	})
-
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
-		"title":          "Vitess benchmark - microbenchmark",
-		"currentSHA":     currentSHA,
-		"lastReleaseSHA": lastReleaseSHA,
-		"resultMatrix":   matrix,
+		"title":        "Vitess benchmark - microbenchmark",
+		"leftSHA":      leftSHA,
+		"rightSHA":     rightSHA,
+		"leftTag":      leftTag,
+		"rightTag":     rightTag,
+		"allReleases":  allReleases,
+		"resultMatrix": matrix,
 	})
+}
+
+func findSHA(releases []*git.Release, tag string) (string, error) {
+	for _, release := range releases {
+		if release.Name == tag {
+			return release.CommitHash, nil
+		}
+	}
+	return "", fmt.Errorf("unknown tag provided %s", tag)
 }
 
 func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 	name := c.Param("name")
 
-	results, err := microbench.GetLatestResultsFor(name, s.dbClient)
+	results, err := microbench.GetLatestResultsFor(name, 10, s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return

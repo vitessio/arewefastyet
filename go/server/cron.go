@@ -45,6 +45,13 @@ func (s *Server) cronMasterHandler() {
 		s.macrobenchConfigPathTPCC,
 	}
 
+	// pull the changes from origin to update the local vitess clone
+	err := s.pullLocalVitess()
+	if err != nil {
+		slog.Warn(err.Error())
+		return
+	}
+
 	for _, config := range configs {
 		e, err := exec.NewExecWithConfig(config)
 		if err != nil {
@@ -53,7 +60,7 @@ func (s *Server) cronMasterHandler() {
 		}
 		slog.Info("Created new execution: ", e.UUID.String())
 
-		ref, err := git.GetCommitHashFromClonedRef("refs/heads/master", "https://github.com/vitessio/vitess")
+		ref, err := git.GetCommitHash(s.getVitessPath())
 		if err != nil {
 			slog.Warn(err.Error())
 			return
