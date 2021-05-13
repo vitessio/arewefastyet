@@ -26,10 +26,10 @@ import (
 func TestMicroBenchmarkComparisonArray_Regression(t *testing.T) {
 	tests := []struct {
 		name         string
-		microsMatrix MicroBenchmarkComparisonArray
+		microsMatrix ComparisonArray
 		wantReason   string
 	}{
-		{name: "No regression", microsMatrix: MicroBenchmarkComparisonArray{
+		{name: "No regression", microsMatrix: ComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, CurrLastDiff: 1},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, CurrLastDiff: 1},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, CurrLastDiff: 1},
@@ -38,13 +38,13 @@ func TestMicroBenchmarkComparisonArray_Regression(t *testing.T) {
 			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1-pkg3"}, CurrLastDiff: 1},
 		}, wantReason: ""},
 
-		{name: "Few regressions", microsMatrix: MicroBenchmarkComparisonArray{
+		{name: "Few regressions", microsMatrix: ComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, CurrLastDiff: 0.5},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, CurrLastDiff: 0.89},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, CurrLastDiff: 0.25},
 		}, wantReason: "- pkg1/bench3-pkg1 decreased by 50.00%\n- pkg1/bench1-pkg1 decreased by 11.00%\n- pkg1/bench2-pkg1 decreased by 75.00%\n"},
 
-		{name: "Close call regressions", microsMatrix: MicroBenchmarkComparisonArray{
+		{name: "Close call regressions", microsMatrix: ComparisonArray{
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3-pkg1"}, CurrLastDiff: 0.90},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1-pkg1"}, CurrLastDiff: 0.91},
 			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2-pkg1"}, CurrLastDiff: 0.899},

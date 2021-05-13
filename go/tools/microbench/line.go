@@ -27,14 +27,14 @@ import (
 	"time"
 )
 
-type BenchType string
+type microType string
 
 const (
 	ErrorLineUnrecognized = "the line format was unrecognized"
 	ErrorLineMalformed    = "the format of the line is malformed"
 
 	// GeneralBenchmark are results that fits with the generalBenchTypeRegExpr regular expression.
-	GeneralBenchmark = BenchType("general")
+	GeneralBenchmark = microType("general")
 )
 
 // benchmarkResultsRegexp's submatch array contains 7 indexes defined below:
@@ -50,11 +50,11 @@ const (
 // https://regex101.com/r/JdCpno/3
 var generalBenchTypeRegExpr = regexp.MustCompile(`(Benchmark.+\b)\s*([0-9]+)\s+([\d\.]+)\s+ns\/op(?:\s*)?(?:([\d\.]+) MB/s+\s*)?(?:([\d\.]+) B/op+\s*)?(?:([0-9]+) allocs/op\s*)?\n`)
 
-var benchTypeRegExprs = map[BenchType]*regexp.Regexp{
+var benchTypeRegExprs = map[microType]*regexp.Regexp{
 	GeneralBenchmark: generalBenchTypeRegExpr,
 }
 
-type benchmarkResult struct {
+type lineResult struct {
 	Op              int
 	NanosecondPerOp float64
 	MBs             float64
@@ -62,7 +62,7 @@ type benchmarkResult struct {
 	AllocsPerOp     float64
 }
 
-type benchmarkRunLine struct {
+type lineRun struct {
 	Time    time.Time
 	Action  string
 	Package string
@@ -71,12 +71,12 @@ type benchmarkRunLine struct {
 
 	id        int64
 	name      string
-	benchType BenchType
+	benchType microType
 	submatch  []string
-	results   benchmarkResult
+	results   lineResult
 }
 
-func (line *benchmarkRunLine) Parse() error {
+func (line *lineRun) Parse() error {
 	line.applyRegularExpr()
 	if line.benchType != "" {
 		return line.parseSubmatch()
@@ -84,7 +84,7 @@ func (line *benchmarkRunLine) Parse() error {
 	return nil
 }
 
-func (line *benchmarkRunLine) applyRegularExpr() {
+func (line *lineRun) applyRegularExpr() {
 	var submatch []string
 
 	for benchType, r := range benchTypeRegExprs {
@@ -98,7 +98,7 @@ func (line *benchmarkRunLine) applyRegularExpr() {
 	}
 }
 
-func (line *benchmarkRunLine) parseSubmatch() error {
+func (line *lineRun) parseSubmatch() error {
 	switch line.benchType {
 	case GeneralBenchmark:
 		return line.parseGeneralBenchmark()
@@ -119,7 +119,7 @@ func getFloatSubMatch(parent, child string) (float64, error) {
 	return val, nil
 }
 
-func (line *benchmarkRunLine) parseGeneralBenchmark() error {
+func (line *lineRun) parseGeneralBenchmark() error {
 	if len(line.submatch) != 7 {
 		return fmt.Errorf("%s: expected 7 arguments but got %d", ErrorLineMalformed, len(line.submatch))
 	}
@@ -155,7 +155,7 @@ func (line *benchmarkRunLine) parseGeneralBenchmark() error {
 	return nil
 }
 
-func (line *benchmarkRunLine) InsertToMySQL(microBenchID int64, client *mysql.Client) error {
+func (line *lineRun) InsertToMySQL(microBenchID int64, client *mysql.Client) error {
 	query := "INSERT INTO microbenchmark_details(microbenchmark_no, name, bench_type, n, ns_per_op, mb_per_sec, bytes_per_op, allocs_per_op) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
 	res, err := client.Insert(query, microBenchID, line.name, line.benchType, line.results.Op, line.results.NanosecondPerOp, line.results.MBs, line.results.BytesPerOp, line.results.AllocsPerOp)
 	if err != nil {

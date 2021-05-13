@@ -32,8 +32,8 @@ import (
 )
 
 type (
-	// MicroBenchmarkResult contains all the metrics measured by a microbenchmark.
-	MicroBenchmarkResult struct {
+	// Result contains all the metrics measured by a microbenchmark.
+	Result struct {
 		Ops         int
 		NSPerOp     float64
 		MBPerSec    float64
@@ -47,31 +47,31 @@ type (
 		Name    string
 	}
 
-	// MicroBenchmarkDetails refers to a single microbenchmark.
-	MicroBenchmarkDetails struct {
+	// Details refers to a single microbenchmark.
+	Details struct {
 		BenchmarkId
 		GitRef    string
 		StartedAt string
-		Result    MicroBenchmarkResult
+		Result    Result
 	}
 
-	// MicroBenchmarkComparison allows comparison of two MicroBenchmarkResult
+	// Comparison allows comparison of two Result
 	// that share the same BenchmarkId.
-	MicroBenchmarkComparison struct {
+	Comparison struct {
 		BenchmarkId
-		Current, Last MicroBenchmarkResult
+		Current, Last Result
 
 		// Difference of NSPerOp in % for Current and Last.
 		CurrLastDiff float64
 	}
 
-	MicroBenchmarkDetailsArray    []MicroBenchmarkDetails
-	MicroBenchmarkComparisonArray []MicroBenchmarkComparison
+	DetailsArray    []Details
+	ComparisonArray []Comparison
 )
 
-// NewMicroBenchmarkDetails creates a new MicroBenchmarkDetails.
-func NewMicroBenchmarkDetails(benchmarkId BenchmarkId, gitRef string, startedAt string, result MicroBenchmarkResult) *MicroBenchmarkDetails {
-	return &MicroBenchmarkDetails{
+// NewDetails creates a new Details.
+func NewDetails(benchmarkId BenchmarkId, gitRef string, startedAt string, result Result) *Details {
+	return &Details{
 		BenchmarkId: benchmarkId,
 		GitRef:      gitRef,
 		Result:      result,
@@ -87,9 +87,9 @@ func NewBenchmarkId(pkgName string, name string) *BenchmarkId {
 	}
 }
 
-// NewMicroBenchmarkResult creates a new MicroBenchmarkResult.
-func NewMicroBenchmarkResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *MicroBenchmarkResult {
-	return &MicroBenchmarkResult{
+// NewResult creates a new Result.
+func NewResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *Result {
+	return &Result{
 		Ops:         ops,
 		NSPerOp:     NSPerOp,
 		MBPerSec:    MBPerSec,
@@ -98,11 +98,11 @@ func NewMicroBenchmarkResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp
 	}
 }
 
-// MergeMicroBenchmarkDetails merges two MicroBenchmarkDetailsArray into a single
-// MicroBenchmarkComparisonArray.
-func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetailsArray) (compareMbs MicroBenchmarkComparisonArray) {
+// MergeDetails merges two DetailsArray into a single
+// ComparisonArray.
+func MergeDetails(currentMbd, lastReleaseMbd DetailsArray) (compareMbs ComparisonArray) {
 	for _, details := range currentMbd {
-		var compareMb MicroBenchmarkComparison
+		var compareMb Comparison
 		compareMb.BenchmarkId = details.BenchmarkId
 		compareMb.Current = details.Result
 		compareMb.CurrLastDiff = 1.00
@@ -118,11 +118,11 @@ func MergeMicroBenchmarkDetails(currentMbd, lastReleaseMbd MicroBenchmarkDetails
 	return compareMbs
 }
 
-// ReduceSimpleMedianByName reduces a MicroBenchmarkDetailsArray by merging
-// all MicroBenchmarkDetails with the same benchmark name into a single
-// one. The results of each MicroBenchmarkDetails correspond to the median
+// ReduceSimpleMedianByName reduces a DetailsArray by merging
+// all Details with the same benchmark name into a single
+// one. The results of each Details correspond to the median
 // of the merged elements.
-func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByName() (reduceMbd MicroBenchmarkDetailsArray) {
+func (mbd DetailsArray) ReduceSimpleMedianByName() (reduceMbd DetailsArray) {
 	sort.SliceStable(mbd, func(i, j int) bool {
 		if mbd[i].PkgName == mbd[j].PkgName {
 			return mbd[i].Name < mbd[j].Name
@@ -136,11 +136,11 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByName() (reduceMbd Micr
 	return reduceMbd
 }
 
-// ReduceSimpleMedianByGitRef reduces a MicroBenchmarkDetailsArray by merging
-// all MicroBenchmarkDetails with the same git ref into a single
-// one. The results of each MicroBenchmarkDetails correspond to the median
+// ReduceSimpleMedianByGitRef reduces a DetailsArray by merging
+// all Details with the same git ref into a single
+// one. The results of each Details correspond to the median
 // of the merged elements.
-func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd MicroBenchmarkDetailsArray) {
+func (mbd DetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd DetailsArray) {
 	sort.SliceStable(mbd, func(i, j int) bool {
 		return mbd[i].GitRef < mbd[j].GitRef
 	})
@@ -150,8 +150,8 @@ func (mbd MicroBenchmarkDetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd Mi
 	return reduceMbd
 }
 
-// mergeUsingCondition is used to merge the MicroBenchmarkDetailsArray based on the compare condition provided
-func (mbd MicroBenchmarkDetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool) (reduceMbd MicroBenchmarkDetailsArray) {
+// mergeUsingCondition is used to merge the DetailsArray based on the compare condition provided
+func (mbd DetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool) (reduceMbd DetailsArray) {
 	for i := 0; i < len(mbd); {
 		var j int
 		var interOps []int
@@ -172,15 +172,15 @@ func (mbd MicroBenchmarkDetailsArray) mergeUsingCondition(compareCondition func(
 		interMBPerSecResult := math.MedianFloat(interMBPerSec)
 		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)
 		interAllocsPerOpResult := math.MedianFloat(interAllocsPerOp)
-		reduceMbd = append(reduceMbd, *NewMicroBenchmarkDetails(*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name), mbd[i].GitRef, mbd[i].StartedAt, *NewMicroBenchmarkResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult)))
+		reduceMbd = append(reduceMbd, *NewDetails(*NewBenchmarkId(mbd[i].PkgName, mbd[i].Name), mbd[i].GitRef, mbd[i].StartedAt, *NewResult(interOpsResult, interNSPerOpResult, interMBPerSecResult, interBytesPerOpResult, interAllocsPerOpResult)))
 		i = j
 	}
 	return reduceMbd
 }
 
-// GetResultsForGitRef will fetch and return a MicroBenchmarkDetailsArray
-// containing all the MicroBenchmarkDetails linked to the given git commit SHA.
-func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
+// GetResultsForGitRef will fetch and return a DetailsArray
+// containing all the Details linked to the given git commit SHA.
+func GetResultsForGitRef(ref string, client *mysql.Client) (mrs DetailsArray, err error) {
 	result, err := client.Select("select m.pkg_name, m.name, md.n, md.ns_per_op, md.bytes_per_op,"+
 		" md.allocs_per_op, md.mb_per_sec FROM microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
 		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc", ref)
@@ -189,7 +189,7 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 	}
 
 	for result.Next() {
-		var res MicroBenchmarkDetails
+		var res Details
 		res.GitRef = ref
 		err = result.Scan(&res.PkgName, &res.Name, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
 			&res.Result.AllocsPerOp, &res.Result.MBPerSec)
@@ -201,9 +201,9 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs MicroBenchmarkDe
 	return mrs, nil
 }
 
-// GetLatestResultsFor will fetch and return a MicroBenchmarkDetailsArray
-// containing all the MicroBenchmarkDetails linked to latest runs of the given benchmark name.
-func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs MicroBenchmarkDetailsArray, err error) {
+// GetLatestResultsFor will fetch and return a DetailsArray
+// containing all the Details linked to latest runs of the given benchmark name.
+func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs DetailsArray, err error) {
 	query := "select m.pkg_name, m.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op," +
 		" md.allocs_per_op, md.mb_per_sec, m.started_at  from (select microbenchmark_no, pkg_name, name, microbenchmark.git_ref, started_at" +
 		" from microbenchmark join execution on exec_uuid = uuid where name = ? and source = \"cron\" and status = \"finished\" order by started_at desc limit ?) m, " +
@@ -214,7 +214,7 @@ func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs Micr
 	}
 
 	for rows.Next() {
-		var res MicroBenchmarkDetails
+		var res Details
 		err = rows.Scan(&res.PkgName, &res.Name, &res.GitRef, &res.Result.Ops, &res.Result.NSPerOp, &res.Result.BytesPerOp,
 			&res.Result.AllocsPerOp, &res.Result.MBPerSec, &res.StartedAt)
 		if err != nil {
@@ -225,14 +225,14 @@ func GetLatestResultsFor(name string, count int, client *mysql.Client) (mrs Micr
 	return mrs, nil
 }
 
-func (r MicroBenchmarkResult) OpsStr() string {
+func (r Result) OpsStr() string {
 	if r.Ops == 0 {
 		return ""
 	}
 	return humanize.Comma(int64(r.Ops))
 }
 
-func (r MicroBenchmarkResult) NSPerOpStr() string {
+func (r Result) NSPerOpStr() string {
 	if r.NSPerOp == 0 {
 		return ""
 	}
@@ -240,7 +240,7 @@ func (r MicroBenchmarkResult) NSPerOpStr() string {
 	return humanize.FormatFloat("#,###.#", r.NSPerOp)
 }
 
-func (r MicroBenchmarkResult) NSPerOpToDurationStr() string {
+func (r Result) NSPerOpToDurationStr() string {
 	if r.NSPerOp == 0 {
 		return ""
 	}
@@ -256,21 +256,21 @@ func (r MicroBenchmarkResult) NSPerOpToDurationStr() string {
 	return fmt.Sprintf("%.2f %s", durFloat, durUnit)
 }
 
-func (r MicroBenchmarkResult) MBPerSecStr() string {
+func (r Result) MBPerSecStr() string {
 	if r.MBPerSec == 0 {
 		return ""
 	}
 
 	return humanize.Bytes(uint64(r.MBPerSec)) + "/s"
 }
-func (r MicroBenchmarkResult) BytesPerOpStr() string {
+func (r Result) BytesPerOpStr() string {
 	if r.BytesPerOp == 0 {
 		return ""
 	}
 
 	return humanize.Bytes(uint64(r.BytesPerOp)) + "/op"
 }
-func (r MicroBenchmarkResult) AllocsPerOpStr() string {
+func (r Result) AllocsPerOpStr() string {
 	if r.AllocsPerOp == 0 {
 		return ""
 	}
@@ -278,7 +278,7 @@ func (r MicroBenchmarkResult) AllocsPerOpStr() string {
 	return humanize.SI(r.AllocsPerOp, "")
 }
 
-func (r MicroBenchmarkComparison) CurrLastDiffStr() string {
+func (r Comparison) CurrLastDiffStr() string {
 
 	return humanize.Comma(int64(r.CurrLastDiff*100)) + "%"
 }

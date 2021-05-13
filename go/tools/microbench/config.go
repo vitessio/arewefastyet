@@ -26,7 +26,7 @@ const (
 	flagExecUUID = "microbench-exec-uuid"
 )
 
-type MicroBenchConfig struct {
+type Config struct {
 	// RootDir is the root path from where micro benchmarks will
 	// be executed.
 	RootDir        string
@@ -48,7 +48,7 @@ type MicroBenchConfig struct {
 	execUUID string
 }
 
-func (mbc *MicroBenchConfig) AddToCommand(cmd *cobra.Command) {
+func (mbc *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&mbc.execUUID, flagExecUUID, "", "UUID of the parent execution, an empty string will set to NULL.")
 
 	_ = viper.BindPFlag(flagExecUUID, cmd.Flags().Lookup(flagExecUUID))

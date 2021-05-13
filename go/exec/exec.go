@@ -235,7 +235,7 @@ Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] +
 `
 
 	if e.typeOf == "micro" {
-		microBenchmarks, err := microbench.CompareMicroBenchmarks(e.clientDB, e.GitRef, previousGitRef)
+		microBenchmarks, err := microbench.Compare(e.clientDB, e.GitRef, previousGitRef)
 		if err != nil {
 			return err
 		}
