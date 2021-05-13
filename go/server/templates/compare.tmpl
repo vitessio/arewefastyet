@@ -172,7 +172,7 @@ limitations under the License.
                         {{range $val := .microbenchmark}}
                         <tr>
                             <td>{{ $val.PkgName }}</td>
-                            <td><a href="/microbench/{{ $val.Name }}">{{ $val.SubBenchmarkName }}</a></td>
+                            <td><a href="/microbench/{{ $val.Name }}?subBenchmarkName={{ $val.SubBenchmarkName }}">{{ $val.SubBenchmarkName }}</a></td>
                             <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-danger {{ else if ge $val.CurrLastDiff 1.10 }} bg-success {{ end }}">{{ $val.CurrLastDiffStr }}</td>
                             <td class="text-right">{{ $val.Current.OpsStr }}</td>
                             <td class="text-right">{{ $val.Last.OpsStr }}</td>

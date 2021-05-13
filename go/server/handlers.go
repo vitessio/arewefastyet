@@ -237,8 +237,9 @@ func findSHA(releases []*git.Release, tag string) (string, error) {
 
 func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 	name := c.Param("name")
+	subBenchmarkName := c.Query("subBenchmarkName")
 
-	results, err := microbench.GetLatestResultsFor(name, 10, s.dbClient)
+	results, err := microbench.GetLatestResultsFor(name, subBenchmarkName, 10, s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -246,8 +247,9 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 	results = results.ReduceSimpleMedianByGitRef()
 
 	c.HTML(http.StatusOK, "microbench_single.tmpl", gin.H{
-		"title":   "Vitess benchmark - microbenchmark - " + name,
-		"name":    name,
-		"results": results,
+		"title":            "Vitess benchmark - microbenchmark - " + name,
+		"name":             name,
+		"subBenchmarkName": subBenchmarkName,
+		"results":          results,
 	})
 }
