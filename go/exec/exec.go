@@ -24,6 +24,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
@@ -69,6 +70,9 @@ type Exec struct {
 
 	// Defines the type of execution (oltp, tpcc, micro, ...)
 	typeOf string
+
+	// Defines the pull request number linked to this execution.
+	pullNB int
 
 	// Configuration used to interact with the SQL database.
 	configDB *mysql.ConfigDB
@@ -170,6 +174,11 @@ func (e *Exec) Prepare() error {
 	}
 	e.AnsibleConfig.ExtraVars = map[string]interface{}{}
 	e.statsRemoteDBConfig.AddToAnsible(&e.AnsibleConfig)
+	if e.pullNB != 0 {
+		e.AnsibleConfig.ExtraVars["vitess_git_version_fetch_pr"] = "refs/pull/" + strconv.Itoa(e.pullNB) + "/head"
+		e.AnsibleConfig.ExtraVars["vitess_git_version_pr_nb"] = e.pullNB
+	}
+
 	e.prepared = true
 	return nil
 }
