@@ -80,7 +80,7 @@ func GenerateCompareReport(client *mysql.Client, metricsClient *influxdb.Client,
 	}
 
 	// Compare microbenchmark results for the 2 SHAs
-	microsMatrix, err := microbench.CompareMicroBenchmarks(client, fromSHA, toSHA)
+	microsMatrix, err := microbench.Compare(client, fromSHA, toSHA)
 	if err != nil {
 		return err
 	}

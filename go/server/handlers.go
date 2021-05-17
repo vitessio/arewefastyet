@@ -94,7 +94,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 	}
 
 	// Compare Microbenchmarks for the two given SHAs.
-	microsMatrix, err := microbench.CompareMicroBenchmarks(s.dbClient, reference, compare)
+	microsMatrix, err := microbench.Compare(s.dbClient, reference, compare)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -214,7 +214,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	}
 	rightMbd = rightMbd.ReduceSimpleMedianByName()
 
-	matrix := microbench.MergeMicroBenchmarkDetails(leftMbd, rightMbd)
+	matrix := microbench.MergeDetails(leftMbd, rightMbd)
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
 		"title":        "Vitess benchmark - microbenchmark",
 		"leftSHA":      leftSHA,

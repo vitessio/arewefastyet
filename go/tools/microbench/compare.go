@@ -24,12 +24,12 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
-// CompareMicroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the microbenchmark
+// Compare takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the microbenchmark
 // results for the 2 SHAs and compares them. The result is a comparison array.
-func CompareMicroBenchmarks(dbClient *mysql.Client, reference string, compare string) (MicroBenchmarkComparisonArray, error) {
+func Compare(dbClient *mysql.Client, reference string, compare string) (ComparisonArray, error) {
 	// compare micro benchmarks
 	SHAs := []string{reference, compare}
-	micros := map[string]MicroBenchmarkDetailsArray{}
+	micros := map[string]DetailsArray{}
 	for _, sha := range SHAs {
 		micro, err := GetResultsForGitRef(sha, dbClient)
 		if err != nil {
@@ -37,18 +37,18 @@ func CompareMicroBenchmarks(dbClient *mysql.Client, reference string, compare st
 		}
 		micros[sha] = micro.ReduceSimpleMedianByName()
 	}
-	microsMatrix := MergeMicroBenchmarkDetails(micros[reference], micros[compare])
+	microsMatrix := MergeDetails(micros[reference], micros[compare])
 	// The result of the merge will be sorted by the package name and then the benchmark name
 	return microsMatrix, nil
 }
 
-// Regression returns a string containing the reason of the regression of the given MicroBenchmarkComparisonArray,
+// Regression returns a string containing the reason of the regression of the given ComparisonArray,
 // if no regression was evaluated, the reason will be an empty string.
 // The format of a single benchmark regression's reason is like this:
 //
 // "- {pkg name}/{benchmark name} decreased by {decrease percentage}%\n"
 //
-func (microsMatrix MicroBenchmarkComparisonArray) Regression() (reason string) {
+func (microsMatrix ComparisonArray) Regression() (reason string) {
 	for _, micro := range microsMatrix {
 		if micro.CurrLastDiff < 0.90 {
 			reason += fmt.Sprintf("- %s/%s decreased by %.2f%%\n", micro.PkgName, micro.SubBenchmarkName, (1-micro.CurrLastDiff)*100)

@@ -23,7 +23,7 @@ import (
 )
 
 func run() *cobra.Command {
-	var mbcfg microbench.MicroBenchConfig
+	var mbcfg microbench.Config
 	mbcfg.DatabaseConfig = &mysql.ConfigDB{}
 
 	cmd := &cobra.Command{
@@ -44,7 +44,7 @@ The output can also be outputted to <output file>.`,
 			mbcfg.Package = args[idx]
 			mbcfg.Output = args[idx+1]
 
-			err := microbench.MicroBenchmark(mbcfg)
+			err := microbench.Run(mbcfg)
 			if err != nil {
 				return err
 			}

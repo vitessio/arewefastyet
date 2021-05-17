@@ -76,7 +76,7 @@ func (b *benchmark) execute(rootDir string, w *os.File) error {
 
 	lines := strings.Split(string(out), "\n")
 	for _, line := range lines {
-		var benchLine benchmarkRunLine
+		var benchLine lineRun
 		err := json.Unmarshal([]byte(line), &benchLine)
 		if err != nil || benchLine.Output == "" {
 			continue
@@ -118,10 +118,10 @@ func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error
 	return nil
 }
 
-// MicroBenchmark runs "go test bench" on the given package (pkg) and outputs
+// Run runs "go test bench" on the given package (pkg) and outputs
 // the results to outputPath.
 // Profiling files will be written to the current working directory.
-func MicroBenchmark(cfg MicroBenchConfig) error {
+func Run(cfg Config) error {
 	var sqlClient *mysql.Client
 	var err error
 
