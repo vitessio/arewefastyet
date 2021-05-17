@@ -26,17 +26,17 @@ import (
 func TestMicroBenchmark(t *testing.T) {
 	tests := []struct {
 		name        string
-		cfg         MicroBenchConfig
+		cfg         Config
 		wantErr     bool
 		errContains string
 	}{
-		{name: "Invalid package path", cfg: MicroBenchConfig{Package: "invalid", Output: "test.txt"}, wantErr: true, errContains: errorInvalidPackageParsing},
+		{name: "Invalid package path", cfg: Config{Package: "invalid", Output: "test.txt"}, wantErr: true, errContains: errorInvalidPackageParsing},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
-			gotErr := MicroBenchmark(tt.cfg)
+			gotErr := Run(tt.cfg)
 			if tt.wantErr {
 				c.Assert(gotErr, qt.Not(qt.IsNil))
 

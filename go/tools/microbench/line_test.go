@@ -26,7 +26,7 @@ import (
 func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 	tests := []struct {
 		name            string
-		benchTypeWanted BenchType
+		benchTypeWanted microType
 		stringToParse   string
 	}{
 		// regular benchmarks
@@ -75,7 +75,7 @@ func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
-			line := &benchmarkRunLine{Output: tt.stringToParse}
+			line := &lineRun{Output: tt.stringToParse}
 			line.applyRegularExpr()
 			gotBenchType := line.benchType
 			c.Assert(gotBenchType, qt.Equals, tt.benchTypeWanted)
@@ -85,7 +85,7 @@ func Test_benchmarkRunLine_applyRegularExpr_checkBenchType(t *testing.T) {
 
 func BenchmarkApplyRegularExprRegularBenchmark(b *testing.B) {
 	b.ReportAllocs()
-	line := &benchmarkRunLine{Output: "BenchmarkEmpty-16 1000000000 0.2439 ns/op\n"}
+	line := &lineRun{Output: "BenchmarkEmpty-16 1000000000 0.2439 ns/op\n"}
 
 	for i := 0; i < b.N; i++ {
 		line.applyRegularExpr()
@@ -97,7 +97,7 @@ func BenchmarkApplyRegularExprRegularBenchmark(b *testing.B) {
 
 func BenchmarkApplyRegularExprAllocsBenchmark(b *testing.B) {
 	b.ReportAllocs()
-	line := &benchmarkRunLine{Output: "BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n"}
+	line := &lineRun{Output: "BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n"}
 
 	for i := 0; i < b.N; i++ {
 		line.applyRegularExpr()
@@ -109,7 +109,7 @@ func BenchmarkApplyRegularExprAllocsBenchmark(b *testing.B) {
 
 func BenchmarkApplyRegularExprBytesBenchmark(b *testing.B) {
 	b.ReportAllocs()
-	line := &benchmarkRunLine{Output: "BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n"}
+	line := &lineRun{Output: "BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n"}
 
 	for i := 0; i < b.N; i++ {
 		line.applyRegularExpr()
@@ -121,7 +121,7 @@ func BenchmarkApplyRegularExprBytesBenchmark(b *testing.B) {
 
 func BenchmarkApplyRegularExprMixedBenchmark(b *testing.B) {
 	b.ReportAllocs()
-	line := &benchmarkRunLine{Output: "BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s \t90 B/op \t1 allocs/op\n"}
+	line := &lineRun{Output: "BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s \t90 B/op \t1 allocs/op\n"}
 
 	for i := 0; i < b.N; i++ {
 		line.applyRegularExpr()
@@ -148,7 +148,7 @@ func Test_benchmarkRunLine_parseGeneralBenchmarkInvalidSubmatchLen(t *testing.T)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
-			line := &benchmarkRunLine{submatch: tt.submatch}
+			line := &lineRun{submatch: tt.submatch}
 			err := line.parseGeneralBenchmark()
 			c.Assert(err != nil, qt.Equals, tt.wantErr)
 		})
@@ -160,19 +160,19 @@ func Test_benchmarkRunLine_parseGeneralBenchmark(t *testing.T) {
 		name        string
 		submatch    []string
 		wantErr     bool
-		wantResults benchmarkResult
+		wantResults lineResult
 	}{
-		{name: "regular benchmark (1)", submatch: []string{"BenchmarkEmpty-16 1000000000 0.2439 ns/op", "BenchmarkEmpty-16", "1000000000", "0.2439", "", "", ""}, wantResults: benchmarkResult{Op: 1000000000, NanosecondPerOp: 0.2439}},
-		{name: "regular benchmark (2)", submatch: []string{"BenchmarkEmpty-16 19836 178.2396 ns/op", "BenchmarkEmpty-16", "19836", "178.2396", "", "", ""}, wantResults: benchmarkResult{Op: 19836, NanosecondPerOp: 178.2396}},
+		{name: "regular benchmark (1)", submatch: []string{"BenchmarkEmpty-16 1000000000 0.2439 ns/op", "BenchmarkEmpty-16", "1000000000", "0.2439", "", "", ""}, wantResults: lineResult{Op: 1000000000, NanosecondPerOp: 0.2439}},
+		{name: "regular benchmark (2)", submatch: []string{"BenchmarkEmpty-16 19836 178.2396 ns/op", "BenchmarkEmpty-16", "19836", "178.2396", "", "", ""}, wantResults: lineResult{Op: 19836, NanosecondPerOp: 178.2396}},
 
-		{name: "allocs benchmark (1)", submatch: []string{"BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "1000000000", "0.2439", "", "90", "1"}, wantResults: benchmarkResult{Op: 1000000000, NanosecondPerOp: 0.2439, BytesPerOp: 90, AllocsPerOp: 1}},
-		{name: "allocs benchmark (2)", submatch: []string{"BenchmarkAllocs-16 19836 178.2396 ns/op \t40489 B/op \t190 allocs/op\n", "BenchmarkAllocs-16", "19836", "178.2396", "", "40489", "190"}, wantResults: benchmarkResult{Op: 19836, NanosecondPerOp: 178.2396, BytesPerOp: 40489, AllocsPerOp: 190}},
+		{name: "allocs benchmark (1)", submatch: []string{"BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "1000000000", "0.2439", "", "90", "1"}, wantResults: lineResult{Op: 1000000000, NanosecondPerOp: 0.2439, BytesPerOp: 90, AllocsPerOp: 1}},
+		{name: "allocs benchmark (2)", submatch: []string{"BenchmarkAllocs-16 19836 178.2396 ns/op \t40489 B/op \t190 allocs/op\n", "BenchmarkAllocs-16", "19836", "178.2396", "", "40489", "190"}, wantResults: lineResult{Op: 19836, NanosecondPerOp: 178.2396, BytesPerOp: 40489, AllocsPerOp: 190}},
 
-		{name: "bytes benchmark (1)", submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "", ""}, wantResults: benchmarkResult{Op: 1000000000, NanosecondPerOp: 0.2439, MBs: 3837911248885.89}},
-		{name: "bytes benchmark (2)", submatch: []string{"BenchmarkBytes-16 19836 178.2396 ns/op \t985291124.89213 MB/s\n", "BenchmarkBytes-16", "19836", "178.2396", "985291124.89213", "", ""}, wantResults: benchmarkResult{Op: 19836, NanosecondPerOp: 178.2396, MBs: 985291124.89213}},
+		{name: "bytes benchmark (1)", submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "", ""}, wantResults: lineResult{Op: 1000000000, NanosecondPerOp: 0.2439, MBs: 3837911248885.89}},
+		{name: "bytes benchmark (2)", submatch: []string{"BenchmarkBytes-16 19836 178.2396 ns/op \t985291124.89213 MB/s\n", "BenchmarkBytes-16", "19836", "178.2396", "985291124.89213", "", ""}, wantResults: lineResult{Op: 19836, NanosecondPerOp: 178.2396, MBs: 985291124.89213}},
 
-		{name: "mixed benchmark (1)", submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "95", "2"}, wantResults: benchmarkResult{Op: 1000000000, NanosecondPerOp: 0.2439, MBs: 3837911248885.89, BytesPerOp: 95, AllocsPerOp: 2}},
-		{name: "mixed benchmark (2)", submatch: []string{"BenchmarkBytes-16 19836 178.2396 ns/op \t985291124.89213 MB/s\n", "BenchmarkBytes-16", "19836", "178.2396", "985291124.89213", "173", "9"}, wantResults: benchmarkResult{Op: 19836, NanosecondPerOp: 178.2396, MBs: 985291124.89213, BytesPerOp: 173, AllocsPerOp: 9}},
+		{name: "mixed benchmark (1)", submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "95", "2"}, wantResults: lineResult{Op: 1000000000, NanosecondPerOp: 0.2439, MBs: 3837911248885.89, BytesPerOp: 95, AllocsPerOp: 2}},
+		{name: "mixed benchmark (2)", submatch: []string{"BenchmarkBytes-16 19836 178.2396 ns/op \t985291124.89213 MB/s\n", "BenchmarkBytes-16", "19836", "178.2396", "985291124.89213", "173", "9"}, wantResults: lineResult{Op: 19836, NanosecondPerOp: 178.2396, MBs: 985291124.89213, BytesPerOp: 173, AllocsPerOp: 9}},
 
 		{name: "invalid number of ops", submatch: []string{"BenchmarkAllocs-16 wrong 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "wrong", "0.2439", "", "90", "1"}, wantErr: true},
 		{name: "invalid ns/op", submatch: []string{"BenchmarkAllocs-16 19836 178.wrong ns/op \t40489 B/op \t190 allocs/op\n", "BenchmarkAllocs-16", "19836", "178.wrong", "", "40489", "190"}, wantErr: true},
@@ -183,7 +183,7 @@ func Test_benchmarkRunLine_parseGeneralBenchmark(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
-			line := &benchmarkRunLine{submatch: tt.submatch}
+			line := &lineRun{submatch: tt.submatch}
 			err := line.parseGeneralBenchmark()
 
 			c.Assert(err != nil, qt.Equals, tt.wantErr)
@@ -204,7 +204,7 @@ func Test_benchmarkRunLine_parseGeneralBenchmark(t *testing.T) {
 
 func BenchmarkParseSimpleGeneralBenchmark(b *testing.B) {
 	var err error
-	line := benchmarkRunLine{submatch: []string{"BenchmarkEmpty-16 1000000000 0.2439 ns/op", "BenchmarkEmpty-16", "1000000000", "0.2439", "", "", ""}}
+	line := lineRun{submatch: []string{"BenchmarkEmpty-16 1000000000 0.2439 ns/op", "BenchmarkEmpty-16", "1000000000", "0.2439", "", "", ""}}
 
 	for i := 0; i < b.N; i++ {
 		err = line.parseGeneralBenchmark()
@@ -216,7 +216,7 @@ func BenchmarkParseSimpleGeneralBenchmark(b *testing.B) {
 
 func BenchmarkParseAllocsGeneralBenchmark(b *testing.B) {
 	var err error
-	line := benchmarkRunLine{submatch: []string{"BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "1000000000", "0.2439", "", "90", "1"}}
+	line := lineRun{submatch: []string{"BenchmarkAllocs-16 1000000000 0.2439 ns/op \t90 B/op \t1 allocs/op\n", "BenchmarkAllocs-16", "1000000000", "0.2439", "", "90", "1"}}
 
 	for i := 0; i < b.N; i++ {
 		err = line.parseGeneralBenchmark()
@@ -228,7 +228,7 @@ func BenchmarkParseAllocsGeneralBenchmark(b *testing.B) {
 
 func BenchmarkParseBytesGeneralBenchmark(b *testing.B) {
 	var err error
-	line := benchmarkRunLine{submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "", ""}}
+	line := lineRun{submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "", ""}}
 
 	for i := 0; i < b.N; i++ {
 		err = line.parseGeneralBenchmark()
@@ -240,7 +240,7 @@ func BenchmarkParseBytesGeneralBenchmark(b *testing.B) {
 
 func BenchmarkParseMixedGeneralBenchmark(b *testing.B) {
 	var err error
-	line := benchmarkRunLine{submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "645", "14"}}
+	line := lineRun{submatch: []string{"BenchmarkBytes-16 1000000000 0.2439 ns/op \t3837911248885.89 MB/s\n", "BenchmarkBytes-16", "1000000000", "0.2439", "3837911248885.89", "645", "14"}}
 
 	for i := 0; i < b.N; i++ {
 		err = line.parseGeneralBenchmark()
