@@ -134,7 +134,7 @@ limitations under the License.
                         {{range $val := .microbenchmark}}
                         <tr>
                             <td>{{ $val.PkgName }}</td>
-                            <td><a href="/microbench/{{ $val.Name }}">{{ $val.Name }}</a></td>
+                            <td><a href="/microbench/{{ $val.Name }}?subBenchmarkName={{ $val.SubBenchmarkName }}">{{ $val.SubBenchmarkName }}</a></td>
                             <td class="text-right">{{ $val.Result.OpsStr }}</td>
                             <td class="text-right">{{ $val.Result.NSPerOpToDurationStr }}</td>
                             <td class="text-right">{{ $val.Result.MBPerSecStr }}</td>

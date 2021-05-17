@@ -20,7 +20,6 @@ package microbench
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
@@ -39,9 +38,7 @@ func Compare(dbClient *mysql.Client, reference string, compare string) (Comparis
 		micros[sha] = micro.ReduceSimpleMedianByName()
 	}
 	microsMatrix := MergeDetails(micros[reference], micros[compare])
-	sort.SliceStable(microsMatrix, func(i, j int) bool {
-		return !(microsMatrix[i].Current.NSPerOp < microsMatrix[j].Current.NSPerOp)
-	})
+	// The result of the merge will be sorted by the package name and then the benchmark name
 	return microsMatrix, nil
 }
 
@@ -54,7 +51,7 @@ func Compare(dbClient *mysql.Client, reference string, compare string) (Comparis
 func (microsMatrix ComparisonArray) Regression() (reason string) {
 	for _, micro := range microsMatrix {
 		if micro.CurrLastDiff < 0.90 {
-			reason += fmt.Sprintf("- %s/%s decreased by %.2f%%\n", micro.PkgName, micro.Name, (1 - micro.CurrLastDiff) * 100)
+			reason += fmt.Sprintf("- %s/%s decreased by %.2f%%\n", micro.PkgName, micro.SubBenchmarkName, (1-micro.CurrLastDiff)*100)
 		}
 	}
 	return
