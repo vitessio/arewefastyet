@@ -253,3 +253,74 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 		"results":          results,
 	})
 }
+
+func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
+	var err error
+
+	// get all the releases and the last cron job for master
+	allReleases, err := git.GetAllVitessReleaseCommitHash(s.getVitessPath())
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	lastrunCronSHA, err := exec.GetLatestCronJobForMacrobenchmarks(s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	allReleases = append(allReleases, &git.Release{
+		Name:       "master",
+		CommitHash: lastrunCronSHA,
+	})
+
+	// initialize left tag and the corresponding sha
+	leftTag := c.Query("ltag")
+	leftSHA := ""
+	if leftTag == "" {
+		// get the latest cron job if leftTag is not specified
+		leftTag = "master"
+		leftSHA = lastrunCronSHA
+	} else {
+		leftSHA, err = findSHA(allReleases, leftTag)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+	}
+
+	// initialize right tag and the corresponding sha
+	rightTag := c.Query("rtag")
+	rightSHA := ""
+	if rightTag == "" {
+		// get the last release sha if rightSHA is not specified
+		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		rightSHA = rel.CommitHash
+		rightTag = rel.Name
+	} else {
+		rightSHA, err = findSHA(allReleases, rightTag)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+	}
+
+	// Compare Macrobenchmarks for the two given SHAs.
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, leftSHA, rightSHA)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	c.HTML(http.StatusOK, "macrobench.tmpl", gin.H{
+		"title":          "Vitess benchmark - macrobenchmark",
+		"leftSHA":        leftSHA,
+		"rightSHA":       rightSHA,
+		"leftTag":        leftTag,
+		"rightTag":       rightTag,
+		"allReleases":    allReleases,
+		"macrobenchmark": macrosMatrices,
+	})
+}
