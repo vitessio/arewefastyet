@@ -22,6 +22,8 @@ BIN_NAME = arewefastyetcli
 
 .PHONY: install virtual_env molecule_converge_all
 
+all: build
+
 virtual_env:
 	test -d $(VIRTUALENV_PATH) || virtualenv -p python$(PY_VERSION) $(VIRTUALENV_PATH)
 
@@ -36,6 +38,14 @@ build:
 
 clean:
 	rm -f $(BIN_NAME)
+
+gendoc: build exec_gendoc clean
+
+exec_gendoc:
+	./$(BIN_NAME) gen doc
+
+test:
+	go test -v ./go/...
 
 molecule_converge_all: virtual_env $(VIRTUALENV_PATH)
 	source $(VIRTUALENV_PATH)/bin/activate && \

@@ -17,7 +17,7 @@ jobs:
       - name: Run gen doc
         run: |
           set -e
-          go run ./go/main.go gen doc
+          make gendoc
           output=$(git status -s)
           if [ -z "${output}" ]; then
            exit 0
