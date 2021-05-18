@@ -1,20 +1,29 @@
 {
-   "__inputs": [ ],
-   "__requires": [ ],
    "annotations": {
-      "list": [ ]
+      "list": [
+         {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+         }
+      ]
    },
    "description": "Vitess cluster overview",
    "editable": true,
    "gnetId": null,
    "graphTooltip": 1,
-   "hideControls": false,
-   "id": null,
-   "links": [ ],
+   "id": 15,
+   "iteration": 1621323987568,
+   "links": [],
    "panels": [
       {
          "collapse": false,
          "collapsed": false,
+         "datasource": null,
          "gridPos": {
             "h": 1,
             "w": 24,
@@ -22,7 +31,7 @@
             "y": 0
          },
          "id": 2,
-         "panels": [ ],
+         "panels": [],
          "repeat": null,
          "repeatIteration": null,
          "repeatRowId": null,
@@ -42,6 +51,10 @@
          ],
          "datasource": "Prometheus",
          "decimals": 4,
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "format": "percentunit",
          "gauge": {
             "maxValue": 100,
@@ -58,7 +71,7 @@
          },
          "id": 3,
          "interval": null,
-         "links": [ ],
+         "links": [],
          "mappingType": 1,
          "mappingTypes": [
             {
@@ -116,89 +129,6 @@
       },
       {
          "cacheTimeout": null,
-         "colorBackground": true,
-         "colorValue": false,
-         "colors": [
-            "#d44a3a",
-            "rgba(237, 129, 40, 0.89)",
-            "#299c46"
-         ],
-         "datasource": "Prometheus",
-         "decimals": 4,
-         "format": "percentunit",
-         "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-         },
-         "gridPos": {
-            "h": 2,
-            "w": 4,
-            "x": 0,
-            "y": 3
-         },
-         "id": 4,
-         "interval": null,
-         "links": [ ],
-         "mappingType": 1,
-         "mappingTypes": [
-            {
-               "name": "value to text",
-               "value": 1
-            },
-            {
-               "name": "range to text",
-               "value": 2
-            }
-         ],
-         "maxDataPoints": 100,
-         "nullPointMode": "connected",
-         "nullText": null,
-         "postfix": "",
-         "postfixFontSize": "50%",
-         "prefix": "",
-         "prefixFontSize": "50%",
-         "rangeMaps": [
-            {
-               "from": "null",
-               "text": "N/A",
-               "to": "null"
-            }
-         ],
-         "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-         },
-         "tableColumn": "",
-         "targets": [
-            {
-               "expr": "1 - (sum(rate(vttablet_errors{region=\"$region\", job=\"vitess-vttablet\"}[$interval])) / (sum(rate(vttablet_errors{region=\"$region\", job=\"vitess-vttablet\"}[$interval])) + sum(rate(vttablet_query_counts{region=\"$region\", job=\"vitess-vttablet\"}[$interval]))))",
-               "format": "time_series",
-               "instant": true,
-               "intervalFactor": 1,
-               "legendFormat": "",
-               "refId": "A"
-            }
-         ],
-         "thresholds": "0.99,0.999",
-         "title": "Query success - vttablet",
-         "type": "singlestat",
-         "valueFontSize": "70%",
-         "valueMaps": [
-            {
-               "op": "=",
-               "text": "N/A",
-               "value": "null"
-            }
-         ],
-         "valueName": "current"
-      },
-      {
-         "cacheTimeout": null,
          "colorBackground": false,
          "colorValue": false,
          "colors": [
@@ -207,6 +137,10 @@
             "#d44a3a"
          ],
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "format": "none",
          "gauge": {
             "maxValue": 100,
@@ -223,7 +157,7 @@
          },
          "id": 5,
          "interval": null,
-         "links": [ ],
+         "links": [],
          "mappingType": 1,
          "mappingTypes": [
             {
@@ -289,88 +223,10 @@
             "#d44a3a"
          ],
          "datasource": "Prometheus",
-         "format": "none",
-         "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
          },
-         "gridPos": {
-            "h": 2,
-            "w": 4,
-            "x": 4,
-            "y": 3
-         },
-         "id": 6,
-         "interval": null,
-         "links": [ ],
-         "mappingType": 1,
-         "mappingTypes": [
-            {
-               "name": "value to text",
-               "value": 1
-            },
-            {
-               "name": "range to text",
-               "value": 2
-            }
-         ],
-         "maxDataPoints": 100,
-         "nullPointMode": "connected",
-         "nullText": null,
-         "postfix": "",
-         "postfixFontSize": "50%",
-         "prefix": "",
-         "prefixFontSize": "50%",
-         "rangeMaps": [
-            {
-               "from": "null",
-               "text": "N/A",
-               "to": "null"
-            }
-         ],
-         "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": true,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": true
-         },
-         "tableColumn": "",
-         "targets": [
-            {
-               "expr": "sum(rate(vttablet_query_counts{region=\"$region\", job=\"vitess-vttablet\"}[$interval]))",
-               "format": "time_series",
-               "instant": false,
-               "intervalFactor": 1,
-               "legendFormat": "",
-               "refId": "A"
-            }
-         ],
-         "thresholds": "",
-         "title": "QPS - vttablet",
-         "type": "singlestat",
-         "valueFontSize": "70%",
-         "valueMaps": [
-            {
-               "op": "=",
-               "text": "N/A",
-               "value": "null"
-            }
-         ],
-         "valueName": "current"
-      },
-      {
-         "cacheTimeout": null,
-         "colorBackground": false,
-         "colorValue": false,
-         "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-         ],
-         "datasource": "Prometheus",
          "format": "none",
          "gauge": {
             "maxValue": 100,
@@ -387,7 +243,7 @@
          },
          "id": 7,
          "interval": null,
-         "links": [ ],
+         "links": [],
          "mappingType": 1,
          "mappingTypes": [
             {
@@ -453,170 +309,10 @@
             "#d44a3a"
          ],
          "datasource": "Prometheus",
-         "format": "none",
-         "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
          },
-         "gridPos": {
-            "h": 2,
-            "w": 2,
-            "x": 8,
-            "y": 3
-         },
-         "id": 8,
-         "interval": null,
-         "links": [ ],
-         "mappingType": 1,
-         "mappingTypes": [
-            {
-               "name": "value to text",
-               "value": 1
-            },
-            {
-               "name": "range to text",
-               "value": 2
-            }
-         ],
-         "maxDataPoints": 100,
-         "nullPointMode": "connected",
-         "nullText": null,
-         "postfix": "",
-         "postfixFontSize": "50%",
-         "prefix": "",
-         "prefixFontSize": "50%",
-         "rangeMaps": [
-            {
-               "from": "null",
-               "text": "N/A",
-               "to": "null"
-            }
-         ],
-         "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-         },
-         "tableColumn": "",
-         "targets": [
-            {
-               "expr": "count(count(vttablet_tablet_state{region=\"$region\", job=\"vitess-vttablet\"}) by (keyspace))",
-               "format": "time_series",
-               "instant": true,
-               "intervalFactor": 1,
-               "legendFormat": "",
-               "refId": "A"
-            }
-         ],
-         "thresholds": "",
-         "title": "keyspace",
-         "type": "singlestat",
-         "valueFontSize": "50%",
-         "valueMaps": [
-            {
-               "op": "=",
-               "text": "N/A",
-               "value": "null"
-            }
-         ],
-         "valueName": "avg"
-      },
-      {
-         "cacheTimeout": null,
-         "colorBackground": false,
-         "colorValue": false,
-         "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-         ],
-         "datasource": "Prometheus",
-         "format": "none",
-         "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-         },
-         "gridPos": {
-            "h": 2,
-            "w": 2,
-            "x": 10,
-            "y": 3
-         },
-         "id": 9,
-         "interval": null,
-         "links": [ ],
-         "mappingType": 1,
-         "mappingTypes": [
-            {
-               "name": "value to text",
-               "value": 1
-            },
-            {
-               "name": "range to text",
-               "value": 2
-            }
-         ],
-         "maxDataPoints": 100,
-         "nullPointMode": "connected",
-         "nullText": null,
-         "postfix": "",
-         "postfixFontSize": "50%",
-         "prefix": "",
-         "prefixFontSize": "50%",
-         "rangeMaps": [
-            {
-               "from": "null",
-               "text": "N/A",
-               "to": "null"
-            }
-         ],
-         "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-         },
-         "tableColumn": "",
-         "targets": [
-            {
-               "expr": "count(count(vttablet_tablet_state{region=\"$region\", job=\"vitess-vttablet\"}) by (keyspace, shard))",
-               "format": "time_series",
-               "instant": true,
-               "intervalFactor": 1,
-               "legendFormat": "",
-               "refId": "A"
-            }
-         ],
-         "thresholds": "",
-         "title": "shard",
-         "type": "singlestat",
-         "valueFontSize": "50%",
-         "valueMaps": [
-            {
-               "op": "=",
-               "text": "N/A",
-               "value": "null"
-            }
-         ],
-         "valueName": "avg"
-      },
-      {
-         "cacheTimeout": null,
-         "colorBackground": false,
-         "colorValue": false,
-         "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-         ],
-         "datasource": "Prometheus",
          "format": "none",
          "gauge": {
             "maxValue": 100,
@@ -633,7 +329,7 @@
          },
          "id": 10,
          "interval": null,
-         "links": [ ],
+         "links": [],
          "mappingType": 1,
          "mappingTypes": [
             {
@@ -699,6 +395,10 @@
             "#d44a3a"
          ],
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "format": "none",
          "gauge": {
             "maxValue": 100,
@@ -715,7 +415,7 @@
          },
          "id": 11,
          "interval": null,
-         "links": [ ],
+         "links": [],
          "mappingType": 1,
          "mappingTypes": [
             {
@@ -773,6 +473,93 @@
       },
       {
          "cacheTimeout": null,
+         "colorBackground": true,
+         "colorValue": false,
+         "colors": [
+            "#d44a3a",
+            "rgba(237, 129, 40, 0.89)",
+            "#299c46"
+         ],
+         "datasource": "Prometheus",
+         "decimals": 4,
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
+         "format": "percentunit",
+         "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+         },
+         "gridPos": {
+            "h": 2,
+            "w": 4,
+            "x": 0,
+            "y": 3
+         },
+         "id": 4,
+         "interval": null,
+         "links": [],
+         "mappingType": 1,
+         "mappingTypes": [
+            {
+               "name": "value to text",
+               "value": 1
+            },
+            {
+               "name": "range to text",
+               "value": 2
+            }
+         ],
+         "maxDataPoints": 100,
+         "nullPointMode": "connected",
+         "nullText": null,
+         "postfix": "",
+         "postfixFontSize": "50%",
+         "prefix": "",
+         "prefixFontSize": "50%",
+         "rangeMaps": [
+            {
+               "from": "null",
+               "text": "N/A",
+               "to": "null"
+            }
+         ],
+         "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+         },
+         "tableColumn": "",
+         "targets": [
+            {
+               "expr": "1 - (sum(rate(vttablet_errors{region=\"$region\", job=\"vitess-vttablet\"}[$interval])) / (sum(rate(vttablet_errors{region=\"$region\", job=\"vitess-vttablet\"}[$interval])) + sum(rate(vttablet_query_counts{region=\"$region\", job=\"vitess-vttablet\"}[$interval]))))",
+               "format": "time_series",
+               "instant": true,
+               "intervalFactor": 1,
+               "legendFormat": "",
+               "refId": "A"
+            }
+         ],
+         "thresholds": "0.99,0.999",
+         "title": "Query success - vttablet",
+         "type": "singlestat",
+         "valueFontSize": "70%",
+         "valueMaps": [
+            {
+               "op": "=",
+               "text": "N/A",
+               "value": "null"
+            }
+         ],
+         "valueName": "current"
+      },
+      {
+         "cacheTimeout": null,
          "colorBackground": false,
          "colorValue": false,
          "colors": [
@@ -781,6 +568,268 @@
             "#d44a3a"
          ],
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
+         "format": "none",
+         "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+         },
+         "gridPos": {
+            "h": 2,
+            "w": 4,
+            "x": 4,
+            "y": 3
+         },
+         "id": 6,
+         "interval": null,
+         "links": [],
+         "mappingType": 1,
+         "mappingTypes": [
+            {
+               "name": "value to text",
+               "value": 1
+            },
+            {
+               "name": "range to text",
+               "value": 2
+            }
+         ],
+         "maxDataPoints": 100,
+         "nullPointMode": "connected",
+         "nullText": null,
+         "postfix": "",
+         "postfixFontSize": "50%",
+         "prefix": "",
+         "prefixFontSize": "50%",
+         "rangeMaps": [
+            {
+               "from": "null",
+               "text": "N/A",
+               "to": "null"
+            }
+         ],
+         "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": true,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": true
+         },
+         "tableColumn": "",
+         "targets": [
+            {
+               "expr": "sum(rate(vttablet_query_counts{region=\"$region\", job=\"vitess-vttablet\"}[$interval]))",
+               "format": "time_series",
+               "instant": false,
+               "intervalFactor": 1,
+               "legendFormat": "",
+               "refId": "A"
+            }
+         ],
+         "thresholds": "",
+         "title": "QPS - vttablet",
+         "type": "singlestat",
+         "valueFontSize": "70%",
+         "valueMaps": [
+            {
+               "op": "=",
+               "text": "N/A",
+               "value": "null"
+            }
+         ],
+         "valueName": "current"
+      },
+      {
+         "cacheTimeout": null,
+         "colorBackground": false,
+         "colorValue": false,
+         "colors": [
+            "#299c46",
+            "rgba(237, 129, 40, 0.89)",
+            "#d44a3a"
+         ],
+         "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
+         "format": "none",
+         "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+         },
+         "gridPos": {
+            "h": 2,
+            "w": 2,
+            "x": 8,
+            "y": 3
+         },
+         "id": 8,
+         "interval": null,
+         "links": [],
+         "mappingType": 1,
+         "mappingTypes": [
+            {
+               "name": "value to text",
+               "value": 1
+            },
+            {
+               "name": "range to text",
+               "value": 2
+            }
+         ],
+         "maxDataPoints": 100,
+         "nullPointMode": "connected",
+         "nullText": null,
+         "postfix": "",
+         "postfixFontSize": "50%",
+         "prefix": "",
+         "prefixFontSize": "50%",
+         "rangeMaps": [
+            {
+               "from": "null",
+               "text": "N/A",
+               "to": "null"
+            }
+         ],
+         "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+         },
+         "tableColumn": "",
+         "targets": [
+            {
+               "expr": "count(count(vttablet_tablet_state{region=\"$region\", job=\"vitess-vttablet\"}) by (keyspace))",
+               "format": "time_series",
+               "instant": true,
+               "intervalFactor": 1,
+               "legendFormat": "",
+               "refId": "A"
+            }
+         ],
+         "thresholds": "",
+         "title": "keyspace",
+         "type": "singlestat",
+         "valueFontSize": "50%",
+         "valueMaps": [
+            {
+               "op": "=",
+               "text": "N/A",
+               "value": "null"
+            }
+         ],
+         "valueName": "avg"
+      },
+      {
+         "cacheTimeout": null,
+         "colorBackground": false,
+         "colorValue": false,
+         "colors": [
+            "#299c46",
+            "rgba(237, 129, 40, 0.89)",
+            "#d44a3a"
+         ],
+         "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
+         "format": "none",
+         "gauge": {
+            "maxValue": 100,
+            "minValue": 0,
+            "show": false,
+            "thresholdLabels": false,
+            "thresholdMarkers": true
+         },
+         "gridPos": {
+            "h": 2,
+            "w": 2,
+            "x": 10,
+            "y": 3
+         },
+         "id": 9,
+         "interval": null,
+         "links": [],
+         "mappingType": 1,
+         "mappingTypes": [
+            {
+               "name": "value to text",
+               "value": 1
+            },
+            {
+               "name": "range to text",
+               "value": 2
+            }
+         ],
+         "maxDataPoints": 100,
+         "nullPointMode": "connected",
+         "nullText": null,
+         "postfix": "",
+         "postfixFontSize": "50%",
+         "prefix": "",
+         "prefixFontSize": "50%",
+         "rangeMaps": [
+            {
+               "from": "null",
+               "text": "N/A",
+               "to": "null"
+            }
+         ],
+         "sparkline": {
+            "fillColor": "rgba(31, 118, 189, 0.18)",
+            "full": false,
+            "lineColor": "rgb(31, 120, 193)",
+            "show": false
+         },
+         "tableColumn": "",
+         "targets": [
+            {
+               "expr": "count(count(vttablet_tablet_state{region=\"$region\", job=\"vitess-vttablet\"}) by (keyspace, shard))",
+               "format": "time_series",
+               "instant": true,
+               "intervalFactor": 1,
+               "legendFormat": "",
+               "refId": "A"
+            }
+         ],
+         "thresholds": "",
+         "title": "shard",
+         "type": "singlestat",
+         "valueFontSize": "50%",
+         "valueMaps": [
+            {
+               "op": "=",
+               "text": "N/A",
+               "value": "null"
+            }
+         ],
+         "valueName": "avg"
+      },
+      {
+         "cacheTimeout": null,
+         "colorBackground": false,
+         "colorValue": false,
+         "colors": [
+            "#299c46",
+            "rgba(237, 129, 40, 0.89)",
+            "#d44a3a"
+         ],
+         "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "format": "none",
          "gauge": {
             "maxValue": 100,
@@ -797,7 +846,7 @@
          },
          "id": 12,
          "interval": null,
-         "links": [ ],
+         "links": [],
          "mappingType": 1,
          "mappingTypes": [
             {
@@ -863,6 +912,10 @@
             "#d44a3a"
          ],
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "format": "none",
          "gauge": {
             "maxValue": 100,
@@ -879,7 +932,7 @@
          },
          "id": 13,
          "interval": null,
-         "links": [ ],
+         "links": [],
          "mappingType": 1,
          "mappingTypes": [
             {
@@ -938,6 +991,7 @@
       {
          "collapse": false,
          "collapsed": false,
+         "datasource": null,
          "gridPos": {
             "h": 1,
             "w": 24,
@@ -945,7 +999,7 @@
             "y": 5
          },
          "id": 14,
-         "panels": [ ],
+         "panels": [],
          "repeat": null,
          "repeatIteration": null,
          "repeatRowId": null,
@@ -955,11 +1009,15 @@
          "type": "row"
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 1,
          "fillGradient": 0,
          "gridPos": {
@@ -968,6 +1026,7 @@
             "x": 0,
             "y": 6
          },
+         "hiddenSeries": false,
          "id": 15,
          "legend": {
             "alignAsTable": true,
@@ -985,14 +1044,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1006,8 +1069,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Requests",
          "tooltip": {
@@ -1021,7 +1085,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1040,7 +1104,11 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
          "aliasColors": {
@@ -1050,6 +1118,10 @@
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 1,
          "fillGradient": 0,
          "gridPos": {
@@ -1058,6 +1130,7 @@
             "x": 8,
             "y": 6
          },
+         "hiddenSeries": false,
          "id": 16,
          "legend": {
             "alignAsTable": true,
@@ -1075,14 +1148,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1096,8 +1173,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Error rate",
          "tooltip": {
@@ -1111,7 +1189,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1130,7 +1208,11 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
          "aliasColors": {
@@ -1140,6 +1222,10 @@
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 1,
          "fillGradient": 0,
          "gridPos": {
@@ -1148,6 +1234,7 @@
             "x": 16,
             "y": 6
          },
+         "hiddenSeries": false,
          "id": 17,
          "legend": {
             "alignAsTable": true,
@@ -1165,14 +1252,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1186,8 +1277,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Duration 99th quantile",
          "tooltip": {
@@ -1201,7 +1293,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1220,14 +1312,29 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {
+               "links": [
+                  {
+                     "title": "Go to \"Keyspace Overview\"",
+                     "url": "/d/ff33eceed7d2b1267dd286a099/?var-interval=${interval}&var-region=${region}&var-keyspace=${__field.labels.keyspace}&time=${__url_time_range}"
+                  }
+               ]
+            },
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
@@ -1236,6 +1343,7 @@
             "x": 0,
             "y": 12
          },
+         "hiddenSeries": false,
          "id": 18,
          "legend": {
             "alignAsTable": true,
@@ -1253,22 +1361,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
          "options": {
-            "dataLinks": [
-               {
-                  "title": "Go to \"Keyspace Overview\"",
-                  "url": "/d/ff33eceed7d2b1267dd286a099/?var-interval=${interval}&var-region=${region}&var-keyspace=${__series.labels.keyspace}&time=${__url_time_range}"
-               }
-            ]
+            "alertThreshold": true
          },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1282,8 +1386,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Requests (by keyspace)",
          "tooltip": {
@@ -1297,7 +1402,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1316,14 +1421,29 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {
+               "links": [
+                  {
+                     "title": "Go to \"Keyspace Overview\"",
+                     "url": "/d/ff33eceed7d2b1267dd286a099/?var-interval=${interval}&var-region=${region}&var-keyspace=${__field.labels.keyspace}&time=${__url_time_range}"
+                  }
+               ]
+            },
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
@@ -1332,6 +1452,7 @@
             "x": 8,
             "y": 12
          },
+         "hiddenSeries": false,
          "id": 19,
          "legend": {
             "alignAsTable": true,
@@ -1349,22 +1470,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
          "options": {
-            "dataLinks": [
-               {
-                  "title": "Go to \"Keyspace Overview\"",
-                  "url": "/d/ff33eceed7d2b1267dd286a099/?var-interval=${interval}&var-region=${region}&var-keyspace=${__series.labels.keyspace}&time=${__url_time_range}"
-               }
-            ]
+            "alertThreshold": true
          },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1378,8 +1495,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Error rate (by keyspace)",
          "tooltip": {
@@ -1393,7 +1511,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1412,14 +1530,29 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {
+               "links": [
+                  {
+                     "title": "Go to \"Keyspace Overview\"",
+                     "url": "/d/ff33eceed7d2b1267dd286a099/?var-interval=${interval}&var-region=${region}&var-keyspace=${__field.labels.keyspace}&time=${__url_time_range}"
+                  }
+               ]
+            },
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
@@ -1428,6 +1561,7 @@
             "x": 16,
             "y": 12
          },
+         "hiddenSeries": false,
          "id": 20,
          "legend": {
             "alignAsTable": true,
@@ -1445,22 +1579,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
          "options": {
-            "dataLinks": [
-               {
-                  "title": "Go to \"Keyspace Overview\"",
-                  "url": "/d/ff33eceed7d2b1267dd286a099/?var-interval=${interval}&var-region=${region}&var-keyspace=${__series.labels.keyspace}&time=${__url_time_range}"
-               }
-            ]
+            "alertThreshold": true
          },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1474,8 +1604,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Duration 99th quantile (by keyspace)",
          "tooltip": {
@@ -1489,7 +1620,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1508,19 +1639,24 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
          "collapse": false,
          "collapsed": false,
+         "datasource": null,
          "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 13
+            "y": 20
          },
          "id": 21,
-         "panels": [ ],
+         "panels": [],
          "repeat": null,
          "repeatIteration": null,
          "repeatRowId": null,
@@ -1530,19 +1666,24 @@
          "type": "row"
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 14
+            "y": 21
          },
+         "hiddenSeries": false,
          "id": 22,
          "legend": {
             "alignAsTable": true,
@@ -1560,14 +1701,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1581,8 +1726,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Query pool: min connections available (by keyspace)",
          "tooltip": {
@@ -1596,7 +1742,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1615,22 +1761,31 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 14
+            "y": 21
          },
+         "hiddenSeries": false,
          "id": 23,
          "legend": {
             "alignAsTable": true,
@@ -1648,14 +1803,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1669,8 +1828,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Transaction pool: min connections available (by keyspace)",
          "tooltip": {
@@ -1684,7 +1844,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1703,22 +1863,31 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 14
+            "y": 21
          },
+         "hiddenSeries": false,
          "id": 24,
          "legend": {
             "alignAsTable": true,
@@ -1736,14 +1905,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1757,8 +1930,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Count of serving tablets (by keyspace)",
          "tooltip": {
@@ -1772,7 +1946,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1791,19 +1965,24 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
          "collapse": false,
          "collapsed": false,
+         "datasource": null,
          "gridPos": {
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 15
+            "y": 27
          },
          "id": 25,
-         "panels": [ ],
+         "panels": [],
          "repeat": null,
          "repeatIteration": null,
          "repeatRowId": null,
@@ -1813,19 +1992,24 @@
          "type": "row"
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 16
+            "y": 28
          },
+         "hiddenSeries": false,
          "id": 26,
          "legend": {
             "alignAsTable": true,
@@ -1843,14 +2027,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null as zero",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1864,8 +2052,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Slow queries > 0 (by keyspace)",
          "tooltip": {
@@ -1879,7 +2068,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1898,22 +2087,31 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 16
+            "y": 28
          },
+         "hiddenSeries": false,
          "id": 27,
          "legend": {
             "alignAsTable": true,
@@ -1931,14 +2129,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -1952,8 +2154,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Replication lag > 0 (by keyspace)",
          "tooltip": {
@@ -1967,7 +2170,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -1986,22 +2189,31 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       },
       {
-         "aliasColors": { },
+         "aliasColors": {},
          "bars": false,
          "dashLength": 10,
          "dashes": false,
          "datasource": "Prometheus",
+         "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+         },
          "fill": 0,
          "fillGradient": 0,
          "gridPos": {
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 16
+            "y": 28
          },
+         "hiddenSeries": false,
          "id": 28,
          "legend": {
             "alignAsTable": true,
@@ -2019,14 +2231,18 @@
          },
          "lines": true,
          "linewidth": 1,
-         "links": [ ],
+         "links": [],
          "nullPointMode": "null",
+         "options": {
+            "alertThreshold": true
+         },
          "percentage": false,
+         "pluginVersion": "7.5.6",
          "pointradius": 5,
          "points": false,
          "renderer": "flot",
          "repeat": null,
-         "seriesOverrides": [ ],
+         "seriesOverrides": [],
          "spaceLength": 10,
          "span": 4,
          "stack": false,
@@ -2040,8 +2256,9 @@
                "refId": "A"
             }
          ],
-         "thresholds": [ ],
+         "thresholds": [],
          "timeFrom": null,
+         "timeRegions": [],
          "timeShift": null,
          "title": "Semi-sync replication avg wait time (by keyspace)",
          "tooltip": {
@@ -2055,7 +2272,7 @@
             "mode": "time",
             "name": null,
             "show": true,
-            "values": [ ]
+            "values": []
          },
          "yaxes": [
             {
@@ -2074,12 +2291,15 @@
                "min": 0,
                "show": true
             }
-         ]
+         ],
+         "yaxis": {
+            "align": false,
+            "alignLevel": null
+         }
       }
    ],
-   "refresh": "",
-   "rows": [ ],
-   "schemaVersion": 14,
+   "refresh": false,
+   "schemaVersion": 27,
    "style": "dark",
    "tags": [
       "vitess-mixin",
@@ -2090,11 +2310,17 @@
       "list": [
          {
             "allValue": null,
+            "auto": false,
+            "auto_count": 30,
+            "auto_min": "10s",
             "current": {
-               "text": "5m",
-               "value": "5m"
+               "selected": true,
+               "text": "1m",
+               "value": "1m"
             },
             "datasource": "$datasource",
+            "description": null,
+            "error": null,
             "hide": 0,
             "includeAll": false,
             "label": "Interval",
@@ -2102,12 +2328,12 @@
             "name": "interval",
             "options": [
                {
-                  "selected": false,
+                  "selected": true,
                   "text": "1m",
                   "value": "1m"
                },
                {
-                  "selected": true,
+                  "selected": false,
                   "text": "5m",
                   "value": "5m"
                },
@@ -2138,40 +2364,63 @@
                }
             ],
             "query": "1m,5m,10m,30m,1h,6h,12h",
+            "queryValue": "",
             "refresh": 2,
             "regex": "",
             "skipUrlSync": false,
             "sort": 1,
             "tagValuesQuery": "",
-            "tags": [ ],
+            "tags": [],
             "tagsQuery": "",
             "type": "interval",
             "useTags": false
          },
          {
             "allValue": null,
-            "current": { },
+            "current": {
+               "selected": false,
+               "text": "local",
+               "value": "local"
+            },
             "datasource": "Prometheus",
+            "definition": "",
+            "description": null,
+            "error": null,
             "hide": 0,
             "includeAll": false,
             "label": "Region",
             "multi": false,
             "name": "region",
-            "options": [ ],
-            "query": "label_values(vtctld_build_number{job=\"vitess-vtctld\"}, region)",
+            "options": [],
+            "query": {
+               "query": "label_values(vtctld_build_number{job=\"vitess-vtctld\"}, region)",
+               "refId": "Prometheus-region-Variable-Query"
+            },
             "refresh": 2,
             "regex": "",
+            "skipUrlSync": false,
             "sort": 1,
             "tagValuesQuery": "",
-            "tags": [ ],
+            "tags": [],
             "tagsQuery": "",
             "type": "query",
             "useTags": false
+         },
+         {
+            "datasource": null,
+            "description": null,
+            "error": null,
+            "filters": [],
+            "hide": 0,
+            "label": null,
+            "name": "filter",
+            "skipUrlSync": false,
+            "type": "adhoc"
          }
       ]
    },
    "time": {
-      "from": "now-30m",
+      "from": "now-7d",
       "to": "now"
    },
    "timepicker": {
@@ -2202,5 +2451,5 @@
    "timezone": "browser",
    "title": "Vitess / Cluster Overview (auto-generated)",
    "uid": "0d0778047f5a64ff2ea084ec3e",
-   "version": 0
+   "version": 5
 }
