@@ -28,6 +28,7 @@ const (
 	flagGitRefExec = "exec-git-ref"
 	flagSourceExec = "exec-source"
 	flagExecType   = "exec-type"
+	flagExecPullNB = "exec-pull-nb"
 )
 
 func (e *Exec) AddToViper(v *viper.Viper) (err error) {
@@ -35,6 +36,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	_ = v.UnmarshalKey(flagGitRefExec, &e.GitRef)
 	_ = v.UnmarshalKey(flagSourceExec, &e.Source)
 	_ = v.UnmarshalKey(flagExecType, &e.typeOf)
+	_ = v.UnmarshalKey(flagExecPullNB, &e.pullNB)
 
 	e.AnsibleConfig.AddToViper(v)
 	e.InfraConfig.AddToViper(v)
@@ -50,11 +52,13 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.GitRef, flagGitRefExec, "", "Git reference on which the benchmarks will run.")
 	cmd.Flags().StringVar(&e.Source, flagSourceExec, "", "Name of the source that triggered the execution.")
 	cmd.Flags().StringVar(&e.typeOf, flagExecType, "", "Defines the execution type (oltp, tpcc, micro).")
+	cmd.Flags().IntVar(&e.pullNB, flagExecPullNB, 0, "Defines the number of the pull request against which to execute.")
 
 	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
 	_ = viper.BindPFlag(flagGitRefExec, cmd.Flags().Lookup(flagGitRefExec))
 	_ = viper.BindPFlag(flagSourceExec, cmd.Flags().Lookup(flagSourceExec))
 	_ = viper.BindPFlag(flagExecType, cmd.Flags().Lookup(flagExecType))
+	_ = viper.BindPFlag(flagExecPullNB, cmd.Flags().Lookup(flagExecPullNB))
 
 	e.AnsibleConfig.AddToPersistentCommand(cmd)
 	e.InfraConfig.AddToPersistentCommand(cmd)
