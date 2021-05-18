@@ -50,12 +50,6 @@ https://docs.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-ke
 ### Build Vitess
 https://vitess.io/docs/contributing/build-on-ubuntu/
 
-### Change files to executables
-```shell
-chmod +x run-benchmark
-chmod +x scheduler
-chmod +x cli
-```
 ### Create file config.yaml
 We can use the following file to create local default value for the CLI's flag.
 
@@ -87,20 +81,9 @@ web_api_key: db084-f8c7-4aaf-9e0a-waeasSd
 slack_api_token: xoxb-12862423802725-128sdffsddSD6946-lzieR3PQXsdfsd2TmmFlpcQeb
 slack_channel: benchmark
 ```
-Inventory file from ansible directory
 
 ### setup supervisord
 https://www.nixknight.com/2020/03/setup-supervisor-with-python-pip-on-ubuntu-debian/
 
 ### Install Caddy for reverse proxy
 https://caddyserver.com/docs/download
-
-### Run Scheduler
-```
-python3 scheduler.py <time> &
-```
-### Example run for API
-```
-curl -X GET 'http://127.0.0.1:5000/allresults' -H 'api-key:b084-f8c7-4aaf-9e0a-waeasSd'
-```
-Api routes : https://github.com/vitessio/arewefastyet/blob/master/server.py

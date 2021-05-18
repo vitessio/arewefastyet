@@ -5,6 +5,5 @@ The purpose of this project is to do a benchmark run when ever there is a push. 
 
 ## Index
 1. [Installation](Installation.md)
-2. [Api](Api.md)
-3. [Cli](arewefastyet.md)
-4. [Makefile](Makefile.md)
+2. [Cli](arewefastyet.md)
+3. [Makefile](Makefile.md)
