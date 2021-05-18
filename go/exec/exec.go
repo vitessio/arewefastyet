@@ -239,7 +239,7 @@ func (e Exec) SendNotificationForRegression() error {
 	header := `*Observed a regression.*
 Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
 Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
-
+Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
 
 `
 
