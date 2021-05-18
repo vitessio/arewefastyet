@@ -99,6 +99,7 @@ type Exec struct {
 	stdout io.Writer
 	stderr io.Writer
 
+	createdInDB bool
 	prepared   bool
 	configPath string
 }
@@ -145,6 +146,13 @@ func (e *Exec) Prepare() error {
 	}
 
 	var err error
+	defer func() {
+		if !e.createdInDB {
+			return
+		}
+		e.handleStepError(err)
+	}()
+
 	e.clientDB, err = mysql.New(*e.configDB)
 	if err != nil {
 		return err
@@ -154,6 +162,7 @@ func (e *Exec) Prepare() error {
 	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb) VALUES(?, ?, ?, ?, ?, ?)", e.UUID.String(), StatusCreated, e.Source, e.GitRef, e.typeOf, e.pullNB); err != nil {
 		return err
 	}
+	e.createdInDB = true
 
 	e.Infra.SetTags(map[string]string{
 		"execution_git_ref": git.ShortenSHA(e.GitRef),
@@ -185,13 +194,7 @@ func (e *Exec) Prepare() error {
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
 func (e *Exec) Execute() (err error) {
-	defer func() {
-		status := StatusFinished
-		if err != nil {
-			status = StatusFailed
-		}
-		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", status, e.UUID.String())
-	}()
+	defer e.handleStepError(err)
 
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
@@ -227,7 +230,17 @@ func (e *Exec) Execute() (err error) {
 	return nil
 }
 
-func (e Exec) SendNotificationForRegression() error {
+func (e *Exec) handleStepError(err error) {
+	status := StatusFinished
+	if err != nil {
+		status = StatusFailed
+	}
+	_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", status, e.UUID.String())
+}
+
+func (e Exec) SendNotificationForRegression() (err error) {
+	defer e.handleStepError(err)
+
 	previousExec, previousGitRef, err := e.getPreviousFromSameSource()
 	if err != nil {
 		return err
@@ -301,8 +314,9 @@ func (e Exec) sendSlackMessage(regression, header string) error {
 
 // CleanUp cleans and removes all things required only during the execution flow
 // and not after it is done.
-func (e Exec) CleanUp() error {
-	err := e.Infra.CleanUp()
+func (e Exec) CleanUp() (err error) {
+	defer e.handleStepError(err)
+	err = e.Infra.CleanUp()
 	if err != nil {
 		return err
 	}

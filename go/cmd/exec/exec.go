@@ -42,6 +42,10 @@ It handles the creation, configuration, and cleanup of the infrastructure.`,
 --equinix-instance-type m2.xlarge.x86 --equinix-token tok --equinix-project-id id
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			defer func() {
+				_ = ex.CleanUp()
+			}()
+
 			// prepare
 			if err := ex.Prepare(); err != nil {
 				return err
@@ -49,11 +53,6 @@ It handles the creation, configuration, and cleanup of the infrastructure.`,
 
 			// execute
 			if err := ex.Execute(); err != nil {
-				return err
-			}
-
-			// cleanup
-			if err := ex.CleanUp(); err != nil {
 				return err
 			}
 			return nil
