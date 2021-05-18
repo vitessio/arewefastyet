@@ -170,9 +170,6 @@ ansible/artifacts/*
 #For Mac OS
 .DS_Store
 
-./report/
-!./report/sample
-
 exec/*
 
 # Local .terraform directories
