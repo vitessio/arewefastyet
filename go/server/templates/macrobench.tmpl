@@ -74,8 +74,8 @@ limitations under the License.
                         <thead>
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $.rightSHA }}" target="_blank">{{ $.rightTag }}</a></th>
                             <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $.leftSHA }}" target="_blank">{{ $.leftTag }}</a></th>
+                            <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $.rightSHA }}" target="_blank">{{ $.rightTag }}</a></th>
                             <th scope="col" class="text-center">Improved by %</th>
                         </tr>
                         </thead>
@@ -199,7 +199,7 @@ limitations under the License.
                     labels: labels,
                     datasets: [
                         {
-                            label: '{{.compare.short}}',
+                            label: '{{.leftTag}}',
                             data: dataCmp,
                             color: 'black',
                             backgroundColor: [
@@ -216,7 +216,7 @@ limitations under the License.
                             ],
                         },
                         {
-                            label: '{{.reference.short}}',
+                            label: '{{.rightTag}}',
                             data: dataRef,
                             backgroundColor: [
                                 'rgba(54, 162, 235, 0.5)',

@@ -309,7 +309,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	}
 
 	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, leftSHA, rightSHA)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, rightSHA, leftSHA)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
