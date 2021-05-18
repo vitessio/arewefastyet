@@ -62,7 +62,7 @@ func (s *Server) cronMasterHandler() {
 		slog.Warn(err.Error())
 		return
 	}
-	s.cronExecution(configs, ref, "cron", 1)
+	s.cronExecution(configs, ref, "cron", s.cronNbRetry)
 }
 
 func (s Server) cronPRLabels() {
@@ -93,7 +93,7 @@ func (s Server) cronPRLabels() {
 		}
 	}
 	for gitRef, configArray := range toExec {
-		s.cronExecution(configArray, gitRef, "cron_pr", 1)
+		s.cronExecution(configArray, gitRef, "cron_pr", s.cronNbRetry)
 	}
 }
 
