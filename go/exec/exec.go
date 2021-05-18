@@ -289,6 +289,10 @@ Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] +
 	return nil
 }
 
+func getComparisonLink(leftSHA, rightSHA string) string {
+	return "https://benchmark.vitess.io/compare?r=" + leftSHA + "&c=" + rightSHA
+}
+
 func (e Exec) sendSlackMessage(regression, header string) error {
 	content := header + regression
 	msg := slack.TextMessage{Content: content}
