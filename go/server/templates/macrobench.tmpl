@@ -178,6 +178,86 @@ limitations under the License.
                 window.open("/macrobench?ltag="+$('#leftTagDropdownMenuButton').text()+"&rtag="+$('#rightTagDropdownMenuButton').text(), '_self');
             })
         });
+
+        function macroCmpBarCharts(type, macro) {
+            for (const macroKey in macro) {
+                var compareMacros = macro[macroKey]["Compare"]["Result"]
+                var referenceMacros = macro[macroKey]["Reference"]["Result"]
+
+                var labels = []
+                var dataCmp = []
+                var dataRef = []
+                var wants = ["total", "reads", "writes", "other"]
+                for (var x in referenceMacros["qps"]) {
+                    if (wants.includes(x)) {
+                        labels.push(x)
+                        dataCmp.push(compareMacros["qps"][x])
+                        dataRef.push(referenceMacros["qps"][x])
+                    }
+                }
+                const data = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '{{.compare.short}}',
+                            data: dataCmp,
+                            color: 'black',
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.5)',
+                                'rgba(255, 99, 132, 0.5)',
+                                'rgba(255, 99, 132, 0.5)',
+                                'rgba(255, 99, 132, 0.5)',
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(255, 99, 132, 1)',
+                            ],
+                        },
+                        {
+                            label: '{{.reference.short}}',
+                            data: dataRef,
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(54, 162, 235, 0.5)',
+                                'rgba(54, 162, 235, 0.5)',
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(54, 162, 235, 1)',
+                            ],
+                        }
+                    ]
+                };
+                const config = {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                            }
+                        }
+                    },
+                };
+                var ctx = document.getElementById(type+"-bar-chart").getContext('2d');
+                var chart = new Chart(ctx, config)
+            }
+        }
+
+        var macro = {{ .macrobenchmark }}
+
+        for (const macroKey in macro) {
+            macroCmpBarCharts(macroKey, macro[macroKey])
+        }
     </script>
 
     {{template "footerHTML" .}}
