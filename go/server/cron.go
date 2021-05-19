@@ -31,7 +31,7 @@ func (s *Server) createNewCron() error {
 	c := cron.New()
 
 	jobs := []func(){
-		s.cronMasterHandler,
+		s.cronBranchHandler,
 		s.cronPRLabels,
 	}
 	for _, job := range jobs {
@@ -44,7 +44,7 @@ func (s *Server) createNewCron() error {
 	return nil
 }
 
-func (s *Server) cronMasterHandler() {
+func (s *Server) cronBranchHandler() {
 	configs := map[string]string{
 		"micro": s.microbenchConfigPath,
 		"oltp":  s.macrobenchConfigPathOLTP,
@@ -56,13 +56,12 @@ func (s *Server) cronMasterHandler() {
 		slog.Warn(err.Error())
 		return
 	}
-
+	// master branch
 	ref, err := git.GetCommitHash(s.getVitessPath())
 	if err != nil {
 		slog.Warn(err.Error())
 		return
 	}
-
 	var configFiles []string
 	for configType, configFile := range configs {
 		exist, err := exec.Exists(s.dbClient, ref, "cron", configType, exec.StatusFinished)
@@ -74,8 +73,29 @@ func (s *Server) cronMasterHandler() {
 			configFiles = append(configFiles, configFile)
 		}
 	}
-
 	s.cronExecution(configFiles, ref, "cron", s.cronNbRetry)
+
+	// release branches
+	releases, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
+	if err != nil {
+		slog.Warn(err.Error())
+		return
+	}
+	for _, release := range releases {
+		ref = release.CommitHash
+		configFiles = nil
+		for configType, configFile := range configs {
+			exist, err := exec.Exists(s.dbClient, ref, "cron_release", configType, exec.StatusFinished)
+			if err != nil {
+				slog.Error(err)
+				continue
+			}
+			if !exist {
+				configFiles = append(configFiles, configFile)
+			}
+		}
+		s.cronExecution(configFiles, ref, "cron_release", s.cronNbRetry)
+	}
 }
 
 func (s Server) cronPRLabels() {

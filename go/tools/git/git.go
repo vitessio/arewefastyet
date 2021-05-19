@@ -30,7 +30,17 @@ import (
 type Release struct {
 	Name       string
 	CommitHash string
+	Number     []int
+	RCnumber   int
 }
+
+var (
+	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
+	regexPatternRelease = regexp.MustCompile(`^v(\d+)\.(\d+)(\.(\d+))?(-rc(\d+))?$`)
+
+	// regex pattern accepts refs/remotes/origin/release-[Num].[Num].[Num]
+	regexPatternReleaseBranch = regexp.MustCompile(`^refs/remotes/origin/release-(\d+)\.(\d+)$`)
+)
 
 // GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes given the directory of the clone of vitess
 func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
@@ -40,8 +50,6 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	}
 	releases := strings.Split(string(out), "\n")
 	var res []*Release
-	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
-	regexPattern := `^v\d+\.\d+(\.\d+)?(-rc\d+)?$`
 
 	// prevMatched keeps track whether the last tag matched the regular expression or not
 	prevMatched := false
@@ -68,34 +76,124 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 			res[len(res)-1].CommitHash = commitHash
 		}
 
-		isMatched, err := regexp.MatchString(regexPattern, tag)
+		isMatched := regexPatternRelease.FindStringSubmatch(tag)
 		prevMatched = false
-		if isMatched {
-			idx := strings.Index(tag, ".")
-			major, err := strconv.Atoi(tag[1:idx])
+		if len(isMatched) > 6 {
+			newRelease := &Release{
+				Name:       tag[1:],
+				CommitHash: commitHash,
+			}
+			num, err := strconv.Atoi(isMatched[1])
 			if err != nil {
 				return nil, err
 			}
-			if major > 6 {
-				res = append(res, &Release{
-					Name:       tag[1:],
-					CommitHash: commitHash,
-				})
-				prevMatched = true
+			newRelease.Number = append(newRelease.Number, num)
+			num, err = strconv.Atoi(isMatched[2])
+			if err != nil {
+				return nil, err
 			}
-		}
-		if err != nil {
-			return nil, err
+			newRelease.Number = append(newRelease.Number, num)
+			if isMatched[4] != "" {
+				num, err := strconv.Atoi(isMatched[4])
+				if err != nil {
+					return nil, err
+				}
+				newRelease.Number = append(newRelease.Number, num)
+			}
+			if isMatched[6] != "" {
+				num, err := strconv.Atoi(isMatched[6])
+				if err != nil {
+					return nil, err
+				}
+				newRelease.RCnumber = num
+			}
+			res = append(res, newRelease)
+			prevMatched = true
 		}
 	}
+	// sort the releases in descending order
 	sort.Slice(res, func(i, j int) bool {
-		cmp, err := compareReleaseNumbers(res[i].Name, res[j].Name)
-		if err != nil {
-			return true
-		}
-		return cmp == 1
+		return compareReleaseNumbers(res[i], res[j]) == 1
 	})
 	return res, nil
+}
+
+// GetLatestVitessReleaseCommitHash gets the lastest major vitess releases and the commit hashes given the directory of the clone of vitess
+func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
+	allReleases, err := GetAllVitessReleaseCommitHash(repoDir)
+	if err != nil || len(allReleases) == 0 {
+		return nil, err
+	}
+	var latestReleases []*Release
+	for _, release := range allReleases {
+		if release.Number[0] > 6 {
+			latestReleases = append(latestReleases, release)
+		}
+	}
+	return latestReleases, nil
+}
+
+// GetAllVitessReleaseBranchCommitHash gets all the vitess release branches and the commit hashes given the directory of the clone of vitess
+func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
+	out, err := ExecCmd(repoDir, "git", "branch", "-r", "--format", `"%(objectname) %(refname)"`)
+	if err != nil {
+		return nil, err
+	}
+	releases := strings.Split(string(out), "\n")
+	var res []*Release
+
+	for _, release := range releases {
+		// value is possibly quoted
+		if s, err := strconv.Unquote(release); err == nil {
+			release = s
+		}
+		// if the length of the line is less than 60 then it cannot have a relese branch since
+		// 40 is commit hash length + 20 for refs/origin/release + 3 for num.num
+		if len(release) < 63 {
+			continue
+		}
+		commitHash := release[0:40]
+		tag := release[41:]
+
+		isMatched := regexPatternReleaseBranch.FindStringSubmatch(tag)
+		if len(isMatched) > 2 {
+			newRelease := &Release{
+				Name:       tag[20:] + "-branch",
+				CommitHash: commitHash,
+			}
+			num, err := strconv.Atoi(isMatched[1])
+			if err != nil {
+				return nil, err
+			}
+			newRelease.Number = append(newRelease.Number, num)
+			num, err = strconv.Atoi(isMatched[2])
+			if err != nil {
+				return nil, err
+			}
+			newRelease.Number = append(newRelease.Number, num)
+			res = append(res, newRelease)
+		}
+	}
+	// sort the releases in descending order
+	sort.Slice(res, func(i, j int) bool {
+		return compareReleaseNumbers(res[i], res[j]) == 1
+	})
+	return res, nil
+}
+
+// GetLatestVitessReleaseBranchCommitHash gets the latest vitess release branches and the commit hashes given the directory of the clone of vitess
+func GetLatestVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
+	res, err := GetAllVitessReleaseBranchCommitHash(repoDir)
+	if err != nil {
+		return nil, err
+	}
+	var latestReleaseBranches []*Release
+	for _, release := range res {
+		if release.Number[0] > 6 {
+			latestReleaseBranches = append(latestReleaseBranches, release)
+		}
+	}
+	return latestReleaseBranches, nil
 }
 
 // GetLastReleaseAndCommitHash gets the last release number along with the commit hash given the directory of the clone of vitess
@@ -104,17 +202,7 @@ func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	maxVersion := res[0]
-	for _, release := range res {
-		comp, err := compareReleaseNumbers(maxVersion.Name, release.Name)
-		if err != nil {
-			return nil, err
-		}
-		if comp == -1 {
-			maxVersion = release
-		}
-	}
-	return maxVersion, nil
+	return res[0], nil
 }
 
 // compareReleaseNumbers compares the two release numbers provided as input
@@ -122,60 +210,39 @@ func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
 // 0, if release1 == release2
 // 1, if release1 > release2
 // -1, if release1 < release2
-func compareReleaseNumbers(release1string, release2string string) (int, error) {
-	release1, err := getVersionNumbersFromString(release1string)
-	if err != nil {
-		return 0, err
-	}
-	release2, err := getVersionNumbersFromString(release2string)
-	if err != nil {
-		return 0, err
-	}
-
+func compareReleaseNumbers(release1, release2 *Release) int {
 	index := 0
-	for index < len(release1) && index < len(release2) {
-		if release1[index] > release2[index] {
-			return 1, nil
+	for index < len(release1.Number) && index < len(release2.Number) {
+		if release1.Number[index] > release2.Number[index] {
+			return 1
 		}
-		if release1[index] < release2[index] {
-			return -1, nil
+		if release1.Number[index] < release2.Number[index] {
+			return -1
 		}
 		index++
 	}
-	if len(release1) > len(release2) {
-		return -1, nil
+	if len(release1.Number) > len(release2.Number) {
+		return -1
 	}
-	if len(release1) < len(release2) {
-		return 1, nil
+	if len(release1.Number) < len(release2.Number) {
+		return 1
 	}
-	return 0, nil
-}
-
-// getVersionNumbersFromString gets the version numbers as an integer slice from the string provided.
-func getVersionNumbersFromString(s string) ([]int, error) {
-	var err error
-	var rc int
-	tmp := strings.Split(s, ".")
-	values := make([]int, 0, len(tmp))
-	for _, raw := range tmp {
-		val := raw
-		if idx := strings.Index(raw, "-rc"); idx > -1 {
-			val = raw[:idx]
-			rc, err = strconv.Atoi(raw[idx+3:])
-			if err != nil {
-				return nil, err
-			}
-		}
-		v, err := strconv.Atoi(val)
-		if err != nil {
-			return nil, err
-		}
-		values = append(values, v)
-		if rc != 0 {
-			values = append(values, rc)
-		}
+	if release1.RCnumber == 0 && release2.RCnumber == 0 {
+		return 0
 	}
-	return values, nil
+	if release1.RCnumber == 0 {
+		return 1
+	}
+	if release2.RCnumber == 0 {
+		return -1
+	}
+	if release1.RCnumber > release2.RCnumber {
+		return 1
+	}
+	if release1.RCnumber < release2.RCnumber {
+		return -1
+	}
+	return 0
 }
 
 // GetCommitHash gets the commit hash of the current branch
