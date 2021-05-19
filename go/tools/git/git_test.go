@@ -226,3 +226,15 @@ func createTemporaryVitessClone() (string, string, error) {
 	vitessPath := path.Join(tmpDir, "vitess")
 	return tmpDir, vitessPath, err
 }
+
+func TestGetAllVitessReleaseBranchCommitHash(t *testing.T) {
+	tmpDir, vitessPath, err := createTemporaryVitessClone()
+	defer os.RemoveAll(tmpDir)
+	qt.Assert(t, err, qt.IsNil)
+	out, err := GetAllVitessReleaseBranchCommitHash(vitessPath)
+	qt.Assert(t, err, qt.IsNil)
+	for _, release := range out {
+		qt.Assert(t, len(release.CommitHash), qt.Equals, 40)
+		qt.Assert(t, release.Name, qt.Contains, "release-")
+	}
+}

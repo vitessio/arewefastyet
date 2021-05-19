@@ -83,6 +83,44 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	return res, nil
 }
 
+// GetAllVitessReleaseBranchCommitHash gets all the vitess release branchess and the commit hashes given the directory of the clone of vitess
+func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
+	out, err := ExecCmd(repoDir, "git", "branch", "-r", "--format", `"%(objectname) %(refname)"`)
+	if err != nil {
+		return nil, err
+	}
+	releases := strings.Split(string(out), "\n")
+	var res []*Release
+	// regex pattern accepts refs/remotes/origin/release-[Num].[Num].[Num]
+	regexPattern := `^refs/remotes/origin/release-\d+\.\d+$`
+
+	for _, release := range releases {
+		// value is possibly quoted
+		if s, err := strconv.Unquote(release); err == nil {
+			release = s
+		}
+		// if the length of the line is less than 60 then it cannot have a relese branch since
+		// 40 is commit hash length + 20 for refs/origin/release + 3 for num.num
+		if len(release) < 63 {
+			continue
+		}
+		commitHash := release[0:40]
+		tag := release[41:]
+
+		isMatched, err := regexp.MatchString(regexPattern, tag)
+		if isMatched {
+			res = append(res, &Release{
+				Name:       tag[20:] + "-branch",
+				CommitHash: commitHash,
+			})
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
 // GetLastReleaseAndCommitHash gets the last release number along with the commit hash given the directory of the clone of vitess
 func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
 	res, err := GetAllVitessReleaseCommitHash(repoDir)
