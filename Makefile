@@ -18,6 +18,8 @@ SHELL = /bin/bash
 PY_VERSION = 3.7
 VIRTUALENV_PATH = benchmark
 
+ANSIBLE_PATH = ansible
+
 BIN_NAME = arewefastyetcli
 
 .PHONY: install virtual_env molecule_converge_all
