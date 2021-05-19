@@ -130,7 +130,7 @@ func (s *Server) cronExecution(configs []string, ref, source string, retry int) 
 					// Retry after execution failure if the counter is above zero.
 					if retry > 0 {
 						slog.Info("Retrying execution for source: ", source, " git ref: ", ref, " with configuration: ", config, ". Number of retry left: ", retry-1)
-						s.cronExecution([]string{config}, ref, source, retry - 1)
+						s.cronExecution([]string{config}, ref, source, retry-1)
 					}
 				}
 			}()

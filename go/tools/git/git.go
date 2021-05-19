@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -29,7 +30,16 @@ import (
 type Release struct {
 	Name       string
 	CommitHash string
+	Number     []int
 }
+
+var (
+	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
+	regexPatternRelease = regexp.MustCompile(`^v(\d+)\.(\d+)(\.(\d+))?$`)
+
+	// regex pattern accepts refs/remotes/origin/release-[Num].[Num].[Num]
+	regexPatternReleaseBranch = regexp.MustCompile(`^refs/remotes/origin/release-(\d+)\.(\d+)$`)
+)
 
 // GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes given the directory of the clone of vitess
 func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
@@ -39,8 +49,6 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	}
 	releases := strings.Split(string(out), "\n")
 	var res []*Release
-	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
-	regexPattern := `^v\d+\.\d+(\.\d+)?$`
 
 	// prevMatched keeps track whether the last tag matched the regular expression or not
 	prevMatched := false
@@ -67,23 +75,42 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 			res[len(res)-1].CommitHash = commitHash
 		}
 
-		isMatched, err := regexp.MatchString(regexPattern, tag)
+		isMatched := regexPatternRelease.FindStringSubmatch(tag)
 		prevMatched = false
-		if isMatched {
-			res = append(res, &Release{
+		if len(isMatched) > 4 {
+			newRelease := &Release{
 				Name:       tag[1:],
 				CommitHash: commitHash,
-			})
+			}
+			num, err := strconv.Atoi(isMatched[1])
+			if err != nil {
+				return nil, err
+			}
+			newRelease.Number = append(newRelease.Number, num)
+			num, err = strconv.Atoi(isMatched[2])
+			if err != nil {
+				return nil, err
+			}
+			newRelease.Number = append(newRelease.Number, num)
+			if isMatched[4] != "" {
+				num, err := strconv.Atoi(isMatched[4])
+				if err != nil {
+					return nil, err
+				}
+				newRelease.Number = append(newRelease.Number, num)
+			}
+			res = append(res, newRelease)
 			prevMatched = true
 		}
-		if err != nil {
-			return nil, err
-		}
 	}
+	// sort the releases in descending order
+	sort.Slice(res, func(i, j int) bool {
+		return compareReleaseNumbers(res[i], res[j]) == 1
+	})
 	return res, nil
 }
 
-// GetAllVitessReleaseBranchCommitHash gets all the vitess release branchess and the commit hashes given the directory of the clone of vitess
+// GetAllVitessReleaseBranchCommitHash gets all the vitess release branches and the commit hashes given the directory of the clone of vitess
 func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
 	out, err := ExecCmd(repoDir, "git", "branch", "-r", "--format", `"%(objectname) %(refname)"`)
 	if err != nil {
@@ -91,8 +118,6 @@ func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
 	}
 	releases := strings.Split(string(out), "\n")
 	var res []*Release
-	// regex pattern accepts refs/remotes/origin/release-[Num].[Num].[Num]
-	regexPattern := `^refs/remotes/origin/release-\d+\.\d+$`
 
 	for _, release := range releases {
 		// value is possibly quoted
@@ -107,17 +132,29 @@ func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
 		commitHash := release[0:40]
 		tag := release[41:]
 
-		isMatched, err := regexp.MatchString(regexPattern, tag)
-		if isMatched {
-			res = append(res, &Release{
+		isMatched := regexPatternReleaseBranch.FindStringSubmatch(tag)
+		if len(isMatched) > 2 {
+			newRelease := &Release{
 				Name:       tag[20:] + "-branch",
 				CommitHash: commitHash,
-			})
-		}
-		if err != nil {
-			return nil, err
+			}
+			num, err := strconv.Atoi(isMatched[1])
+			if err != nil {
+				return nil, err
+			}
+			newRelease.Number = append(newRelease.Number, num)
+			num, err = strconv.Atoi(isMatched[2])
+			if err != nil {
+				return nil, err
+			}
+			newRelease.Number = append(newRelease.Number, num)
+			res = append(res, newRelease)
 		}
 	}
+	// sort the releases in descending order
+	sort.Slice(res, func(i, j int) bool {
+		return compareReleaseNumbers(res[i], res[j]) == 1
+	})
 	return res, nil
 }
 
@@ -127,17 +164,7 @@ func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	maxVersion := res[0]
-	for _, release := range res {
-		comp, err := compareReleaseNumbers(maxVersion.Name, release.Name)
-		if err != nil {
-			return nil, err
-		}
-		if comp == -1 {
-			maxVersion = release
-		}
-	}
-	return maxVersion, nil
+	return res[0], nil
 }
 
 // compareReleaseNumbers compares the two release numbers provided as input
@@ -145,47 +172,24 @@ func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
 // 0, if release1 == release2
 // 1, if release1 > release2
 // -1, if release1 < release2
-func compareReleaseNumbers(release1string, release2string string) (int, error) {
-	release1, err := getVersionNumbersFromString(release1string)
-	if err != nil {
-		return 0, err
-	}
-	release2, err := getVersionNumbersFromString(release2string)
-	if err != nil {
-		return 0, err
-	}
-
+func compareReleaseNumbers(release1, release2 *Release) int {
 	index := 0
-	for index < len(release1) && index < len(release2) {
-		if release1[index] > release2[index] {
-			return 1, nil
+	for index < len(release1.Number) && index < len(release2.Number) {
+		if release1.Number[index] > release2.Number[index] {
+			return 1
 		}
-		if release1[index] < release2[index] {
-			return -1, nil
+		if release1.Number[index] < release2.Number[index] {
+			return -1
 		}
 		index++
 	}
-	if len(release1) > len(release2) {
-		return 1, nil
+	if len(release1.Number) > len(release2.Number) {
+		return 1
 	}
-	if len(release1) < len(release2) {
-		return -1, nil
+	if len(release1.Number) < len(release2.Number) {
+		return -1
 	}
-	return 0, nil
-}
-
-// getVersionNumbersFromString gets the version numbers as an integer slice from the string provided.
-func getVersionNumbersFromString(s string) ([]int, error) {
-	tmp := strings.Split(s, ".")
-	values := make([]int, 0, len(tmp))
-	for _, raw := range tmp {
-		v, err := strconv.Atoi(raw)
-		if err != nil {
-			return nil, err
-		}
-		values = append(values, v)
-	}
-	return values, nil
+	return 0
 }
 
 // GetCommitHash gets the commit hash of the current branch
