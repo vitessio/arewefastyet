@@ -45,10 +45,10 @@ func (s *Server) createNewCron() error {
 }
 
 func (s *Server) cronMasterHandler() {
-	configs := []string{
-		s.microbenchConfigPath,
-		s.macrobenchConfigPathOLTP,
-		s.macrobenchConfigPathTPCC,
+	configs := map[string]string{
+		"micro": s.microbenchConfigPath,
+		"oltp":  s.macrobenchConfigPathOLTP,
+		"tpcc":  s.macrobenchConfigPathTPCC,
 	}
 
 	err := s.pullLocalVitess()
@@ -62,7 +62,20 @@ func (s *Server) cronMasterHandler() {
 		slog.Warn(err.Error())
 		return
 	}
-	s.cronExecution(configs, ref, "cron")
+
+	var configFiles []string
+	for configType, configFile := range configs {
+		exist, err := exec.Exists(s.dbClient, ref, "cron", configType, exec.StatusFinished)
+		if err != nil {
+			slog.Error(err)
+			continue
+		}
+		if !exist {
+			configFiles = append(configFiles, configFile)
+		}
+	}
+
+	s.cronExecution(configFiles, ref, "cron")
 }
 
 func (s Server) cronPRLabels() {

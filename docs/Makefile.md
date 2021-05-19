@@ -4,12 +4,14 @@
 
 | Name | Action |
 | -----| ------ |
+| `all`   | Call `build` |
 | `virtual_env`   | Check if virtualenv is present, if not, create it |
 | `install`   | Call `virtual_env`, then install all dependencies (ansible & pip) |
-| `install_dev_cli`   | Call `virtual_env`, then install the CLI in development mode |
-| `oltp`   | Call `virtual_env`, then run an OLTP benchmark |
-| `tpcc`   | Call `virtual_env`, then run a TPCC benchmark |
+| `build`   | Build the CLI binary |
+| `gendoc`   | Generate the CLI documentation |
+| `test`   | Start Golang unit tests |
 | `molecule_converge_all`   | Call `virtual_env`, then create a molecule and converge all the roles |
+| `molecule_dryrun_all`   | Call `virtual_env`, then converge and execute all tasks except oltp and tpcc |
 
 ### Variables
 
@@ -17,9 +19,4 @@
 | ---- | ----------- | ------- |
 | `PY_VERSION`   | Python version used | 3.7 |
 | `VIRTUALENV_PATH`   | Path to virtualenv folder | benchmark |
-| `ANSIBLE_PATH`   | Path to ansible folder | ansible |
-| `CONFIG_PATH`   | Path to config.yaml file | config/config.yaml |
-| `SCRIPTS_PATH`   | Path to scripts dir | scripts |
-| `REPORTS_PATH`   | Path to reports dir | report |
-| `RUN_COMMIT`   | Vitess commit used to run the benchmark | HEAD |
-| `RUN_INVENTORY_FILE`   | Path to the ansible inventory file for benchmark| koz-inventory-unsharded-test.yml |
+| `BIN_NAME`   | Name of the CLI binary | arewefastyetcli |

@@ -169,10 +169,14 @@ func (s *Server) Run() error {
 	// Request benchmark page
 	s.router.GET("/request_benchmark", s.requestBenchmarkHandler)
 
-	// Request benchmark page
+	// Microbenchmark comparison page
 	s.router.GET("/microbench", s.microbenchmarkResultsHandler)
 
+	// Single Microbenchmark page
 	s.router.GET("/microbench/:name", s.microbenchmarkSingleResultsHandler)
+
+	// Macrobenchmark comparison page
+	s.router.GET("/macrobench", s.macrobenchmarkResultsHandler)
 
 	return s.router.Run(":" + s.port)
 }

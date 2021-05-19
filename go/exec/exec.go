@@ -252,7 +252,7 @@ func (e Exec) SendNotificationForRegression() (err error) {
 	header := `*Observed a regression.*
 Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
 Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
-
+Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
 
 `
 
@@ -300,6 +300,10 @@ Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] +
 		}
 	}
 	return nil
+}
+
+func getComparisonLink(leftSHA, rightSHA string) string {
+	return "https://benchmark.vitess.io/compare?r=" + leftSHA + "&c=" + rightSHA
 }
 
 func (e Exec) sendSlackMessage(regression, header string) error {
@@ -395,7 +399,23 @@ func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
 // GetLatestCronJobForMicrobenchmarks will fetch and return the commit sha for which
 // the last cron job for microbenchmarks was run
 func GetLatestCronJobForMicrobenchmarks(client *mysql.Client) (gitSha string, err error) {
-	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" order by started_at desc limit 1"
+	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and type = \"micro\" order by started_at desc limit 1"
+	rows, err := client.Select(query)
+	if err != nil {
+		return "", err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&gitSha)
+		return gitSha, err
+	}
+	return "", nil
+}
+
+// GetLatestCronJobForMacrobenchmarks will fetch and return the commit sha for which
+// the last cron job for macrobenchmarks was run
+func GetLatestCronJobForMacrobenchmarks(client *mysql.Client) (gitSha string, err error) {
+	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and ( type = \"oltp\" or type = \"tpcc\" ) order by started_at desc limit 1"
 	rows, err := client.Select(query)
 	if err != nil {
 		return "", err
