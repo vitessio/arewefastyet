@@ -20,7 +20,6 @@ package infra
 
 import (
 	"context"
-	"errors"
 	"github.com/google/uuid"
 	"github.com/hashicorp/terraform-exec/tfexec"
 	"github.com/hashicorp/terraform-exec/tfinstall"
@@ -32,7 +31,6 @@ import (
 const (
 	ErrorInvalidConfiguration = "invalid configuration"
 	ErrorProvision            = "provision failed"
-	ErrorTfOptionNotHandled   = "tf option not handled"
 )
 
 type Infra interface {
@@ -55,29 +53,4 @@ func getTerraformExecPath(installPath string) (string, error) {
 		return "", err
 	}
 	return execPath, nil
-}
-
-// PopulateTfOption will fill opts with the given vars.
-// Opts has to be a PlanOption or an ApplyOption.
-func PopulateTfOption(vars []*tfexec.VarOption, opts interface{}) error {
-	if opts == nil {
-		return errors.New(ErrorTfOptionNotHandled)
-	}
-	switch optsT := opts.(type) {
-	case *[]tfexec.PlanOption:
-		for _, varValue := range vars {
-			*optsT = append(*optsT, varValue)
-		}
-	case *[]tfexec.ApplyOption:
-		for _, varValue := range vars {
-			*optsT = append(*optsT, varValue)
-		}
-	case *[]tfexec.DestroyOption:
-		for _, varValue := range vars {
-			*optsT = append(*optsT, varValue)
-		}
-	default:
-		return errors.New(ErrorTfOptionNotHandled)
-	}
-	return nil
 }

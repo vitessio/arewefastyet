@@ -19,6 +19,7 @@
 package exec
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -41,22 +42,27 @@ It handles the creation, configuration, and cleanup of the infrastructure.`,
 --exec-source config_micro_remote --ansible-inventory-files microbench_inventory.yml --ansible-playbook-files microbench.yml --ansible-root-directory ./ansible/
 --equinix-instance-type m2.xlarge.x86 --equinix-token tok --equinix-project-id id
 `,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			defer func() {
+				errCleanUp := ex.CleanUp()
+				if errCleanUp == nil {
+					return
+				}
+				if err != nil {
+					err = fmt.Errorf("%v: %v", errCleanUp, err)
+					return
+				}
+				err = errCleanUp
+			}()
+
 			// prepare
-			if err := ex.Prepare(); err != nil {
-				return err
+			if err = ex.Prepare(); err != nil {
+				return
 			}
 
 			// execute
-			if err := ex.Execute(); err != nil {
-				return err
-			}
-
-			// cleanup
-			if err := ex.CleanUp(); err != nil {
-				return err
-			}
-			return nil
+			err = ex.Execute()
+			return
 		},
 	}
 

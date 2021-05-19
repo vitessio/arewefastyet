@@ -81,14 +81,14 @@ func (e Equinix) TerraformVarArray() (vars []*tfexec.VarOption) {
 // CleanUp destroys the infrastructure provisioned by terraform.
 func (e *Equinix) CleanUp() error {
 	if e.tf == nil {
-		return fmt.Errorf("%s: equinix terraform not prepared", infra.ErrorInvalidConfiguration)
+		return nil
 	}
-	destroyOpts := &[]tfexec.DestroyOption{}
-	if err := infra.PopulateTfOption(e.TerraformVarArray(), destroyOpts); err != nil {
-		return fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+	var destroyOpts []tfexec.DestroyOption
+	for _, varValue := range e.TerraformVarArray() {
+		destroyOpts = append(destroyOpts, varValue)
 	}
 
-	err := e.tf.Destroy(context.Background(), *destroyOpts...)
+	err := e.tf.Destroy(context.Background(), destroyOpts...)
 	if err != nil {
 		return err
 	}
@@ -100,22 +100,23 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 		return nil, fmt.Errorf("%s: equinix terraform not prepared", infra.ErrorInvalidConfiguration)
 	}
 
-	planOpts := &[]tfexec.PlanOption{}
-	if err = infra.PopulateTfOption(e.TerraformVarArray(), planOpts); err != nil {
-		return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+	varArray := e.TerraformVarArray()
+	var planOpts []tfexec.PlanOption
+	for _, varValue := range varArray {
+		planOpts = append(planOpts, varValue)
 	}
-
-	changed, err := e.tf.Plan(context.Background(), *planOpts...)
+	changed, err := e.tf.Plan(context.Background(), planOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
-	} else if changed {
-		applyOpts := &[]tfexec.ApplyOption{}
-		if err = infra.PopulateTfOption(e.TerraformVarArray(), applyOpts); err != nil {
-			return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+		return nil, fmt.Errorf("%s: %v", infra.ErrorProvision, err)
+	}
+	if changed {
+		var applyOpts []tfexec.ApplyOption
+		for _, varValue := range varArray {
+			applyOpts = append(applyOpts, varValue)
 		}
-		err = e.tf.Apply(context.Background(), *applyOpts...)
+		err = e.tf.Apply(context.Background(), applyOpts...)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+			return nil, fmt.Errorf("%s: %v", infra.ErrorProvision, err)
 		}
 	}
 
