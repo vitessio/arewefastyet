@@ -239,7 +239,7 @@ func (e Exec) SendNotificationForRegression() error {
 	header := `*Observed a regression.*
 Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
 Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
-
+Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
 
 `
 
@@ -287,6 +287,10 @@ Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] +
 		}
 	}
 	return nil
+}
+
+func getComparisonLink(leftSHA, rightSHA string) string {
+	return "https://benchmark.vitess.io/compare?r=" + leftSHA + "&c=" + rightSHA
 }
 
 func (e Exec) sendSlackMessage(regression, header string) error {
