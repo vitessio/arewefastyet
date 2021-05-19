@@ -43,6 +43,7 @@ const (
 	flagMacroBenchConfigFileTPCC = "web-macrobench-tpcc-config"
 	flagCronSchedule             = "web-cron-schedule"
 	flagPullRequestLabelTrigger  = "web-pr-label-trigger"
+	flagCronNbRetry              = "web-cron-nb-retry"
 )
 
 type Server struct {
@@ -59,6 +60,7 @@ type Server struct {
 	executionMetricsDBClient *influxdb.Client
 
 	cronSchedule             string
+	cronNbRetry              int
 	microbenchConfigPath     string
 	macrobenchConfigPathOLTP string
 	macrobenchConfigPathTPCC string
@@ -81,6 +83,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.macrobenchConfigPathOLTP, flagMacroBenchConfigFileOLTP, "", "Path to the configuration file used to execute OLTP macrobenchmark.")
 	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
 	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON.")
+	cmd.Flags().IntVar(&s.cronNbRetry, flagCronNbRetry, 0, "Number of retries allowed for each cron job.")
 	cmd.Flags().StringVar(&s.prLabelTrigger, flagPullRequestLabelTrigger, "Benchmark me", "GitHub Pull Request label that will trigger the execution of new execution.")
 	_ = cmd.MarkFlagRequired(flagMicroBenchConfigFile)
 	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileOLTP)
@@ -95,6 +98,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagMacroBenchConfigFileOLTP, cmd.Flags().Lookup(flagMacroBenchConfigFileOLTP))
 	_ = viper.BindPFlag(flagMacroBenchConfigFileTPCC, cmd.Flags().Lookup(flagMacroBenchConfigFileTPCC))
 	_ = viper.BindPFlag(flagCronSchedule, cmd.Flags().Lookup(flagCronSchedule))
+	_ = viper.BindPFlag(flagCronNbRetry, cmd.Flags().Lookup(flagCronNbRetry))
 	_ = viper.BindPFlag(flagPullRequestLabelTrigger, cmd.Flags().Lookup(flagPullRequestLabelTrigger))
 
 	if s.dbCfg == nil {

@@ -75,7 +75,7 @@ func (s *Server) cronMasterHandler() {
 		}
 	}
 
-	s.cronExecution(configFiles, ref, "cron")
+	s.cronExecution(configFiles, ref, "cron", s.cronNbRetry)
 }
 
 func (s Server) cronPRLabels() {
@@ -106,11 +106,11 @@ func (s Server) cronPRLabels() {
 		}
 	}
 	for gitRef, configArray := range toExec {
-		s.cronExecution(configArray, gitRef, "cron_pr")
+		s.cronExecution(configArray, gitRef, "cron_pr", s.cronNbRetry)
 	}
 }
 
-func (s *Server) cronExecution(configs []string, ref, source string) {
+func (s *Server) cronExecution(configs []string, ref, source string, retry int) {
 	for _, config := range configs {
 		e, err := exec.NewExecWithConfig(config)
 		if err != nil {
@@ -121,12 +121,19 @@ func (s *Server) cronExecution(configs []string, ref, source string) {
 		e.Source = source
 		e.GitRef = ref
 
+		config := config
 		go func() {
 			defer func() {
 				err = e.CleanUp()
 				if err != nil {
 					slog.Errorf("CleanUp step: %v", err)
-					return
+				}
+				if err != nil {
+					// Retry after execution failure if the counter is above zero.
+					if retry > 0 {
+						slog.Info("Retrying execution for source: ", source, " git ref: ", ref, " with configuration: ", config, ". Number of retry left: ", retry-1)
+						s.cronExecution([]string{config}, ref, source, retry-1)
+					}
 				}
 			}()
 
