@@ -1,21 +1,4 @@
-mysql-connector-python
-schedule
-pyyaml
-pysftp
-packet-python
 ansible==2.9.12
 molecule[ansible, docker]
-jmespath
-flask
-slackclient
 supervisor
-gunicorn
-asyncio
-gitpython
-flask_sslify
-pyOpenSSL
-click
-setuptools
-boto3
-PyGithub
 ansible_runner
