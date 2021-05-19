@@ -105,14 +105,14 @@ func (s *Server) cronExecution(configs []string, ref, source string) {
 			return
 		}
 		slog.Info("Created new execution: ", e.UUID.String())
-		e.Source = "cron"
+		e.Source = source
 		e.GitRef = ref
 
 		go func() {
 			defer func() {
 				err = e.CleanUp()
 				if err != nil {
-					slog.Error("Clean step", err.Error())
+					slog.Errorf("CleanUp step: %v", err)
 					return
 				}
 			}()
@@ -120,25 +120,25 @@ func (s *Server) cronExecution(configs []string, ref, source string) {
 			slog.Info("Started execution: ", e.UUID.String(), ", with git ref: ", ref)
 			err = e.Prepare()
 			if err != nil {
-				slog.Error("Prepare step", err.Error())
+				slog.Errorf("Prepare step: %v", err)
 				return
 			}
 
 			err = e.SetOutputToDefaultPath()
 			if err != nil {
-				slog.Error("Prepare outputs step", err.Error())
+				slog.Errorf("Prepare outputs step: %v", err)
 				return
 			}
 
 			err = e.Execute()
 			if err != nil {
-				slog.Error("Execution step", err.Error())
+				slog.Errorf("Execution step: %v", err)
 				return
 			}
 
 			err = e.SendNotificationForRegression()
 			if err != nil {
-				slog.Error("Send notification", err.Error())
+				slog.Errorf("Send notification: %v", err)
 				return
 			}
 			slog.Info("Finished execution: ", e.UUID.String())

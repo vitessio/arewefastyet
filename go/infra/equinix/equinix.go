@@ -81,14 +81,14 @@ func (e Equinix) TerraformVarArray() (vars []*tfexec.VarOption) {
 // CleanUp destroys the infrastructure provisioned by terraform.
 func (e *Equinix) CleanUp() error {
 	if e.tf == nil {
-		return fmt.Errorf("%s: equinix terraform not prepared", infra.ErrorInvalidConfiguration)
+		return nil
 	}
-	destroyOpts := &[]tfexec.DestroyOption{}
-	if err := infra.PopulateTfOption(e.TerraformVarArray(), destroyOpts); err != nil {
-		return fmt.Errorf("%s: %s", infra.ErrorProvision, err.Error())
+	var destroyOpts []tfexec.DestroyOption
+	for _, varValue := range e.TerraformVarArray() {
+		destroyOpts = append(destroyOpts, varValue)
 	}
 
-	err := e.tf.Destroy(context.Background(), *destroyOpts...)
+	err := e.tf.Destroy(context.Background(), destroyOpts...)
 	if err != nil {
 		return err
 	}

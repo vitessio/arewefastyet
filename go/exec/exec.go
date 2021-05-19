@@ -150,7 +150,7 @@ func (e *Exec) Prepare() error {
 		if !e.createdInDB {
 			return
 		}
-		e.handleStepError(err)
+		e.handleStepEnd(err)
 	}()
 
 	e.clientDB, err = mysql.New(*e.configDB)
@@ -194,7 +194,7 @@ func (e *Exec) Prepare() error {
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
 func (e *Exec) Execute() (err error) {
-	defer e.handleStepError(err)
+	defer e.handleStepEnd(err)
 
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
@@ -230,7 +230,7 @@ func (e *Exec) Execute() (err error) {
 	return nil
 }
 
-func (e *Exec) handleStepError(err error) {
+func (e *Exec) handleStepEnd(err error) {
 	status := StatusFinished
 	if err != nil {
 		status = StatusFailed
@@ -239,7 +239,7 @@ func (e *Exec) handleStepError(err error) {
 }
 
 func (e Exec) SendNotificationForRegression() (err error) {
-	defer e.handleStepError(err)
+	defer e.handleStepEnd(err)
 
 	previousExec, previousGitRef, err := e.getPreviousFromSameSource()
 	if err != nil {
@@ -315,7 +315,7 @@ func (e Exec) sendSlackMessage(regression, header string) error {
 // CleanUp cleans and removes all things required only during the execution flow
 // and not after it is done.
 func (e Exec) CleanUp() (err error) {
-	defer e.handleStepError(err)
+	defer e.handleStepEnd(err)
 	err = e.Infra.CleanUp()
 	if err != nil {
 		return err
