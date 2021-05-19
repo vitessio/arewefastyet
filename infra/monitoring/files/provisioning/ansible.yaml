@@ -18,3 +18,11 @@ providers:
     allowUiUpdates: true
     options:
       path: "/var/lib/grafana/dashboards"
+
+  - name: 'vitess-mixin'
+    orgId: 1
+    folder: ''
+    type: file
+    allowUiUpdates: true
+    options:
+      path: "/go/src/vitess.io/vitess/vitess-mixin/dashboards_out"
