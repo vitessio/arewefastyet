@@ -40,7 +40,7 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	releases := strings.Split(string(out), "\n")
 	var res []*Release
 	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
-	regexPattern := `^v\d+\.\d+(\.\d+)?$`
+	regexPattern := `^v\d+\.\d+(\.\d+)?(-rc\d+)?$`
 
 	// prevMatched keeps track whether the last tag matched the regular expression or not
 	prevMatched := false
@@ -70,11 +70,18 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 		isMatched, err := regexp.MatchString(regexPattern, tag)
 		prevMatched = false
 		if isMatched {
-			res = append(res, &Release{
-				Name:       tag[1:],
-				CommitHash: commitHash,
-			})
-			prevMatched = true
+			idx := strings.Index(tag, ".")
+			major, err := strconv.Atoi(tag[1:idx])
+			if err != nil {
+				return nil, err
+			}
+			if major > 6 {
+				res = append(res, &Release{
+					Name:       tag[1:],
+					CommitHash: commitHash,
+				})
+				prevMatched = true
+			}
 		}
 		if err != nil {
 			return nil, err
@@ -128,24 +135,37 @@ func compareReleaseNumbers(release1string, release2string string) (int, error) {
 		index++
 	}
 	if len(release1) > len(release2) {
-		return 1, nil
+		return -1, nil
 	}
 	if len(release1) < len(release2) {
-		return -1, nil
+		return 1, nil
 	}
 	return 0, nil
 }
 
 // getVersionNumbersFromString gets the version numbers as an integer slice from the string provided.
 func getVersionNumbersFromString(s string) ([]int, error) {
+	var err error
+	var rc int
 	tmp := strings.Split(s, ".")
 	values := make([]int, 0, len(tmp))
 	for _, raw := range tmp {
-		v, err := strconv.Atoi(raw)
+		val := raw
+		if idx := strings.Index(raw, "-rc"); idx > -1 {
+			val = raw[:idx]
+			rc, err = strconv.Atoi(raw[idx+3:])
+			if err != nil {
+				return nil, err
+			}
+		}
+		v, err := strconv.Atoi(val)
 		if err != nil {
 			return nil, err
 		}
 		values = append(values, v)
+		if rc != 0 {
+			values = append(values, rc)
+		}
 	}
 	return values, nil
 }
