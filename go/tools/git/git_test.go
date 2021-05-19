@@ -53,20 +53,29 @@ func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
 	qt.Assert(t, err, qt.IsNil)
 	s, err := GetAllVitessReleaseCommitHash(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
-	qt.Assert(t, s, qt.DeepEquals, []*Release{
+
+	// find the index where 10.0.1 is in the list of releases
+	idx := 0
+	for ; idx < len(s); idx++ {
+		if s[idx].Name == "10.0.1" {
+			break
+		}
+	}
+
+	// ordered releases from v10.0.1 to v9.0.0-rc1
+	tc := []*Release{
 		{Name: "10.0.1", CommitHash: "f7304cd1893accfefee0525910098a8e0e68deec"},
 		{Name: "10.0.0", CommitHash: "48dccf56282dc79903c0ab0b1d0177617f927403"},
 		{Name: "10.0.0-rc1", CommitHash: "29a494f7b45faf26eaaa3e6727b452a2ef254101"},
 		{Name: "9.0.1", CommitHash: "42c38e56e4ae29012a5d603d8bc8c22c35b78b52"},
 		{Name: "9.0.0", CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8"},
 		{Name: "9.0.0-rc1", CommitHash: "0472d4728ff4b5a0b91834331ff16ab9b0057da8"},
-		{Name: "8.0.0", CommitHash: "7e09d0c20ca1e535b9b3f2d96ff2b1ab907d96e8"},
-		{Name: "8.0.0-rc1", CommitHash: "098845592f16d235cb440bdafe070b4dcc0eb07b"},
-		{Name: "7.0.3", CommitHash: "5f293938aa637e073231e24fe97448f3b6f2579a"},
-		{Name: "7.0.2", CommitHash: "aea21dcbfab3d01fedf2ad4b42f9c7727bc47128"},
-		{Name: "7.0.1", CommitHash: "19c92a5eabefe4556ae23154e1fee12f977ed1ec"},
-		{Name: "7.0.0", CommitHash: "a3a52322d4d24bac4f020ec6fd95418f88276662"},
-	})
+	}
+
+	// check that all release match the order of tc
+	for i := 0; i < len(tc); i++ {
+		qt.Assert(t, s[idx+i], qt.DeepEquals, tc[i])
+	}
 }
 
 func TestGetAllVitessReleaseCommitHash(t *testing.T) {
