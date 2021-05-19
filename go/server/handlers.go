@@ -20,9 +20,8 @@ package server
 
 import (
 	"fmt"
-	"net/http"
-
 	"github.com/vitessio/arewefastyet/go/exec"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/tools/git"
@@ -160,10 +159,11 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	allReleases = append(allReleases, &git.Release{
+	masterRelease := []*git.Release{{
 		Name:       "master",
 		CommitHash: lastrunCronSHA,
-	})
+	}}
+	allReleases = append(masterRelease, allReleases...)
 
 	// initialize left tag and the corresponding sha
 	leftTag := c.Query("ltag")
@@ -268,10 +268,11 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	allReleases = append(allReleases, &git.Release{
+	masterRelease := []*git.Release{{
 		Name:       "master",
 		CommitHash: lastrunCronSHA,
-	})
+	}}
+	allReleases = append(masterRelease, allReleases...)
 
 	// initialize left tag and the corresponding sha
 	leftTag := c.Query("ltag")

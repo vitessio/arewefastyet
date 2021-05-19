@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -87,6 +88,13 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 			return nil, err
 		}
 	}
+	sort.Slice(res, func(i, j int) bool {
+		cmp, err := compareReleaseNumbers(res[i].Name, res[j].Name)
+		if err != nil {
+			return true
+		}
+		return cmp == 1
+	})
 	return res, nil
 }
 
