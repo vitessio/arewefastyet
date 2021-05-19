@@ -123,9 +123,11 @@ func (s *Server) cronExecution(configs []string, ref, source string, retry int) 
 
 		config := config
 		go func() {
-			var err error
-
 			defer func() {
+				err = e.CleanUp()
+				if err != nil {
+					slog.Errorf("CleanUp step: %v", err)
+				}
 				if err != nil {
 					// Retry after execution failure if the counter is above zero.
 					if retry > 0 {
@@ -138,31 +140,25 @@ func (s *Server) cronExecution(configs []string, ref, source string, retry int) 
 			slog.Info("Started execution: ", e.UUID.String(), ", with git ref: ", ref)
 			err = e.Prepare()
 			if err != nil {
-				slog.Error("Prepare step", err.Error())
+				slog.Errorf("Prepare step: %v", err)
 				return
 			}
 
 			err = e.SetOutputToDefaultPath()
 			if err != nil {
-				slog.Error("Prepare outputs step", err.Error())
+				slog.Errorf("Prepare outputs step: %v", err)
 				return
 			}
 
 			err = e.Execute()
 			if err != nil {
-				slog.Error("Execution step", err.Error())
+				slog.Errorf("Execution step: %v", err)
 				return
 			}
 
 			err = e.SendNotificationForRegression()
 			if err != nil {
-				slog.Error("Send notification", err.Error())
-				return
-			}
-
-			err = e.CleanUp()
-			if err != nil {
-				slog.Error("Clean step", err.Error())
+				slog.Errorf("Send notification: %v", err)
 				return
 			}
 			slog.Info("Finished execution: ", e.UUID.String())

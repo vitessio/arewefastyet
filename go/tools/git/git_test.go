@@ -159,6 +159,12 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 		CommitHash: "66e84fadcc1a7e956e7ffcebcaaba0b04132ca1f",
 		Number:     []int{2, 2},
 	})
+	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
+		Name:       "9.0.0-rc1",
+		CommitHash: "0472d4728ff4b5a0b91834331ff16ab9b0057da8",
+		Number:     []int{9, 0, 0},
+		RCnumber:   1,
+	})
 }
 
 func TestCompareReleaseNumbers(t *testing.T) {
@@ -204,6 +210,15 @@ func TestCompareReleaseNumbers(t *testing.T) {
 		},
 		release2: &Release{
 			Number: []int{9, 4, 1},
+		},
+		expectedComparison: -1,
+	}, {
+		release1: &Release{
+			Number:   []int{9, 0, 0},
+			RCnumber: 1,
+		},
+		release2: &Release{
+			Number: []int{9, 0, 0},
 		},
 		expectedComparison: -1,
 	}}

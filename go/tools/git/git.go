@@ -31,11 +31,12 @@ type Release struct {
 	Name       string
 	CommitHash string
 	Number     []int
+	RCnumber   int
 }
 
 var (
 	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
-	regexPatternRelease = regexp.MustCompile(`^v(\d+)\.(\d+)(\.(\d+))?$`)
+	regexPatternRelease = regexp.MustCompile(`^v(\d+)\.(\d+)(\.(\d+))?(-rc(\d+))?$`)
 
 	// regex pattern accepts refs/remotes/origin/release-[Num].[Num].[Num]
 	regexPatternReleaseBranch = regexp.MustCompile(`^refs/remotes/origin/release-(\d+)\.(\d+)$`)
@@ -77,7 +78,7 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 
 		isMatched := regexPatternRelease.FindStringSubmatch(tag)
 		prevMatched = false
-		if len(isMatched) > 4 {
+		if len(isMatched) > 6 {
 			newRelease := &Release{
 				Name:       tag[1:],
 				CommitHash: commitHash,
@@ -98,6 +99,13 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 					return nil, err
 				}
 				newRelease.Number = append(newRelease.Number, num)
+			}
+			if isMatched[6] != "" {
+				num, err := strconv.Atoi(isMatched[6])
+				if err != nil {
+					return nil, err
+				}
+				newRelease.RCnumber = num
 			}
 			res = append(res, newRelease)
 			prevMatched = true
@@ -199,9 +207,24 @@ func compareReleaseNumbers(release1, release2 *Release) int {
 		index++
 	}
 	if len(release1.Number) > len(release2.Number) {
-		return 1
+		return -1
 	}
 	if len(release1.Number) < len(release2.Number) {
+		return 1
+	}
+	if release1.RCnumber == 0 && release2.RCnumber == 0 {
+		return 0
+	}
+	if release1.RCnumber == 0 {
+		return 1
+	}
+	if release2.RCnumber == 0 {
+		return -1
+	}
+	if release1.RCnumber > release2.RCnumber {
+		return 1
+	}
+	if release1.RCnumber < release2.RCnumber {
 		return -1
 	}
 	return 0
