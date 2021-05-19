@@ -385,7 +385,23 @@ func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
 // GetLatestCronJobForMicrobenchmarks will fetch and return the commit sha for which
 // the last cron job for microbenchmarks was run
 func GetLatestCronJobForMicrobenchmarks(client *mysql.Client) (gitSha string, err error) {
-	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" order by started_at desc limit 1"
+	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and type = \"micro\" order by started_at desc limit 1"
+	rows, err := client.Select(query)
+	if err != nil {
+		return "", err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&gitSha)
+		return gitSha, err
+	}
+	return "", nil
+}
+
+// GetLatestCronJobForMacrobenchmarks will fetch and return the commit sha for which
+// the last cron job for macrobenchmarks was run
+func GetLatestCronJobForMacrobenchmarks(client *mysql.Client) (gitSha string, err error) {
+	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and ( type = \"oltp\" or type = \"tpcc\" ) order by started_at desc limit 1"
 	rows, err := client.Select(query)
 	if err != nil {
 		return "", err
