@@ -20,8 +20,9 @@ package server
 
 import (
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/exec"
 	"net/http"
+
+	"github.com/vitessio/arewefastyet/go/exec"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/tools/git"
@@ -148,7 +149,7 @@ func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	var err error
 
-	// get all the supported releases and the last cron job for master
+	// get all the latest releases and the last cron job for master
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
@@ -257,7 +258,7 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	var err error
 
-	// get all the releases and the last cron job for master
+	// get all the latest releases and the last cron job for master
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
