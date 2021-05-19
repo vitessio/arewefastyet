@@ -124,13 +124,13 @@ func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	if err != nil || len(allReleases) == 0 {
 		return nil, err
 	}
-	var last3Releases []*Release
+	var latestReleases []*Release
 	for _, release := range allReleases {
 		if release.Number[0] > 6 {
-			last3Releases = append(last3Releases, release)
+			latestReleases = append(latestReleases, release)
 		}
 	}
-	return last3Releases, nil
+	return latestReleases, nil
 }
 
 // GetAllVitessReleaseBranchCommitHash gets all the vitess release branches and the commit hashes given the directory of the clone of vitess
@@ -179,6 +179,21 @@ func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
 		return compareReleaseNumbers(res[i], res[j]) == 1
 	})
 	return res, nil
+}
+
+// GetLatestVitessReleaseBranchCommitHash gets the latest vitess release branches and the commit hashes given the directory of the clone of vitess
+func GetLatestVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
+	res, err := GetAllVitessReleaseBranchCommitHash(repoDir)
+	if err != nil {
+		return nil, err
+	}
+	var latestReleaseBranches []*Release
+	for _, release := range res {
+		if release.Number[0] > 6 {
+			latestReleaseBranches = append(latestReleaseBranches, release)
+		}
+	}
+	return latestReleaseBranches, nil
 }
 
 // GetLastReleaseAndCommitHash gets the last release number along with the commit hash given the directory of the clone of vitess
