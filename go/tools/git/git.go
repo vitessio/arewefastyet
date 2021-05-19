@@ -110,6 +110,21 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	return res, nil
 }
 
+// GetLatestVitessReleaseCommitHash gets the lastest major vitess releases and the commit hashes given the directory of the clone of vitess
+func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
+	allReleases, err := GetAllVitessReleaseCommitHash(repoDir)
+	if err != nil || len(allReleases) == 0 {
+		return nil, err
+	}
+	var last3Releases []*Release
+	for _, release := range allReleases {
+		if release.Number[0] > 6 {
+			last3Releases = append(last3Releases, release)
+		}
+	}
+	return last3Releases, nil
+}
+
 // GetAllVitessReleaseBranchCommitHash gets all the vitess release branches and the commit hashes given the directory of the clone of vitess
 func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
 	out, err := ExecCmd(repoDir, "git", "branch", "-r", "--format", `"%(objectname) %(refname)"`)
