@@ -45,6 +45,7 @@ It handles the creation, configuration, and cleanup of the infrastructure.`,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			defer func() {
 				errCleanUp := ex.CleanUp()
+				ex.Success()
 				if errCleanUp == nil {
 					return
 				}
