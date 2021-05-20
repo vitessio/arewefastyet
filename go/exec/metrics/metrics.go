@@ -177,7 +177,7 @@ func CompareTwo(left, right ExecutionMetrics) ExecutionMetrics {
 
 func compareSafeComponentMap(left, right map[string]float64) map[string]float64 {
 	result := map[string]float64{}
-	for component, _ := range left {
+	for component := range left {
 		result[component] = 0
 		if _, ok := right[component]; !ok {
 			continue
