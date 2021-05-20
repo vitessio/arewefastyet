@@ -233,6 +233,7 @@ func (s *Server) cronExecution(eI execInfo) {
 				return
 			}
 		}
+		e.Success()
 		mtx.Lock()
 		currentCountExec--
 		mtx.Unlock()
