@@ -108,6 +108,28 @@ limitations under the License.
                             {{ end }}
                             </tbody>
                         </table>
+                        <table class="table table-striped table-hover table-sm table-bordered">
+                            <thead>
+                            <tr>
+                                <th scope="col" class="text-center">Total Allocs bytes</th>
+                                {{ range $elem := $val }}
+                                    {{ range $componentAllocsName, $componentAllocsValue := $elem.Metrics.ComponentsMemStatsAllocBytes }}
+                                    <th scope="col" class="text-center">Allocs bytes {{$componentAllocsName}}</th>
+                                    {{ end }}
+                                {{ end }}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $elem := $val }}
+                            <tr>
+                                <td class="text-right">{{ formatBytes $elem.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                                {{ range $componentAllocsName, $componentAllocsValue := $elem.Metrics.ComponentsMemStatsAllocBytes }}
+                                    <td class="text-right">{{ formatBytes (index $elem.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName ) }}</td>
+                                {{ end }}
+                            </tr>
+                            {{ end }}
+                            </tbody>
+                        </table>
                     {{ end }}
                 {{ else if not .macrobenchmark }}
                     <div class="alert alert-warning" role="alert">
