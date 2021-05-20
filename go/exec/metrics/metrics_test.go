@@ -26,6 +26,7 @@ import (
 func emptyExecMetrics() ExecutionMetrics {
 	return ExecutionMetrics{
 		ComponentsCPUTime: map[string]float64{},
+		ComponentsMemStatsAllocBytes: map[string]float64{},
 	}
 }
 
@@ -36,6 +37,11 @@ func simpleExecMetrics(vtgate, vttablet float64) ExecutionMetrics {
 			"vtgate":   vtgate,
 			"vttablet": vttablet,
 		},
+		TotalComponentsMemStatsAllocBytes: vtgate + vttablet,
+		ComponentsMemStatsAllocBytes: map[string]float64{
+			"vtgate":   vtgate,
+			"vttablet": vttablet,
+		},
 	}
 }
 
@@ -43,6 +49,11 @@ func complexExecMetrics(vtgate, vttablet, all float64) ExecutionMetrics {
 	return ExecutionMetrics{
 		TotalComponentsCPUTime: all,
 		ComponentsCPUTime: map[string]float64{
+			"vtgate":   vtgate,
+			"vttablet": vttablet,
+		},
+		TotalComponentsMemStatsAllocBytes: all,
+		ComponentsMemStatsAllocBytes: map[string]float64{
 			"vtgate":   vtgate,
 			"vttablet": vttablet,
 		},
