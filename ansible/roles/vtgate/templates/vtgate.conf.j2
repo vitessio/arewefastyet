@@ -25,6 +25,7 @@ EXTRA_VTGATE_FLAGS="-vschema_ddl_authorized_users \"%\" \
             -pprof {{ pprof_args }},path=/tmp/pprof/vtgate-{{ gateway.id }},waitSig
         {%- endfor %}
     {% endif %}
+    -planner_version {{ planner_version | default("V3") }}
     {{gateway.extra_flags|default("")}} \
     {{extra_vtgate_flags|default("")}} \
 "

@@ -20,10 +20,11 @@ package macrobench
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
-	"strings"
 )
 
 // Config defines a configuration used to execute macro benchmark.
@@ -60,6 +61,10 @@ type Config struct {
 	// of Vitess that we are currently macro benchmarking.
 	GitRef string
 
+	// VtgatePlannerVersion refers to the planner version that the vtgate is using
+	// in Vitess that we are currently macro benchmarking.
+	VtgatePlannerVersion string
+
 	// WorkingDirectory defines from where sysbench commands will be executed.
 	// This parameter
 	WorkingDirectory string
@@ -71,14 +76,15 @@ type Config struct {
 }
 
 const (
-	flagSysbenchExecutable = "macrobench-sysbench-executable"
-	flagSysbenchPath       = "macrobench-workload-path"
-	flagSkipSteps          = "macrobench-skip-steps"
-	flagType               = "macrobench-type"
-	flagSource             = "macrobench-source"
-	flagGitRef             = "macrobench-git-ref"
-	flagWorkingDirectory   = "macrobench-working-directory"
-	flagExecUUID           = "macrobench-exec-uuid"
+	flagSysbenchExecutable   = "macrobench-sysbench-executable"
+	flagSysbenchPath         = "macrobench-workload-path"
+	flagSkipSteps            = "macrobench-skip-steps"
+	flagType                 = "macrobench-type"
+	flagSource               = "macrobench-source"
+	flagGitRef               = "macrobench-git-ref"
+	flagWorkingDirectory     = "macrobench-working-directory"
+	flagExecUUID             = "macrobench-exec-uuid"
+	flagVtgatePlannerVersion = "macrobench-vtgate-planner-version"
 )
 
 // AddToCommand will add the different CLI flags used by MacroBenchConfig into
@@ -90,6 +96,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "Path to the sysbench binary.")
 	cmd.Flags().StringSliceVar(&mabcfg.SkipSteps, flagSkipSteps, []string{}, "Slice of sysbench steps to skip.")
 	cmd.Flags().Var(&mabcfg.Type, flagType, "Type of macro benchmark.")
+	cmd.Flags().StringVar(&mabcfg.VtgatePlannerVersion, flagVtgatePlannerVersion, "", "Vtgate planner version running on Vitess")
 	cmd.Flags().StringVar(&mabcfg.Source, flagSource, "", "The source or origin of the macro benchmark trigger.")
 	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "Git SHA referring to the macro benchmark.")
 	cmd.Flags().StringVar(&mabcfg.WorkingDirectory, flagWorkingDirectory, "", "Directory on which to execute sysbench.")
@@ -101,6 +108,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagType, cmd.Flags().Lookup(flagType))
 	_ = viper.BindPFlag(flagSource, cmd.Flags().Lookup(flagSource))
 	_ = viper.BindPFlag(flagGitRef, cmd.Flags().Lookup(flagGitRef))
+	_ = viper.BindPFlag(flagVtgatePlannerVersion, cmd.Flags().Lookup(flagVtgatePlannerVersion))
 	_ = viper.BindPFlag(flagWorkingDirectory, cmd.Flags().Lookup(flagWorkingDirectory))
 	_ = viper.BindPFlag(flagExecUUID, cmd.Flags().Lookup(flagExecUUID))
 }
@@ -121,8 +129,8 @@ func (mabcfg Config) insertBenchmarkToSQL(client *mysql.Client) (newMacroBenchma
 	if client == nil {
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
-	query := "INSERT INTO macrobenchmark(exec_uuid, commit, source) VALUES(NULLIF(?, ''), ?, ?)"
-	res, err := client.Insert(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.Source)
+	query := "INSERT INTO macrobenchmark(exec_uuid, commit, source, vtgate_planner_version) VALUES(NULLIF(?, ''), ?, ?, ?)"
+	res, err := client.Insert(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.Source, mabcfg.VtgatePlannerVersion)
 	if err != nil {
 		return 0, err
 	}
