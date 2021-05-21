@@ -20,5 +20,5 @@ resource "metal_device" "node" {
   operating_system = var.operating_system
   billing_cycle    = "hourly"
   project_id       = var.project_id
-  tags             = [var.execution_source, var.execution_git_ref]
+  tags             = [var.execution_source, var.execution_git_ref, var.execution_type]
 }

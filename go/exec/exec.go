@@ -54,6 +54,8 @@ const (
 	// or SHA on which benchmarks will be executed.
 	keyVitessVersion = "vitess_git_version"
 
+	keyExecutionType = "arewefastyet_execution_type"
+
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
 
@@ -167,6 +169,7 @@ func (e *Exec) Prepare() error {
 	e.Infra.SetTags(map[string]string{
 		"execution_git_ref": git.ShortenSHA(e.GitRef),
 		"execution_source":  e.Source,
+		"execution_type": e.typeOf,
 	})
 
 	err = e.prepareDirectories()
@@ -221,6 +224,7 @@ func (e *Exec) Execute() (err error) {
 	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
+	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
