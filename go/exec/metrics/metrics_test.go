@@ -122,6 +122,8 @@ func Test_compareSafeComponentMap(t *testing.T) {
 		{name: "Same component", left: map[string]float64{"vtgate": 10}, right: map[string]float64{"vtgate": 10}, want: map[string]float64{"vtgate": 0}},
 		{name: "Same component with performance increase", left: map[string]float64{"vtgate": 10}, right: map[string]float64{"vtgate": 5}, want: map[string]float64{"vtgate": 50}},
 		{name: "Compare multiple components", left: map[string]float64{"vtgate": 10, "vttablet": 10}, right: map[string]float64{"vtgate": 5, "vttablet": 20}, want: map[string]float64{"vtgate": 50, "vttablet": -100}},
+		{name: "Left empty", left: map[string]float64{}, right: map[string]float64{"vtgate": 10, "vttablet": 10}, want: map[string]float64{"vtgate": -100, "vttablet": -100}},
+		{name: "Right empty", right: map[string]float64{}, left: map[string]float64{"vtgate": 10, "vttablet": 10}, want: map[string]float64{"vtgate": 0, "vttablet": 0}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
