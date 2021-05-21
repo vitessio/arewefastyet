@@ -94,9 +94,8 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 	return execMetrics, nil
 }
 
-// getCPUTimeForComponent return the CPU Time taken by a component (vtgate, vttablet, ...)
-// for the given execUUID. The range of the select is defined through the start and end
-// arguments, to select the whole span one can use: "start:0, end:now()".
+// getSumFloatValueForQuery return the sum of a float value based on the given query, for
+// each row.
 func getSumFloatValueForQuery(client influxdb.Client, query string) (float64, error) {
 	result, err := client.Select(query)
 	if err != nil {
