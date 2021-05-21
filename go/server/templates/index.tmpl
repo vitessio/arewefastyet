@@ -23,12 +23,20 @@ limitations under the License.
     <!-- Navigation -->
     {{ template "navigation" "/" }}
 
+  <section class="py-5" style="padding-top: 10px !important;">
+    <div class="container">
+      <h1>Are We Fast Yet</h1>
+      <p class="lead"></p>
+      <p>Nightly benchmark project for <a href="https://vitess.io">Vitess</a>.</p>
+    </div>
+  </section>
+
 
     <!--------------------------------------------------------------------------- OLTP ---------------------------------------------------------------------------------------------->
 
-    <section class="py-5">
+  <section class="py-5" style="padding-top: 10px !important;">
       <div class="container">
-        <h1>SYSBENCH OLTP BENCHMARK</h1>
+        <h2>SYSBENCH OLTP BENCHMARK</h2>
         <p class="lead"></p>
         <p>The Sysbench OLTP application benchmark runs on top of a MySQL database running the InnoDB storage engine.
           The
@@ -59,7 +67,9 @@ limitations under the License.
       {{ if not .data_oltp }}
       <p class="text-center font-italic">The graph could not be rendered.</p>
       {{ else }}
-      <canvas id="tps" height="100"></canvas>
+      <div class="container-xl">
+        <canvas id="tps" height="100"></canvas>
+      </div>
       {{ end }}
     </header>
 
@@ -79,7 +89,9 @@ limitations under the License.
       {{ if not .data_oltp }}
       <p class="text-center font-italic">The graph could not be rendered.</p>
       {{ else }}
-      <canvas id="qps" height="100"></canvas>
+      <div class="container-xl">
+        <canvas id="qps" height="100"></canvas>
+      </div>
       {{ end }}
     </header>
 
@@ -99,7 +111,9 @@ limitations under the License.
       {{ if not .data_oltp }}
       <p class="text-center font-italic">The graph could not be rendered.</p>
       {{ else }}
-      <canvas id="latency" height="100"></canvas>
+      <div class="container-xl">
+        <canvas id="latency" height="100"></canvas>
+      </div>
       {{ end }}
     </header>
 
@@ -109,7 +123,7 @@ limitations under the License.
 
     <section class="py-5">
       <div class="container">
-        <h1>TPC-C BENCHMARK</h1>
+        <h2>TPC-C BENCHMARK</h2>
         <p class="lead"></p>
         <p>"Despite being 25 years old, the TPC-C benchmark can still provide an interesting intensive workload for a
           database in my opinion. It runs multi-statement transactions
@@ -134,7 +148,9 @@ limitations under the License.
       {{ if not .data_tpcc }}
       <p class="text-center font-italic">The graph could not be rendered.</p>
       {{ else }}
-      <canvas id="tps_tpcc" height="100"></canvas>
+      <div class="container-xl">
+        <canvas id="tps_tpcc" height="100"></canvas>
+      </div>
       {{ end }}
     </header>
 
@@ -154,7 +170,9 @@ limitations under the License.
       {{ if not .data_tpcc }}
       <p class="text-center font-italic">The graph could not be rendered.</p>
       {{ else }}
-      <canvas id="qps_tpcc" height="100"></canvas>
+      <div class="container-xl">
+        <canvas id="qps_tpcc" height="100"></canvas>
+      </div>
       {{ end }}
     </header>
 
@@ -174,7 +192,9 @@ limitations under the License.
       {{ if not .data_tpcc }}
       <p class="text-center font-italic">The graph could not be rendered.</p>
       {{ else }}
-      <canvas id="latency_tpcc" height="100"></canvas>
+      <div class="container-xl">
+        <canvas id="latency_tpcc" height="100"></canvas>
+      </div>
       {{ end }}
     </header>
 

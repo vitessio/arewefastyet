@@ -309,7 +309,7 @@ Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
 			return err
 		}
 
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(e.clientDB, influxClient, e.GitRef, previousGitRef)
+		macrosMatrices, err := macrobench.CompareMacroBenchmarks(e.clientDB, influxClient, e.GitRef, previousGitRef, macrobench.PlannerVersion(e.VtgatePlannerVersion))
 		if err != nil {
 			return err
 		}

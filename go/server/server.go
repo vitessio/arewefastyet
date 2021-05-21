@@ -153,6 +153,7 @@ func (s *Server) Run() error {
 	s.router.SetFuncMap(template.FuncMap{
 		"formatFloat": func(f float64) string { return humanize.FormatFloat("#,###.##", f) },
 		"formatBytes": func(f float64) string { return humanize.Bytes(uint64(f)) },
+
 	})
 
 	s.router.Static("/static", s.staticPath)

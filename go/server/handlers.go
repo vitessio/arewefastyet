@@ -47,13 +47,28 @@ func (s *Server) informationHandler(c *gin.Context) {
 	})
 }
 
+func getPlannerVersion(c *gin.Context) macrobench.PlannerVersion {
+	planner := macrobench.V3Planner
+	plannerStr, err := c.Cookie("vtgatePlanner")
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+	if plannerStr == string(macrobench.Gen4FallbackPlanner) {
+		planner = macrobench.Gen4FallbackPlanner
+	}
+	return planner
+}
+
+
 func (s *Server) homeHandler(c *gin.Context) {
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", macrobench.V3Planner, 31, s.dbClient)
+	planner := getPlannerVersion(c)
+
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
 
-	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", macrobench.V3Planner, 31, s.dbClient)
+	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
@@ -66,6 +81,7 @@ func (s *Server) homeHandler(c *gin.Context) {
 }
 
 func (s *Server) compareHandler(c *gin.Context) {
+	planner := getPlannerVersion(c)
 	reference := c.Query("r")
 	compare := c.Query("c")
 
@@ -87,7 +103,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 	}
 
 	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, reference, compare)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, reference, compare, planner)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -110,6 +126,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 }
 
 func (s *Server) searchHandler(c *gin.Context) {
+	planner := getPlannerVersion(c)
 	search := c.Query("s")
 	if search == "" {
 		c.HTML(http.StatusOK, "search.tmpl", gin.H{
@@ -118,7 +135,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 		return
 	}
 
-	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, macrobench.V3Planner, s.dbClient, s.executionMetricsDBClient)
+	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, planner, s.dbClient, s.executionMetricsDBClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -264,7 +281,7 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 
 func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	var err error
-
+	planner := getPlannerVersion(c)
 	// get all the latest releases and the last cron job for master
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
@@ -325,7 +342,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	}
 
 	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, rightSHA, leftSHA)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, rightSHA, leftSHA, planner)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
