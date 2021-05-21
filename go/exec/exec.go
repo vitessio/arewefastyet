@@ -56,6 +56,8 @@ const (
 
 	keyExecutionType = "arewefastyet_execution_type"
 
+	keyVtgatePlanner = "planner_version"
+
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
 
@@ -102,8 +104,11 @@ type Exec struct {
 	stderr io.Writer
 
 	createdInDB bool
-	prepared   bool
-	configPath string
+	prepared    bool
+	configPath  string
+
+	// vtgatePlannerVersion is the planner version that vtgate is going to use
+	vtgatePlannerVersion string
 }
 
 // SetStdout sets the standard output of Exec.
@@ -169,7 +174,7 @@ func (e *Exec) Prepare() error {
 	e.Infra.SetTags(map[string]string{
 		"execution_git_ref": git.ShortenSHA(e.GitRef),
 		"execution_source":  e.Source,
-		"execution_type": e.typeOf,
+		"execution_type":    e.typeOf,
 	})
 
 	err = e.prepareDirectories()
@@ -227,6 +232,7 @@ func (e *Exec) Execute() (err error) {
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
 	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
+	e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.vtgatePlannerVersion
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)

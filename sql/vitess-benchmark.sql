@@ -82,6 +82,7 @@ CREATE TABLE `macrobenchmark` (
                                   `DateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                   `source` varchar(100) DEFAULT NULL,
                                   `exec_uuid` varchar(100) DEFAULT NULL,
+                                  `vtgate_planner_version` varchar(20) NOT NULL DEFAULT 'V3',
                                   PRIMARY KEY (`macrobenchmark_id`),
                                   KEY `macrobenchmark_ibfk_1` (`exec_uuid`),
                                   CONSTRAINT `macrobenchmark_ibfk_1` FOREIGN KEY (`exec_uuid`) REFERENCES `execution` (`uuid`)
