@@ -55,3 +55,8 @@ variable "execution_type" {
   description = "The type of execution (can be micro, oltp, tpcc)"
   default = ""
 }
+
+variable "execution_planner_version" {
+  description = "The planner being used by vtgate for execution (can be V3, Gen4FallBack)"
+  default = ""
+}
