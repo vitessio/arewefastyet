@@ -48,12 +48,18 @@ func (s *Server) informationHandler(c *gin.Context) {
 }
 
 func (s *Server) homeHandler(c *gin.Context) {
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", macrobench.V3Planner, 31, s.dbClient)
+	planner := macrobench.V3Planner
+	plannerStr := c.Query("planner")
+	if plannerStr == string(macrobench.Gen4FallbackPlanner) {
+		planner = macrobench.Gen4FallbackPlanner
+	}
+
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
 
-	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", macrobench.V3Planner, 31, s.dbClient)
+	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
@@ -62,6 +68,7 @@ func (s *Server) homeHandler(c *gin.Context) {
 		"title":     "Vitess benchmark",
 		"data_oltp": oltpData,
 		"data_tpcc": tpccData,
+		"planner":   plannerStr,
 	})
 }
 
