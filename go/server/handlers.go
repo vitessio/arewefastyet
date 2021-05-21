@@ -340,3 +340,60 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 		"macrobenchmark": macrosMatrices,
 	})
 }
+
+func (s *Server) v3VsGen4Handler(c *gin.Context) {
+	var err error
+
+	// get all the latest releases and the last cron job for master
+	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	lastrunCronSHA, err := exec.GetLatestCronJobForMacrobenchmarks(s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	masterRelease := []*git.Release{{
+		Name:       "master",
+		CommitHash: lastrunCronSHA,
+	}}
+	allReleases = append(masterRelease, allReleases...)
+	// get all the latest release branches as well
+	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	allReleases = append(allReleases, allReleaseBranches...)
+
+	// initialize tag and the corresponding sha
+	tag := c.Query("tag")
+	sha := ""
+	if tag == "" {
+		// get the latest cron job if tag is not specified
+		tag = "master"
+		sha = lastrunCronSHA
+	} else {
+		sha, err = findSHA(allReleases, tag)
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+	}
+
+	// Compare Macrobenchmarks for the two planners for the given SHA.
+	macrosMatrices, err := macrobench.ComparePlanners(s.dbClient, s.executionMetricsDBClient, sha)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	c.HTML(http.StatusOK, "v3VsGen4.tmpl", gin.H{
+		"title":          "Vitess V3 Vs Gen4 Planner",
+		"sha":            sha,
+		"tag":            tag,
+		"allReleases":    allReleases,
+		"macrobenchmark": macrosMatrices,
+	})
+}

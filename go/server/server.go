@@ -183,6 +183,9 @@ func (s *Server) Run() error {
 	// Macrobenchmark comparison page
 	s.router.GET("/macrobench", s.macrobenchmarkResultsHandler)
 
+	// V3 VS Gen4 comparison page
+	s.router.GET("/v3_VS_Gen4", s.v3VsGen4Handler)
+
 	return s.router.Run(":" + s.port)
 }
 
