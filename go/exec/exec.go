@@ -107,8 +107,8 @@ type Exec struct {
 	prepared    bool
 	configPath  string
 
-	// vtgatePlannerVersion is the planner version that vtgate is going to use
-	vtgatePlannerVersion string
+	// VtgatePlannerVersion is the planner version that vtgate is going to use
+	VtgatePlannerVersion string
 }
 
 // SetStdout sets the standard output of Exec.
@@ -232,7 +232,7 @@ func (e *Exec) Execute() (err error) {
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
 	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
-	e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.vtgatePlannerVersion
+	e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
@@ -454,6 +454,15 @@ func GetLatestCronJobForMacrobenchmarks(client *mysql.Client) (gitSha string, er
 func Exists(clientDB *mysql.Client, gitRef, source, typeOf, status string) (bool, error) {
 	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
 	result, err := clientDB.Select(query, status, gitRef, typeOf, source)
+	if err != nil {
+		return false, err
+	}
+	return result.Next(), nil
+}
+
+func ExistsMacrobenchmark(clientDB *mysql.Client, gitRef, source, typeOf, status, planner string) (bool, error) {
+	query := "SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
+	result, err := clientDB.Select(query, status, gitRef, typeOf, source, planner)
 	if err != nil {
 		return false, err
 	}

@@ -37,7 +37,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	_ = v.UnmarshalKey(flagGitRefExec, &e.GitRef)
 	_ = v.UnmarshalKey(flagSourceExec, &e.Source)
 	_ = v.UnmarshalKey(flagExecType, &e.typeOf)
-	_ = v.UnmarshalKey(flagVtgatePlannerVersion, &e.vtgatePlannerVersion)
+	_ = v.UnmarshalKey(flagVtgatePlannerVersion, &e.VtgatePlannerVersion)
 	_ = v.UnmarshalKey(flagExecPullNB, &e.pullNB)
 
 	e.AnsibleConfig.AddToViper(v)
@@ -54,7 +54,7 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.GitRef, flagGitRefExec, "", "Git reference on which the benchmarks will run.")
 	cmd.Flags().StringVar(&e.Source, flagSourceExec, "", "Name of the source that triggered the execution.")
 	cmd.Flags().StringVar(&e.typeOf, flagExecType, "", "Defines the execution type (oltp, tpcc, micro).")
-	cmd.Flags().StringVar(&e.vtgatePlannerVersion, flagVtgatePlannerVersion, "V3", "Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback.")
+	cmd.Flags().StringVar(&e.VtgatePlannerVersion, flagVtgatePlannerVersion, "V3", "Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback.")
 	cmd.Flags().IntVar(&e.pullNB, flagExecPullNB, 0, "Defines the number of the pull request against which to execute.")
 
 	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))

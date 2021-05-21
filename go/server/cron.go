@@ -19,18 +19,23 @@
 package server
 
 import (
+	"sync"
+	"time"
+
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
+
 	"github.com/robfig/cron/v3"
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/tools/git"
-	"sync"
-	"time"
 )
 
 type execInfo struct {
-	config string
-	ref    string
-	retry  int
-	source string
+	config         string
+	ref            string
+	retry          int
+	source         string
+	plannerVersion string
+	execType       string
 }
 
 const (
@@ -86,18 +91,27 @@ func (s *Server) cronBranchHandler() {
 		slog.Warn(err.Error())
 		return
 	}
-	var configFiles []string
+	var execInfos []execInfo
 	for configType, configFile := range configs {
-		exist, err := exec.Exists(s.dbClient, ref, "cron", configType, exec.StatusFinished)
-		if err != nil {
-			slog.Error(err)
-			continue
-		}
-		if !exist {
-			configFiles = append(configFiles, configFile)
+		if configType == "micro" {
+			execInfos = append(execInfos, execInfo{
+				config: configFile,
+				ref:    ref,
+				retry:  s.cronNbRetry,
+				source: "cron",
+			})
+		} else {
+			for _, version := range macrobench.PlannerVersions {
+				execInfos = append(execInfos, execInfo{
+					config:         configFile,
+					ref:            ref,
+					retry:          s.cronNbRetry,
+					source:         "cron",
+					plannerVersion: version,
+				})
+			}
 		}
 	}
-	s.cronPrepare(configFiles, ref, "cron")
 
 	// release branches
 	releases, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
@@ -107,18 +121,27 @@ func (s *Server) cronBranchHandler() {
 	}
 	for _, release := range releases {
 		ref = release.CommitHash
-		configFiles = nil
 		for configType, configFile := range configs {
-			exist, err := exec.Exists(s.dbClient, ref, "cron_release", configType, exec.StatusFinished)
-			if err != nil {
-				slog.Error(err)
-				continue
-			}
-			if !exist {
-				configFiles = append(configFiles, configFile)
+			if configType == "micro" {
+				execInfos = append(execInfos, execInfo{
+					config: configFile,
+					ref:    ref,
+					retry:  s.cronNbRetry,
+					source: "cron_" + release.Name,
+				})
+			} else {
+				for _, version := range macrobench.PlannerVersions {
+					execInfos = append(execInfos, execInfo{
+						config:         configFile,
+						ref:            ref,
+						retry:          s.cronNbRetry,
+						source:         "cron_" + release.Name,
+						plannerVersion: version,
+					})
+				}
 			}
 		}
-		s.cronPrepare(configFiles, ref, "cron_release")
+		s.cronPrepare(execInfos)
 	}
 }
 
@@ -135,23 +158,32 @@ func (s Server) cronPRLabels() {
 		return
 	}
 
-	// map with the git_ref as key and a slice of configuration file as value
-	toExec := map[string][]string{}
+	// a slice of execInfos
+	var execInfos []execInfo
+	source := "cron_pr"
 	for _, sha := range SHAs {
 		for configType, configFile := range configs {
-			exist, err := exec.Exists(s.dbClient, sha, "cron_pr", configType, exec.StatusFinished)
-			if err != nil {
-				slog.Error(err)
-				continue
-			}
-			if !exist {
-				toExec[sha] = append(toExec[sha], configFile)
+			if configType == "micro" {
+				execInfos = append(execInfos, execInfo{
+					config: configFile,
+					ref:    sha,
+					retry:  s.cronNbRetry,
+					source: source,
+				})
+			} else {
+				for _, version := range macrobench.PlannerVersions {
+					execInfos = append(execInfos, execInfo{
+						config:         configFile,
+						ref:            sha,
+						retry:          s.cronNbRetry,
+						source:         source,
+						plannerVersion: version,
+					})
+				}
 			}
 		}
 	}
-	for gitRef, configArray := range toExec {
-		s.cronPrepare(configArray, gitRef, "cron_pr")
-	}
+	s.cronPrepare(execInfos)
 }
 
 func (s *Server) cronTags() {
@@ -167,37 +199,59 @@ func (s *Server) cronTags() {
 		return
 	}
 
-	// map with the git_ref as key and a slice of configuration file as value
-	toExec := map[string][]string{}
-	source := "cron_tags"
+	// a slice of execInfos
+	var execInfos []execInfo
 	for _, release := range releases {
 		for configType, configFile := range configs {
-			exist, err := exec.Exists(s.dbClient, release.CommitHash, source, configType, exec.StatusFinished)
-			if err != nil {
-				slog.Error(err)
-				continue
-			}
-			if !exist {
-				toExec[release.CommitHash] = append(toExec[release.CommitHash], configFile)
+			if configType == "micro" {
+				execInfos = append(execInfos, execInfo{
+					config: configFile,
+					ref:    release.CommitHash,
+					retry:  s.cronNbRetry,
+					source: "cron_tags_" + release.Name,
+				})
+			} else {
+				for _, version := range macrobench.PlannerVersions {
+					execInfos = append(execInfos, execInfo{
+						config:         configFile,
+						ref:            release.CommitHash,
+						retry:          s.cronNbRetry,
+						source:         "cron_tags_" + release.Name,
+						plannerVersion: version,
+					})
+				}
 			}
 		}
 	}
-	for gitRef, configArray := range toExec {
-		s.cronPrepare(configArray, gitRef, source)
+	s.cronPrepare(execInfos)
+}
+
+func (s *Server) cronPrepare(execInfos []execInfo) {
+	for _, info := range execInfos {
+		exists, err := s.checkIfExists(info)
+		if err != nil || exists {
+			continue
+		}
+		execQueue <- info
+		slog.Infof("New Execution (config: %s, ref: %s, source: %s, planner: %s) added to the queue (length: %d)", info.config, info.ref, info.source, info.plannerVersion, len(execQueue))
 	}
 }
 
-func (s *Server) cronPrepare(configs []string, ref, source string) {
-	for _, config := range configs {
-		info := execInfo{
-			config: config,
-			ref:    ref,
-			retry:  s.cronNbRetry,
-			source: source,
+func (s *Server) checkIfExists(execIn execInfo) (bool, error) {
+	if execIn.execType == "micro" {
+		exist, err := exec.Exists(s.dbClient, execIn.ref, "cron", execIn.execType, exec.StatusFinished)
+		if err != nil {
+			slog.Error(err)
+			return false, err
 		}
-		execQueue <- info
-		slog.Infof("New Execution (config: %s, ref: %s, source: %s) added to the queue (length: %d)", info.config, info.ref, info.source, len(execQueue))
+		return exist, nil
 	}
+	exist, err := exec.ExistsMacrobenchmark(s.dbClient, execIn.ref, "cron", execIn.execType, exec.StatusFinished, execIn.plannerVersion)
+	if err != nil {
+		slog.Error(err)
+		return false, err
+	}
+	return exist, nil
 }
 
 func (s *Server) cron() {
@@ -247,6 +301,7 @@ func (s *Server) cronExecution(eI execInfo) {
 	slog.Info("Created new execution: ", e.UUID.String())
 	e.Source = eI.source
 	e.GitRef = eI.ref
+	e.VtgatePlannerVersion = eI.plannerVersion
 
 	slog.Info("Started execution: ", e.UUID.String(), ", with git ref: ", eI.ref)
 	err = e.Prepare()

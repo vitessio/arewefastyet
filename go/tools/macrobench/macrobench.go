@@ -22,16 +22,24 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
 const (
-	ErrorNoSysBenchResult          = "no sysbench results were found"
+	ErrorNoSysBenchResult = "no sysbench results were found"
 
 	prefixMacroBenchSysbenchConfig = "macrobench_"
+)
+
+var (
+	PlannerVersions = []string{
+		"V3",
+		"Gen4Fallback",
+	}
 )
 
 func buildSysbenchArgString(m map[string]string, step string) []string {
