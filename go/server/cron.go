@@ -152,7 +152,7 @@ func (s Server) cronPRLabels() {
 		"tpcc":  s.macrobenchConfigPathTPCC,
 	}
 
-	SHAs, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
+	prInfos, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
 	if err != nil {
 		slog.Error(err)
 		return
@@ -161,12 +161,12 @@ func (s Server) cronPRLabels() {
 	// a slice of execInfos
 	var execInfos []execInfo
 	source := "cron_pr"
-	for _, sha := range SHAs {
+	for _, prInfo := range prInfos {
 		for configType, configFile := range configs {
 			if configType == "micro" {
 				execInfos = append(execInfos, execInfo{
 					config: configFile,
-					ref:    sha,
+					ref:    prInfo.SHA,
 					retry:  s.cronNbRetry,
 					source: source,
 				})
@@ -174,7 +174,7 @@ func (s Server) cronPRLabels() {
 				for _, version := range macrobench.PlannerVersions {
 					execInfos = append(execInfos, execInfo{
 						config:         configFile,
-						ref:            sha,
+						ref:            prInfo.SHA,
 						retry:          s.cronNbRetry,
 						source:         source,
 						plannerVersion: version,

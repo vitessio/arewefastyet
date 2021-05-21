@@ -25,31 +25,39 @@ import (
 	"net/url"
 )
 
+type PRInfo struct {
+	Base string
+	SHA  string
+}
+
 // GetPullRequestHeadForLabels fetches every pull requests in the provided repo that have the
 // given set of labels. It then returns each pull request's head SHA.
 // The format for repo is: "{USERNAME}/{REPO_NAME}", i.e "vitessio/vitess".
-func GetPullRequestHeadForLabels(labels []string, repo string) ([]string, error) {
+func GetPullRequestHeadForLabels(labels []string, repo string) ([]PRInfo, error) {
 	pulls, err := getPullRequestsForLabels(labelsToURL(labels), repo)
 	if err != nil {
 		return nil, err
 	}
 
-	SHAs := []string{}
+	prInfos := []PRInfo{}
 	for _, pull := range pulls {
-		head, err := getPullRequestHead(pull)
+		head, base, err := GetPullRequestHeadAndBase(pull)
 		if err != nil {
 			return nil, err
 		}
-		SHAs = append(SHAs, head)
+		prInfos = append(prInfos, PRInfo{
+			Base: base,
+			SHA:  head,
+		})
 	}
-	return SHAs, nil
+	return prInfos, nil
 }
 
 func labelsToURL(labels []string) string {
 	result := ""
 	for i, label := range labels {
-		result += "label:"+url.PathEscape(label)
-		if i + 1 < len(labels) {
+		result += "label:" + url.PathEscape(label)
+		if i+1 < len(labels) {
 			result += "+"
 		}
 	}
@@ -73,7 +81,7 @@ func getPullRequestsForLabels(labels, repo string) ([]string, error) {
 	defer response.Body.Close()
 
 	res := struct {
-		Items []struct{
+		Items []struct {
 			PullRequest struct {
 				URL string `json:"url"`
 			} `json:"pull_request"`
@@ -90,15 +98,15 @@ func getPullRequestsForLabels(labels, repo string) ([]string, error) {
 	return pulls, nil
 }
 
-func getPullRequestHead(url string) (string, error) {
+func GetPullRequestHeadAndBase(url string) (string, string, error) {
 	client := http.Client{}
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	response, err := client.Do(request)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	defer response.Body.Close()
 
@@ -106,10 +114,13 @@ func getPullRequestHead(url string) (string, error) {
 		Head struct {
 			SHA string `json:"sha"`
 		} `json:"head"`
+		Base struct {
+			SHA string `json:"sha"`
+		} `json:"base"`
 	}{}
 	err = json.NewDecoder(response.Body).Decode(&res)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return res.Head.SHA, nil
+	return res.Head.SHA, res.Base.SHA, nil
 }
