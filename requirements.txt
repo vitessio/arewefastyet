@@ -2,3 +2,4 @@ ansible==2.9.12
 molecule[ansible, docker]
 supervisor
 ansible_runner
+jmespath

@@ -54,6 +54,8 @@ const (
 	// or SHA on which benchmarks will be executed.
 	keyVitessVersion = "vitess_git_version"
 
+	keyExecutionType = "arewefastyet_execution_type"
+
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
 
@@ -167,6 +169,7 @@ func (e *Exec) Prepare() error {
 	e.Infra.SetTags(map[string]string{
 		"execution_git_ref": git.ShortenSHA(e.GitRef),
 		"execution_source":  e.Source,
+		"execution_type": e.typeOf,
 	})
 
 	err = e.prepareDirectories()
@@ -194,7 +197,9 @@ func (e *Exec) Prepare() error {
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
 func (e *Exec) Execute() (err error) {
-	defer e.handleStepEnd(err)
+	defer func() {
+		e.handleStepEnd(err)
+	}()
 
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
@@ -221,6 +226,7 @@ func (e *Exec) Execute() (err error) {
 	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
+	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
@@ -230,16 +236,25 @@ func (e *Exec) Execute() (err error) {
 	return nil
 }
 
-func (e *Exec) handleStepEnd(err error) {
-	status := StatusFinished
-	if err != nil {
-		status = StatusFailed
+func (e *Exec) Success() {
+	// checking if the execution has not already failed
+	rows, errSQL := e.clientDB.Select("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
+	if errSQL != nil || rows.Next() {
+		return
 	}
-	_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", status, e.UUID.String())
+	_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
+}
+
+func (e *Exec) handleStepEnd(err error) {
+	if err != nil {
+		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFailed, e.UUID.String())
+	}
 }
 
 func (e Exec) SendNotificationForRegression() (err error) {
-	defer e.handleStepEnd(err)
+	defer func() {
+		e.handleStepEnd(err)
+	}()
 
 	previousExec, previousGitRef, err := e.getPreviousFromSameSource()
 	if err != nil {
@@ -319,7 +334,9 @@ func (e Exec) sendSlackMessage(regression, header string) error {
 // CleanUp cleans and removes all things required only during the execution flow
 // and not after it is done.
 func (e Exec) CleanUp() (err error) {
-	defer e.handleStepEnd(err)
+	defer func() {
+		e.handleStepEnd(err)
+	}()
 	err = e.Infra.CleanUp()
 	if err != nil {
 		return err

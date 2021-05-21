@@ -26,14 +26,20 @@ import (
 func emptyExecMetrics() ExecutionMetrics {
 	return ExecutionMetrics{
 		ComponentsCPUTime: map[string]float64{},
+		ComponentsMemStatsAllocBytes: map[string]float64{},
 	}
 }
 
 func simpleExecMetrics(vtgate, vttablet float64) ExecutionMetrics {
 	return ExecutionMetrics{
 		TotalComponentsCPUTime: vtgate + vttablet,
-		ComponentsCPUTime:      map[string]float64{
-			"vtgate": vtgate,
+		ComponentsCPUTime: map[string]float64{
+			"vtgate":   vtgate,
+			"vttablet": vttablet,
+		},
+		TotalComponentsMemStatsAllocBytes: vtgate + vttablet,
+		ComponentsMemStatsAllocBytes: map[string]float64{
+			"vtgate":   vtgate,
 			"vttablet": vttablet,
 		},
 	}
@@ -42,8 +48,13 @@ func simpleExecMetrics(vtgate, vttablet float64) ExecutionMetrics {
 func complexExecMetrics(vtgate, vttablet, all float64) ExecutionMetrics {
 	return ExecutionMetrics{
 		TotalComponentsCPUTime: all,
-		ComponentsCPUTime:      map[string]float64{
-			"vtgate": vtgate,
+		ComponentsCPUTime: map[string]float64{
+			"vtgate":   vtgate,
+			"vttablet": vttablet,
+		},
+		TotalComponentsMemStatsAllocBytes: all,
+		ComponentsMemStatsAllocBytes: map[string]float64{
+			"vtgate":   vtgate,
 			"vttablet": vttablet,
 		},
 	}
@@ -74,6 +85,48 @@ func TestCompareTwo(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 			got := CompareTwo(tt.left, tt.right)
+			c.Assert(got, qt.DeepEquals, tt.want)
+		})
+	}
+}
+
+func Test_compareSafe(t *testing.T) {
+	tests := []struct {
+		name       string
+		left       float64
+		right      float64
+		wantResult float64
+	}{
+		{name: "50% performance increase", left: 100, right: 50, wantResult: 50},
+		{name: "100% performance decrease", left: 50, right: 100, wantResult: -100},
+		{name: "200% performance decrease", left: 50, right: 150, wantResult: -200},
+		{name: "left zero", left: 0, right: 100, wantResult: -100},
+		{name: "right zero", left: 100, right: 0, wantResult: 100},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+			got := compareSafe(tt.left, tt.right)
+			c.Assert(got, qt.Equals, tt.wantResult)
+		})
+	}
+}
+
+func Test_compareSafeComponentMap(t *testing.T) {
+	tests := []struct {
+		name  string
+		left  map[string]float64
+		right map[string]float64
+		want  map[string]float64
+	}{
+		{name: "Same component", left: map[string]float64{"vtgate": 10}, right: map[string]float64{"vtgate": 10}, want: map[string]float64{"vtgate": 0}},
+		{name: "Same component with performance increase", left: map[string]float64{"vtgate": 10}, right: map[string]float64{"vtgate": 5}, want: map[string]float64{"vtgate": 50}},
+		{name: "Compare multiple components", left: map[string]float64{"vtgate": 10, "vttablet": 10}, right: map[string]float64{"vtgate": 5, "vttablet": 20}, want: map[string]float64{"vtgate": 50, "vttablet": -100}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := qt.New(t)
+			got := compareSafeComponentMap(tt.left, tt.right)
 			c.Assert(got, qt.DeepEquals, tt.want)
 		})
 	}

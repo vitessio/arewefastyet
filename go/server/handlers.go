@@ -165,6 +165,13 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		CommitHash: lastrunCronSHA,
 	}}
 	allReleases = append(masterRelease, allReleases...)
+	// get all the latest release branches as well
+	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	allReleases = append(allReleases, allReleaseBranches...)
 
 	// initialize left tag and the corresponding sha
 	leftTag := c.Query("ltag")
@@ -274,6 +281,13 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 		CommitHash: lastrunCronSHA,
 	}}
 	allReleases = append(masterRelease, allReleases...)
+	// get all the latest release branches as well
+	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	allReleases = append(allReleases, allReleaseBranches...)
 
 	// initialize left tag and the corresponding sha
 	leftTag := c.Query("ltag")

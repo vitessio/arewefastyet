@@ -158,21 +158,23 @@
         done
       changed_when: false
 
-    - name: Get schema
+    - name: Get VSchema for OLTP
       ansible.builtin.copy:
-        src: "{{ macrobenchmark_vschema }}"
+        src: "{{ macrobenchmark_vschema_oltp }}"
         dest: /tmp/vschema_sysbench.json
         mode: '0644'
+      when: arewefastyet_execution_type == 'oltp'
+
+    - name: Get VSchema for TPCC
+      ansible.builtin.copy:
+        src: "{{ macrobenchmark_vschema_tpcc }}"
+        dest: /tmp/vschema_sysbench.json
+        mode: '0644'
+      when: arewefastyet_execution_type == 'tpcc'
 
     - name: Ensure VSchmea
       shell: |
         vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
-      when: tpcc is not defined
-
-    - name: Ensure VSchmea
-      shell: |
-        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
-      when: tpcc is defined
 
 - hosts: macrobench
   roles:

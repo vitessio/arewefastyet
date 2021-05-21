@@ -48,6 +48,37 @@ func TestShortenSHA(t *testing.T) {
 	}
 }
 
+func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
+	tmpDir, vitessPath, err := createTemporaryVitessClone()
+	defer os.RemoveAll(tmpDir)
+	qt.Assert(t, err, qt.IsNil)
+	s, err := GetAllVitessReleaseCommitHash(vitessPath)
+	qt.Assert(t, err, qt.IsNil)
+
+	// find the index where 10.0.1 is in the list of releases
+	idx := 0
+	for ; idx < len(s); idx++ {
+		if s[idx].Name == "10.0.1" {
+			break
+		}
+	}
+
+	// ordered releases from v10.0.1 to v9.0.0-rc1
+	tc := []*Release{
+		{Name: "10.0.1", CommitHash: "f7304cd1893accfefee0525910098a8e0e68deec", Number: []int{10, 0, 1}},
+		{Name: "10.0.0", CommitHash: "48dccf56282dc79903c0ab0b1d0177617f927403", Number: []int{10, 0, 0}},
+		{Name: "10.0.0-rc1", CommitHash: "29a494f7b45faf26eaaa3e6727b452a2ef254101", Number: []int{10, 0, 0}, RCnumber: 1},
+		{Name: "9.0.1", CommitHash: "42c38e56e4ae29012a5d603d8bc8c22c35b78b52", Number: []int{9, 0, 1}},
+		{Name: "9.0.0", CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8", Number: []int{9, 0, 0}},
+		{Name: "9.0.0-rc1", CommitHash: "0472d4728ff4b5a0b91834331ff16ab9b0057da8", Number: []int{9, 0, 0}, RCnumber: 1},
+	}
+
+	// check that all release match the order of tc
+	for i := 0; i < len(tc); i++ {
+		qt.Assert(t, s[idx+i], qt.DeepEquals, tc[i])
+	}
+}
+
 func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
 	defer os.RemoveAll(tmpDir)
