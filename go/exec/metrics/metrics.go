@@ -183,6 +183,12 @@ func compareSafeComponentMap(left, right map[string]float64) map[string]float64 
 		}
 		result[component] = compareSafe(left[component], right[component])
 	}
+	for component := range right {
+		if _, ok := left[component]; ok {
+			continue
+		}
+		result[component] = compareSafe(0, right[component])
+	}
 	return result
 }
 
