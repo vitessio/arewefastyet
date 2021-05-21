@@ -129,7 +129,7 @@ func (s Server) cronPRLabels() {
 		"tpcc":  s.macrobenchConfigPathTPCC,
 	}
 
-	SHAs, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
+	prInfos, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
 	if err != nil {
 		slog.Error(err)
 		return
@@ -137,15 +137,15 @@ func (s Server) cronPRLabels() {
 
 	// map with the git_ref as key and a slice of configuration file as value
 	toExec := map[string][]string{}
-	for _, sha := range SHAs {
+	for _, prInfo := range prInfos {
 		for configType, configFile := range configs {
-			exist, err := exec.Exists(s.dbClient, sha, "cron_pr", configType, exec.StatusFinished)
+			exist, err := exec.Exists(s.dbClient, prInfo.SHA, "cron_pr", configType, exec.StatusFinished)
 			if err != nil {
 				slog.Error(err)
 				continue
 			}
 			if !exist {
-				toExec[sha] = append(toExec[sha], configFile)
+				toExec[prInfo.SHA] = append(toExec[prInfo.SHA], configFile)
 			}
 		}
 	}
