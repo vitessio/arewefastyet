@@ -50,3 +50,8 @@ variable "execution_git_ref" {
   description = "The git reference on which we execute benchmarks"
   default = ""
 }
+
+variable "execution_type" {
+  description = "The type of execution (can be micro, oltp, tpcc)"
+  default = ""
+}
