@@ -107,7 +107,7 @@ func (s *Server) cronBranchHandler() {
 					ref:            ref,
 					retry:          s.cronNbRetry,
 					source:         "cron",
-					plannerVersion: version,
+					plannerVersion: string(version),
 				})
 			}
 		}
@@ -136,7 +136,7 @@ func (s *Server) cronBranchHandler() {
 						ref:            ref,
 						retry:          s.cronNbRetry,
 						source:         "cron_" + release.Name,
-						plannerVersion: version,
+						plannerVersion: string(version),
 					})
 				}
 			}
@@ -177,7 +177,7 @@ func (s Server) cronPRLabels() {
 						ref:            prInfo.SHA,
 						retry:          s.cronNbRetry,
 						source:         source,
-						plannerVersion: version,
+						plannerVersion: string(version),
 					})
 				}
 			}
@@ -217,7 +217,7 @@ func (s *Server) cronTags() {
 						ref:            release.CommitHash,
 						retry:          s.cronNbRetry,
 						source:         "cron_tags_" + release.Name,
-						plannerVersion: version,
+						plannerVersion: string(version),
 					})
 				}
 			}

@@ -29,16 +29,21 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
+type PlannerVersion string
+
 const (
 	ErrorNoSysBenchResult = "no sysbench results were found"
 
 	prefixMacroBenchSysbenchConfig = "macrobench_"
+
+	V3Planner           PlannerVersion = "V3"
+	Gen4FallbackPlanner PlannerVersion = "Gen4Fallback"
 )
 
 var (
-	PlannerVersions = []string{
-		"V3",
-		"Gen4Fallback",
+	PlannerVersions = []PlannerVersion{
+		V3Planner,
+		Gen4FallbackPlanner,
 	}
 )
 
