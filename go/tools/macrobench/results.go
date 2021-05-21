@@ -21,15 +21,16 @@ package macrobench
 import (
 	"errors"
 	"fmt"
+	"math"
+	"sort"
+	"strings"
+	"time"
+
 	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
-	"math"
-	"sort"
-	"strings"
-	"time"
 )
 
 type (
@@ -252,10 +253,10 @@ func (qps QPS) OtherStr() string {
 }
 
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
-func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client, metricsClient *influxdb.Client) (map[Type]DetailsArray, error) {
+func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbClient *mysql.Client, metricsClient *influxdb.Client) (map[Type]DetailsArray, error) {
 	macros := map[Type]DetailsArray{}
 	for _, mtype := range Types {
-		macro, err := GetResultsForGitRef(mtype, sha, dbClient)
+		macro, err := GetResultsForGitRefAndPlanner(mtype, sha, planner, dbClient)
 		if err != nil {
 			return nil, err
 		}
@@ -276,7 +277,7 @@ func GetDetailsArraysFromAllTypes(sha string, dbClient *mysql.Client, metricsCli
 // GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType Type, source string, lastDays int, client *mysql.Client) (macrodetails DetailsArray, err error) {
+func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion, lastDays int, client *mysql.Client) (macrodetails DetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
@@ -287,11 +288,11 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
 		"WHERE b.DateTime BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW()) " +
-		"AND b.source = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+		"AND b.source = ? AND b.vtgate_planner_version = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	result, err := client.Select(query, lastDays, source)
+	result, err := client.Select(query, lastDays, source, planner)
 	if err != nil {
 		return nil, err
 	}
@@ -308,9 +309,9 @@ func GetResultsForLastDays(macroType Type, source string, lastDays int, client *
 	return macrodetails, nil
 }
 
-// GetResultsForGitRef returns a slice of Details based on the given git ref
+// GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
 // and macro benchmark Type. The type must be either OLTP or TPCC.
-func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macrodetails DetailsArray, err error) {
+func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVersion, client *mysql.Client) (macrodetails DetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
@@ -319,11 +320,11 @@ func GetResultsForGitRef(macroType Type, ref string, client *mysql.Client) (macr
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
 		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
-		"WHERE b.commit = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+		"WHERE b.commit = ? AND b.vtgate_planner_version = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 
-	result, err := client.Select(query, ref)
+	result, err := client.Select(query, ref, planner)
 	if err != nil {
 		return nil, err
 	}

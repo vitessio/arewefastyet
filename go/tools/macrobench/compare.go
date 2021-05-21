@@ -20,6 +20,7 @@ package macrobench
 
 import (
 	"fmt"
+
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
@@ -32,7 +33,7 @@ func CompareMacroBenchmarks(dbClient *mysql.Client, metricsClient *influxdb.Clie
 	var err error
 	macros := map[string]map[Type]DetailsArray{}
 	for _, sha := range SHAs {
-		macros[sha], err = GetDetailsArraysFromAllTypes(sha, dbClient, metricsClient)
+		macros[sha], err = GetDetailsArraysFromAllTypes(sha, V3Planner, dbClient, metricsClient)
 		if err != nil {
 			return nil, err
 		}
@@ -51,21 +52,21 @@ func CompareMacroBenchmarks(dbClient *mysql.Client, metricsClient *influxdb.Clie
 // will be returned empty.
 func (c Comparison) Regression() (reason string) {
 	if c.DiffMetrics.TotalComponentsCPUTime <= -5.00 {
-		reason += fmt.Sprintf("- Total CPU time increased by %.2f%% \n", c.DiffMetrics.TotalComponentsCPUTime * -1)
+		reason += fmt.Sprintf("- Total CPU time increased by %.2f%% \n", c.DiffMetrics.TotalComponentsCPUTime*-1)
 	}
 	for key, value := range c.DiffMetrics.ComponentsCPUTime {
 		if value <= -5.00 {
-			reason += fmt.Sprintf("- %s CPU time increased by %.2f%% \n", key, value * -1)
+			reason += fmt.Sprintf("- %s CPU time increased by %.2f%% \n", key, value*-1)
 		}
 	}
 	if c.Diff.TPS <= -10 {
-		reason += fmt.Sprintf("- TPS decreased by %.2f%% \n", c.Diff.TPS * -1)
+		reason += fmt.Sprintf("- TPS decreased by %.2f%% \n", c.Diff.TPS*-1)
 	}
 	if c.Diff.QPS.Total <= -10 {
-		reason += fmt.Sprintf("- QPS decreased by %.2f%% \n", c.Diff.QPS.Total * -1)
+		reason += fmt.Sprintf("- QPS decreased by %.2f%% \n", c.Diff.QPS.Total*-1)
 	}
 	if c.Diff.Latency <= -10 {
-		reason += fmt.Sprintf("- Latency increased by %.2f%% \n", c.Diff.Latency * -1)
+		reason += fmt.Sprintf("- Latency increased by %.2f%% \n", c.Diff.Latency*-1)
 	}
 	return
 }

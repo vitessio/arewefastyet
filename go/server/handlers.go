@@ -48,12 +48,12 @@ func (s *Server) informationHandler(c *gin.Context) {
 }
 
 func (s *Server) homeHandler(c *gin.Context) {
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "webhook", 31, s.dbClient)
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", macrobench.V3Planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
 
-	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "webhook", 31, s.dbClient)
+	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", macrobench.V3Planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
@@ -118,7 +118,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 		return
 	}
 
-	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, s.dbClient, s.executionMetricsDBClient)
+	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, macrobench.V3Planner, s.dbClient, s.executionMetricsDBClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
