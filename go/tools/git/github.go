@@ -41,7 +41,7 @@ func GetPullRequestHeadForLabels(labels []string, repo string) ([]PRInfo, error)
 
 	prInfos := []PRInfo{}
 	for _, pull := range pulls {
-		head, base, err := getPullRequestHead(pull)
+		head, base, err := GetPullRequestHeadAndBase(pull)
 		if err != nil {
 			return nil, err
 		}
@@ -98,7 +98,7 @@ func getPullRequestsForLabels(labels, repo string) ([]string, error) {
 	return pulls, nil
 }
 
-func getPullRequestHead(url string) (string, string, error) {
+func GetPullRequestHeadAndBase(url string) (string, string, error) {
 	client := http.Client{}
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
