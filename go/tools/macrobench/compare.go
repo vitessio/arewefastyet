@@ -48,6 +48,28 @@ func CompareMacroBenchmarks(dbClient *mysql.Client, metricsClient *influxdb.Clie
 	return macrosMatrixes, nil
 }
 
+// ComparePlanners takes in 2 arguments, the database, and a SHA. It reads from the database, the macrobenchmark
+// results for the 2 planners corresponding to the sha and compares them. The result is a map with the key being the macrobenchmark name.
+func ComparePlanners(dbClient *mysql.Client, metricsClient *influxdb.Client, sha string) (map[Type]interface{}, error) {
+	// Get macro benchmarks from all the different types
+	var err error
+	macros := map[string]map[Type]DetailsArray{}
+	for _, planner := range PlannerVersions {
+		macros[string(planner)], err = GetDetailsArraysFromAllTypes(sha, planner, dbClient, metricsClient)
+		if err != nil {
+			return nil, err
+		}
+		for mtype := range macros[string(planner)] {
+			macros[string(planner)][mtype] = macros[string(planner)][mtype].ReduceSimpleMedian()
+		}
+	}
+	macrosMatrixes := map[Type]interface{}{}
+	for _, mtype := range Types {
+		macrosMatrixes[mtype] = CompareDetailsArrays(macros[string(V3Planner)][mtype], macros[string(Gen4FallbackPlanner)][mtype])
+	}
+	return macrosMatrixes, nil
+}
+
 // Regression returns a string containing the reason of the regression, if no regression is found, the string
 // will be returned empty.
 func (c Comparison) Regression() (reason string) {
