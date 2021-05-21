@@ -49,7 +49,10 @@ func (s *Server) informationHandler(c *gin.Context) {
 
 func (s *Server) homeHandler(c *gin.Context) {
 	planner := macrobench.V3Planner
-	plannerStr := c.Query("planner")
+	plannerStr, err := c.Cookie("vtgatePlanner")
+	if err != nil {
+		slog.Warn(err.Error())
+	}
 	if plannerStr == string(macrobench.Gen4FallbackPlanner) {
 		planner = macrobench.Gen4FallbackPlanner
 	}
@@ -68,7 +71,6 @@ func (s *Server) homeHandler(c *gin.Context) {
 		"title":     "Vitess benchmark",
 		"data_oltp": oltpData,
 		"data_tpcc": tpccData,
-		"planner":   plannerStr,
 	})
 }
 

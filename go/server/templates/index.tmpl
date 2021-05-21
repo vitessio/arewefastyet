@@ -28,13 +28,6 @@ limitations under the License.
       <h1>Are We Fast Yet</h1>
       <p class="lead"></p>
       <p>Nightly benchmark project for <a href="https://vitess.io">Vitess</a>.</p>
-      <h3>
-        Settings
-      </h3>
-          <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="vtgateplanner-switch" {{ if eq .planner "Gen4Fallback" }}checked{{ end }} onclick="switchVtgatePlanner()">
-            <label class="custom-control-label" for="vtgateplanner-switch">VTGate Planner Gen4</label>
-          </div>
     </div>
   </section>
 
@@ -402,14 +395,6 @@ limitations under the License.
     {{ if .data_tpcc}}
       plotTPCC({{ .data_tpcc }})
     {{ end }}
-
-    function switchVtgatePlanner() {
-      if ($("#vtgateplanner-switch").is(":checked")) {
-        window.open("/?planner=Gen4Fallback", '_self');
-      } else {
-        window.open("/", "_self");
-      }
-    }
   </script>
 
 </body>
