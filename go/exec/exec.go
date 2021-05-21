@@ -265,8 +265,10 @@ func (e Exec) SendNotificationForRegression() (err error) {
 	}()
 
 	var previousExec, previousGitRef string
+	var ignoreNonRegression bool
 	if e.pullNB > 0 {
 		previousExec, previousGitRef, err = e.getPreviousForPR()
+		ignoreNonRegression = true
 	} else {
 		previousExec, previousGitRef, err = e.getPreviousFromSameSource()
 	}
@@ -277,8 +279,9 @@ func (e Exec) SendNotificationForRegression() (err error) {
 		return nil
 	}
 
-	header := `*Observed a regression.*
-Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
+	regressionHeader := `*Observed a regression.*
+`
+	header := `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.
 Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
 Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
 
@@ -290,11 +293,9 @@ Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
 			return err
 		}
 		regression := microBenchmarks.Regression()
-		if regression != "" {
-			err = e.sendSlackMessage(regression, header)
-			if err != nil {
-				return err
-			}
+		err = e.sendMessageIfRegression(ignoreNonRegression, regression, header, regressionHeader)
+		if err != nil {
+			return err
 		}
 	} else if e.typeOf == "oltp" || e.typeOf == "tpcc" {
 		influxCfg := influxdb.Config{
@@ -320,11 +321,23 @@ Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
 		}
 
 		regression := macroResults[0].Regression()
+		err = e.sendMessageIfRegression(ignoreNonRegression, regression, header, regressionHeader)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e Exec) sendMessageIfRegression(ignoreNonRegression bool, regression, header, regressionHeader string) error {
+	if regression != "" || ignoreNonRegression {
+		hd := header
 		if regression != "" {
-			err = e.sendSlackMessage(regression, header)
-			if err != nil {
-				return err
-			}
+			hd = regressionHeader + header
+		}
+		err := e.sendSlackMessage(regression, hd)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
