@@ -172,9 +172,10 @@ func (e *Exec) Prepare() error {
 	e.createdInDB = true
 
 	e.Infra.SetTags(map[string]string{
-		"execution_git_ref": git.ShortenSHA(e.GitRef),
-		"execution_source":  e.Source,
-		"execution_type":    e.typeOf,
+		"execution_git_ref":         git.ShortenSHA(e.GitRef),
+		"execution_source":          e.Source,
+		"execution_type":            e.typeOf,
+		"execution_planner_version": e.VtgatePlannerVersion,
 	})
 
 	err = e.prepareDirectories()
