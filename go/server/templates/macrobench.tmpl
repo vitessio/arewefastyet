@@ -155,6 +155,20 @@ limitations under the License.
                                     <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsCPUTime $componentCPUName) }}</td>
                                 </tr>
                             {{ end }}
+                            <tr>
+                                <th scope="row" class="text-center">Total Allocs bytes</th>
+                                <td class="text-center">{{ formatBytes $elem.Compare.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                                <td class="text-center">{{ formatBytes $elem.Reference.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                                <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsMemStatsAllocBytes }}</td>
+                            </tr>
+                            {{ range $componentAllocsName, $componentAllocsValue := $elem.Compare.Metrics.ComponentsMemStatsAllocBytes }}
+                            <tr>
+                                <th scope="row" class="text-center">Allocs bytes {{$componentAllocsName}}</th>
+                                <td class="text-center">{{ formatBytes (index $elem.Compare.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
+                                <td class="text-center">{{ formatBytes (index $elem.Reference.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
+                                <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
+                            </tr>
+                            {{ end }}
                         {{ end }}
                         </tbody>
                     </table>
