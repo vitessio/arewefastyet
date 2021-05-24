@@ -16,7 +16,7 @@
  * /
  */
 
-package exec
+package server
 
 import (
 	"testing"
