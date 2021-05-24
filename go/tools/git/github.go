@@ -26,6 +26,7 @@ import (
 )
 
 type PRInfo struct {
+	Number int
 	Base string
 	SHA  string
 }
@@ -41,14 +42,11 @@ func GetPullRequestHeadForLabels(labels []string, repo string) ([]PRInfo, error)
 
 	prInfos := []PRInfo{}
 	for _, pull := range pulls {
-		head, base, err := GetPullRequestHeadAndBase(pull)
+		prInfo, err := GetPullRequestHeadAndBase(pull)
 		if err != nil {
 			return nil, err
 		}
-		prInfos = append(prInfos, PRInfo{
-			Base: base,
-			SHA:  head,
-		})
+		prInfos = append(prInfos, prInfo)
 	}
 	return prInfos, nil
 }
@@ -98,19 +96,20 @@ func getPullRequestsForLabels(labels, repo string) ([]string, error) {
 	return pulls, nil
 }
 
-func GetPullRequestHeadAndBase(url string) (string, string, error) {
+func GetPullRequestHeadAndBase(url string) (PRInfo, error) {
 	client := http.Client{}
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return "", "", err
+		return PRInfo{}, err
 	}
 	response, err := client.Do(request)
 	if err != nil {
-		return "", "", err
+		return PRInfo{}, err
 	}
 	defer response.Body.Close()
 
 	res := struct {
+		Number int `json:"number"`
 		Head struct {
 			SHA string `json:"sha"`
 		} `json:"head"`
@@ -120,7 +119,12 @@ func GetPullRequestHeadAndBase(url string) (string, string, error) {
 	}{}
 	err = json.NewDecoder(response.Body).Decode(&res)
 	if err != nil {
-		return "", "", err
+		return PRInfo{}, err
 	}
-	return res.Head.SHA, res.Base.SHA, nil
+	prInfo := PRInfo{
+		Number: res.Number,
+		Base:   res.Base.SHA,
+		SHA:    res.Head.SHA,
+	}
+	return prInfo, nil
 }

@@ -208,8 +208,7 @@ func (s Server) cronPRLabels() {
 		for configType, configFile := range configs {
 			ref := prInfo.SHA
 			previousGitRef := prInfo.Base
-			// TODO : Get non zero PR number and use it in execution
-			pullNb := 0
+			pullNb := prInfo.Number
 			if configType == "micro" {
 				compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro", configFile, ref, source, pullNb, previousGitRef, source, s.cronNbRetry, configType, "", true))
 			} else {
@@ -392,7 +391,6 @@ func newCompareInfo(name, configFile, ref, source string, pullNB int, compareRef
 		},
 		execComp: &execInfo{
 			ref:    compareRef,
-			pullNB: pullNB,
 			source: compareSource,
 		},
 		retry:               retry,
