@@ -51,14 +51,14 @@ func getPlannerVersion(c *gin.Context) macrobench.PlannerVersion {
 	planner := macrobench.V3Planner
 	plannerStr, err := c.Cookie("vtgatePlanner")
 	if err != nil {
-		slog.Warn(err.Error())
+		// cookie is not set, then use the default
+		return planner
 	}
 	if plannerStr == string(macrobench.Gen4FallbackPlanner) {
 		planner = macrobench.Gen4FallbackPlanner
 	}
 	return planner
 }
-
 
 func (s *Server) homeHandler(c *gin.Context) {
 	planner := getPlannerVersion(c)
