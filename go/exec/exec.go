@@ -270,7 +270,7 @@ func (e Exec) SendNotificationForRegression() (err error) {
 		previousExec, previousGitRef, err = e.getPreviousForPR()
 		ignoreNonRegression = true
 	} else {
-		previousExec, previousGitRef, err = e.getPreviousFromSameSource()
+		previousExec, previousGitRef, err = e.GetPreviousFromSameSource()
 	}
 	if err != nil {
 		return err
@@ -442,7 +442,7 @@ func (e Exec) getPreviousForPR() (execUUID, gitRef string, err error) {
 	if e.typeOf == "micro" {
 		// compare with base ref
 		query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.status = 'finished' AND " +
-			"e.type = ? AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
+			"e.type = ? AND e.git_ref == ? ORDER BY e.started_at DESC LIMIT 1"
 		result, err = e.clientDB.Select(query, e.typeOf, baseRef)
 	} else {
 		// compare with base ref and same vtgate_planner_version
@@ -462,15 +462,31 @@ func (e Exec) getPreviousForPR() (execUUID, gitRef string, err error) {
 	return
 }
 
-func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
+func GetPreviousFromSourceMicrobenchmark(clientDB *mysql.Client, source, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
-		"e.type = ? AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
-	result, err := e.clientDB.Select(query, e.Source, e.typeOf, e.GitRef)
+		"e.type = \"micro\" AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
+	result, err := clientDB.Select(query, source, gitRef)
 	if err != nil {
 		return
 	}
 	for result.Next() {
-		err = result.Scan(&execUUID, &gitRef)
+		err = result.Scan(&execUUID, &gitRefOut)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func GetPreviousFromSourceMacrobenchmark(clientDB *mysql.Client, source, typeOf, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
+	query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.source = ? AND e.status = 'finished' AND " +
+		"e.type = ? AND e.git_ref != ? AND m.exec_uuid = e.uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
+	result, err := clientDB.Select(query, source, typeOf, gitRef, plannerVersion)
+	if err != nil {
+		return
+	}
+	for result.Next() {
+		err = result.Scan(&execUUID, &gitRefOut)
 		if err != nil {
 			return
 		}

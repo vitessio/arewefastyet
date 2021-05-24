@@ -29,13 +29,20 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/git"
 )
 
+type CompareInfo struct {
+	Config              string
+	execMain            *execInfo
+	execComp            *execInfo
+	Retry               int
+	PlannerVersion      string
+	ExecType            string
+	Name                string
+	IgnoreNonRegression bool
+}
+
 type execInfo struct {
-	config         string
-	ref            string
-	retry          int
-	source         string
-	plannerVersion string
-	execType       string
+	ref    string
+	source string
 }
 
 const (
@@ -43,17 +50,17 @@ const (
 )
 
 var (
-	execQueue        chan execInfo
+	execQueue        chan *CompareInfo
 	currentCountExec int
-	mtx              *sync.Mutex
+	mtx              *sync.RWMutex
 )
 
 func (s *Server) createNewCron() error {
 	if s.cronSchedule == "" {
 		return nil
 	}
-	execQueue = make(chan execInfo)
-	mtx = &sync.Mutex{}
+	execQueue = make(chan *CompareInfo)
+	mtx = &sync.RWMutex{}
 
 	c := cron.New()
 
@@ -86,20 +93,10 @@ func (s *Server) cronBranchHandler() {
 		return
 	}
 	// master branch
-	ref, err := git.GetCommitHash(s.getVitessPath())
+	compareInfos, err := s.compareMasterBranch(configs)
 	if err != nil {
 		slog.Warn(err.Error())
 		return
-	}
-	var execInfos []execInfo
-	for configType, configFile := range configs {
-		if configType == "micro" {
-			execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron", "", configType))
-		} else {
-			for _, version := range macrobench.PlannerVersions {
-				execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron", string(version), configType))
-			}
-		}
 	}
 
 	// release branches
@@ -112,15 +109,51 @@ func (s *Server) cronBranchHandler() {
 		ref = release.CommitHash
 		for configType, configFile := range configs {
 			if configType == "micro" {
-				execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, "", configType))
+				compareInfos = append(compareInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, "", configType))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
-					execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, string(version), configType))
+					compareInfos = append(compareInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, string(version), configType))
 				}
 			}
 		}
-		s.cronPrepare(execInfos)
 	}
+	s.cronPrepare(compareInfos)
+}
+
+func (s *Server) compareMasterBranch(configs map[string]string) ([]*CompareInfo, error) {
+	var compareInfos []*CompareInfo
+	ref, err := git.GetCommitHash(s.getVitessPath())
+	if err != nil {
+		slog.Warn(err.Error())
+		return nil, err
+	}
+	lastRelease, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
+	if err != nil {
+		slog.Warn(err.Error())
+		return nil, nil
+	}
+	for configType, configFile := range configs {
+		if configType == "micro" {
+			_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, "cron", ref)
+			if err != nil {
+				slog.Warn(err.Error())
+				return nil, err
+			}
+			compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", previousGitRef, "", s.cronNbRetry, configType, ""))
+			compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, ""))
+		} else {
+			for _, version := range macrobench.PlannerVersions {
+				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, "cron", configType, string(version), ref)
+				if err != nil {
+					slog.Warn(err.Error())
+					return nil, err
+				}
+				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", previousGitRef, "", s.cronNbRetry, configType, string(version)))
+				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version)))
+			}
+		}
+	}
+	return compareInfos, nil
 }
 
 func (s Server) cronPRLabels() {
@@ -213,9 +246,12 @@ func (s *Server) checkIfExists(execIn execInfo) (bool, error) {
 func (s *Server) cron() {
 	for {
 		time.Sleep(time.Second * 1)
+		mtx.RLock()
 		if currentCountExec >= maxConcurJob {
+			mtx.RUnlock()
 			continue
 		}
+		mtx.RUnlock()
 		e := <-execQueue
 		mtx.Lock()
 		currentCountExec++
@@ -286,13 +322,20 @@ func (s *Server) cronExecution(eI execInfo) {
 	slog.Info("Finished execution: ", e.UUID.String())
 }
 
-func newExecInfo(config, ref string, retry int, source, plannerVersion, execType string) execInfo {
-	return execInfo{
-		config:         config,
-		ref:            ref,
-		retry:          retry,
-		source:         source,
-		plannerVersion: plannerVersion,
-		execType:       execType,
+func newCompareInfo(configFile, ref, source, compareRef, compareSource string, retry int, configType, plannerVersion string) *CompareInfo {
+	return &CompareInfo{
+		Config: configFile,
+		execMain: &execInfo{
+			ref:    ref,
+			source: source,
+		},
+		execComp: &execInfo{
+			ref:    compareRef,
+			source: compareSource,
+		},
+		Retry:               retry,
+		PlannerVersion:      plannerVersion,
+		ExecType:            configType,
+		IgnoreNonRegression: false,
 	}
 }
