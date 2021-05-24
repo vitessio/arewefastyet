@@ -19,9 +19,7 @@
 package exec
 
 import (
-	"database/sql"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -316,37 +314,6 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	}
 	e.configPath = pathConfig
 	return e, nil
-}
-
-func (e Exec) getPreviousForPR() (execUUID, gitRef string, err error) {
-	// getting the PR's base ref
-	_, baseRef, err := git.GetPullRequestHeadAndBase(fmt.Sprintf("https://api.github.com/repos/vitessio/vitess/pulls/%d", +e.pullNB))
-	if err != nil {
-		return "", "", err
-	}
-
-	var result *sql.Rows
-	if e.typeOf == "micro" {
-		// compare with base ref
-		query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.status = 'finished' AND " +
-			"e.type = ? AND e.git_ref == ? ORDER BY e.started_at DESC LIMIT 1"
-		result, err = e.clientDB.Select(query, e.typeOf, baseRef)
-	} else {
-		// compare with base ref and same vtgate_planner_version
-		query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.status = 'finished' AND " +
-			"e.type = ? AND e.git_ref != ? AND e.uuid = m.exec_uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
-		result, err = e.clientDB.Select(query, e.typeOf, baseRef, e.VtgatePlannerVersion)
-	}
-	if err != nil {
-		return
-	}
-	for result != nil && result.Next() {
-		err = result.Scan(&execUUID, &gitRef)
-		if err != nil {
-			return
-		}
-	}
-	return
 }
 
 func GetPreviousFromSourceMicrobenchmark(clientDB *mysql.Client, source, gitRef string) (execUUID, gitRefOut string, err error) {
