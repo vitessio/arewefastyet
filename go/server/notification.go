@@ -34,7 +34,7 @@ func (s *Server) sendNotificationForRegression(compInfo *CompareInfo) (err error
 `
 
 	// header of the message, before the regression explanation
-	header := ``
+	header := compInfo.name + "\n\n"
 	if compInfo.execMain.pullNB > 0 {
 		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, compInfo.execMain.pullNB)
 	} else {

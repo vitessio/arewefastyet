@@ -19,6 +19,7 @@
 package server
 
 import (
+	"strconv"
 	"sync"
 	"time"
 
@@ -129,8 +130,8 @@ func (s *Server) compareMasterBranch(configs map[string]string) ([]*CompareInfo,
 				slog.Warn(err.Error())
 				return nil, err
 			}
-			compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
-			compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, "", false))
+			compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - micro", configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
+			compareInfos = append(compareInfos, newCompareInfo("Comparing master with latest release - "+lastRelease.Name+" - micro", configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, "", false))
 		} else {
 			for _, version := range macrobench.PlannerVersions {
 				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, "cron", configType, string(version), ref)
@@ -138,8 +139,8 @@ func (s *Server) compareMasterBranch(configs map[string]string) ([]*CompareInfo,
 					slog.Warn(err.Error())
 					return nil, err
 				}
-				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
-				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version), false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - "+configType+" - "+string(version), configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing master with latest release - "+lastRelease.Name+" - "+configType+" - "+string(version), configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version), false))
 			}
 		}
 	}
@@ -168,8 +169,8 @@ func (s *Server) compareReleaseBranches(configs map[string]string) ([]*CompareIn
 					slog.Warn(err.Error())
 					return nil, err
 				}
-				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
-				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, "", false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with previous commit - micro", configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with last path release "+lastPathRelease.Name+" - micro", configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, "", false))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
 					_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, source, configType, string(version), ref)
@@ -177,8 +178,8 @@ func (s *Server) compareReleaseBranches(configs map[string]string) ([]*CompareIn
 						slog.Warn(err.Error())
 						return nil, err
 					}
-					compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
-					compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, string(version), false))
+					compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with previous commit - "+configType+" - "+string(version), configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
+					compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with last path release "+lastPathRelease.Name+" - "+configType+" - "+string(version), configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, string(version), false))
 				}
 			}
 		}
@@ -208,11 +209,12 @@ func (s Server) cronPRLabels() {
 			ref := prInfo.SHA
 			previousGitRef := prInfo.Base
 			// TODO : Get non zero PR number and use it in execution
+			pullNb := 0
 			if configType == "micro" {
-				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, 0, previousGitRef, source, s.cronNbRetry, configType, "", true))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro", configFile, ref, source, pullNb, previousGitRef, source, s.cronNbRetry, configType, "", true))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
-					compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, 0, previousGitRef, source, s.cronNbRetry, configType, string(version), true))
+					compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - "+configType+" - "+string(version), configFile, ref, source, pullNb, previousGitRef, source, s.cronNbRetry, configType, string(version), true))
 				}
 			}
 		}
@@ -238,10 +240,10 @@ func (s *Server) cronTags() {
 	for _, release := range releases {
 		for configType, configFile := range configs {
 			if configType == "micro" {
-				compareInfos = append(compareInfos, newSingleExecution(configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, ""))
+				compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, ""))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
-					compareInfos = append(compareInfos, newSingleExecution(configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, string(version)))
+					compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, string(version)))
 				}
 			}
 		}
@@ -310,7 +312,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 		return
 	}
 
-	if compInfo.execComp != nil {
+	if compInfo.execComp != nil || compInfo.execComp.source == "" {
 		err = s.executeSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
 		if err != nil {
 			slog.Errorf("Error while single execution: %v", err)
@@ -380,7 +382,7 @@ func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion strin
 	return nil
 }
 
-func newCompareInfo(configFile, ref, source string, pullNB int, compareRef, compareSource string, retry int, configType, plannerVersion string, ignoreNonRegression bool) *CompareInfo {
+func newCompareInfo(name, configFile, ref, source string, pullNB int, compareRef, compareSource string, retry int, configType, plannerVersion string, ignoreNonRegression bool) *CompareInfo {
 	return &CompareInfo{
 		config: configFile,
 		execMain: &execInfo{
@@ -397,10 +399,11 @@ func newCompareInfo(configFile, ref, source string, pullNB int, compareRef, comp
 		plannerVersion:      plannerVersion,
 		typeOf:              configType,
 		ignoreNonRegression: ignoreNonRegression,
+		name:                name,
 	}
 }
 
-func newSingleExecution(configFile, ref, source string, retry int, configType, plannerVersion string) *CompareInfo {
+func newSingleExecution(name, configFile, ref, source string, retry int, configType, plannerVersion string) *CompareInfo {
 	return &CompareInfo{
 		config: configFile,
 		execMain: &execInfo{
