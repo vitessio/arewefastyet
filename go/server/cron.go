@@ -94,21 +94,10 @@ func (s *Server) cronBranchHandler() {
 	var execInfos []execInfo
 	for configType, configFile := range configs {
 		if configType == "micro" {
-			execInfos = append(execInfos, execInfo{
-				config: configFile,
-				ref:    ref,
-				retry:  s.cronNbRetry,
-				source: "cron",
-			})
+			execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron", "", configType))
 		} else {
 			for _, version := range macrobench.PlannerVersions {
-				execInfos = append(execInfos, execInfo{
-					config:         configFile,
-					ref:            ref,
-					retry:          s.cronNbRetry,
-					source:         "cron",
-					plannerVersion: string(version),
-				})
+				execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron", string(version), configType))
 			}
 		}
 	}
@@ -123,21 +112,10 @@ func (s *Server) cronBranchHandler() {
 		ref = release.CommitHash
 		for configType, configFile := range configs {
 			if configType == "micro" {
-				execInfos = append(execInfos, execInfo{
-					config: configFile,
-					ref:    ref,
-					retry:  s.cronNbRetry,
-					source: "cron_" + release.Name,
-				})
+				execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, "", configType))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
-					execInfos = append(execInfos, execInfo{
-						config:         configFile,
-						ref:            ref,
-						retry:          s.cronNbRetry,
-						source:         "cron_" + release.Name,
-						plannerVersion: string(version),
-					})
+					execInfos = append(execInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, string(version), configType))
 				}
 			}
 		}
@@ -164,21 +142,10 @@ func (s Server) cronPRLabels() {
 	for _, prInfo := range prInfos {
 		for configType, configFile := range configs {
 			if configType == "micro" {
-				execInfos = append(execInfos, execInfo{
-					config: configFile,
-					ref:    prInfo.SHA,
-					retry:  s.cronNbRetry,
-					source: source,
-				})
+				execInfos = append(execInfos, newExecInfo(configFile, prInfo.SHA, s.cronNbRetry, source, "", configType))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
-					execInfos = append(execInfos, execInfo{
-						config:         configFile,
-						ref:            prInfo.SHA,
-						retry:          s.cronNbRetry,
-						source:         source,
-						plannerVersion: string(version),
-					})
+					execInfos = append(execInfos, newExecInfo(configFile, prInfo.SHA, s.cronNbRetry, source, string(version), configType))
 				}
 			}
 		}
@@ -204,21 +171,10 @@ func (s *Server) cronTags() {
 	for _, release := range releases {
 		for configType, configFile := range configs {
 			if configType == "micro" {
-				execInfos = append(execInfos, execInfo{
-					config: configFile,
-					ref:    release.CommitHash,
-					retry:  s.cronNbRetry,
-					source: "cron_tags_" + release.Name,
-				})
+				execInfos = append(execInfos, newExecInfo(configFile, release.CommitHash, s.cronNbRetry, "cron_tags_"+release.Name, "", configType))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
-					execInfos = append(execInfos, execInfo{
-						config:         configFile,
-						ref:            release.CommitHash,
-						retry:          s.cronNbRetry,
-						source:         "cron_tags_" + release.Name,
-						plannerVersion: string(version),
-					})
+					execInfos = append(execInfos, newExecInfo(configFile, release.CommitHash, s.cronNbRetry, "cron_tags_"+release.Name, string(version), configType))
 				}
 			}
 		}
@@ -328,4 +284,15 @@ func (s *Server) cronExecution(eI execInfo) {
 		return
 	}
 	slog.Info("Finished execution: ", e.UUID.String())
+}
+
+func newExecInfo(config, ref string, retry int, source, plannerVersion, execType string) execInfo {
+	return execInfo{
+		config:         config,
+		ref:            ref,
+		retry:          retry,
+		source:         source,
+		plannerVersion: plannerVersion,
+		execType:       execType,
+	}
 }
