@@ -34,12 +34,8 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
-	"github.com/vitessio/arewefastyet/go/slack"
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
-	"github.com/vitessio/arewefastyet/go/tools/macrobench"
-	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
 const (
@@ -88,9 +84,6 @@ type Exec struct {
 	// Configuration used to authenticate and insert execution stats
 	// data to a remote database system.
 	statsRemoteDBConfig stats.RemoteDBConfig
-
-	// Configuration used to send message to Slack.
-	slackConfig slack.Config
 
 	// rootDir represents the parent directory of the Exec.
 	// From there, the Exec's unique directory named Exec.dirPath will
@@ -257,112 +250,6 @@ func (e *Exec) handleStepEnd(err error) {
 	if err != nil {
 		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFailed, e.UUID.String())
 	}
-}
-
-func (e Exec) SendNotificationForRegression() (err error) {
-	defer func() {
-		e.handleStepEnd(err)
-	}()
-
-	var previousExec, previousGitRef string
-	var ignoreNonRegression bool
-	if e.pullNB > 0 {
-		previousExec, previousGitRef, err = e.getPreviousForPR()
-		ignoreNonRegression = true
-	} else {
-		previousExec, previousGitRef, err = e.GetPreviousFromSameSource()
-	}
-	if err != nil {
-		return err
-	}
-	if previousExec == "" {
-		return nil
-	}
-
-	// regression header, appender to header in the event of a regression
-	regressionHeader := `*Observed a regression.*
-`
-
-	// header of the message, before the regression explanation
-	header := ``
-	if e.pullNB > 0 {
-		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, e.pullNB)
-	} else {
-		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.`
-	}
-	header += `Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
-Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
-
-`
-
-	if e.typeOf == "micro" {
-		microBenchmarks, err := microbench.Compare(e.clientDB, e.GitRef, previousGitRef)
-		if err != nil {
-			return err
-		}
-		regression := microBenchmarks.Regression()
-		err = e.sendMessageIfRegression(ignoreNonRegression, regression, header, regressionHeader)
-		if err != nil {
-			return err
-		}
-	} else if e.typeOf == "oltp" || e.typeOf == "tpcc" {
-		influxCfg := influxdb.Config{
-			Host:     e.statsRemoteDBConfig.Host,
-			Port:     e.statsRemoteDBConfig.Port,
-			User:     e.statsRemoteDBConfig.User,
-			Password: e.statsRemoteDBConfig.Password,
-			Database: e.statsRemoteDBConfig.DbName,
-		}
-		influxClient, err := influxCfg.NewClient()
-		if err != nil {
-			return err
-		}
-
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(e.clientDB, influxClient, e.GitRef, previousGitRef, macrobench.PlannerVersion(e.VtgatePlannerVersion))
-		if err != nil {
-			return err
-		}
-
-		macroResults := macrosMatrices[macrobench.Type(e.typeOf)].(macrobench.ComparisonArray)
-		if len(macroResults) == 0 {
-			return fmt.Errorf("no macrobenchmark result")
-		}
-
-		regression := macroResults[0].Regression()
-		err = e.sendMessageIfRegression(ignoreNonRegression, regression, header, regressionHeader)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (e Exec) sendMessageIfRegression(ignoreNonRegression bool, regression, header, regressionHeader string) error {
-	if regression != "" || ignoreNonRegression {
-		hd := header
-		if regression != "" {
-			hd = regressionHeader + header
-		}
-		err := e.sendSlackMessage(regression, hd)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func getComparisonLink(leftSHA, rightSHA string) string {
-	return "https://benchmark.vitess.io/compare?r=" + leftSHA + "&c=" + rightSHA
-}
-
-func (e Exec) sendSlackMessage(regression, header string) error {
-	content := header + regression
-	msg := slack.TextMessage{Content: content}
-	err := msg.Send(e.slackConfig)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // CleanUp cleans and removes all things required only during the execution flow

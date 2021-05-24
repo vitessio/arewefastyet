@@ -22,6 +22,8 @@ import (
 	"errors"
 	"html/template"
 
+	"github.com/vitessio/arewefastyet/go/slack"
+
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
@@ -58,6 +60,9 @@ type Server struct {
 
 	executionMetricsDBConfig *influxdb.Config
 	executionMetricsDBClient *influxdb.Client
+
+	// Configuration used to send message to Slack.
+	slackConfig slack.Config
 
 	cronSchedule             string
 	cronNbRetry              int
@@ -101,6 +106,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagCronNbRetry, cmd.Flags().Lookup(flagCronNbRetry))
 	_ = viper.BindPFlag(flagPullRequestLabelTrigger, cmd.Flags().Lookup(flagPullRequestLabelTrigger))
 
+	s.slackConfig.AddToCommand(cmd)
 	if s.dbCfg == nil {
 		s.dbCfg = &mysql.ConfigDB{}
 	}
@@ -153,7 +159,6 @@ func (s *Server) Run() error {
 	s.router.SetFuncMap(template.FuncMap{
 		"formatFloat": func(f float64) string { return humanize.FormatFloat("#,###.##", f) },
 		"formatBytes": func(f float64) string { return humanize.Bytes(uint64(f)) },
-
 	})
 
 	s.router.Static("/static", s.staticPath)
