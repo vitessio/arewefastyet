@@ -34,6 +34,8 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
       --influx-password string              Password used to connect to InfluxDB.
       --influx-port string                  Port on which to InfluxDB listens. (default "8086")
       --influx-username string              Username used to connect to InfluxDB.
+      --slack-channel string                Slack channel on which to post messages
+      --slack-token string                  Token used to authenticate Slack
       --web-cron-nb-retry int               Number of retries allowed for each cron job.
       --web-cron-schedule string            Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON. (default "@midnight")
       --web-macrobench-oltp-config string   Path to the configuration file used to execute OLTP macrobenchmark.
