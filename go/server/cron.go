@@ -30,14 +30,14 @@ import (
 )
 
 type CompareInfo struct {
-	Config              string
+	config              string
 	execMain            *execInfo
 	execComp            *execInfo
-	Retry               int
-	PlannerVersion      string
-	ExecType            string
-	Name                string
-	IgnoreNonRegression bool
+	retry               int
+	plannerVersion      string
+	typeOf              string
+	name                string
+	ignoreNonRegression bool
 }
 
 type execInfo struct {
@@ -250,20 +250,20 @@ func (s *Server) cronTags() {
 func (s *Server) cronPrepare(compareInfos []*CompareInfo) {
 	for _, info := range compareInfos {
 		execQueue <- info
-		slog.Infof("New Comparison Execution - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) added to the queue (length: %d)", info.Name, info.Config, info.execMain.ref, info.execMain.source, info.PlannerVersion, len(execQueue))
+		slog.Infof("New Comparison Execution - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) added to the queue (length: %d)", info.name, info.config, info.execMain.ref, info.execMain.source, info.plannerVersion, len(execQueue))
 	}
 }
 
-func (s *Server) checkIfExists(execIn execInfo) (bool, error) {
-	if execIn.execType == "micro" {
-		exist, err := exec.Exists(s.dbClient, execIn.ref, "cron", execIn.execType, exec.StatusFinished)
+func (s *Server) checkIfExists(ref, typeOf, plannerVersion string) (bool, error) {
+	if typeOf == "micro" {
+		exist, err := exec.Exists(s.dbClient, ref, "cron", typeOf, exec.StatusFinished)
 		if err != nil {
 			slog.Error(err)
 			return false, err
 		}
 		return exist, nil
 	}
-	exist, err := exec.ExistsMacrobenchmark(s.dbClient, execIn.ref, "cron", execIn.execType, exec.StatusFinished, execIn.plannerVersion)
+	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, "cron", typeOf, exec.StatusFinished, plannerVersion)
 	if err != nil {
 		slog.Error(err)
 		return false, err
@@ -288,71 +288,99 @@ func (s *Server) cron() {
 	}
 }
 
-func (s *Server) cronExecution(eI execInfo) {
+func (s *Server) cronExecution(compInfo *CompareInfo) {
 	var err error
-	var e *exec.Exec
 	defer func() {
-		if e != nil {
-			err = e.CleanUp()
-			if err != nil {
-				slog.Errorf("CleanUp step: %v", err)
-			}
-		}
 		if err != nil {
-			// Retry after execution failure if the counter is above zero.
-			if eI.retry > 0 {
-				eI.retry--
-				slog.Info("Retrying execution for source: ", eI.source, " git ref: ", eI.ref, " with configuration: ", eI.config, ". Number of retry left: ", eI.retry)
-				s.cronExecution(eI)
+			// Retry after any failure if the counter is above zero.
+			if compInfo.retry > 0 {
+				compInfo.retry--
+				slog.Infof("Retrying Cron Execution - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) retries left: %d", compInfo.name, compInfo.config, compInfo.execMain.ref, compInfo.execMain.source, compInfo.plannerVersion, len(execQueue), compInfo.retry)
+				s.cronExecution(compInfo)
 				return
 			}
 		}
-		e.Success()
-		mtx.Lock()
-		currentCountExec--
-		mtx.Unlock()
 	}()
 
-	e, err = exec.NewExecWithConfig(eI.config)
+	err = s.executeSingle(compInfo.config, compInfo.execMain.source, compInfo.execMain.ref, compInfo.typeOf, compInfo.plannerVersion)
 	if err != nil {
-		slog.Warn(err.Error())
+		slog.Errorf("Error while single execution: %v", err)
 		return
 	}
-	slog.Info("Created new execution: ", e.UUID.String())
-	e.Source = eI.source
-	e.GitRef = eI.ref
-	e.VtgatePlannerVersion = eI.plannerVersion
 
-	slog.Info("Started execution: ", e.UUID.String(), ", with git ref: ", eI.ref)
+	if compInfo.execComp != nil {
+		err = s.executeSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
+		if err != nil {
+			slog.Errorf("Error while single execution: %v", err)
+			return
+		}
+	}
+
+	err = sendNotificationForRegression()
+	if err != nil {
+		slog.Errorf("Send notification: %v", err)
+		return
+	}
+}
+
+func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion string) (err error) {
+	var e *exec.Exec
+	var exists bool
+	defer func() {
+		if e != nil {
+			err2 := e.CleanUp()
+			if err2 != nil {
+				slog.Errorf("CleanUp step: %v", err2)
+				err = err2
+				return
+			}
+			e.Success()
+			slog.Info("Finished execution: ", e.UUID.String())
+			mtx.Lock()
+			currentCountExec--
+			mtx.Unlock()
+		}
+	}()
+
+	exists, err = s.checkIfExists(ref, typeOf, plannerVersion)
+	if exists || err != nil {
+		return err
+	}
+
+	e, err = exec.NewExecWithConfig(config)
+	if err != nil {
+		slog.Warn(err.Error())
+		return err
+	}
+	slog.Info("Created new execution: ", e.UUID.String())
+	e.Source = source
+	e.GitRef = ref
+	e.VtgatePlannerVersion = plannerVersion
+
+	slog.Info("Started execution: ", e.UUID.String(), ", with git ref: ", ref)
 	err = e.Prepare()
 	if err != nil {
 		slog.Errorf("Prepare step: %v", err)
-		return
+		return err
 	}
 
 	err = e.SetOutputToDefaultPath()
 	if err != nil {
 		slog.Errorf("Prepare outputs step: %v", err)
-		return
+		return err
 	}
 
 	err = e.Execute()
 	if err != nil {
 		slog.Errorf("Execution step: %v", err)
-		return
+		return err
 	}
-
-	err = e.SendNotificationForRegression()
-	if err != nil {
-		slog.Errorf("Send notification: %v", err)
-		return
-	}
-	slog.Info("Finished execution: ", e.UUID.String())
+	return nil
 }
 
 func newCompareInfo(configFile, ref, source, compareRef, compareSource string, retry int, configType, plannerVersion string, ignoreNonRegression bool) *CompareInfo {
 	return &CompareInfo{
-		Config: configFile,
+		config: configFile,
 		execMain: &execInfo{
 			ref:    ref,
 			source: source,
@@ -361,24 +389,24 @@ func newCompareInfo(configFile, ref, source, compareRef, compareSource string, r
 			ref:    compareRef,
 			source: compareSource,
 		},
-		Retry:               retry,
-		PlannerVersion:      plannerVersion,
-		ExecType:            configType,
-		IgnoreNonRegression: ignoreNonRegression,
+		retry:               retry,
+		plannerVersion:      plannerVersion,
+		typeOf:              configType,
+		ignoreNonRegression: ignoreNonRegression,
 	}
 }
 
 func newSingleExecution(configFile, ref, source string, retry int, configType, plannerVersion string) *CompareInfo {
 	return &CompareInfo{
-		Config: configFile,
+		config: configFile,
 		execMain: &execInfo{
 			ref:    ref,
 			source: source,
 		},
 		execComp:            nil,
-		Retry:               retry,
-		PlannerVersion:      plannerVersion,
-		ExecType:            configType,
-		IgnoreNonRegression: false,
+		retry:               retry,
+		plannerVersion:      plannerVersion,
+		typeOf:              configType,
+		ignoreNonRegression: false,
 	}
 }
