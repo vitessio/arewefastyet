@@ -247,14 +247,10 @@ func (s *Server) cronTags() {
 	s.cronPrepare(compareInfos)
 }
 
-func (s *Server) cronPrepare(execInfos []execInfo) {
-	for _, info := range execInfos {
-		exists, err := s.checkIfExists(info)
-		if err != nil || exists {
-			continue
-		}
+func (s *Server) cronPrepare(compareInfos []*CompareInfo) {
+	for _, info := range compareInfos {
 		execQueue <- info
-		slog.Infof("New Execution (config: %s, ref: %s, source: %s, planner: %s) added to the queue (length: %d)", info.config, info.ref, info.source, info.plannerVersion, len(execQueue))
+		slog.Infof("New Comparison Execution - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) added to the queue (length: %d)", info.Name, info.Config, info.execMain.ref, info.execMain.source, info.PlannerVersion, len(execQueue))
 	}
 }
 
