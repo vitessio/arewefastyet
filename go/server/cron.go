@@ -100,23 +100,12 @@ func (s *Server) cronBranchHandler() {
 	}
 
 	// release branches
-	releases, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
+	compareInfosReleases, err := s.compareReleaseBranches(configs)
 	if err != nil {
 		slog.Warn(err.Error())
 		return
 	}
-	for _, release := range releases {
-		ref = release.CommitHash
-		for configType, configFile := range configs {
-			if configType == "micro" {
-				compareInfos = append(compareInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, "", configType))
-			} else {
-				for _, version := range macrobench.PlannerVersions {
-					compareInfos = append(compareInfos, newExecInfo(configFile, ref, s.cronNbRetry, "cron_"+release.Name, string(version), configType))
-				}
-			}
-		}
-	}
+	compareInfos = append(compareInfos, compareInfosReleases...)
 	s.cronPrepare(compareInfos)
 }
 
@@ -153,6 +142,47 @@ func (s *Server) compareMasterBranch(configs map[string]string) ([]*CompareInfo,
 			}
 		}
 	}
+	return compareInfos, nil
+}
+
+func (s *Server) compareReleaseBranches(configs map[string]string) ([]*CompareInfo, error) {
+	var compareInfos []*CompareInfo
+	releases, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
+	if err != nil {
+		slog.Warn(err.Error())
+		return nil, err
+	}
+	for _, release := range releases {
+		ref := release.CommitHash
+		source := "cron_" + release.Name
+		lastPathRelease, err := git.GetLastPatchReleaseAndCommitHash(s.getVitessPath(), release.Number)
+		if err != nil {
+			slog.Warn(err.Error())
+			return nil, nil
+		}
+		for configType, configFile := range configs {
+			if configType == "micro" {
+				_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, source, ref)
+				if err != nil {
+					slog.Warn(err.Error())
+					return nil, err
+				}
+				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, previousGitRef, "", s.cronNbRetry, configType, ""))
+				compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, ""))
+			} else {
+				for _, version := range macrobench.PlannerVersions {
+					_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, source, configType, string(version), ref)
+					if err != nil {
+						slog.Warn(err.Error())
+						return nil, err
+					}
+					compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, previousGitRef, "", s.cronNbRetry, configType, string(version)))
+					compareInfos = append(compareInfos, newCompareInfo(configFile, ref, source, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, string(version)))
+				}
+			}
+		}
+	}
+
 	return compareInfos, nil
 }
 

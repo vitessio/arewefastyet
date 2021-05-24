@@ -205,6 +205,22 @@ func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
 	return res[0], nil
 }
 
+// GetLastPatchReleaseAndCommitHash gets the last release number given the major and minor release number along with the commit hash given the directory of the clone of vitess
+func GetLastPatchReleaseAndCommitHash(repoDir string, releaseNumber []int) (*Release, error) {
+	major := releaseNumber[0]
+	minor := releaseNumber[1]
+	res, err := GetAllVitessReleaseCommitHash(repoDir)
+	if err != nil {
+		return nil, err
+	}
+	for _, release := range res {
+		if release.Number[0] == major && release.Number[1] == minor {
+			return release, nil
+		}
+	}
+	return nil, fmt.Errorf("could not find the latest patch release for %d.%d", major, minor)
+}
+
 // compareReleaseNumbers compares the two release numbers provided as input
 // the result is as follows -
 // 0, if release1 == release2
