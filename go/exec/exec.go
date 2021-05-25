@@ -338,6 +338,7 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	return e, nil
 }
 
+// GetPreviousFromSourceMicrobenchmark gets the previous execution from the same source for microbenchmarks
 func GetPreviousFromSourceMicrobenchmark(clientDB *mysql.Client, source, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
 		"e.type = \"micro\" AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
@@ -354,6 +355,7 @@ func GetPreviousFromSourceMicrobenchmark(clientDB *mysql.Client, source, gitRef 
 	return
 }
 
+// GetPreviousFromSourceMacrobenchmark gets the previous execution from the same source with the sane plannerVersion for macrobenchmarks
 func GetPreviousFromSourceMacrobenchmark(clientDB *mysql.Client, source, typeOf, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.source = ? AND e.status = 'finished' AND " +
 		"e.type = ? AND e.git_ref != ? AND m.exec_uuid = e.uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
