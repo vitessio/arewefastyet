@@ -32,6 +32,8 @@ import (
 var (
 	v = viper.New()
 
+	skip = ""
+
 	dbConfig = mysql.ConfigDB{}
 	dbClient = new(mysql.Client)
 
@@ -44,7 +46,20 @@ func TestMain(m *testing.M) {
 	if configFile == "" {
 		configFile = "../../../../config/config.yaml"
 	}
-	var err error
+
+	// Checking if the configuration file exists or not.
+	// Skipping the E2E tests if none were found.
+	//
+	// CI does not include configuration file / secrets, thus
+	// these tests will be skipped.
+	_, err := os.OpenFile(configFile, os.O_RDWR, 0755)
+	if err != nil {
+		if os.IsNotExist(err) {
+			skip = "no configuration file found."
+			os.Exit(m.Run())
+		}
+		log.Fatal(err)
+	}
 
 	v.SetConfigFile(configFile)
 	if err = v.ReadInConfig(); err != nil {
@@ -67,6 +82,9 @@ func TestMain(m *testing.M) {
 
 func TestCompareMacroBenchmark(t *testing.T) {
 	c := qt.New(t)
+	if skip != "" {
+		c.Skip(skip)
+	}
 	macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, execMetricsClient, "dff8d632908583cae5940b25a962eaa2e6550508", "f7304cd1893accfefee0525910098a8e0e68deec", macrobench.V3Planner)
 	if err != nil {
 		c.Fatal(err)
@@ -78,6 +96,9 @@ func BenchmarkCompareMacroBenchmark(b *testing.B) {
 	c := qt.New(b)
 
 	run := func(b *testing.B, planner macrobench.PlannerVersion, reference, compare string) {
+		if skip != "" {
+			c.Skip(skip)
+		}
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
 			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, execMetricsClient, reference, compare, planner)
