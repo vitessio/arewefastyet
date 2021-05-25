@@ -87,6 +87,10 @@ func (e *Equinix) CleanUp() error {
 	for _, varValue := range e.TerraformVarArray() {
 		destroyOpts = append(destroyOpts, varValue)
 	}
+	// tfTimeout allows us to wait for the state's lock to be unlocked
+	// before proceeding to the destroy. 120s = 120 seconds.
+	tfTimeout := tfexec.LockTimeout("120s")
+	destroyOpts = append(destroyOpts, tfTimeout)
 
 	err := e.tf.Destroy(context.Background(), destroyOpts...)
 	if err != nil {
@@ -105,6 +109,7 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 	for _, varValue := range varArray {
 		planOpts = append(planOpts, varValue)
 	}
+
 	changed, err := e.tf.Plan(context.Background(), planOpts...)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %v", infra.ErrorProvision, err)
@@ -114,6 +119,7 @@ func (e Equinix) Create(wantOutputs ...string) (output map[string]string, err er
 		for _, varValue := range varArray {
 			applyOpts = append(applyOpts, varValue)
 		}
+
 		err = e.tf.Apply(context.Background(), applyOpts...)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %v", infra.ErrorProvision, err)

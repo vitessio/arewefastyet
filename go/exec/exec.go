@@ -24,6 +24,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
@@ -56,7 +57,8 @@ const (
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
 
-	ErrorNotPrepared = "exec is not prepared"
+	ErrorNotPrepared      = "exec is not prepared"
+	ErrorExecutionTimeout = "execution timeout"
 )
 
 type Exec struct {
@@ -191,6 +193,26 @@ func (e *Exec) Prepare() error {
 
 	e.prepared = true
 	return nil
+}
+
+// ExecuteWithTimeout will call execution's Execute method with the given timeout.
+func (e Exec) ExecuteWithTimeout(timeout time.Duration) (err error) {
+	defer func() {
+		e.handleStepEnd(err)
+	}()
+	errs := make(chan error)
+
+	go func() {
+		errs <- e.Execute()
+	}()
+
+	select {
+	case err = <-errs:
+		return
+	case <-time.After(timeout):
+		err = errors.New(ErrorExecutionTimeout)
+		return
+	}
 }
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
