@@ -55,15 +55,8 @@ func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
 	s, err := GetAllVitessReleaseCommitHash(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
 
-	// find the index where 10.0.1 is in the list of releases
-	idx := 0
-	for ; idx < len(s); idx++ {
-		if s[idx].Name == "10.0.1" {
-			break
-		}
-	}
-
 	// ordered releases from v10.0.1 to v9.0.0-rc1
+	// these should come one after the other but there can be intermediate values in between owing to new releases
 	tc := []*Release{
 		{Name: "10.0.1", CommitHash: "f7304cd1893accfefee0525910098a8e0e68deec", Number: []int{10, 0, 1}},
 		{Name: "10.0.0", CommitHash: "48dccf56282dc79903c0ab0b1d0177617f927403", Number: []int{10, 0, 0}},
@@ -73,9 +66,19 @@ func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
 		{Name: "9.0.0-rc1", CommitHash: "0472d4728ff4b5a0b91834331ff16ab9b0057da8", Number: []int{9, 0, 0}, RCnumber: 1},
 	}
 
-	// check that all release match the order of tc
-	for i := 0; i < len(tc); i++ {
-		qt.Assert(t, s[idx+i], qt.DeepEquals, tc[i])
+	idx := 0
+	for _, release := range tc {
+		found := false
+		// keep iterating over all the releases gotten and try to find the next one
+		for ; idx < len(s); idx++ {
+			if s[idx].Name == release.Name {
+				found = true
+				break
+			}
+		}
+		// assert that the current release is found and also assert that its contents match the expectations
+		qt.Assert(t, found, qt.IsTrue)
+		qt.Assert(t, s[idx], qt.DeepEquals, release)
 	}
 }
 
