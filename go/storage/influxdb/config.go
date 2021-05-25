@@ -76,6 +76,14 @@ func (cfg Config) IsValid() bool {
 	return cfg.Host != ""
 }
 
+func (cfg *Config) AddToViper(v *viper.Viper) {
+	_ = v.UnmarshalKey(flagInfluxHostname, &cfg.Host)
+	_ = v.UnmarshalKey(flagInfluxPort, &cfg.Port)
+	_ = v.UnmarshalKey(flagInfluxUsername, &cfg.User)
+	_ = v.UnmarshalKey(flagInfluxPassword, &cfg.Password)
+	_ = v.UnmarshalKey(flagInfluxDatabase, &cfg.Database)
+}
+
 // AddToCommand adds Config to the given cobra.Command.
 func (cfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&cfg.Host, flagInfluxHostname, "", "Hostname of InfluxDB.")
