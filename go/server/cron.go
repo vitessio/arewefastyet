@@ -31,17 +31,29 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/git"
 )
 
+// CompareInfo has the details required to compare two git commits
 type CompareInfo struct {
-	config              string
-	execMain            *execInfo
-	execComp            *execInfo
-	retry               int
-	plannerVersion      string
-	typeOf              string
-	name                string
+	// config is the configuration file to use
+	config string
+	// execMain contains the details of the execution of the main commit
+	execMain *execInfo
+	// execComp contains the details of the execution of the secondary commit
+	// when execComp is nil, then there is no execution to be done
+	// when execComp.source == "", then we are sure that the results already exist and do not need to rerun
+	execComp *execInfo
+	// retry is the number of times we want to retry failed comparisons
+	retry int
+	// plannerVersion is the vtgate planner that we should be using for testing
+	plannerVersion string
+	// typeOf takes 3 values = [oltp, micro, tpcc]
+	typeOf string
+	// name is the name of the comparison, used in sending slack message
+	name string
+	// ignoreNonRegression is true when we want to send a slack message even when there is no regression
 	ignoreNonRegression bool
 }
 
+// execInfo contains execution information regarding each exec, which is not common between the 2 executions
 type execInfo struct {
 	ref    string
 	pullNB int
@@ -49,7 +61,8 @@ type execInfo struct {
 }
 
 const (
-	maxConcurJob = 1
+	// maxConcurJob is the maximum number of concurrent jobs that we can execute
+	maxConcurJob = 5
 )
 
 var (
@@ -120,6 +133,7 @@ func (s *Server) compareMasterBranch() ([]*CompareInfo, error) {
 		slog.Warn(err.Error())
 		return nil, nil
 	}
+	// We compare master with the previous hash of master and with the latest release
 	for configType, configFile := range configs {
 		if configType == "micro" {
 			_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, "cron", ref)
@@ -153,6 +167,8 @@ func (s *Server) compareReleaseBranches() ([]*CompareInfo, error) {
 		slog.Warn(err.Error())
 		return nil, err
 	}
+
+	// We compare release-branches with the previous hash of that branch and with the latest patch release of that version
 	for _, release := range releases {
 		ref := release.CommitHash
 		source := "cron_" + release.Name
@@ -203,6 +219,8 @@ func (s Server) cronPRLabels() {
 	// a slice of compareInfo's
 	var compareInfos []*CompareInfo
 	source := "cron_pr"
+
+	// We compare PRs with the base of the PR
 	for _, prInfo := range prInfos {
 		for configType, configFile := range configs {
 			ref := prInfo.SHA
@@ -231,6 +249,8 @@ func (s *Server) cronTags() {
 
 	// a slice of compareInfo's
 	var compareInfos []*CompareInfo
+
+	// We add single executions for the tags, we do not compare them against anything
 	for _, release := range releases {
 		for configType, configFile := range configs {
 			if configType == "micro" {
@@ -312,12 +332,14 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 		mtx.Unlock()
 	}()
 
+	// execute the main execution
 	err = s.executeSingle(compInfo.config, compInfo.execMain.source, compInfo.execMain.ref, compInfo.typeOf, compInfo.plannerVersion)
 	if err != nil {
 		slog.Errorf("Error while single execution: %v", err)
 		return
 	}
 
+	// only execute the secondary execution if it is not nil and the source is set
 	if compInfo.execComp != nil && compInfo.execComp.source != "" {
 		err = s.executeSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
 		if err != nil {
@@ -326,6 +348,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 		}
 	}
 
+	// only try to send a regression message when there is a secondary execution to compare against
 	if compInfo.execComp != nil {
 		err = s.sendNotificationForRegression(compInfo)
 		if err != nil {
