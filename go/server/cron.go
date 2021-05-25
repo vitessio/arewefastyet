@@ -257,20 +257,20 @@ func (s *Server) getConfigFiles() map[string]string {
 func (s *Server) cronPrepare(compareInfos []*CompareInfo) {
 	for _, info := range compareInfos {
 		execQueue <- info
-		slog.Infof("New Comparison Execution - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) added to the queue (length: %d)", info.name, info.config, info.execMain.ref, info.execMain.source, info.plannerVersion, len(execQueue))
+		slog.Infof("New Comparison - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) added to the queue (length: %d)", info.name, info.config, info.execMain.ref, info.execMain.source, info.plannerVersion, len(execQueue))
 	}
 }
 
-func (s *Server) checkIfExists(ref, typeOf, plannerVersion string) (bool, error) {
+func (s *Server) checkIfExists(ref, typeOf, plannerVersion, source string) (bool, error) {
 	if typeOf == "micro" {
-		exist, err := exec.Exists(s.dbClient, ref, "cron", typeOf, exec.StatusFinished)
+		exist, err := exec.Exists(s.dbClient, ref, source, typeOf, exec.StatusFinished)
 		if err != nil {
 			slog.Error(err)
 			return false, err
 		}
 		return exist, nil
 	}
-	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, "cron", typeOf, exec.StatusFinished, plannerVersion)
+	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, source, typeOf, exec.StatusFinished, plannerVersion)
 	if err != nil {
 		slog.Error(err)
 		return false, err
@@ -302,7 +302,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 			// Retry after any failure if the counter is above zero.
 			if compInfo.retry > 0 {
 				compInfo.retry--
-				slog.Infof("Retrying Cron Execution - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) retries left: %d", compInfo.name, compInfo.config, compInfo.execMain.ref, compInfo.execMain.source, compInfo.plannerVersion, len(execQueue), compInfo.retry)
+				slog.Infof("Retrying Comparison - Name: %s (config: %s, refMain: %s, sourceMain: %s, planner: %s) retries left: %d", compInfo.name, compInfo.config, compInfo.execMain.ref, compInfo.execMain.source, compInfo.plannerVersion, len(execQueue), compInfo.retry)
 				s.cronExecution(compInfo)
 				return
 			}
@@ -318,7 +318,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 		return
 	}
 
-	if compInfo.execComp != nil || compInfo.execComp.source == "" {
+	if compInfo.execComp != nil && compInfo.execComp.source != "" {
 		err = s.executeSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
 		if err != nil {
 			slog.Errorf("Error while single execution: %v", err)
@@ -326,10 +326,12 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 		}
 	}
 
-	err = s.sendNotificationForRegression(compInfo)
-	if err != nil {
-		slog.Errorf("Send notification: %v", err)
-		return
+	if compInfo.execComp != nil {
+		err = s.sendNotificationForRegression(compInfo)
+		if err != nil {
+			slog.Errorf("Send notification: %v", err)
+			return
+		}
 	}
 }
 
@@ -352,7 +354,7 @@ func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion strin
 		}
 	}()
 
-	exists, err = s.checkIfExists(ref, typeOf, plannerVersion)
+	exists, err = s.checkIfExists(ref, typeOf, plannerVersion, source)
 	if exists || err != nil {
 		return err
 	}
@@ -420,5 +422,6 @@ func newSingleExecution(name, configFile, ref, source string, retry int, configT
 		plannerVersion:      plannerVersion,
 		typeOf:              configType,
 		ignoreNonRegression: false,
+		name:                name,
 	}
 }
