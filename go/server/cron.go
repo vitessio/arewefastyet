@@ -49,7 +49,7 @@ type execInfo struct {
 }
 
 const (
-	maxConcurJob = 5
+	maxConcurJob = 1
 )
 
 var (

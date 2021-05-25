@@ -7,3 +7,4 @@ The purpose of this project is to do a benchmark run when ever there is a push. 
 1. [Installation](Installation.md)
 2. [Cli](arewefastyet.md)
 3. [Makefile](Makefile.md)
+3. [Cron](cron.md)
