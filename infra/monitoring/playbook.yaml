@@ -26,7 +26,6 @@
 - hosts: storage
   roles:
     - role: influxdb
-      when: influxdb is defined
 
 - hosts: metrics
   roles:

@@ -14,22 +14,32 @@
   apt_key:
     url: https://repos.influxdata.com/influxdb.key
     state: present
+  when: create_influxdb is defined
 
 - name: Add InfluxDB repository
   apt_repository:
     repo: 'deb https://repos.influxdata.com/ubuntu xenial stable'
     state: present
+  when: create_influxdb is defined
 
 - name: Install InfluxDB packages
   apt:
     name: influxdb
     state: present
+  when: create_influxdb is defined
 
 - name: Modify InfluxDB hostname
   replace:
     dest: /etc/influxdb/influxdb.conf
     regexp: '^# hostname = "localhost"$'
     replace: 'hostname = \"{{ ansible_hostname }}\"'
+    backup: yes
+
+- name: Modify InfluxDB inmem
+  replace:
+    dest: /etc/influxdb/influxdb.conf
+    regexp: '# max-series-per-database = 1000000'
+    replace: 'max-series-per-database = 0'
     backup: yes
 
 - name: Start Service
@@ -40,15 +50,19 @@
 
 - name: Create Admin User
   command: /usr/bin/influx -execute "CREATE USER admin WITH PASSWORD '{{ influxdb_admin_password }}' WITH ALL PRIVILEGES;"
+  when: create_influxdb is defined
 
 - name: Create Prometheus User
   command: /usr/bin/influx -execute "CREATE USER prometheus WITH PASSWORD '{{ influxdb_prometheus_password }}';"
+  when: create_influxdb is defined
 
 - name: Create Prometheus Database
   command: /usr/bin/influx -execute "CREATE DATABASE prometheus;"
+  when: create_influxdb is defined
 
 - name: Grant Prometheus User
   command: /usr/bin/influx -execute "GRANT ALL ON prometheus TO prometheus;"
+  when: create_influxdb is defined
 
 - name: Enable Auth
   replace:
