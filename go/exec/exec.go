@@ -19,9 +19,7 @@
 package exec
 
 import (
-	"database/sql"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path"
@@ -34,12 +32,8 @@ import (
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
 	"github.com/vitessio/arewefastyet/go/infra/construct"
 	"github.com/vitessio/arewefastyet/go/infra/equinix"
-	"github.com/vitessio/arewefastyet/go/slack"
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
-	"github.com/vitessio/arewefastyet/go/tools/macrobench"
-	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
 const (
@@ -88,9 +82,6 @@ type Exec struct {
 	// Configuration used to authenticate and insert execution stats
 	// data to a remote database system.
 	statsRemoteDBConfig stats.RemoteDBConfig
-
-	// Configuration used to send message to Slack.
-	slackConfig slack.Config
 
 	// rootDir represents the parent directory of the Exec.
 	// From there, the Exec's unique directory named Exec.dirPath will
@@ -259,112 +250,6 @@ func (e *Exec) handleStepEnd(err error) {
 	}
 }
 
-func (e Exec) SendNotificationForRegression() (err error) {
-	defer func() {
-		e.handleStepEnd(err)
-	}()
-
-	var previousExec, previousGitRef string
-	var ignoreNonRegression bool
-	if e.pullNB > 0 {
-		previousExec, previousGitRef, err = e.getPreviousForPR()
-		ignoreNonRegression = true
-	} else {
-		previousExec, previousGitRef, err = e.getPreviousFromSameSource()
-	}
-	if err != nil {
-		return err
-	}
-	if previousExec == "" {
-		return nil
-	}
-
-	// regression header, appender to header in the event of a regression
-	regressionHeader := `*Observed a regression.*
-`
-
-	// header of the message, before the regression explanation
-	header := ``
-	if e.pullNB > 0 {
-		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, e.pullNB)
-	} else {
-		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + e.GitRef + `|` + git.ShortenSHA(e.GitRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + previousGitRef + `|` + git.ShortenSHA(previousGitRef) + `>.`
-	}
-	header += `Benchmark UUIDs, recent: ` + e.UUID.String()[:7] + ` old: ` + previousExec[:7] + `.
-Comparison can be seen at : ` + getComparisonLink(e.GitRef, previousGitRef) + `
-
-`
-
-	if e.typeOf == "micro" {
-		microBenchmarks, err := microbench.Compare(e.clientDB, e.GitRef, previousGitRef)
-		if err != nil {
-			return err
-		}
-		regression := microBenchmarks.Regression()
-		err = e.sendMessageIfRegression(ignoreNonRegression, regression, header, regressionHeader)
-		if err != nil {
-			return err
-		}
-	} else if e.typeOf == "oltp" || e.typeOf == "tpcc" {
-		influxCfg := influxdb.Config{
-			Host:     e.statsRemoteDBConfig.Host,
-			Port:     e.statsRemoteDBConfig.Port,
-			User:     e.statsRemoteDBConfig.User,
-			Password: e.statsRemoteDBConfig.Password,
-			Database: e.statsRemoteDBConfig.DbName,
-		}
-		influxClient, err := influxCfg.NewClient()
-		if err != nil {
-			return err
-		}
-
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(e.clientDB, influxClient, e.GitRef, previousGitRef, macrobench.PlannerVersion(e.VtgatePlannerVersion))
-		if err != nil {
-			return err
-		}
-
-		macroResults := macrosMatrices[macrobench.Type(e.typeOf)].(macrobench.ComparisonArray)
-		if len(macroResults) == 0 {
-			return fmt.Errorf("no macrobenchmark result")
-		}
-
-		regression := macroResults[0].Regression()
-		err = e.sendMessageIfRegression(ignoreNonRegression, regression, header, regressionHeader)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (e Exec) sendMessageIfRegression(ignoreNonRegression bool, regression, header, regressionHeader string) error {
-	if regression != "" || ignoreNonRegression {
-		hd := header
-		if regression != "" {
-			hd = regressionHeader + header
-		}
-		err := e.sendSlackMessage(regression, hd)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func getComparisonLink(leftSHA, rightSHA string) string {
-	return "https://benchmark.vitess.io/compare?r=" + leftSHA + "&c=" + rightSHA
-}
-
-func (e Exec) sendSlackMessage(regression, header string) error {
-	content := header + regression
-	msg := slack.TextMessage{Content: content}
-	err := msg.Send(e.slackConfig)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // CleanUp cleans and removes all things required only during the execution flow
 // and not after it is done.
 func (e Exec) CleanUp() (err error) {
@@ -431,30 +316,15 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	return e, nil
 }
 
-func (e Exec) getPreviousForPR() (execUUID, gitRef string, err error) {
-	// getting the PR's base ref
-	_, baseRef, err := git.GetPullRequestHeadAndBase(fmt.Sprintf("https://api.github.com/repos/vitessio/vitess/pulls/%d", +e.pullNB))
-	if err != nil {
-		return "", "", err
-	}
-
-	var result *sql.Rows
-	if e.typeOf == "micro" {
-		// compare with base ref
-		query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.status = 'finished' AND " +
-			"e.type = ? AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
-		result, err = e.clientDB.Select(query, e.typeOf, baseRef)
-	} else {
-		// compare with base ref and same vtgate_planner_version
-		query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.status = 'finished' AND " +
-			"e.type = ? AND e.git_ref != ? AND e.uuid = m.exec_uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
-		result, err = e.clientDB.Select(query, e.typeOf, baseRef, e.VtgatePlannerVersion)
-	}
+func GetPreviousFromSourceMicrobenchmark(clientDB *mysql.Client, source, gitRef string) (execUUID, gitRefOut string, err error) {
+	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
+		"e.type = \"micro\" AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
+	result, err := clientDB.Select(query, source, gitRef)
 	if err != nil {
 		return
 	}
-	for result != nil && result.Next() {
-		err = result.Scan(&execUUID, &gitRef)
+	for result.Next() {
+		err = result.Scan(&execUUID, &gitRefOut)
 		if err != nil {
 			return
 		}
@@ -462,15 +332,15 @@ func (e Exec) getPreviousForPR() (execUUID, gitRef string, err error) {
 	return
 }
 
-func (e Exec) getPreviousFromSameSource() (execUUID, gitRef string, err error) {
-	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
-		"e.type = ? AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
-	result, err := e.clientDB.Select(query, e.Source, e.typeOf, e.GitRef)
+func GetPreviousFromSourceMacrobenchmark(clientDB *mysql.Client, source, typeOf, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
+	query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.source = ? AND e.status = 'finished' AND " +
+		"e.type = ? AND e.git_ref != ? AND m.exec_uuid = e.uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
+	result, err := clientDB.Select(query, source, typeOf, gitRef, plannerVersion)
 	if err != nil {
 		return
 	}
 	for result.Next() {
-		err = result.Scan(&execUUID, &gitRef)
+		err = result.Scan(&execUUID, &gitRefOut)
 		if err != nil {
 			return
 		}

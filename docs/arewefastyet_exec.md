@@ -41,8 +41,6 @@ arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --db-
       --exec-vtgate-planner-version string   Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback. (default "V3")
   -h, --help                                 help for exec
       --infra-path string                    Path to the infra directory
-      --slack-channel string                 Slack channel on which to post messages
-      --slack-token string                   Token used to authenticate Slack
       --stats-remote-db-database string      Name of the stats remote database.
       --stats-remote-db-host string          Hostname of the stats remote database.
       --stats-remote-db-password string      Password to authenticate the stats remote database.
