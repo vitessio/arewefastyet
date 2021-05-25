@@ -196,7 +196,6 @@ func (e *Exec) Prepare() error {
 }
 
 // ExecuteWithTimeout will call execution's Execute method with the given timeout.
-// Note that a timeout too small will result in
 func (e Exec) ExecuteWithTimeout(timeout time.Duration) error {
 	errs := make(chan error)
 
