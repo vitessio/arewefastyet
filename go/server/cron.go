@@ -19,6 +19,7 @@
 package server
 
 import (
+	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -83,26 +84,20 @@ func (s *Server) createNewCron() error {
 }
 
 func (s *Server) cronBranchHandler() {
-	configs := map[string]string{
-		"micro": s.microbenchConfigPath,
-		"oltp":  s.macrobenchConfigPathOLTP,
-		"tpcc":  s.macrobenchConfigPathTPCC,
-	}
-
 	err := s.pullLocalVitess()
 	if err != nil {
 		slog.Warn(err.Error())
 		return
 	}
 	// master branch
-	compareInfos, err := s.compareMasterBranch(configs)
+	compareInfos, err := s.compareMasterBranch()
 	if err != nil {
 		slog.Warn(err.Error())
 		return
 	}
 
 	// release branches
-	compareInfosReleases, err := s.compareReleaseBranches(configs)
+	compareInfosReleases, err := s.compareReleaseBranches()
 	if err != nil {
 		slog.Warn(err.Error())
 		return
@@ -111,7 +106,9 @@ func (s *Server) cronBranchHandler() {
 	s.cronPrepare(compareInfos)
 }
 
-func (s *Server) compareMasterBranch(configs map[string]string) ([]*CompareInfo, error) {
+func (s *Server) compareMasterBranch() ([]*CompareInfo, error) {
+	configs := s.getConfigFiles()
+
 	var compareInfos []*CompareInfo
 	ref, err := git.GetCommitHash(s.getVitessPath())
 	if err != nil {
@@ -128,18 +125,18 @@ func (s *Server) compareMasterBranch(configs map[string]string) ([]*CompareInfo,
 			_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, "cron", ref)
 			if err != nil {
 				slog.Warn(err.Error())
-				return nil, err
+			} else if previousGitRef != "" {
+				compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - micro", configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
 			}
-			compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - micro", configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
 			compareInfos = append(compareInfos, newCompareInfo("Comparing master with latest release - "+lastRelease.Name+" - micro", configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, "", false))
 		} else {
 			for _, version := range macrobench.PlannerVersions {
 				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, "cron", configType, string(version), ref)
 				if err != nil {
 					slog.Warn(err.Error())
-					return nil, err
+				} else if previousGitRef != "" {
+					compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - "+configType+" - "+string(version), configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
 				}
-				compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - "+configType+" - "+string(version), configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
 				compareInfos = append(compareInfos, newCompareInfo("Comparing master with latest release - "+lastRelease.Name+" - "+configType+" - "+string(version), configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version), false))
 			}
 		}
@@ -147,7 +144,9 @@ func (s *Server) compareMasterBranch(configs map[string]string) ([]*CompareInfo,
 	return compareInfos, nil
 }
 
-func (s *Server) compareReleaseBranches(configs map[string]string) ([]*CompareInfo, error) {
+func (s *Server) compareReleaseBranches() ([]*CompareInfo, error) {
+	configs := s.getConfigFiles()
+
 	var compareInfos []*CompareInfo
 	releases, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
 	if err != nil {
@@ -160,7 +159,6 @@ func (s *Server) compareReleaseBranches(configs map[string]string) ([]*CompareIn
 		lastPathRelease, err := git.GetLastPatchReleaseAndCommitHash(s.getVitessPath(), release.Number)
 		if err != nil {
 			slog.Warn(err.Error())
-			return nil, nil
 		}
 		for configType, configFile := range configs {
 			if configType == "micro" {
@@ -168,18 +166,23 @@ func (s *Server) compareReleaseBranches(configs map[string]string) ([]*CompareIn
 				if err != nil {
 					slog.Warn(err.Error())
 					return nil, err
+				} else if previousGitRef != "" {
+					compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with previous commit - micro", configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
 				}
-				compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with previous commit - micro", configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
-				compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with last path release "+lastPathRelease.Name+" - micro", configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, "", false))
+				if lastPathRelease != nil {
+					compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with last path release "+lastPathRelease.Name+" - micro", configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, "", false))
+				}
 			} else {
 				for _, version := range macrobench.PlannerVersions {
 					_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, source, configType, string(version), ref)
 					if err != nil {
 						slog.Warn(err.Error())
-						return nil, err
+					} else if previousGitRef != "" {
+						compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with previous commit - "+configType+" - "+string(version), configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
 					}
-					compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with previous commit - "+configType+" - "+string(version), configFile, ref, source, 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
-					compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with last path release "+lastPathRelease.Name+" - "+configType+" - "+string(version), configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, string(version), false))
+					if lastPathRelease != nil {
+						compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with last path release "+lastPathRelease.Name+" - "+configType+" - "+string(version), configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, string(version), false))
+					}
 				}
 			}
 		}
@@ -189,11 +192,7 @@ func (s *Server) compareReleaseBranches(configs map[string]string) ([]*CompareIn
 }
 
 func (s Server) cronPRLabels() {
-	configs := map[string]string{
-		"micro": s.microbenchConfigPath,
-		"oltp":  s.macrobenchConfigPathOLTP,
-		"tpcc":  s.macrobenchConfigPathTPCC,
-	}
+	configs := s.getConfigFiles()
 
 	prInfos, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
 	if err != nil {
@@ -210,10 +209,10 @@ func (s Server) cronPRLabels() {
 			previousGitRef := prInfo.Base
 			pullNb := prInfo.Number
 			if configType == "micro" {
-				compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro", configFile, ref, source, pullNb, previousGitRef, source, s.cronNbRetry, configType, "", true))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro", configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, "", true))
 			} else {
 				for _, version := range macrobench.PlannerVersions {
-					compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - "+configType+" - "+string(version), configFile, ref, source, pullNb, previousGitRef, source, s.cronNbRetry, configType, string(version), true))
+					compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - "+configType+" - "+string(version), configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, string(version), true))
 				}
 			}
 		}
@@ -222,11 +221,7 @@ func (s Server) cronPRLabels() {
 }
 
 func (s *Server) cronTags() {
-	configs := map[string]string{
-		"micro": s.microbenchConfigPath,
-		"oltp":  s.macrobenchConfigPathOLTP,
-		"tpcc":  s.macrobenchConfigPathTPCC,
-	}
+	configs := s.getConfigFiles()
 
 	releases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
@@ -248,6 +243,15 @@ func (s *Server) cronTags() {
 		}
 	}
 	s.cronPrepare(compareInfos)
+}
+
+func (s *Server) getConfigFiles() map[string]string {
+	configs := map[string]string{
+		"micro": s.microbenchConfigPath,
+		"oltp":  s.macrobenchConfigPathOLTP,
+		"tpcc":  s.macrobenchConfigPathTPCC,
+	}
+	return configs
 }
 
 func (s *Server) cronPrepare(compareInfos []*CompareInfo) {
@@ -303,6 +307,9 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 				return
 			}
 		}
+		mtx.Lock()
+		currentCountExec--
+		mtx.Unlock()
 	}()
 
 	err = s.executeSingle(compInfo.config, compInfo.execMain.source, compInfo.execMain.ref, compInfo.typeOf, compInfo.plannerVersion)
@@ -331,17 +338,17 @@ func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion strin
 	var exists bool
 	defer func() {
 		if e != nil {
-			err2 := e.CleanUp()
-			if err2 != nil {
-				slog.Errorf("CleanUp step: %v", err2)
-				err = err2
-				return
+			errCleanUp := e.CleanUp()
+			if errCleanUp != nil {
+				slog.Errorf("CleanUp step: %v", errCleanUp)
+				if err != nil {
+					err = fmt.Errorf("%v: %v", errCleanUp, err)
+				} else {
+					err = errCleanUp
+				}
 			}
 			e.Success()
 			slog.Info("Finished execution: ", e.UUID.String())
-			mtx.Lock()
-			currentCountExec--
-			mtx.Unlock()
 		}
 	}()
 
