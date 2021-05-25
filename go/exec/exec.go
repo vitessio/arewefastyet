@@ -196,7 +196,10 @@ func (e *Exec) Prepare() error {
 }
 
 // ExecuteWithTimeout will call execution's Execute method with the given timeout.
-func (e Exec) ExecuteWithTimeout(timeout time.Duration) error {
+func (e Exec) ExecuteWithTimeout(timeout time.Duration) (err error) {
+	defer func() {
+		e.handleStepEnd(err)
+	}()
 	errs := make(chan error)
 
 	go func() {
@@ -204,10 +207,11 @@ func (e Exec) ExecuteWithTimeout(timeout time.Duration) error {
 	}()
 
 	select {
-	case err := <-errs:
-		return err
+	case err = <-errs:
+		return
 	case <-time.After(timeout):
-		return errors.New(ErrorExecutionTimeout)
+		err = errors.New(ErrorExecutionTimeout)
+		return
 	}
 }
 

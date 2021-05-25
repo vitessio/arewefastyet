@@ -87,7 +87,11 @@ func (e *Equinix) CleanUp() error {
 	for _, varValue := range e.TerraformVarArray() {
 		destroyOpts = append(destroyOpts, varValue)
 	}
-	destroyOpts = append(destroyOpts, tfexec.LockTimeout("120s"))
+	// tfTimeout allows us to wait for the state's lock to be unlocked
+	// before proceeding to the destroy. 120s = 120 seconds.
+	tfTimeout := tfexec.LockTimeout("120s")
+	destroyOpts = append(destroyOpts, tfTimeout)
+
 	err := e.tf.Destroy(context.Background(), destroyOpts...)
 	if err != nil {
 		return err
