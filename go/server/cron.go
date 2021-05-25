@@ -382,7 +382,7 @@ func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion strin
 		return err
 	}
 
-	err = e.Execute()
+	err = e.ExecuteWithTimeout(time.Hour * 2)
 	if err != nil {
 		slog.Errorf("Execution step: %v", err)
 		return err
