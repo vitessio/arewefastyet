@@ -20,6 +20,7 @@ package exec
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path"
@@ -404,12 +405,22 @@ func GetLatestCronJobForMacrobenchmarks(client *mysql.Client) (gitSha string, er
 	return "", nil
 }
 
-func Exists(clientDB *mysql.Client, gitRef, source, typeOf, status string, wantOld bool) (bool, error) {
+// TODO: For the following 4 functions, set the time frame for recent results according to the cron jobs schedule instead of using CURDATE always
+func Exists(clientDB *mysql.Client, gitRef, source, typeOf, status string, wantOnlyOld bool) (bool, error) {
 	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
-	if wantOld {
+	if wantOnlyOld {
 		query += " AND started_at < CURDATE()"
 	}
 	result, err := clientDB.Select(query, status, gitRef, typeOf, source)
+	if err != nil {
+		return false, err
+	}
+	return result.Next(), nil
+}
+
+func ExistsStartedToday(clientDB *mysql.Client, gitRef, source, typeOf string) (bool, error) {
+	query := fmt.Sprintf("SELECT uuid FROM execution WHERE ( status = '%s' OR status = '%s' ) AND git_ref = ? AND type = ? AND source = ? AND started_at >= CURDATE()", StatusCreated, StatusStarted)
+	result, err := clientDB.Select(query, gitRef, typeOf, source)
 	if err != nil {
 		return false, err
 	}
@@ -422,6 +433,15 @@ func ExistsMacrobenchmark(clientDB *mysql.Client, gitRef, source, typeOf, status
 		query += " AND e.started_at < CURDATE()"
 	}
 	result, err := clientDB.Select(query, status, gitRef, typeOf, source, planner)
+	if err != nil {
+		return false, err
+	}
+	return result.Next(), nil
+}
+
+func ExistsMacrobenchmarkStartedToday(clientDB *mysql.Client, gitRef, source, typeOf, planner string) (bool, error) {
+	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+	result, err := clientDB.Select(query, gitRef, typeOf, source, planner)
 	if err != nil {
 		return false, err
 	}

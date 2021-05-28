@@ -290,19 +290,19 @@ func (s *Server) cronPrepare(compareInfos []*CompareInfo) {
 }
 
 // checkIfExists is used to check if the results for a given configuration exists or not
-// wantOld defines wether we only want a day old results or not.
-// wantOld = true -> check existence for a day older results
-// wantOld = false -> check existence for any time
-func (s *Server) checkIfExists(ref, typeOf, plannerVersion, source string, wantOld bool) (bool, error) {
+// wantOnlyOld defines wether we only want a day old results or not.
+// wantOnlyOld = true -> check existence for a day older results
+// wantOnlyOld = false -> check existence for any time
+func (s *Server) checkIfExists(ref, typeOf, plannerVersion, source string, wantOnlyOld bool) (bool, error) {
 	if typeOf == "micro" {
-		exist, err := exec.Exists(s.dbClient, ref, source, typeOf, exec.StatusFinished, wantOld)
+		exist, err := exec.Exists(s.dbClient, ref, source, typeOf, exec.StatusFinished, wantOnlyOld)
 		if err != nil {
 			slog.Error(err)
 			return false, err
 		}
 		return exist, nil
 	}
-	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, source, typeOf, exec.StatusFinished, plannerVersion, wantOld)
+	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, source, typeOf, exec.StatusFinished, plannerVersion, wantOnlyOld)
 	if err != nil {
 		slog.Error(err)
 		return false, err
@@ -310,16 +310,17 @@ func (s *Server) checkIfExists(ref, typeOf, plannerVersion, source string, wantO
 	return exist, nil
 }
 
-func (s *Server) checkIfStarted(ref, typeOf, plannerVersion, source string) (bool, error) {
+// checkIfInProgress returns whether there is an execution with a given configuration already in progress for todays cron job
+func (s *Server) checkIfInProgress(ref, typeOf, plannerVersion, source string) (bool, error) {
 	if typeOf == "micro" {
-		exist, err := exec.Exists(s.dbClient, ref, source, typeOf, exec.StatusStarted, false)
+		exist, err := exec.ExistsStartedToday(s.dbClient, ref, source, typeOf)
 		if err != nil {
 			slog.Error(err)
 			return false, err
 		}
 		return exist, nil
 	}
-	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, source, typeOf, exec.StatusStarted, plannerVersion, false)
+	exist, err := exec.ExistsMacrobenchmarkStartedToday(s.dbClient, ref, source, typeOf, plannerVersion)
 	if err != nil {
 		slog.Error(err)
 		return false, err
@@ -371,11 +372,16 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 	}
 
 	// only execute the secondary execution if it is not nil and the source is set
-	if compInfo.execComp != nil && compInfo.execComp.source != "" {
-		execStatusComp, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
-		if err != nil {
-			slog.Errorf("Error while single execution: %v", err)
-			return
+	// when source is nil, we already know that an execution already exists from previous cron jobs
+	if compInfo.execComp != nil {
+		if compInfo.execComp.source == "" {
+			execStatusComp = executionExists
+		} else {
+			execStatusComp, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
+			if err != nil {
+				slog.Errorf("Error while single execution: %v", err)
+				return
+			}
 		}
 	}
 
@@ -409,7 +415,7 @@ func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersi
 	}
 
 	// Now check if an execution is in progress or not
-	isStarted, err := s.checkIfStarted(ref, typeOf, plannerVersion, source)
+	isStarted, err := s.checkIfInProgress(ref, typeOf, plannerVersion, source)
 	if err != nil {
 		return executionFailed, err
 	}
@@ -424,7 +430,7 @@ func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersi
 				return executionFailed, fmt.Errorf("timed out waiting for existing execution to finish for source: %s, ref: %s, typeOf: %s, plannerVersion: %s", source, ref, typeOf, plannerVersion)
 			case <-time.After(1 * time.Minute):
 				// check again after every minute if execution finished or not, if it did then exit the for loop
-				isStarted, err = s.checkIfStarted(ref, typeOf, plannerVersion, source)
+				isStarted, err = s.checkIfInProgress(ref, typeOf, plannerVersion, source)
 				if err != nil {
 					return executionFailed, err
 				}
