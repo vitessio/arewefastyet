@@ -60,6 +60,14 @@ type execInfo struct {
 	source string
 }
 
+type executionStatus int
+
+const (
+	executionFailed executionStatus = iota
+	executionSucceeded
+	executionExists
+)
+
 const (
 	// maxConcurJob is the maximum number of concurrent jobs that we can execute
 	maxConcurJob = 5
@@ -281,16 +289,37 @@ func (s *Server) cronPrepare(compareInfos []*CompareInfo) {
 	}
 }
 
-func (s *Server) checkIfExists(ref, typeOf, plannerVersion, source string) (bool, error) {
+// checkIfExists is used to check if the results for a given configuration exists or not
+// wantOld defines wether we only want a day old results or not.
+// wantOld = true -> check existence for a day older results
+// wantOld = false -> check existence for any time
+func (s *Server) checkIfExists(ref, typeOf, plannerVersion, source string, wantOld bool) (bool, error) {
 	if typeOf == "micro" {
-		exist, err := exec.Exists(s.dbClient, ref, source, typeOf, exec.StatusFinished)
+		exist, err := exec.Exists(s.dbClient, ref, source, typeOf, exec.StatusFinished, wantOld)
 		if err != nil {
 			slog.Error(err)
 			return false, err
 		}
 		return exist, nil
 	}
-	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, source, typeOf, exec.StatusFinished, plannerVersion)
+	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, source, typeOf, exec.StatusFinished, plannerVersion, wantOld)
+	if err != nil {
+		slog.Error(err)
+		return false, err
+	}
+	return exist, nil
+}
+
+func (s *Server) checkIfStarted(ref, typeOf, plannerVersion, source string) (bool, error) {
+	if typeOf == "micro" {
+		exist, err := exec.Exists(s.dbClient, ref, source, typeOf, exec.StatusStarted, false)
+		if err != nil {
+			slog.Error(err)
+			return false, err
+		}
+		return exist, nil
+	}
+	exist, err := exec.ExistsMacrobenchmark(s.dbClient, ref, source, typeOf, exec.StatusStarted, plannerVersion, false)
 	if err != nil {
 		slog.Error(err)
 		return false, err
@@ -358,9 +387,68 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 	}
 }
 
+// checkAndExecuteSingle checks whether there already exists a run or if one is in progress.
+// It runs the execution if there are no results.
+// It returns the executionStatus and an error. Returned values are
+// executionExists -> there already exist results from yesterdays cron jobs ; err will be nil
+// executionSucceeded -> results have been found today during cron jobs ; err will be nil
+// executionFailed -> an error occurred while reading results or execution ; requires not nil err
+func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersion string) (executionStatus, error) {
+	// First check if an old execution exists or not
+	exists, err := s.checkIfExists(ref, typeOf, plannerVersion, source, true)
+	if err != nil {
+		return executionFailed, err
+	}
+	if exists {
+		return executionExists, nil
+	}
+
+	// Now check if an execution is in progress or not
+	isStarted, err := s.checkIfStarted(ref, typeOf, plannerVersion, source)
+	if err != nil {
+		return executionFailed, err
+	}
+	if isStarted {
+		// Wait for the execution to finish, with a timeout
+		timeOut := time.After(2 * time.Hour)
+
+		for {
+			select {
+			case <-timeOut:
+				// return error due to timeout
+				return executionFailed, fmt.Errorf("timed out waiting for existing execution to finish for source: %s, ref: %s, typeOf: %s, plannerVersion: %s", source, ref, typeOf, plannerVersion)
+			case <-time.After(1 * time.Minute):
+				// check again after every minute if execution finished or not, if it did then exit the for loop
+				isStarted, err = s.checkIfStarted(ref, typeOf, plannerVersion, source)
+				if err != nil {
+					return executionFailed, err
+				}
+				if !isStarted {
+					break
+				}
+			}
+		}
+	}
+
+	// check if there are results already. These would only be from this days cron jobs since we already checked for older results earlier
+	exists, err = s.checkIfExists(ref, typeOf, plannerVersion, source, false)
+	if err != nil {
+		return executionFailed, err
+	}
+	if exists {
+		return executionSucceeded, nil
+	}
+
+	// try executing given the configuration.
+	err = s.executeSingle(config, source, ref, typeOf, plannerVersion)
+	if err != nil {
+		return executionFailed, err
+	}
+	return executionSucceeded, nil
+}
+
 func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion string) (err error) {
 	var e *exec.Exec
-	var exists bool
 	defer func() {
 		if e != nil {
 			errCleanUp := e.CleanUp()
@@ -376,11 +464,6 @@ func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion strin
 			slog.Info("Finished execution: ", e.UUID.String())
 		}
 	}()
-
-	exists, err = s.checkIfExists(ref, typeOf, plannerVersion, source)
-	if exists || err != nil {
-		return err
-	}
 
 	e, err = exec.NewExecWithConfig(config)
 	if err != nil {
