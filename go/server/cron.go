@@ -346,6 +346,8 @@ func (s *Server) cron() {
 
 func (s *Server) cronExecution(compInfo *CompareInfo) {
 	var err error
+	var execStatusMain executionStatus
+	var execStatusComp executionStatus
 	defer func() {
 		if err != nil {
 			// Retry after any failure if the counter is above zero.
@@ -361,8 +363,8 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 		mtx.Unlock()
 	}()
 
-	// execute the main execution
-	err = s.executeSingle(compInfo.config, compInfo.execMain.source, compInfo.execMain.ref, compInfo.typeOf, compInfo.plannerVersion)
+	// check and execute the main execution
+	execStatusMain, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execMain.source, compInfo.execMain.ref, compInfo.typeOf, compInfo.plannerVersion)
 	if err != nil {
 		slog.Errorf("Error while single execution: %v", err)
 		return
@@ -370,7 +372,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 
 	// only execute the secondary execution if it is not nil and the source is set
 	if compInfo.execComp != nil && compInfo.execComp.source != "" {
-		err = s.executeSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
+		execStatusComp, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
 		if err != nil {
 			slog.Errorf("Error while single execution: %v", err)
 			return
@@ -379,6 +381,9 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 
 	// only try to send a regression message when there is a secondary execution to compare against
 	if compInfo.execComp != nil {
+		if execStatusMain == executionExists && execStatusComp == executionExists {
+			return
+		}
 		err = s.sendNotificationForRegression(compInfo)
 		if err != nil {
 			slog.Errorf("Send notification: %v", err)
