@@ -472,14 +472,14 @@ func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersi
 	}
 
 	// try executing given the configuration.
-	err = s.executeSingle(config, source, ref, typeOf, plannerVersion)
+	err = s.executeSingle(config, source, ref, plannerVersion)
 	if err != nil {
 		return executionFailed, err
 	}
 	return executionSucceeded, nil
 }
 
-func (s *Server) executeSingle(config, source, ref, typeOf, plannerVersion string) (err error) {
+func (s *Server) executeSingle(config, source, ref, plannerVersion string) (err error) {
 	var e *exec.Exec
 	defer func() {
 		if e != nil {

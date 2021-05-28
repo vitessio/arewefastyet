@@ -450,5 +450,29 @@ func ExistsMacrobenchmarkStartedToday(clientDB *mysql.Client, gitRef, source, ty
 	if err != nil {
 		return false, err
 	}
-	return result.Next(), nil
+	exists := result.Next()
+	if exists {
+		return true,nil
+	}
+	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+	result, err = clientDB.Select(query, gitRef, typeOf, source)
+	if err != nil {
+		return false, err
+	}
+	for result.Next() {
+		var exec_uuid string
+		err = result.Scan(&exec_uuid)
+		if err != nil {
+			return false, err
+		}
+		query = "SELECT exec_uuid FROM macrobenchmark m WHERE m.exec_uuid = ?"
+		resultMacro, err := clientDB.Select(query, exec_uuid)
+		if err != nil {
+			return false, err
+		}
+		if !resultMacro.Next() {
+			return true, nil
+		}
+	}
+	return false, nil
 }
