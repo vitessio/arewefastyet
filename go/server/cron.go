@@ -197,7 +197,11 @@ func (s *Server) compareReleaseBranches() ([]*CompareInfo, error) {
 					compareInfos = append(compareInfos, newCompareInfo("Comparing "+release.Name+" with last path release "+lastPathRelease.Name+" - micro", configFile, ref, source, 0, lastPathRelease.CommitHash, "cron_tags_"+lastPathRelease.Name, s.cronNbRetry, configType, "", false))
 				}
 			} else {
-				for _, version := range macrobench.PlannerVersions {
+				versions := []macrobench.PlannerVersion{macrobench.V3Planner}
+				if release.Number[0] >= 10 {
+					versions = append(versions, macrobench.Gen4FallbackPlanner)
+				}
+				for _, version := range versions {
 					_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, source, configType, string(version), ref)
 					if err != nil {
 						slog.Warn(err.Error())
@@ -217,28 +221,41 @@ func (s *Server) compareReleaseBranches() ([]*CompareInfo, error) {
 
 func (s Server) cronPRLabels() {
 	configs := s.getConfigFiles()
-
-	prInfos, err := git.GetPullRequestHeadForLabels([]string{s.prLabelTrigger}, "vitessio/vitess")
-	if err != nil {
-		slog.Error(err)
-		return
+	prLabelsInfo := []struct {
+		label   string
+		useGen4 bool
+	}{
+		{label: s.prLabelTrigger, useGen4: true},
+		{label: s.prLabelTriggerV3, useGen4: false},
 	}
 
 	// a slice of compareInfo's
 	var compareInfos []*CompareInfo
 	source := "cron_pr"
 
-	// We compare PRs with the base of the PR
-	for _, prInfo := range prInfos {
-		for configType, configFile := range configs {
-			ref := prInfo.SHA
-			previousGitRef := prInfo.Base
-			pullNb := prInfo.Number
-			if configType == "micro" {
-				compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro", configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, "", true))
-			} else {
-				for _, version := range macrobench.PlannerVersions {
-					compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - "+configType+" - "+string(version), configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, string(version), true))
+	for _, labelInfo := range prLabelsInfo {
+		prInfos, err := git.GetPullRequestHeadForLabels([]string{labelInfo.label}, "vitessio/vitess")
+		if err != nil {
+			slog.Error(err)
+			return
+		}
+
+		// We compare PRs with the base of the PR
+		for _, prInfo := range prInfos {
+			for configType, configFile := range configs {
+				ref := prInfo.SHA
+				previousGitRef := prInfo.Base
+				pullNb := prInfo.Number
+				if configType == "micro" {
+					compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro", configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, "", true))
+				} else {
+					versions := []macrobench.PlannerVersion{macrobench.V3Planner}
+					if labelInfo.useGen4 {
+						versions = append(versions, macrobench.Gen4FallbackPlanner)
+					}
+					for _, version := range versions {
+						compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - "+configType+" - "+string(version), configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, string(version), true))
+					}
 				}
 			}
 		}
@@ -264,7 +281,11 @@ func (s *Server) cronTags() {
 			if configType == "micro" {
 				compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, ""))
 			} else {
-				for _, version := range macrobench.PlannerVersions {
+				versions := []macrobench.PlannerVersion{macrobench.V3Planner}
+				if release.Number[0] >= 10 {
+					versions = append(versions, macrobench.Gen4FallbackPlanner)
+				}
+				for _, version := range versions {
 					compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, string(version)))
 				}
 			}
@@ -434,9 +455,9 @@ func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersi
 				if err != nil {
 					return executionFailed, err
 				}
-				if !isStarted {
-					break
-				}
+			}
+			if !isStarted {
+				break
 			}
 		}
 	}

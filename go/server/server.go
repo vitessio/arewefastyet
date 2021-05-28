@@ -35,17 +35,18 @@ import (
 const (
 	ErrorIncorrectConfiguration = "incorrect configuration"
 
-	flagPort                     = "web-port"
-	flagTemplatePath             = "web-template-path"
-	flagStaticPath               = "web-static-path"
-	flagVitessPath               = "web-vitess-path"
-	flagMode                     = "web-mode"
-	flagMicroBenchConfigFile     = "web-microbench-config"
-	flagMacroBenchConfigFileOLTP = "web-macrobench-oltp-config"
-	flagMacroBenchConfigFileTPCC = "web-macrobench-tpcc-config"
-	flagCronSchedule             = "web-cron-schedule"
-	flagPullRequestLabelTrigger  = "web-pr-label-trigger"
-	flagCronNbRetry              = "web-cron-nb-retry"
+	flagPort                                 = "web-port"
+	flagTemplatePath                         = "web-template-path"
+	flagStaticPath                           = "web-static-path"
+	flagVitessPath                           = "web-vitess-path"
+	flagMode                                 = "web-mode"
+	flagMicroBenchConfigFile                 = "web-microbench-config"
+	flagMacroBenchConfigFileOLTP             = "web-macrobench-oltp-config"
+	flagMacroBenchConfigFileTPCC             = "web-macrobench-tpcc-config"
+	flagCronSchedule                         = "web-cron-schedule"
+	flagPullRequestLabelTrigger              = "web-pr-label-trigger"
+	flagPullRequestLabelTriggerWithPlannerV3 = "web-pr-label-trigger-planner-v3"
+	flagCronNbRetry                          = "web-cron-nb-retry"
 )
 
 type Server struct {
@@ -70,7 +71,8 @@ type Server struct {
 	macrobenchConfigPathOLTP string
 	macrobenchConfigPathTPCC string
 
-	prLabelTrigger string
+	prLabelTrigger   string
+	prLabelTriggerV3 string
 
 	// Mode used to run the server.
 	Mode
@@ -90,6 +92,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON.")
 	cmd.Flags().IntVar(&s.cronNbRetry, flagCronNbRetry, 0, "Number of retries allowed for each cron job.")
 	cmd.Flags().StringVar(&s.prLabelTrigger, flagPullRequestLabelTrigger, "Benchmark me", "GitHub Pull Request label that will trigger the execution of new execution.")
+	cmd.Flags().StringVar(&s.prLabelTriggerV3, flagPullRequestLabelTriggerWithPlannerV3, "Benchmark me (V3)", "GitHub Pull Request label that will trigger the execution of new execution using the V3 planner.")
 	_ = cmd.MarkFlagRequired(flagMicroBenchConfigFile)
 	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileOLTP)
 	_ = cmd.MarkFlagRequired(flagMacroBenchConfigFileTPCC)
@@ -105,6 +108,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagCronSchedule, cmd.Flags().Lookup(flagCronSchedule))
 	_ = viper.BindPFlag(flagCronNbRetry, cmd.Flags().Lookup(flagCronNbRetry))
 	_ = viper.BindPFlag(flagPullRequestLabelTrigger, cmd.Flags().Lookup(flagPullRequestLabelTrigger))
+	_ = viper.BindPFlag(flagPullRequestLabelTriggerWithPlannerV3, cmd.Flags().Lookup(flagPullRequestLabelTriggerWithPlannerV3))
 
 	s.slackConfig.AddToCommand(cmd)
 	if s.dbCfg == nil {

@@ -63,7 +63,7 @@ func labelsToURL(labels []string) string {
 }
 
 func getPullRequestsForLabels(labels, repo string) ([]string, error) {
-	query := fmt.Sprintf("https://api.github.com/search/issues?q=repo:%s+is:pr+is:open", repo)
+	query := fmt.Sprintf("https://api.github.com/search/issues?q=repo:%s+is:pr", repo)
 	if labels != "" {
 		query += "+" + labels
 	}

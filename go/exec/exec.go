@@ -21,6 +21,7 @@ package exec
 import (
 	"errors"
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"io"
 	"os"
 	"path"
@@ -248,7 +249,11 @@ func (e *Exec) Execute() (err error) {
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
 	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
-	e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
+
+	// not adding the -planner_version flag to ansible if we did not specify it or if using the default value
+	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) {
+		e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
+	}
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
