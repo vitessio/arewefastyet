@@ -20,6 +20,8 @@ package exec
 
 import (
 	"errors"
+	"fmt"
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"io"
 	"os"
 	"path"
@@ -247,7 +249,11 @@ func (e *Exec) Execute() (err error) {
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
 	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
-	e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
+
+	// not adding the -planner_version flag to ansible if we did not specify it or if using the default value
+	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) {
+		e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
+	}
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
@@ -404,8 +410,12 @@ func GetLatestCronJobForMacrobenchmarks(client *mysql.Client) (gitSha string, er
 	return "", nil
 }
 
-func Exists(clientDB *mysql.Client, gitRef, source, typeOf, status string) (bool, error) {
+// TODO: For the following 4 functions, set the time frame for recent results according to the cron jobs schedule instead of using CURDATE always
+func Exists(clientDB *mysql.Client, gitRef, source, typeOf, status string, wantOnlyOld bool) (bool, error) {
 	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
+	if wantOnlyOld {
+		query += " AND started_at < CURDATE()"
+	}
 	result, err := clientDB.Select(query, status, gitRef, typeOf, source)
 	if err != nil {
 		return false, err
@@ -413,11 +423,56 @@ func Exists(clientDB *mysql.Client, gitRef, source, typeOf, status string) (bool
 	return result.Next(), nil
 }
 
-func ExistsMacrobenchmark(clientDB *mysql.Client, gitRef, source, typeOf, status, planner string) (bool, error) {
+func ExistsStartedToday(clientDB *mysql.Client, gitRef, source, typeOf string) (bool, error) {
+	query := fmt.Sprintf("SELECT uuid FROM execution WHERE ( status = '%s' OR status = '%s' ) AND git_ref = ? AND type = ? AND source = ? AND started_at >= CURDATE()", StatusCreated, StatusStarted)
+	result, err := clientDB.Select(query, gitRef, typeOf, source)
+	if err != nil {
+		return false, err
+	}
+	return result.Next(), nil
+}
+
+func ExistsMacrobenchmark(clientDB *mysql.Client, gitRef, source, typeOf, status, planner string, wantOld bool) (bool, error) {
 	query := "SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
+	if wantOld {
+		query += " AND e.started_at < CURDATE()"
+	}
 	result, err := clientDB.Select(query, status, gitRef, typeOf, source, planner)
 	if err != nil {
 		return false, err
 	}
 	return result.Next(), nil
+}
+
+func ExistsMacrobenchmarkStartedToday(clientDB *mysql.Client, gitRef, source, typeOf, planner string) (bool, error) {
+	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+	result, err := clientDB.Select(query, gitRef, typeOf, source, planner)
+	if err != nil {
+		return false, err
+	}
+	exists := result.Next()
+	if exists {
+		return true,nil
+	}
+	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+	result, err = clientDB.Select(query, gitRef, typeOf, source)
+	if err != nil {
+		return false, err
+	}
+	for result.Next() {
+		var exec_uuid string
+		err = result.Scan(&exec_uuid)
+		if err != nil {
+			return false, err
+		}
+		query = "SELECT exec_uuid FROM macrobenchmark m WHERE m.exec_uuid = ?"
+		resultMacro, err := clientDB.Select(query, exec_uuid)
+		if err != nil {
+			return false, err
+		}
+		if !resultMacro.Next() {
+			return true, nil
+		}
+	}
+	return false, nil
 }
