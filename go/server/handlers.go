@@ -194,7 +194,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	leftTag := c.Query("ltag")
 	leftSHA := ""
 	if leftTag == "" {
-		// get the last release sha if rightSHA is not specified
+		// get the last release sha if leftSHA is not specified
 		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
 		if err != nil {
 			handleRenderErrors(c, err)
@@ -214,7 +214,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	rightTag := c.Query("rtag")
 	rightSHA := ""
 	if rightTag == "" {
-		// get the latest cron job if leftTag is not specified
+		// get the latest cron job if rightTag is not specified
 		rightTag = "master"
 		rightSHA = lastrunCronSHA
 	} else {
@@ -310,8 +310,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	leftTag := c.Query("ltag")
 	leftSHA := ""
 	if leftTag == "" {
-
-		// get the last release sha if rightSHA is not specified
+		// get the last release sha if leftSHA is not specified
 		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
 		if err != nil {
 			handleRenderErrors(c, err)
@@ -331,7 +330,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	rightTag := c.Query("rtag")
 	rightSHA := ""
 	if rightTag == "" {
-		// get the latest cron job if leftTag is not specified
+		// get the latest cron job if rightTag is not specified
 		rightTag = "master"
 		rightSHA = lastrunCronSHA
 	} else {
