@@ -62,8 +62,8 @@ func (microsMatrix ComparisonArray) Regression() (reason string) {
 		}
 
 		for _, s := range m {
-			if s.value <= -10 {
-				reason += fmt.Sprintf("- %s/%s: metric: %s, decreased by %.2f%%\n", micro.PkgName, micro.SubBenchmarkName, s.name, s.value)
+			if s.value < -10 {
+				reason += fmt.Sprintf("- %s/%s: metric: %s, decreased by %.2f%%\n", micro.PkgName, micro.SubBenchmarkName, s.name, -1*s.value)
 			}
 		}
 	}

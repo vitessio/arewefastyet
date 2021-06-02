@@ -53,6 +53,6 @@ func (s *Server) pullLocalVitess() error {
 	if err != nil {
 		return err
 	}
-	_, err = git.ExecCmd(s.getVitessPath(), "git", "reset", "--hard", "origin/master")
+	_, err = git.ExecCmd(s.getVitessPath(), "git", "reset", "--hard", "origin/main")
 	return err
 }
