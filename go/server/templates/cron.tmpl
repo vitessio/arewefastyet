@@ -192,7 +192,6 @@
                 scales: {
                     xAxes: [{
                         ticks: {
-                            display: false, //this will remove only the label
                             padding: 4,
                         },
                     }],
@@ -245,7 +244,6 @@
                 scales: {
                     xAxes: [{
                         ticks: {
-                            display: false, //this will remove only the label
                             padding: 4,
                         },
                     }],
@@ -283,7 +281,6 @@
                 scales: {
                     xAxes: [{
                         ticks: {
-                            display: false, //this will remove only the label
                             padding: 4,
                         },
                     }],
@@ -315,7 +312,8 @@
             writes.push(graph_oltp[i].Result.qps.writes)
             others.push(graph_oltp[i].Result.qps.others)
 
-            label_oltp.push(graph_oltp[i].GitRef + " | " + graph_oltp[i].CreatedAt);
+            gitRef = String(graph_oltp[i].GitRef)
+            label_oltp.push(gitRef.slice(0, 7));
         }
         graphTPS("tps", label_oltp, data_tps);
         graphQPS("qps", label_oltp, total, reads, writes, others);
@@ -341,7 +339,8 @@
             writes.push(graph_tpcc[i].Result.qps.writes)
             others.push(graph_tpcc[i].Result.qps.others)
 
-            label_tpcc.push(graph_tpcc[i].GitRef + " | " + graph_tpcc[i].CreatedAt);
+            gitRef = String(graph_tpcc[i].GitRef)
+            label_tpcc.push(gitRef.slice(0, 7));
         }
 
         graphTPS("tps_tpcc", label_tpcc, data_tps);
