@@ -110,8 +110,8 @@ func (s *Server) cronBranchHandler() {
 		slog.Warn(err.Error())
 		return
 	}
-	// master branch
-	compareInfos, err := s.compareMasterBranch()
+	// main branch
+	compareInfos, err := s.compareMainBranch()
 	if err != nil {
 		slog.Warn(err.Error())
 		return
@@ -127,7 +127,7 @@ func (s *Server) cronBranchHandler() {
 	s.cronPrepare(compareInfos)
 }
 
-func (s *Server) compareMasterBranch() ([]*CompareInfo, error) {
+func (s *Server) compareMainBranch() ([]*CompareInfo, error) {
 	configs := s.getConfigFiles()
 
 	var compareInfos []*CompareInfo
@@ -141,25 +141,25 @@ func (s *Server) compareMasterBranch() ([]*CompareInfo, error) {
 		slog.Warn(err.Error())
 		return nil, nil
 	}
-	// We compare master with the previous hash of master and with the latest release
+	// We compare main with the previous hash of main and with the latest release
 	for configType, configFile := range configs {
 		if configType == "micro" {
 			_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, "cron", ref)
 			if err != nil {
 				slog.Warn(err.Error())
 			} else if previousGitRef != "" {
-				compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - micro", configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing main with previous main - micro", configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
 			}
-			compareInfos = append(compareInfos, newCompareInfo("Comparing master with latest release - "+lastRelease.Name+" - micro", configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, "", false))
+			compareInfos = append(compareInfos, newCompareInfo("Comparing main with latest release - "+lastRelease.Name+" - micro", configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, "", false))
 		} else {
 			for _, version := range macrobench.PlannerVersions {
 				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, "cron", configType, string(version), ref)
 				if err != nil {
 					slog.Warn(err.Error())
 				} else if previousGitRef != "" {
-					compareInfos = append(compareInfos, newCompareInfo("Comparing master with previous master - "+configType+" - "+string(version), configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
+					compareInfos = append(compareInfos, newCompareInfo("Comparing main with previous main - "+configType+" - "+string(version), configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
 				}
-				compareInfos = append(compareInfos, newCompareInfo("Comparing master with latest release - "+lastRelease.Name+" - "+configType+" - "+string(version), configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version), false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing main with latest release - "+lastRelease.Name+" - "+configType+" - "+string(version), configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version), false))
 			}
 		}
 	}

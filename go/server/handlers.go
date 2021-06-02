@@ -166,7 +166,7 @@ func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	var err error
 
-	// get all the latest releases and the last cron job for master
+	// get all the latest releases and the last cron job for main
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
@@ -177,11 +177,11 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	masterRelease := []*git.Release{{
-		Name:       "master",
+	mainRelease := []*git.Release{{
+		Name:       "main",
 		CommitHash: lastrunCronSHA,
 	}}
-	allReleases = append(masterRelease, allReleases...)
+	allReleases = append(mainRelease, allReleases...)
 	// get all the latest release branches as well
 	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
 	if err != nil {
@@ -195,7 +195,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	leftSHA := ""
 	if leftTag == "" {
 		// get the latest cron job if leftTag is not specified
-		leftTag = "master"
+		leftTag = "main"
 		leftSHA = lastrunCronSHA
 	} else {
 		leftSHA, err = findSHA(allReleases, leftTag)
@@ -282,7 +282,7 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	var err error
 	planner := getPlannerVersion(c)
-	// get all the latest releases and the last cron job for master
+	// get all the latest releases and the last cron job for main
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
@@ -293,11 +293,11 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	masterRelease := []*git.Release{{
-		Name:       "master",
+	mainRelease := []*git.Release{{
+		Name:       "main",
 		CommitHash: lastrunCronSHA,
 	}}
-	allReleases = append(masterRelease, allReleases...)
+	allReleases = append(mainRelease, allReleases...)
 	// get all the latest release branches as well
 	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
 	if err != nil {
@@ -311,7 +311,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	leftSHA := ""
 	if leftTag == "" {
 		// get the latest cron job if leftTag is not specified
-		leftTag = "master"
+		leftTag = "main"
 		leftSHA = lastrunCronSHA
 	} else {
 		leftSHA, err = findSHA(allReleases, leftTag)
@@ -361,7 +361,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 func (s *Server) v3VsGen4Handler(c *gin.Context) {
 	var err error
 
-	// get all the latest releases and the last cron job for master
+	// get all the latest releases and the last cron job for main
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
@@ -372,11 +372,11 @@ func (s *Server) v3VsGen4Handler(c *gin.Context) {
 		handleRenderErrors(c, err)
 		return
 	}
-	masterRelease := []*git.Release{{
-		Name:       "master",
+	mainRelease := []*git.Release{{
+		Name:       "main",
 		CommitHash: lastrunCronSHA,
 	}}
-	allReleases = append(masterRelease, allReleases...)
+	allReleases = append(mainRelease, allReleases...)
 	// get all the latest release branches as well
 	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
 	if err != nil {
@@ -390,7 +390,7 @@ func (s *Server) v3VsGen4Handler(c *gin.Context) {
 	sha := ""
 	if tag == "" {
 		// get the latest cron job if tag is not specified
-		tag = "master"
+		tag = "main"
 		sha = lastrunCronSHA
 	} else {
 		sha, err = findSHA(allReleases, tag)
