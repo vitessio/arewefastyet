@@ -111,11 +111,11 @@ func MergeDetails(currentMbd, lastReleaseMbd DetailsArray) (compareMbs Compariso
 		for j := 0; j < len(lastReleaseMbd); j++ {
 			if lastReleaseMbd[j].BenchmarkId == details.BenchmarkId {
 				compareMb.Last = lastReleaseMbd[j].Result
-				compareMb.Diff.NSPerOp = (compareMb.Current.NSPerOp - compareMb.Last.NSPerOp) / compareMb.Current.NSPerOp * 100 * -1
+				compareMb.Diff.NSPerOp = (compareMb.Current.NSPerOp - compareMb.Last.NSPerOp) / compareMb.Current.NSPerOp * 100
 				compareMb.Diff.Ops = (compareMb.Current.Ops - compareMb.Last.Ops) / compareMb.Current.Ops * 100 * -1
-				compareMb.Diff.BytesPerOp = (compareMb.Current.BytesPerOp - compareMb.Last.BytesPerOp) / compareMb.Current.BytesPerOp * 100 * -1
-				compareMb.Diff.MBPerSec = (compareMb.Current.MBPerSec - compareMb.Last.MBPerSec) / compareMb.Current.MBPerSec * 100 * -1
-				compareMb.Diff.AllocsPerOp = (compareMb.Current.AllocsPerOp - compareMb.Last.AllocsPerOp) / compareMb.Current.AllocsPerOp * 100 * -1
+				compareMb.Diff.BytesPerOp = (compareMb.Current.BytesPerOp - compareMb.Last.BytesPerOp) / compareMb.Current.BytesPerOp * 100
+				compareMb.Diff.MBPerSec = (compareMb.Current.MBPerSec - compareMb.Last.MBPerSec) / compareMb.Current.MBPerSec * 100
+				compareMb.Diff.AllocsPerOp = (compareMb.Current.AllocsPerOp - compareMb.Last.AllocsPerOp) / compareMb.Current.AllocsPerOp * 100
 				math.CheckForNaN(&compareMb.Diff, 0)
 				break
 			}
