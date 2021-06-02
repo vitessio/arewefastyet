@@ -21,6 +21,9 @@
 
 {{template "headHTML" .}}
 <body>
+
+<div style="min-height: 90vh;">
+
 {{ template "navigation" "/cron" }}
 <section class="py-5" style="padding-top: 10px !important;">
     <div class="container">
@@ -161,6 +164,8 @@
     </div>
     {{ end }}
 </header>
+
+</div>
 
 {{template "footerHTML" .}}
 
