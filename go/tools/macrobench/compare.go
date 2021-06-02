@@ -65,7 +65,7 @@ func ComparePlanners(dbClient *mysql.Client, metricsClient *influxdb.Client, sha
 	}
 	macrosMatrixes := map[Type]interface{}{}
 	for _, mtype := range Types {
-		macrosMatrixes[mtype] = CompareDetailsArrays(macros[string(V3Planner)][mtype], macros[string(Gen4FallbackPlanner)][mtype])
+		macrosMatrixes[mtype] = CompareDetailsArrays(macros[string(Gen4FallbackPlanner)][mtype], macros[string(V3Planner)][mtype])
 	}
 	return macrosMatrixes, nil
 }

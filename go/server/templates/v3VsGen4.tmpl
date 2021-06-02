@@ -71,89 +71,89 @@ limitations under the License.
                         {{ range $elem := $val }}
                             <tr>
                                 <th scope="row" class="text-center">QPS Total</th>
-                                <td class="text-center">{{ $elem.Reference.Result.QPS.TotalStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.TotalStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.TotalStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.TotalStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">QPS Reads</th>
-                                <td class="text-center">{{ $elem.Reference.Result.QPS.ReadsStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.ReadsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.ReadsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.ReadsStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">QPS Writes</th>
-                                <td class="text-center">{{ $elem.Reference.Result.QPS.WritesStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.WritesStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.WritesStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.WritesStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">QPS Other</th>
-                                <td class="text-center">{{ $elem.Reference.Result.QPS.OtherStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.OtherStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.QPS.OtherStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.OtherStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">TPS</th>
-                                <td class="text-center">{{ $elem.Reference.Result.TPSStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.TPSStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.TPSStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.TPSStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">Latency</th>
-                                <td class="text-center">{{ $elem.Reference.Result.LatencyStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.LatencyStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.LatencyStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.LatencyStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">Errors</th>
-                                <td class="text-center">{{ $elem.Reference.Result.ErrorsStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.ErrorsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.ErrorsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.ErrorsStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">Reconnects</th>
-                                <td class="text-center">{{ $elem.Reference.Result.ReconnectsStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.ReconnectsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.ReconnectsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.ReconnectsStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">Time</th>
-                                <td class="text-center">{{ $elem.Reference.Result.TimeStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.TimeStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.TimeStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.TimeStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">Threads</th>
-                                <td class="text-center">{{ $elem.Reference.Result.ThreadsStr }}</td>
                                 <td class="text-center">{{ $elem.Compare.Result.ThreadsStr }}</td>
+                                <td class="text-center">{{ $elem.Reference.Result.ThreadsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.ThreadsStr }}</td>
                             </tr>
                             <tr>
                                 <th scope="row" class="text-center">Total CPU time</th>
-                                <td class="text-center">{{ formatFloat $elem.Reference.Metrics.TotalComponentsCPUTime }}</td>
                                 <td class="text-center">{{ formatFloat $elem.Compare.Metrics.TotalComponentsCPUTime }}</td>
+                                <td class="text-center">{{ formatFloat $elem.Reference.Metrics.TotalComponentsCPUTime }}</td>
                                 <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsCPUTime }}</td>
                             </tr>
                             {{ range $componentCPUName, $componentCPUValue := $elem.Compare.Metrics.ComponentsCPUTime }}
                                 <tr>
                                     <th scope="row" class="text-center">CPU time {{$componentCPUName}}</th>
-                                    <td class="text-center">{{ formatFloat (index $elem.Reference.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
                                     <td class="text-center">{{ formatFloat (index $elem.Compare.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                    <td class="text-center">{{ formatFloat (index $elem.Reference.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
                                     <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsCPUTime $componentCPUName) }}</td>
                                 </tr>
                             {{ end }}
                             <tr>
                                 <th scope="row" class="text-center">Total Allocs bytes</th>
-                                <td class="text-center">{{ formatBytes $elem.Reference.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
                                 <td class="text-center">{{ formatBytes $elem.Compare.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                                <td class="text-center">{{ formatBytes $elem.Reference.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
                                 <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsMemStatsAllocBytes }}</td>
                             </tr>
                             {{ range $componentAllocsName, $componentAllocsValue := $elem.Compare.Metrics.ComponentsMemStatsAllocBytes }}
                             <tr>
                                 <th scope="row" class="text-center">Allocs bytes {{$componentAllocsName}}</th>
-                                <td class="text-center">{{ formatBytes (index $elem.Reference.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
                                 <td class="text-center">{{ formatBytes (index $elem.Compare.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
+                                <td class="text-center">{{ formatBytes (index $elem.Reference.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
                                 <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
                             </tr>
                             {{ end }}

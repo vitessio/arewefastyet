@@ -407,7 +407,7 @@ func (s *Server) v3VsGen4Handler(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "v3VsGen4.tmpl", gin.H{
-		"title":          "Vitess V3 Vs Gen4 Planner",
+		"title":          "Vitess v3 vs Gen4 Planner",
 		"sha":            sha,
 		"tag":            tag,
 		"allReleases":    allReleases,
