@@ -31,25 +31,25 @@ func TestMicroBenchmarkComparisonArray_Regression(t *testing.T) {
 		wantReason   string
 	}{
 		{name: "No regression", microsMatrix: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, CurrLastDiff: 1},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, CurrLastDiff: 1},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, CurrLastDiff: 1},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2", SubBenchmarkName: "bench2-pkg2"}, CurrLastDiff: 1},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1", SubBenchmarkName: "bench1-pkg2"}, CurrLastDiff: 1},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1", SubBenchmarkName: "bench1-pkg3"}, CurrLastDiff: 1},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2", SubBenchmarkName: "bench2-pkg2"}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1", SubBenchmarkName: "bench1-pkg2"}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1", SubBenchmarkName: "bench1-pkg3"}},
 		}, wantReason: ""},
 
 		{name: "Few regressions", microsMatrix: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, CurrLastDiff: 0.5},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, CurrLastDiff: 0.89},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, CurrLastDiff: 0.25},
-		}, wantReason: "- pkg1/bench3-pkg1 decreased by 50.00%\n- pkg1/bench1-pkg1 decreased by 11.00%\n- pkg1/bench2-pkg1 decreased by 75.00%\n"},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Diff: Result{NSPerOp: -50}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Diff: Result{NSPerOp: -11}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Diff: Result{NSPerOp: -75}},
+		}, wantReason: "- pkg1/bench3-pkg1: metric: nanosecond per operation, decreased by 50.00%\n- pkg1/bench1-pkg1: metric: nanosecond per operation, decreased by 11.00%\n- pkg1/bench2-pkg1: metric: nanosecond per operation, decreased by 75.00%\n"},
 
 		{name: "Close call regressions", microsMatrix: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, CurrLastDiff: 0.90},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, CurrLastDiff: 0.91},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, CurrLastDiff: 0.899},
-		}, wantReason: "- pkg1/bench2-pkg1 decreased by 10.10%\n"},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Diff: Result{NSPerOp: -10}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Diff: Result{NSPerOp: -9.99}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Diff: Result{NSPerOp: -10.01}},
+		}, wantReason: "- pkg1/bench2-pkg1: metric: nanosecond per operation, decreased by 10.01%\n"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

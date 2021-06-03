@@ -20,26 +20,31 @@ limitations under the License.
 
 <body>
 
+    <div style="min-height: 90vh;">
+
     <!-- Navigation -->
     {{ template "navigation" "/compare" }}
 
     <section class="py-5">
-        <div class="container">
-            <h1>Compare</h1>
+        <div>
+            <div class="container">
+                <h1>Compare</h1>
 
-            <div class="main">
-                <form type="GET" action="/compare">
-                    <div class="input-group">
-                        <input type="text" class="form-control" value="{{.reference.SHA}}" placeholder="Reference commit SHA" name="r">
-                        <input type="text" class="form-control" value="{{.compare.SHA}}" placeholder="Compare commit SHA" name="c">
-                        <div class="input-group-append">
-                            <button class="btn btn-secondary" type="submit">
-                                Compare
-                            </button>
+                <div class="main">
+                    <form type="GET" action="/compare">
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="{{.reference.SHA}}" placeholder="Reference commit SHA" name="r">
+                            <input type="text" class="form-control" value="{{.compare.SHA}}" placeholder="Compare commit SHA" name="c">
+                            <div class="input-group-append">
+                                <button class="btn btn-secondary" type="submit">
+                                    Compare
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
+            <div class="container">
 
             {{ if and .compare.SHA .reference.SHA }}
                 <h2>Comparing <a href="https://github.com/vitessio/vitess/commit/{{ .compare.SHA }}" target="_blank">{{.compare.short}}</a> with <a href="https://github.com/vitessio/vitess/commit/{{ .reference.SHA }}" target="_blank">{{.reference.short}}</a>.</h2>
@@ -165,59 +170,84 @@ limitations under the License.
                         No macro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=macrobench">request</a> a run.
                     </div>
                 {{ end }}
-
-                {{ if .microbenchmark }}
-                <h3>Micro benchmarks</h3>
-                <div>
-                <table class="table table-striped table-hover table-sm table-bordered" style="width: max-content;">
+            </div>
+            <div class="container">
+            <h3>Micro benchmarks</h3>
+            {{ if .microbenchmark }}
+            </div>
+            <div class="container-xxl">
+                <table class="table table-striped table-hover table-sm table-bordered">
                     <thead>
-                        <tr>
-                            <th scope="col">Pkg</th>
-                            <th scope="col">Name</th>
-                            <th scope="col" colspan="1" class="text-center">Diff</th>
-                            <th scope="col" colspan="2" class="text-center">Number of Iterations</th>
-                            <th scope="col" colspan="2" class="text-center">Time/op</th>
-                            <th scope="col" colspan="2" class="text-center">B/op</th>
-                            <th scope="col" colspan="2" class="text-center">MB/s</th>
-                            <th scope="col" colspan="2" class="text-center">Allocs/op</th>
-                        </tr>
+                    <tr>
+                        <th scope="col">Package</th>
+                        <th scope="col">Benchmark Name</th>
+                        <th scope="col" colspan="3" class="text-center">Number of Iterations</th>
+                        <th scope="col" colspan="3" class="text-center">Time/op</th>
+                        <th scope="col" colspan="3" class="text-center">Bytes/op</th>
+                        <th scope="col" colspan="3" class="text-center">Megabytes/s</th>
+                        <th scope="col" colspan="3" class="text-center">Allocations/op</th>
+                    </tr>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th class="text-center" scope="col">{{ $compareSHAs.short }}</th>
+                        <th class="text-center" scope="col">{{ $referenceSHAs.short }}</th>
+                        <th class="text-center" scope="col">Diff %</th>
+                        <th class="text-center" scope="col">{{ $compareSHAs.short }}</th>
+                        <th class="text-center" scope="col">{{ $referenceSHAs.short }}</th>
+                        <th class="text-center" scope="col">Diff %</th>
+                        <th class="text-center" scope="col">{{ $compareSHAs.short }}</th>
+                        <th class="text-center" scope="col">{{ $referenceSHAs.short }}</th>
+                        <th class="text-center" scope="col">Diff %</th>
+                        <th class="text-center" scope="col">{{ $compareSHAs.short }}</th>
+                        <th class="text-center" scope="col">{{ $referenceSHAs.short }}</th>
+                        <th class="text-center" scope="col">Diff %</th>
+                        <th class="text-center" scope="col">{{ $compareSHAs.short }}</th>
+                        <th class="text-center" scope="col">{{ $referenceSHAs.short }}</th>
+                        <th class="text-center" scope="col">Diff %</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {{range $val := .microbenchmark}}
-                        <tr>
-                            <td>{{ $val.PkgName }}</td>
-                            <td><a href="/microbench/{{ $val.Name }}?subBenchmarkName={{ $val.SubBenchmarkName }}">{{ $val.SubBenchmarkName }}</a></td>
-                            <td class="text-right {{if le $val.CurrLastDiff 0.90 }} bg-danger {{ else if ge $val.CurrLastDiff 1.10 }} bg-success {{ end }}">{{ $val.CurrLastDiffStr }}</td>
-                            <td class="text-right">{{ $val.Current.OpsStr }}</td>
-                            <td class="text-right">{{ $val.Last.OpsStr }}</td>
+                    {{range $val := .microbenchmark}}
+                    <tr>
+                        <td>{{ $val.PkgName }}</td>
+                        <td><a href="/microbench/{{ $val.Name }}?subBenchmarkName={{ $val.SubBenchmarkName }}">{{ $val.SubBenchmarkName }}</a></td>
+                        <td class="text-right">{{ $val.Current.OpsStr }}</td>
+                        <td class="text-right">{{ $val.Last.OpsStr }}</td>
+                        <td class="text-right {{if le $val.Diff.Ops -10.0 }} bg-danger {{ else if ge $val.Diff.Ops 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.Ops }}</td>
 
-                            <td class="text-right">{{ $val.Current.NSPerOpToDurationStr }}</td>
-                            <td class="text-right">{{ $val.Last.NSPerOpToDurationStr }}</td>
+                        <td class="text-right">{{ $val.Current.NSPerOpToDurationStr }}</td>
+                        <td class="text-right">{{ $val.Last.NSPerOpToDurationStr }}</td>
+                        <td class="text-right {{if le $val.Diff.NSPerOp -10.0 }} bg-danger {{ else if ge $val.Diff.NSPerOp 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.NSPerOp }}</td>
 
-                            <td class="text-right">{{ $val.Current.MBPerSecStr }}</td>
-                            <td class="text-right">{{ $val.Last.MBPerSecStr }}</td>
+                        <td class="text-right">{{ $val.Current.BytesPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Last.BytesPerOpStr }}</td>
+                        <td class="text-right {{if le $val.Diff.BytesPerOp -10.0 }} bg-danger {{ else if ge $val.Diff.BytesPerOp 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.BytesPerOp }}</td>
 
-                            <td class="text-right">{{ $val.Current.BytesPerOpStr }}</td>
-                            <td class="text-right">{{ $val.Last.BytesPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Current.MBPerSecStr }}</td>
+                        <td class="text-right">{{ $val.Last.MBPerSecStr }}</td>
+                        <td class="text-right {{if le $val.Diff.MBPerSec -10.0 }} bg-danger {{ else if ge $val.Diff.MBPerSec 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.MBPerSec }}</td>
 
-                            <td class="text-right">{{ $val.Current.AllocsPerOpStr }}</td>
-                            <td class="text-right">{{ $val.Last.AllocsPerOpStr }}</td>
-                        </tr>
-                        {{end}}
+                        <td class="text-right">{{ $val.Current.AllocsPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Last.AllocsPerOpStr }}</td>
+                        <td class="text-right {{if le $val.Diff.AllocsPerOp -10.0 }} bg-danger {{ else if ge $val.Diff.AllocsPerOp 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.AllocsPerOp }}</td>
+                    </tr>
+                    {{end}}
                     </tbody>
                 </table>
-                </div>
                 {{ else if not .microbenchmark }}
                 <div class="alert alert-warning" role="alert">
                     No micro benchmark results. You can <a href="/request_benchmark?s={{ .search }}&type=microbench">request</a> a run.
                 </div>
                 {{ end }}
+            </div>
             {{ end }}
         </div>
     </section>
 
     <!------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------>
 
+    </div>
 
   {{template "footerHTML" .}}
 

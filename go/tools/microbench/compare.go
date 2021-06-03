@@ -50,8 +50,21 @@ func Compare(dbClient *mysql.Client, reference string, compare string) (Comparis
 //
 func (microsMatrix ComparisonArray) Regression() (reason string) {
 	for _, micro := range microsMatrix {
-		if micro.CurrLastDiff < 0.90 {
-			reason += fmt.Sprintf("- %s/%s decreased by %.2f%%\n", micro.PkgName, micro.SubBenchmarkName, (1-micro.CurrLastDiff)*100)
+		m := []struct{
+			value float64
+			name string
+		}{
+			{name: "total operation", value: micro.Diff.Ops},
+			{name: "nanosecond per operation", value: micro.Diff.NSPerOp},
+			{name: "bytes per operation", value: micro.Diff.BytesPerOp},
+			{name: "MB per second", value: micro.Diff.MBPerSec},
+			{name: "allocations per operation", value: micro.Diff.AllocsPerOp},
+		}
+
+		for _, s := range m {
+			if s.value < -10 {
+				reason += fmt.Sprintf("- %s/%s: metric: %s, decreased by %.2f%%\n", micro.PkgName, micro.SubBenchmarkName, s.name, -1*s.value)
+			}
 		}
 	}
 	return

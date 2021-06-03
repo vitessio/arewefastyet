@@ -34,7 +34,7 @@ import (
 type (
 	// Result contains all the metrics measured by a microbenchmark.
 	Result struct {
-		Ops         int
+		Ops         float64
 		NSPerOp     float64
 		MBPerSec    float64
 		BytesPerOp  float64
@@ -62,8 +62,8 @@ type (
 		BenchmarkId
 		Current, Last Result
 
-		// Difference of NSPerOp in % for Current and Last.
-		CurrLastDiff float64
+		// Difference between Current and Last.
+		Diff Result
 	}
 
 	DetailsArray    []Details
@@ -90,7 +90,7 @@ func NewBenchmarkId(pkgName string, name string, subBenchmarkName string) *Bench
 }
 
 // NewResult creates a new Result.
-func NewResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *Result {
+func NewResult(ops, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *Result {
 	return &Result{
 		Ops:         ops,
 		NSPerOp:     NSPerOp,
@@ -104,14 +104,19 @@ func NewResult(ops int, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *Res
 // ComparisonArray.
 func MergeDetails(currentMbd, lastReleaseMbd DetailsArray) (compareMbs ComparisonArray) {
 	for _, details := range currentMbd {
-		var compareMb Comparison
-		compareMb.BenchmarkId = details.BenchmarkId
-		compareMb.Current = details.Result
-		compareMb.CurrLastDiff = 1.00
+		compareMb := Comparison{
+			BenchmarkId: details.BenchmarkId,
+			Current:     details.Result,
+		}
 		for j := 0; j < len(lastReleaseMbd); j++ {
 			if lastReleaseMbd[j].BenchmarkId == details.BenchmarkId {
 				compareMb.Last = lastReleaseMbd[j].Result
-				compareMb.CurrLastDiff = compareMb.Last.NSPerOp / compareMb.Current.NSPerOp
+				compareMb.Diff.NSPerOp = (compareMb.Current.NSPerOp - compareMb.Last.NSPerOp) / compareMb.Current.NSPerOp * 100
+				compareMb.Diff.Ops = (compareMb.Current.Ops - compareMb.Last.Ops) / compareMb.Current.Ops * 100 * -1
+				compareMb.Diff.BytesPerOp = (compareMb.Current.BytesPerOp - compareMb.Last.BytesPerOp) / compareMb.Current.BytesPerOp * 100
+				compareMb.Diff.MBPerSec = (compareMb.Current.MBPerSec - compareMb.Last.MBPerSec) / compareMb.Current.MBPerSec * 100
+				compareMb.Diff.AllocsPerOp = (compareMb.Current.AllocsPerOp - compareMb.Last.AllocsPerOp) / compareMb.Current.AllocsPerOp * 100
+				math.CheckForNaN(&compareMb.Diff, 0)
 				break
 			}
 		}
@@ -159,7 +164,7 @@ func (mbd DetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd DetailsArray) {
 func (mbd DetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool) (reduceMbd DetailsArray) {
 	for i := 0; i < len(mbd); {
 		var j int
-		var interOps []int
+		var interOps []float64
 		var interNSPerOp []float64
 		var interMBPerSec []float64
 		var interBytesPerOp []float64
@@ -172,7 +177,7 @@ func (mbd DetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool
 			interAllocsPerOp = append(interAllocsPerOp, mbd[j].Result.AllocsPerOp)
 		}
 
-		interOpsResult := int(math.MedianInt(interOps))
+		interOpsResult := math.MedianFloat(interOps)
 		interNSPerOpResult := math.MedianFloat(interNSPerOp)
 		interMBPerSecResult := math.MedianFloat(interMBPerSec)
 		interBytesPerOpResult := math.MedianFloat(interBytesPerOp)
@@ -232,14 +237,14 @@ func GetLatestResultsFor(name, subBenchmarkName string, count int, client *mysql
 
 func (r Result) OpsStr() string {
 	if r.Ops == 0 {
-		return ""
+		return "N/A"
 	}
 	return humanize.Comma(int64(r.Ops))
 }
 
 func (r Result) NSPerOpStr() string {
 	if r.NSPerOp == 0 {
-		return ""
+		return "N/A"
 	}
 
 	return humanize.FormatFloat("#,###.#", r.NSPerOp)
@@ -247,7 +252,7 @@ func (r Result) NSPerOpStr() string {
 
 func (r Result) NSPerOpToDurationStr() string {
 	if r.NSPerOp == 0 {
-		return ""
+		return "N/A"
 	}
 
 	dur, _ := time.ParseDuration(fmt.Sprintf("%fns", r.NSPerOp))
@@ -263,27 +268,22 @@ func (r Result) NSPerOpToDurationStr() string {
 
 func (r Result) MBPerSecStr() string {
 	if r.MBPerSec == 0 {
-		return ""
+		return "N/A"
 	}
 
 	return humanize.Bytes(uint64(r.MBPerSec)) + "/s"
 }
 func (r Result) BytesPerOpStr() string {
 	if r.BytesPerOp == 0 {
-		return ""
+		return "N/A"
 	}
 
 	return humanize.Bytes(uint64(r.BytesPerOp)) + "/op"
 }
 func (r Result) AllocsPerOpStr() string {
 	if r.AllocsPerOp == 0 {
-		return ""
+		return "N/A"
 	}
 
 	return humanize.SI(r.AllocsPerOp, "")
-}
-
-func (r Comparison) CurrLastDiffStr() string {
-
-	return humanize.Comma(int64(r.CurrLastDiff*100)) + "%"
 }

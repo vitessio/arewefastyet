@@ -145,12 +145,12 @@ func GenerateCompareReport(client *mysql.Client, metricsClient *influxdb.Client,
 		// range over all the microbenchmarks
 		for _, microComp := range microsMatrix {
 			microTable = append(microTable, []tableCell{{value: microComp.PkgName + "." + microComp.SubBenchmarkName, styleIndex: 2}})
-			microTable = append(microTable, []tableCell{{value: "Ops", styleIndex: 0}, {value: strconv.Itoa(microComp.Current.Ops), styleIndex: 1}, {value: strconv.Itoa(microComp.Last.Ops), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "Ops", styleIndex: 0}, {value: convertFloatToString(microComp.Current.Ops), styleIndex: 1}, {value: convertFloatToString(microComp.Last.Ops), styleIndex: 1}})
 			microTable = append(microTable, []tableCell{{value: "NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.NSPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.NSPerOp), styleIndex: 1}})
 			microTable = append(microTable, []tableCell{{value: "MBPerSec", styleIndex: 0}, {value: convertFloatToString(microComp.Current.MBPerSec), styleIndex: 1}, {value: convertFloatToString(microComp.Last.MBPerSec), styleIndex: 1}})
 			microTable = append(microTable, []tableCell{{value: "BytesPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.BytesPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.BytesPerOp), styleIndex: 1}})
 			microTable = append(microTable, []tableCell{{value: "AllocsPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.AllocsPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.AllocsPerOp), styleIndex: 1}})
-			microTable = append(microTable, []tableCell{{value: "Ratio of NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.CurrLastDiff), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "Ratio of NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Diff.NSPerOp), styleIndex: 1}})
 		}
 		// write the table to pdf
 		writeTableToPdf(pdf, microTable)

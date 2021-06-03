@@ -1,0 +1,367 @@
+<!--
+  ~ /*
+  ~ Copyright 2021 The Vitess Authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~ */
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+{{template "headHTML" .}}
+<body>
+
+<div style="min-height: 90vh;">
+
+{{ template "navigation" "/cron" }}
+<section class="py-5" style="padding-top: 10px !important;">
+    <div class="container">
+        <h1>CRON</h1>
+        <p class="lead"></p>
+        <p>
+            Our nightly macrobenchmark routine includes the execution of two types of macrobenchmarks, <a href="https://en.wikipedia.org/wiki/Online_transaction_processing">OLTP</a> and <a href="http://www.tpc.org/tpcc/">TPCC</a>.
+            Both of which are enabled by the tool sysbench.
+        </p>
+        <p>
+            Some graphs highlighting the results we got over the last 31 days are rendered below.
+            For both OLTP and TPCC, we show three metrics: <b>transactions per second (TPS)</b>, <b>queries per second (QPS)</b> and the <b>latency</b>.
+        </p>
+    </div>
+</section>
+
+
+<section class="py-1" style="padding-top: 10px !important;">
+    <div class="container">
+        <h2>OLTP</h2>
+    </div>
+</section>
+
+<section class="py-2">
+    <div class="container">
+        <h3>TPS (Transactions per second) - OLTP</h3>
+        <p class="lead"></p>
+        <p></p>
+    </div>
+</section>
+<!-- Header - set the background image for the header in the line below -->
+<header class="py-5 bg-image-full" style="">
+    {{ if not .data_oltp }}
+    <p class="text-center font-italic">The graph could not be rendered.</p>
+    {{ else }}
+    <div class="container-xl">
+        <canvas id="tps" height="100"></canvas>
+    </div>
+    {{ end }}
+</header>
+
+<!-- Content section -->
+<section class="py-2">
+    <div class="container">
+        <h3>QPS (Queries per second) - OLTP</h3>
+        <p class="lead"></p>
+        <p></p>
+    </div>
+</section>
+
+<header class="py-5 bg-image-full" style="">
+    {{ if not .data_oltp }}
+    <p class="text-center font-italic">The graph could not be rendered.</p>
+    {{ else }}
+    <div class="container-xl">
+        <canvas id="qps" height="100"></canvas>
+    </div>
+    {{ end }}
+</header>
+
+<!-- Content section -->
+<section class="py-2">
+    <div class="container">
+        <h3>Latency (Milliseconds) - OLTP</h3>
+        <p class="lead"></p>
+        <p></p>
+    </div>
+</section>
+
+<header class="py-5 bg-image-full" style="">
+    {{ if not .data_oltp }}
+    <p class="text-center font-italic">The graph could not be rendered.</p>
+    {{ else }}
+    <div class="container-xl">
+        <canvas id="latency" height="100"></canvas>
+    </div>
+    {{ end }}
+</header>
+
+<section class="py-1">
+    <div class="container">
+        <h2>TPC-C</h2>
+    </div>
+</section>
+
+<section class="py-2">
+    <div class="container">
+        <h3>TPS (Transactions per second) - TPCC</h3>
+        <p class="lead"></p>
+        <p></p>
+    </div>
+</section>
+
+<header class="py-5 bg-image-full" style="">
+    {{ if not .data_tpcc }}
+    <p class="text-center font-italic">The graph could not be rendered.</p>
+    {{ else }}
+    <div class="container-xl">
+        <canvas id="tps_tpcc" height="100"></canvas>
+    </div>
+    {{ end }}
+</header>
+
+<!-- Content section -->
+<section class="py-2">
+    <div class="container">
+        <h3>QPS (Queries per second)- TPCC</h3>
+        <p class="lead"></p>
+        <p></p>
+    </div>
+</section>
+
+<header class="py-5 bg-image-full" style="">
+    {{ if not .data_tpcc }}
+    <p class="text-center font-italic">The graph could not be rendered.</p>
+    {{ else }}
+    <div class="container-xl">
+        <canvas id="qps_tpcc" height="100"></canvas>
+    </div>
+    {{ end }}
+</header>
+
+<!-- Content section -->
+<section class="py-2">
+    <div class="container">
+        <h3>Latency (Milliseconds) - TPCC</h3>
+        <p class="lead"></p>
+        <p></p>
+    </div>
+</section>
+
+<header class="py-5 bg-image-full" style="">
+    {{ if not .data_tpcc }}
+    <p class="text-center font-italic">The graph could not be rendered.</p>
+    {{ else }}
+    <div class="container-xl">
+        <canvas id="latency_tpcc" height="100"></canvas>
+    </div>
+    {{ end }}
+</header>
+
+</div>
+
+{{template "footerHTML" .}}
+
+<!-- Chart JS code -->
+
+<script>
+
+    function graphTPS(id, labels, data) {
+        var ctx = document.getElementById(id).getContext('2d');
+
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'TPS (Transactions per second)',
+                    borderColor: 'orange',
+                    data: data
+                },
+                ]
+            },
+
+            // Configuration options go here
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            padding: 4,
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0
+                        },
+                    }]
+                }
+            }
+        });
+    }
+
+    function graphQPS(id, labels, total, reads, writes, others) {
+        var ctx = document.getElementById(id).getContext('2d');
+
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'total',
+                    borderColor: 'red',
+                    data: total
+                },
+                    {
+                        label: 'reads',
+                        borderColor: 'blue',
+                        data: reads
+                    },
+                    {
+                        label: 'writes',
+                        borderColor: 'green',
+                        data: writes
+                    },
+                    {
+                        label: 'others',
+                        borderColor: 'purple',
+                        data: others
+                    }
+                ]
+            },
+
+            // Configuration options go here
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            padding: 4,
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0
+                        },
+                    }]
+                }
+            }
+        });
+    }
+
+    function graphLatency(id, labels, latency) {
+        var ctx = document.getElementById(id).getContext('2d');
+
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
+
+            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'latency',
+                    borderColor: 'black',
+                    data: latency
+                },
+                ]
+            },
+
+            // Configuration options go here
+            options: {
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            padding: 4,
+                        },
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0
+                        },
+                    }]
+                }
+            }
+        });
+    }
+
+    function plotOLTP(data) {
+        graph_oltp = data
+        label_oltp = []
+        data_tps = []
+        latency = []
+        total = []
+        reads = []
+        writes = []
+        others = []
+
+        for (var i = 0; i < graph_oltp.length; i++) {
+            data_tps.push(graph_oltp[i].Result.tps);
+            latency.push(graph_oltp[i].Result.latency);
+            total.push(graph_oltp[i].Result.qps.total)
+            reads.push(graph_oltp[i].Result.qps.reads)
+            writes.push(graph_oltp[i].Result.qps.writes)
+            others.push(graph_oltp[i].Result.qps.others)
+
+            gitRef = String(graph_oltp[i].GitRef)
+            label_oltp.push(gitRef.slice(0, 7));
+        }
+        graphTPS("tps", label_oltp, data_tps);
+        graphQPS("qps", label_oltp, total, reads, writes, others);
+        graphLatency("latency", label_oltp, latency);
+    }
+
+    function plotTPCC(data) {
+        graph_tpcc = data
+        label_tpcc = []
+        data_tps = []
+        latency = []
+        total = []
+        reads = []
+        writes = []
+        others = []
+
+        console.log(graph_tpcc[0])
+        for (var i = 0; i < graph_tpcc.length; i++) {
+            data_tps.push(graph_tpcc[i].Result.tps);
+            latency.push(graph_tpcc[i].Result.latency);
+            total.push(graph_tpcc[i].Result.qps.total)
+            reads.push(graph_tpcc[i].Result.qps.reads)
+            writes.push(graph_tpcc[i].Result.qps.writes)
+            others.push(graph_tpcc[i].Result.qps.others)
+
+            gitRef = String(graph_tpcc[i].GitRef)
+            label_tpcc.push(gitRef.slice(0, 7));
+        }
+
+        graphTPS("tps_tpcc", label_tpcc, data_tps);
+        graphQPS("qps_tpcc", label_tpcc, total, reads, writes, others);
+        graphLatency("latency_tpcc", label_tpcc, latency);
+    }
+
+    {{ if .data_oltp }}
+    plotOLTP({{ .data_oltp }})
+    {{ end }}
+
+    {{ if .data_tpcc}}
+    plotTPCC({{ .data_tpcc }})
+    {{ end }}
+</script>
+
+</body>
+
+</html>

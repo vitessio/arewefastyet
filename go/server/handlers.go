@@ -41,9 +41,23 @@ func handleRenderErrors(c *gin.Context, err error) {
 	})
 }
 
-func (s *Server) informationHandler(c *gin.Context) {
-	c.HTML(http.StatusOK, "information.tmpl", gin.H{
-		"title": "Vitess benchmark",
+func (s *Server) cronHandler(c *gin.Context) {
+	planner := getPlannerVersion(c)
+
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", planner, 31, s.dbClient)
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+
+	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", planner, 31, s.dbClient)
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+
+	c.HTML(http.StatusOK, "cron.tmpl", gin.H{
+		"title":     "Vitess benchmark - cron",
+		"data_oltp": oltpData,
+		"data_tpcc": tpccData,
 	})
 }
 
@@ -61,22 +75,8 @@ func getPlannerVersion(c *gin.Context) macrobench.PlannerVersion {
 }
 
 func (s *Server) homeHandler(c *gin.Context) {
-	planner := getPlannerVersion(c)
-
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", planner, 31, s.dbClient)
-	if err != nil {
-		slog.Warn(err.Error())
-	}
-
-	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", planner, 31, s.dbClient)
-	if err != nil {
-		slog.Warn(err.Error())
-	}
-
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title":     "Vitess benchmark",
-		"data_oltp": oltpData,
-		"data_tpcc": tpccData,
 	})
 }
 
@@ -407,7 +407,7 @@ func (s *Server) v3VsGen4Handler(c *gin.Context) {
 		return
 	}
 	c.HTML(http.StatusOK, "v3VsGen4.tmpl", gin.H{
-		"title":          "Vitess V3 Vs Gen4 Planner",
+		"title":          "Vitess v3 vs Gen4 Planner",
 		"sha":            sha,
 		"tag":            tag,
 		"allReleases":    allReleases,

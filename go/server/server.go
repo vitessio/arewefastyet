@@ -170,7 +170,7 @@ func (s *Server) Run() error {
 	s.router.LoadHTMLGlob(s.templatePath + "/*")
 
 	// Information page
-	s.router.GET("/information", s.informationHandler)
+	s.router.GET("/cron", s.cronHandler)
 
 	// Home page
 	s.router.GET("/", s.homeHandler)

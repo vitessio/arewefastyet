@@ -209,7 +209,7 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewDetails(*NewBenchmarkId("pkg1", "bench1", "bench1-pkg1"), "", "", *NewResult(0, 5.00, 0, 0, 0)),
 			},
 		}, want: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: Result{NSPerOp: 1.00}, Last: Result{NSPerOp: 5.00}, CurrLastDiff: 5},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: Result{NSPerOp: 1.00}, Last: Result{NSPerOp: 5.00}, Diff: Result{NSPerOp: -400}},
 		}},
 
 		// tc2
@@ -223,8 +223,8 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewDetails(*NewBenchmarkId("pkg1", "bench2", "bench2-pkg1"), "", "", *NewResult(0, 89.00, 0, 0, 0)),
 			},
 		}, want: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), Diff: Result{NSPerOp: -400}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), Diff: Result{NSPerOp: 9.183673469387756}},
 		}},
 
 		// tc3
@@ -240,9 +240,9 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewDetails(*NewBenchmarkId("pkg1", "bench3", "bench3-pkg1"), "ppbb", "", *NewResult(0, 56.00, 0, 0, 0)),
 			},
 		}, want: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Current: *NewResult(0, 58.00, 0, 0, 0), Last: *NewResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Current: *NewResult(0, 58.00, 0, 0, 0), Last: *NewResult(0, 56.00, 0, 0, 0), Diff: Result{NSPerOp: 3.4482758620689653}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), Diff: Result{NSPerOp:  -400}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), Diff: Result{NSPerOp:  9.183673469387756}},
 		}},
 
 		// tc4
@@ -264,12 +264,12 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewDetails(*NewBenchmarkId("pkg2", "bench1", "bench1-pkg2"), "ppbb", "", *NewResult(0, 4.20, 0, 0, 0)),
 			},
 		}, want: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Current: *NewResult(0, 58.00, 0, 0, 0), Last: *NewResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2", SubBenchmarkName: "bench2-pkg2"}, Current: *NewResult(0, 3.50, 0, 0, 0), Last: *NewResult(0, 6.00, 0, 0, 0), CurrLastDiff: 1.7142857142857142},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1", SubBenchmarkName: "bench1-pkg2"}, Current: *NewResult(0, 5.00, 0, 0, 0), Last: *NewResult(0, 4.20, 0, 0, 0), CurrLastDiff: 0.8400000000000001},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1", SubBenchmarkName: "bench1-pkg3"}, Current: *NewResult(0, 2385.00, 0, 0, 0), Last: *NewResult(0, 2560.00, 0, 0, 0), CurrLastDiff: 1.0733752620545074},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Current: *NewResult(0, 58.00, 0, 0, 0), Last: *NewResult(0, 56.00, 0, 0, 0), Diff: Result{NSPerOp:  3.4482758620689653}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), Diff: Result{NSPerOp:  -400}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), Diff: Result{NSPerOp: 9.183673469387756}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2", SubBenchmarkName: "bench2-pkg2"}, Current: *NewResult(0, 3.50, 0, 0, 0), Last: *NewResult(0, 6.00, 0, 0, 0), Diff: Result{NSPerOp:  -71.42857142857143}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1", SubBenchmarkName: "bench1-pkg2"}, Current: *NewResult(0, 5.00, 0, 0, 0), Last: *NewResult(0, 4.20, 0, 0, 0), Diff: Result{NSPerOp:  15.999999999999998}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1", SubBenchmarkName: "bench1-pkg3"}, Current: *NewResult(0, 2385.00, 0, 0, 0), Last: *NewResult(0, 2560.00, 0, 0, 0), Diff: Result{NSPerOp:  -7.337526205450734}},
 		}},
 
 		// tc5
@@ -289,12 +289,12 @@ func TestMergeMicroBenchmarkDetails(t *testing.T) {
 				*NewDetails(*NewBenchmarkId("pkg2", "bench1", "bench1-pkg2"), "ppbb", "", *NewResult(0, 4.20, 0, 0, 0)),
 			},
 		}, want: ComparisonArray{
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Current: *NewResult(0, 58.00, 0, 0, 0), Last: *NewResult(0, 56.00, 0, 0, 0), CurrLastDiff: 0.9655172413793104},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), CurrLastDiff: 5},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), CurrLastDiff: 0.9081632653061225},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2", SubBenchmarkName: "bench2-pkg2"}, Current: *NewResult(0, 3.50, 0, 0, 0), Last: *NewResult(0, 0, 0, 0, 0), CurrLastDiff: 1},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1", SubBenchmarkName: "bench1-pkg2"}, Current: *NewResult(0, 5.00, 0, 0, 0), Last: *NewResult(0, 4.20, 0, 0, 0), CurrLastDiff: 0.8400000000000001},
-			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1", SubBenchmarkName: "bench1-pkg3"}, Current: *NewResult(0, 2385.00, 0, 0, 0), Last: *NewResult(0, 0.00, 0, 0, 0), CurrLastDiff: 1},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench3", SubBenchmarkName: "bench3-pkg1"}, Current: *NewResult(0, 58.00, 0, 0, 0), Last: *NewResult(0, 56.00, 0, 0, 0), Diff: Result{NSPerOp:  3.4482758620689653}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench1", SubBenchmarkName: "bench1-pkg1"}, Current: *NewResult(0, 1.00, 0, 0, 0), Last: *NewResult(0, 5.00, 0, 0, 0), Diff: Result{NSPerOp:  -400}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg1", Name: "bench2", SubBenchmarkName: "bench2-pkg1"}, Current: *NewResult(0, 98.00, 0, 0, 0), Last: *NewResult(0, 89.00, 0, 0, 0), Diff: Result{NSPerOp:  9.183673469387756}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench2", SubBenchmarkName: "bench2-pkg2"}, Current: *NewResult(0, 3.50, 0, 0, 0), Last: *NewResult(0, 0, 0, 0, 0), Diff: Result{NSPerOp:  0}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg2", Name: "bench1", SubBenchmarkName: "bench1-pkg2"}, Current: *NewResult(0, 5.00, 0, 0, 0), Last: *NewResult(0, 4.20, 0, 0, 0), Diff: Result{NSPerOp:  15.999999999999998}},
+			{BenchmarkId: BenchmarkId{PkgName: "pkg3", Name: "bench1", SubBenchmarkName: "bench1-pkg3"}, Current: *NewResult(0, 2385.00, 0, 0, 0), Last: *NewResult(0, 0.00, 0, 0, 0), Diff: Result{NSPerOp:  0}},
 		}},
 	}
 	for _, tt := range tests {
