@@ -20,7 +20,7 @@ golang_hash_linux_amd64:
   1.15.8: 'sha256:d3379c32a90fdf9382166f8f48034c459a8cc433730bc9476d39d9082c94583b'
 
 vitess_git_repo: "https://github.com/vitessio/vitess.git"
-vitess_git_version: "master"
+vitess_git_version: "main"
 
 mysql_daemon: mysqld
 
