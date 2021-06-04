@@ -5,15 +5,16 @@ go 1.15
 require (
 	github.com/apenella/go-ansible v1.0.0
 	github.com/dustin/go-humanize v1.0.0
-	github.com/frankban/quicktest v1.11.3
+	github.com/frankban/quicktest v1.13.0
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-sql-driver/mysql v1.5.0
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/uuid v1.2.0
 	github.com/hashicorp/terraform-exec v0.13.3
 	github.com/influxdata/influxdb-client-go/v2 v2.3.0
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.5.0
+	github.com/planetscale/planetscale-go v0.27.0 // indirect
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/slack-go/slack v0.8.1
 	github.com/spf13/cobra v1.1.3
