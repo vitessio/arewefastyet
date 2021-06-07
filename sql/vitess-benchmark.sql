@@ -46,8 +46,6 @@ CREATE TABLE `macrobenchmark` (
                                   `exec_uuid` varchar(100) DEFAULT NULL,
                                   `vtgate_planner_version` varchar(20) NOT NULL DEFAULT 'V3',
                                   PRIMARY KEY (`macrobenchmark_id`)
-#                                   KEY `macrobenchmark_ibfk_1` (`exec_uuid`),
-#                                   CONSTRAINT `macrobenchmark_ibfk_1` FOREIGN KEY (`exec_uuid`) REFERENCES `execution` (`uuid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=939 DEFAULT CHARSET=utf8;
 
 --
@@ -65,8 +63,6 @@ CREATE TABLE `OLTP` (
                         `time` int(11) DEFAULT NULL,
                         `threads` decimal(8,2) DEFAULT NULL,
                         PRIMARY KEY (`OLTP_no`)
-#                         KEY `test_no` (`macrobenchmark_id`),
-#                         CONSTRAINT `OLTP_ibfk_1` FOREIGN KEY (`macrobenchmark_id`) REFERENCES `macrobenchmark` (`macrobenchmark_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=511 DEFAULT CHARSET=utf8;
 
 --
@@ -84,8 +80,6 @@ CREATE TABLE `TPCC` (
                         `time` int(11) DEFAULT NULL,
                         `threads` decimal(8,2) DEFAULT NULL,
                         PRIMARY KEY (`TPCC_no`)
-#                         KEY `test_no` (`macrobenchmark_id`),
-#                         CONSTRAINT `TPCC_ibfk_1` FOREIGN KEY (`macrobenchmark_id`) REFERENCES `macrobenchmark` (`macrobenchmark_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=356 DEFAULT CHARSET=utf8;
 
 --
@@ -102,10 +96,6 @@ CREATE TABLE `qps` (
                        `other_qps` decimal(8,2) DEFAULT NULL,
                        `OLTP_no` int(11) DEFAULT NULL,
                        PRIMARY KEY (`qps_no`)
-#                        KEY `TPCC_no` (`TPCC_no`),
-#                        KEY `OLTP_no` (`OLTP_no`),
-#                        CONSTRAINT `qps_ibfk_1` FOREIGN KEY (`TPCC_no`) REFERENCES `TPCC` (`TPCC_no`),
-#                        CONSTRAINT `qps_ibfk_2` FOREIGN KEY (`OLTP_no`) REFERENCES `OLTP` (`OLTP_no`)
 ) ENGINE=InnoDB AUTO_INCREMENT=865 DEFAULT CHARSET=utf8;
 
 --
@@ -120,8 +110,6 @@ CREATE TABLE `microbenchmark` (
                                   `git_ref` varchar(255) DEFAULT NULL,
                                   `exec_uuid` varchar(100) DEFAULT NULL,
                                   PRIMARY KEY (`microbenchmark_no`)
-#                                   KEY `microbenchmark_ibfk_1` (`exec_uuid`),
-#                                   CONSTRAINT `microbenchmark_ibfk_1` FOREIGN KEY (`exec_uuid`) REFERENCES `execution` (`uuid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14619 DEFAULT CHARSET=utf8;
 
 --
@@ -140,6 +128,4 @@ CREATE TABLE `microbenchmark_details` (
                                           `bytes_per_op` decimal(22,5) DEFAULT NULL,
                                           `allocs_per_op` decimal(22,5) DEFAULT NULL,
                                           PRIMARY KEY (`detail_no`)
-#                                           KEY `microbenchmark_details_fk_1` (`microbenchmark_no`),
-#                                           CONSTRAINT `microbenchmark_details_fk_1` FOREIGN KEY (`microbenchmark_no`) REFERENCES `microbenchmark` (`microbenchmark_no`)
 ) ENGINE=InnoDB AUTO_INCREMENT=358174 DEFAULT CHARSET=utf8;
