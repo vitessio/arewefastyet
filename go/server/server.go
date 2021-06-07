@@ -20,6 +20,7 @@ package server
 
 import (
 	"errors"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"html/template"
 
 	"github.com/vitessio/arewefastyet/go/slack"
@@ -29,7 +30,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
 const (
@@ -56,8 +56,8 @@ type Server struct {
 	localVitessPath string
 	router          *gin.Engine
 
-	dbCfg    *mysql.ConfigDB
-	dbClient *mysql.Client
+	dbCfg    *psdb.Config
+	dbClient *psdb.Client
 
 	executionMetricsDBConfig *influxdb.Config
 	executionMetricsDBClient *influxdb.Client
@@ -112,7 +112,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 
 	s.slackConfig.AddToCommand(cmd)
 	if s.dbCfg == nil {
-		s.dbCfg = &mysql.ConfigDB{}
+		s.dbCfg = &psdb.Config{}
 	}
 	s.dbCfg.AddToCommand(cmd)
 

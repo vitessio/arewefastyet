@@ -21,6 +21,7 @@ package macrobench
 import (
 	"errors"
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/storage"
 	"math"
 	"sort"
 	"strings"
@@ -253,10 +254,10 @@ func (qps QPS) OtherStr() string {
 }
 
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
-func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbClient *mysql.Client, metricsClient *influxdb.Client) (map[Type]DetailsArray, error) {
+func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, metricsClient *influxdb.Client) (map[Type]DetailsArray, error) {
 	macros := map[Type]DetailsArray{}
 	for _, mtype := range Types {
-		macro, err := GetResultsForGitRefAndPlanner(mtype, sha, planner, dbClient)
+		macro, err := GetResultsForGitRefAndPlanner(mtype, sha, planner, dbclient)
 		if err != nil {
 			return nil, err
 		}
@@ -277,7 +278,7 @@ func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbClient *
 // GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion, lastDays int, client *mysql.Client) (macrodetails DetailsArray, err error) {
+func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
@@ -311,7 +312,7 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 
 // GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
 // and macro benchmark Type. The type must be either OLTP or TPCC.
-func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVersion, client *mysql.Client) (macrodetails DetailsArray, err error) {
+func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
 	if macroType != OLTP && macroType != TPCC {
 		return nil, errors.New(IncorrectMacroBenchmarkType)
 	}
@@ -345,7 +346,7 @@ func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVe
 // The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
 // Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
 // The children table QPS is also inserted.
-func (mbr *Result) insertToMySQL(benchmarkType Type, macrobenchmarkID int, client *mysql.Client) error {
+func (mbr *Result) insertToMySQL(benchmarkType Type, macrobenchmarkID int, client storage.SQLClient) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}

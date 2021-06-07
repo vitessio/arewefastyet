@@ -14,7 +14,7 @@ require (
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.5.0
-	github.com/planetscale/planetscale-go v0.27.0
+	github.com/planetscale/planetscale-go v0.28.0
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/slack-go/slack v0.8.1
 	github.com/spf13/cobra v1.1.3

@@ -22,6 +22,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/go-sql-driver/mysql"
 	"github.com/planetscale/planetscale-go/planetscale"
 	"github.com/planetscale/planetscale-go/planetscale/dbutil"
 	"github.com/spf13/cobra"
@@ -97,6 +98,7 @@ func (cfg Config) NewClient() (*Client, error) {
 		Database:     cfg.Database,
 		Branch:       cfg.Branch,
 		Client:       psdbClient,
+		MySQLConfig:  mysql.NewConfig(),
 	}
 	db, err := dbutil.Dial(context.Background(), dialCfg)
 	if err != nil {
@@ -140,4 +142,3 @@ func (c *Client) Select(query string, args ...interface{}) (*sql.Rows, error) {
 	}
 	return rows, nil
 }
-
