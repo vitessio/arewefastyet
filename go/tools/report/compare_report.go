@@ -17,6 +17,7 @@ limitations under the License.
 package report
 
 import (
+	"github.com/vitessio/arewefastyet/go/storage"
 	"strconv"
 	"strings"
 
@@ -25,7 +26,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 
 	"github.com/jung-kurt/gofpdf"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
@@ -72,7 +72,7 @@ type tableCell struct {
 
 // GenerateCompareReport is used to generate a comparison report between the 2 SHAs provided. It uses the client connection
 // to read the results. It also takes as an argument the name of the report that will be generated
-func GenerateCompareReport(client *mysql.Client, metricsClient *influxdb.Client, fromSHA, toSHA, reportFile string) error {
+func GenerateCompareReport(client storage.SQLClient, metricsClient *influxdb.Client, fromSHA, toSHA, reportFile string) error {
 	// Compare macrobenchmark results for the 2 SHAs
 	macrosMatrices, err := macrobench.CompareMacroBenchmarks(client, metricsClient, fromSHA, toSHA, macrobench.V3Planner)
 	if err != nil {

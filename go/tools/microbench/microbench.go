@@ -20,7 +20,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/storage"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"go.uber.org/multierr"
 	"go/types"
@@ -44,12 +45,12 @@ type benchmark struct {
 	filePath         string
 	name             string
 	pkgPath, pkgName string
-	sql              *mysql.Client
+	sql              *psdb.Client
 	gitHash          string
 	execUUID         string
 }
 
-func (b *benchmark) registerToMySQL(client *mysql.Client) error {
+func (b *benchmark) registerToMySQL(client storage.SQLClient) error {
 	query := "INSERT INTO microbenchmark(exec_uuid, pkg_name, name, git_ref) VALUES(NULLIF(?, ''), ?, ?, ?)"
 	res, err := client.Insert(query, b.execUUID, b.pkgName, b.name, b.gitHash)
 	if err != nil {
@@ -122,11 +123,11 @@ func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error
 // the results to outputPath.
 // Profiling files will be written to the current working directory.
 func Run(cfg Config) error {
-	var sqlClient *mysql.Client
+	var sqlClient *psdb.Client
 	var err error
 
 	if cfg.DatabaseConfig != nil && cfg.DatabaseConfig.IsValid() {
-		sqlClient, err = mysql.New(*cfg.DatabaseConfig)
+		sqlClient, err = cfg.DatabaseConfig.NewClient()
 		if err != nil {
 			return err
 		}

@@ -20,13 +20,13 @@ package macrobench
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
 
 func run() *cobra.Command {
 	mabcfg := macrobench.Config{
-		DatabaseConfig: &mysql.ConfigDB{},
+		DatabaseConfig: &psdb.Config{},
 	}
 
 	cmd := &cobra.Command{
