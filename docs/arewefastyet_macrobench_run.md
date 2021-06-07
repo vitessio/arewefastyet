@@ -13,7 +13,7 @@ arewefastyet macrobench run [flags]
 ### Examples
 
 ```
-arewastyet macrobenchmark run --db-database benchmark --db-host localhost --db-password <db-password> --db-user <db-username>
+arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-db-branch main --planetscale-db-org my-org --planetscale-db-service-token <token> --planetscale-db-service-token-name <token name>
 ```
 
 ### Options

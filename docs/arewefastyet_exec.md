@@ -14,7 +14,7 @@ arewefastyet exec [flags]
 ### Examples
 
 ```
-arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --db-database benchmark --db-host localhost --db-password <db-password> --db-user <db-username>
+arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --planetscale-db-database benchmark --planetscale-db-branch main --planetscale-db-org my-org --planetscale-db-service-token <token> --planetscale-db-service-token-name <token name>
 --exec-source config_micro_remote --ansible-inventory-files microbench_inventory.yml --ansible-playbook-files microbench.yml --ansible-root-directory ./ansible/
 --equinix-instance-type m2.xlarge.x86 --equinix-token tok --equinix-project-id id
 

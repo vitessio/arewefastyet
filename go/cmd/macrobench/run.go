@@ -36,7 +36,7 @@ func run() *cobra.Command {
 		},
 		Short:   "Run macro benchmarks and store the output in the mysql configuration provided.",
 		Long:    "Run macro benchmarks using a fork of sysbench (https://github.com/planetscale/sysbench for OLTP and https://github.com/planetscale/sysbench-TPCC for TPCC)  and store the output in the mysql configuration provided.",
-		Example: "arewastyet macrobenchmark run --db-database benchmark --db-host localhost --db-password <db-password> --db-user <db-username>",
+		Example: "arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-db-branch main --planetscale-db-org my-org --planetscale-db-service-token <token> --planetscale-db-service-token-name <token name>",
 	}
 	mabcfg.AddToCommand(cmd)
 	return cmd
