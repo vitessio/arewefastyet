@@ -59,6 +59,10 @@ type (
 	}
 )
 
+func (cfg Config) IsValid() bool {
+	return !(cfg.Token == "" || cfg.Name == "" || cfg.Org == "" || cfg.Database == "" || cfg.Branch == "")
+}
+
 func (cfg *Config) AddToViper(v *viper.Viper) {
 	_ = v.UnmarshalKey(flagPsdbOrg, &cfg.Org)
 	_ = v.UnmarshalKey(flagPsdbServiceTokenName, &cfg.Name)
