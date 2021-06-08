@@ -22,7 +22,7 @@ import (
 	qt "github.com/frankban/quicktest"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"log"
 	"os"
@@ -34,8 +34,8 @@ var (
 
 	skip = ""
 
-	dbConfig = mysql.ConfigDB{}
-	dbClient = new(mysql.Client)
+	dbConfig = psdb.Config{}
+	dbClient = new(psdb.Client)
 
 	execMetricsConfig = influxdb.Config{}
 	execMetricsClient = new(influxdb.Client)

@@ -20,6 +20,8 @@ package macrobench
 
 import (
 	"errors"
+	"github.com/vitessio/arewefastyet/go/storage"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -37,9 +39,9 @@ type Config struct {
 	WorkloadPath string
 
 	// DatabaseConfig points to the required configuration to create
-	// a *mysql.Client. If no configuration, results and reports will
+	// a *psdb.Client. If no configuration, results and reports will
 	// not be saved to MySQL, though the program won't fail.
-	DatabaseConfig *mysql.ConfigDB
+	DatabaseConfig *psdb.Config
 
 	// M contains all metadata used to parameter sysbench execution.
 	// This key value map stores the value of each CLI parameters.
@@ -125,7 +127,7 @@ func (mabcfg *Config) parseIntoMap(prefix string) {
 
 // insertBenchmarkToSQL will insert a new row in the benchmark table based on
 // the given MacroBenchConfig. The newly created row's unique ID is returned.
-func (mabcfg Config) insertBenchmarkToSQL(client *mysql.Client) (newMacroBenchmarkID int, err error) {
+func (mabcfg Config) insertBenchmarkToSQL(client storage.SQLClient) (newMacroBenchmarkID int, err error) {
 	if client == nil {
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}

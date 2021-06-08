@@ -20,18 +20,17 @@ package microbench
 
 import (
 	"fmt"
-
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 // Compare takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the microbenchmark
 // results for the 2 SHAs and compares them. The result is a comparison array.
-func Compare(dbClient *mysql.Client, reference string, compare string) (ComparisonArray, error) {
+func Compare(client storage.SQLClient, reference string, compare string) (ComparisonArray, error) {
 	// compare micro benchmarks
 	SHAs := []string{reference, compare}
 	micros := map[string]DetailsArray{}
 	for _, sha := range SHAs {
-		micro, err := GetResultsForGitRef(sha, dbClient)
+		micro, err := GetResultsForGitRef(sha, client)
 		if err != nil {
 			return nil, err
 		}

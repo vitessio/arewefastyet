@@ -19,3 +19,4 @@ mysql -u root < ./002_add_foreign_key_to_microbenchmark_details.sql
 mysql -u root < ./003_add_type_to_execution.sql
 mysql -u root < ./004_add_pull_request_to_execution.sql
 mysql -u root < ./005_add_vtgate_planner_version_to_macrobenchmarks.sql
+mysql -u root < ./006_drop_foreign_key_constraints.sql

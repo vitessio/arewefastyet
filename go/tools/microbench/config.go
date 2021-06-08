@@ -19,7 +19,7 @@ package microbench
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 )
 
 const (
@@ -40,7 +40,7 @@ type Config struct {
 	// DatabaseConfig used to save results to SQL. If this field
 	// is nil, saving results will be skipped and no error will
 	// be returned.
-	DatabaseConfig *mysql.ConfigDB
+	DatabaseConfig *psdb.Config
 
 	// execUUID refers to parent execution of the microbenchmark.
 	// If this field is empty, the corresponding column in SQL

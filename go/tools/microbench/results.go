@@ -20,6 +20,7 @@ package microbench
 
 import (
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/storage"
 	"sort"
 	"strconv"
 	"strings"
@@ -27,7 +28,6 @@ import (
 	"unicode"
 
 	"github.com/dustin/go-humanize"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/math"
 )
 
@@ -190,7 +190,7 @@ func (mbd DetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool
 
 // GetResultsForGitRef will fetch and return a DetailsArray
 // containing all the Details linked to the given git commit SHA.
-func GetResultsForGitRef(ref string, client *mysql.Client) (mrs DetailsArray, err error) {
+func GetResultsForGitRef(ref string, client storage.SQLClient) (mrs DetailsArray, err error) {
 	result, err := client.Select("select m.pkg_name, m.name, md.name, md.n, md.ns_per_op, md.bytes_per_op,"+
 		" md.allocs_per_op, md.mb_per_sec FROM microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
 		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc", ref)
@@ -213,7 +213,7 @@ func GetResultsForGitRef(ref string, client *mysql.Client) (mrs DetailsArray, er
 
 // GetLatestResultsFor will fetch and return a DetailsArray
 // containing all the Details linked to latest runs of the given benchmark name.
-func GetLatestResultsFor(name, subBenchmarkName string, count int, client *mysql.Client) (mrs DetailsArray, err error) {
+func GetLatestResultsFor(name, subBenchmarkName string, count int, client storage.SQLClient) (mrs DetailsArray, err error) {
 	query := "select m.pkg_name, m.name, md.name, m.git_ref , md.n, md.ns_per_op, md.bytes_per_op," +
 		" md.allocs_per_op, md.mb_per_sec, m.started_at  from (select microbenchmark_no, pkg_name, name, microbenchmark.git_ref, started_at" +
 		" from microbenchmark join execution on exec_uuid = uuid where name = ? and source = \"cron\" and status = \"finished\" order by started_at desc limit ?) m, " +

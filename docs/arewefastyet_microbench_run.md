@@ -20,12 +20,13 @@ arewastyet microbenchmark run ~/vitess ./go/vt/sqlparser output.txt
 ### Options
 
 ```
-      --db-database string            Database to use.
-      --db-host string                Hostname of the database
-      --db-password string            Password to authenticate the database.
-      --db-user string                User used to connect to the database
-  -h, --help                          help for run
-      --microbench-exec-uuid string   UUID of the parent execution, an empty string will set to NULL.
+  -h, --help                                       help for run
+      --microbench-exec-uuid string                UUID of the parent execution, an empty string will set to NULL.
+      --planetscale-db-branch string               PlanetscaleDB branch to use. (default "main")
+      --planetscale-db-database string             PlanetscaleDB database name.
+      --planetscale-db-org string                  Name of the PlanetscaleDB organization.
+      --planetscale-db-service-token string        PlanetscaleDB service token value.
+      --planetscale-db-service-token-name string   PlanetscaleDB service token name.
 ```
 
 ### Options inherited from parent commands

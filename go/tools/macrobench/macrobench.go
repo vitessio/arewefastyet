@@ -22,11 +22,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
 type PlannerVersion string
@@ -89,10 +88,10 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 // Sysbench-TPCC: https://github.com/planetscale/sysbench-tpcc
 func Run(mabcfg Config) error {
 	var err error
-	var sqlClient *mysql.Client
+	var sqlClient *psdb.Client
 
 	if mabcfg.DatabaseConfig != nil && mabcfg.DatabaseConfig.IsValid() {
-		sqlClient, err = mysql.New(*mabcfg.DatabaseConfig)
+		sqlClient, err = mabcfg.DatabaseConfig.NewClient()
 		if err != nil {
 			return err
 		}

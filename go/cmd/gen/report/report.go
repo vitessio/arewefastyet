@@ -17,11 +17,11 @@ limitations under the License.
 package report
 
 import (
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"github.com/vitessio/arewefastyet/go/tools/report"
 )
 
@@ -29,7 +29,7 @@ func GenerateReport() *cobra.Command {
 	var reportFile string
 	var toSHA string
 	var fromSHA string
-	var dbClient mysql.ConfigDB
+	var dbConfig psdb.Config
 	var metricsCfg influxdb.Config
 	cmd := &cobra.Command{
 		Use:     "report",
@@ -38,7 +38,7 @@ func GenerateReport() *cobra.Command {
 		Example: "arewefastyet gen report --compare-from sha1 --compare-to sha2 --report-file report.pdf",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Println("Generating file.")
-			client, err := mysql.New(dbClient)
+			client, err := dbConfig.NewClient()
 			if err != nil {
 				return err
 			}
@@ -60,7 +60,7 @@ func GenerateReport() *cobra.Command {
 	_ = cmd.MarkFlagRequired("compare-to")
 	cmd.Flags().StringVar(&fromSHA, "compare-from", "", "SHA for Vitess that we want to compare from")
 	_ = cmd.MarkFlagRequired("compare-from")
-	dbClient.AddToCommand(cmd)
+	dbConfig.AddToCommand(cmd)
 	metricsCfg.AddToCommand(cmd)
 	return cmd
 }

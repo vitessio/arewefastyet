@@ -18,13 +18,13 @@ package microbench
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
 func run() *cobra.Command {
 	var mbcfg microbench.Config
-	mbcfg.DatabaseConfig = &mysql.ConfigDB{}
+	mbcfg.DatabaseConfig = &psdb.Config{}
 
 	cmd := &cobra.Command{
 		Use:   "run [root dir] <pkg> <output file>",

@@ -21,7 +21,7 @@ package microbench
 import (
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"github.com/vitessio/arewefastyet/go/storage"
 	"regexp"
 	"strconv"
 	"time"
@@ -155,7 +155,7 @@ func (line *lineRun) parseGeneralBenchmark() error {
 	return nil
 }
 
-func (line *lineRun) InsertToMySQL(microBenchID int64, client *mysql.Client) error {
+func (line *lineRun) InsertToMySQL(microBenchID int64, client storage.SQLClient) error {
 	query := "INSERT INTO microbenchmark_details(microbenchmark_no, name, bench_type, n, ns_per_op, mb_per_sec, bytes_per_op, allocs_per_op) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
 	res, err := client.Insert(query, microBenchID, line.name, line.benchType, line.results.Op, line.results.NanosecondPerOp, line.results.MBs, line.results.BytesPerOp, line.results.AllocsPerOp)
 	if err != nil {
