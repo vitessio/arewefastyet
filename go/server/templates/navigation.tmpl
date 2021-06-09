@@ -26,7 +26,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="custom-control custom-switch">
+        <div class="custom-control custom-switch" data-toggle="tooltip"  data-placement="bottom" title="See results from VTGate's Gen4 planner. Defaults to V3 planner." style="margin-left: 10px;">
             <input type="checkbox" class="custom-control-input" id="vtgateplanner-switch" onclick="switchVtgatePlanner()">
             <label class="custom-control-label" for="vtgateplanner-switch" style="color: white">Gen4</label>
         </div>
@@ -133,5 +133,8 @@
         }
         location.reload()
     }
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>
 {{ end }}
