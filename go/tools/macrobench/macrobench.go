@@ -22,6 +22,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"os"
 	"os/exec"
@@ -130,9 +132,29 @@ func Run(mabcfg Config) error {
 		}
 	}
 
+	err = handleSysBenchResults(resStr, sqlClient, mabcfg.Type, macrobenchID)
+	if err != nil {
+		return err
+	}
+	err = handleMetricsResults(influxdb.Client{}, mabcfg.execUUID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func handleMetricsResults(client influxdb.Client, execUUID string) error {
+	_, err := metrics.GetExecutionMetrics(client, execUUID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchType Type, macrobenchID int) error {
 	// Parse results
 	var results []Result
-	err = json.Unmarshal(resStr, &results)
+	err := json.Unmarshal(resStr, &results)
 	if err != nil {
 		return fmt.Errorf("unmarshal results: %+v\n", err)
 	}
@@ -142,7 +164,7 @@ func Run(mabcfg Config) error {
 
 	// Save results
 	if sqlClient != nil {
-		err = results[0].insertToMySQL(mabcfg.Type, macrobenchID, sqlClient)
+		err = results[0].insertToMySQL(macrobenchType, macrobenchID, sqlClient)
 		if err != nil {
 			return err
 		}
