@@ -29,7 +29,6 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 )
@@ -254,7 +253,7 @@ func (qps QPS) OtherStr() string {
 }
 
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
-func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, metricsClient *influxdb.Client) (map[Type]DetailsArray, error) {
+func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient) (map[Type]DetailsArray, error) {
 	macros := map[Type]DetailsArray{}
 	for _, mtype := range Types {
 		macro, err := GetResultsForGitRefAndPlanner(mtype, sha, planner, dbclient)
@@ -264,7 +263,7 @@ func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient s
 
 		// Get the execution metrics of each macrobenchmark details
 		for i, details := range macro {
-			macro[i].Metrics, err = metrics.GetExecutionMetrics(*metricsClient, details.ExecUUID)
+			macro[i].Metrics, err = metrics.GetExecutionMetricsSQL(dbclient, details.ExecUUID)
 			if err != nil {
 				return nil, err
 			}

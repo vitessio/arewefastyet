@@ -21,19 +21,17 @@ package macrobench
 import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage"
-
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 )
 
 // CompareMacroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the macrobenchmark
 // results for the 2 SHAs and compares them. The result is a map with the key being the macrobenchmark name.
-func CompareMacroBenchmarks(client storage.SQLClient, metricsClient *influxdb.Client, reference, compare string, planner PlannerVersion) (map[Type]interface{}, error) {
+func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string, planner PlannerVersion) (map[Type]interface{}, error) {
 	// Get macro benchmarks from all the different types
 	SHAs := []string{reference, compare}
 	var err error
 	macros := map[string]map[Type]DetailsArray{}
 	for _, sha := range SHAs {
-		macros[sha], err = GetDetailsArraysFromAllTypes(sha, planner, client, metricsClient)
+		macros[sha], err = GetDetailsArraysFromAllTypes(sha, planner, client)
 		if err != nil {
 			return nil, err
 		}
@@ -50,12 +48,12 @@ func CompareMacroBenchmarks(client storage.SQLClient, metricsClient *influxdb.Cl
 
 // ComparePlanners takes in 2 arguments, the database, and a SHA. It reads from the database, the macrobenchmark
 // results for the 2 planners corresponding to the sha and compares them. The result is a map with the key being the macrobenchmark name.
-func ComparePlanners(client storage.SQLClient, metricsClient *influxdb.Client, sha string) (map[Type]interface{}, error) {
+func ComparePlanners(client storage.SQLClient, sha string) (map[Type]interface{}, error) {
 	// Get macro benchmarks from all the different types
 	var err error
 	macros := map[string]map[Type]DetailsArray{}
 	for _, planner := range PlannerVersions {
-		macros[string(planner)], err = GetDetailsArraysFromAllTypes(sha, planner, client, metricsClient)
+		macros[string(planner)], err = GetDetailsArraysFromAllTypes(sha, planner, client)
 		if err != nil {
 			return nil, err
 		}

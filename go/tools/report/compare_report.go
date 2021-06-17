@@ -74,7 +74,7 @@ type tableCell struct {
 // to read the results. It also takes as an argument the name of the report that will be generated
 func GenerateCompareReport(client storage.SQLClient, metricsClient *influxdb.Client, fromSHA, toSHA, reportFile string) error {
 	// Compare macrobenchmark results for the 2 SHAs
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(client, metricsClient, fromSHA, toSHA, macrobench.V3Planner)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(client, fromSHA, toSHA, macrobench.V3Planner)
 	if err != nil {
 		return err
 	}
