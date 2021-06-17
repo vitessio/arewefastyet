@@ -104,19 +104,19 @@ func newExecMetrics() ExecutionMetrics {
 func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetrics ExecutionMetrics) error {
 	query := "INSERT INTO metrics(exec_uuid, `name`, `value`) VALUES (?, ?, ?), (?, ?, ?)"
 	args := []interface{}{
-		execUUID, "TotalComponentsCPUTime", math.Round(execMetrics.TotalComponentsCPUTime*100)/100,
-		execUUID, "TotalComponentsMemStatsAllocBytes", math.Round(execMetrics.TotalComponentsMemStatsAllocBytes*100)/100,
+		execUUID, "TotalComponentsCPUTime", math.Round(float64(int(execMetrics.TotalComponentsCPUTime*100)))/100,
+		execUUID, "TotalComponentsMemStatsAllocBytes", math.Round(float64(int(execMetrics.TotalComponentsMemStatsAllocBytes*100)))/100,
 	}
 	for k, v := range execMetrics.ComponentsCPUTime {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsCPUTime." + k, math.Round(v*100)/100,
+			execUUID, "ComponentsCPUTime." + k, math.Round(float64(int(v*100)))/100,
 		}...)
 	}
 	for k, v := range execMetrics.ComponentsMemStatsAllocBytes {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsMemStatsAllocBytes." + k, math.Round(v*100)/100,
+			execUUID, "ComponentsMemStatsAllocBytes." + k, math.Round(float64(int(v*100)))/100,
 		}...)
 	}
 	_, err := client.Insert(query, args...)
