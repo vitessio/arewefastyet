@@ -23,10 +23,5 @@ func (s *Server) createStorages() (err error) {
 	if err != nil {
 		return
 	}
-
-	s.executionMetricsDBClient, err = s.executionMetricsDBConfig.NewClient()
-	if err != nil {
-		return
-	}
 	return
 }

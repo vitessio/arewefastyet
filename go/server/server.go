@@ -29,7 +29,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 )
 
 const (
@@ -58,9 +57,6 @@ type Server struct {
 
 	dbCfg    *psdb.Config
 	dbClient *psdb.Client
-
-	executionMetricsDBConfig *influxdb.Config
-	executionMetricsDBClient *influxdb.Client
 
 	// Configuration used to send message to Slack.
 	slackConfig slack.Config
@@ -115,11 +111,6 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 		s.dbCfg = &psdb.Config{}
 	}
 	s.dbCfg.AddToCommand(cmd)
-
-	if s.executionMetricsDBConfig == nil {
-		s.executionMetricsDBConfig = &influxdb.Config{}
-	}
-	s.executionMetricsDBConfig.AddToCommand(cmd)
 }
 
 func (s Server) isReady() bool {
