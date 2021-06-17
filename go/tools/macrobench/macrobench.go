@@ -146,7 +146,7 @@ func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metrics
 	if err != nil {
 		return err
 	}
-	err = handleMetricsResults(metricsClient, mabcfg.execUUID)
+	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID)
 	if err != nil {
 		return err
 	}
@@ -173,8 +173,12 @@ func createMetricsDatabaseClient(dbConfig *influxdb.Config) (client *influxdb.Cl
 	return
 }
 
-func handleMetricsResults(client *influxdb.Client, execUUID string) error {
-	_, err := metrics.GetExecutionMetrics(*client, execUUID)
+func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string) error {
+	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID)
+	if err != nil {
+		return err
+	}
+	err = metrics.InsertExecutionMetrics(sqlClient, execUUID, execMetrics)
 	if err != nil {
 		return err
 	}

@@ -20,6 +20,7 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 )
@@ -92,6 +93,11 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 		execMetrics.TotalComponentsMemStatsAllocBytes += execMetrics.ComponentsMemStatsAllocBytes[component]
 	}
 	return execMetrics, nil
+}
+
+func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetrics ExecutionMetrics) error {
+
+	return nil
 }
 
 // getSumFloatValueForQuery return the sum of a float value based on the given query, for
