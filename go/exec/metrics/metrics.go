@@ -23,6 +23,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
+	"math"
 	"strings"
 )
 
@@ -103,19 +104,19 @@ func newExecMetrics() ExecutionMetrics {
 func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetrics ExecutionMetrics) error {
 	query := "INSERT INTO metrics(exec_uuid, `name`, `value`) VALUES (?, ?, ?), (?, ?, ?)"
 	args := []interface{}{
-		execUUID, "TotalComponentsCPUTime", execMetrics.TotalComponentsCPUTime,
-		execUUID, "TotalComponentsMemStatsAllocBytes", execMetrics.TotalComponentsMemStatsAllocBytes,
+		execUUID, "TotalComponentsCPUTime", math.Round(execMetrics.TotalComponentsCPUTime*100)/100,
+		execUUID, "TotalComponentsMemStatsAllocBytes", math.Round(execMetrics.TotalComponentsMemStatsAllocBytes*100)/100,
 	}
 	for k, v := range execMetrics.ComponentsCPUTime {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsCPUTime." + k, v,
+			execUUID, "ComponentsCPUTime." + k, math.Round(v*100)/100,
 		}...)
 	}
 	for k, v := range execMetrics.ComponentsMemStatsAllocBytes {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsMemStatsAllocBytes." + k, v,
+			execUUID, "ComponentsMemStatsAllocBytes." + k, math.Round(v*100)/100,
 		}...)
 	}
 	_, err := client.Insert(query, args...)
