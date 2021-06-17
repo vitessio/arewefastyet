@@ -23,6 +23,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
+	"strings"
 )
 
 const (
@@ -73,10 +74,7 @@ type (
 // GetExecutionMetrics fetches and computes a single execution's metrics.
 // Metrics are fetched using the given influxdb.Client and execUUID.
 func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
-	execMetrics := ExecutionMetrics{
-		ComponentsCPUTime:            map[string]float64{},
-		ComponentsMemStatsAllocBytes: map[string]float64{},
-	}
+	execMetrics := newExecMetrics()
 
 	var err error
 	for _, component := range components {
@@ -93,6 +91,13 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 		execMetrics.TotalComponentsMemStatsAllocBytes += execMetrics.ComponentsMemStatsAllocBytes[component]
 	}
 	return execMetrics, nil
+}
+
+func newExecMetrics() ExecutionMetrics {
+	return ExecutionMetrics{
+		ComponentsCPUTime:            map[string]float64{},
+		ComponentsMemStatsAllocBytes: map[string]float64{},
+	}
 }
 
 func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetrics ExecutionMetrics) error {
@@ -115,6 +120,37 @@ func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetri
 	}
 	_, err := client.Insert(query, args...)
 	return err
+}
+
+func GetExecutionMetricsSQL(client storage.SQLClient, execUUID string) (ExecutionMetrics, error) {
+	query := "select `name`, value from metrics where exec_uuid = ?"
+	rows, err := client.Select(query, execUUID)
+	if err != nil {
+		return ExecutionMetrics{}, err
+	}
+
+	result := newExecMetrics()
+	for rows.Next() {
+		var name string
+		var value float64
+		err = rows.Scan(&name, &value)
+		if err != nil {
+			return ExecutionMetrics{}, err
+		}
+		switch {
+		case name == "TotalComponentsCPUTime":
+			result.TotalComponentsCPUTime = value
+		case name == "TotalComponentsMemStatsAllocBytes":
+			result.TotalComponentsMemStatsAllocBytes = value
+		case strings.HasPrefix(name, "ComponentsCPUTime."):
+			key := strings.Split(name, ".")[1]
+			result.ComponentsCPUTime[key]=value
+		case strings.HasPrefix(name, "ComponentsMemStatsAllocBytes."):
+			key := strings.Split(name, ".")[1]
+			result.ComponentsMemStatsAllocBytes[key]=value
+		}
+	}
+	return result, nil
 }
 
 // getSumFloatValueForQuery return the sum of a float value based on the given query, for

@@ -24,7 +24,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"log"
-	"math"
 	"os"
 	"testing"
 )
@@ -78,13 +77,20 @@ func TestInsertExecutionMetrics(t *testing.T) {
 		c.Skip(skip)
 	}
 
-	_, err := dbClient.Insert("DELETE FROM metrics WHERE exec_uuid='test_TestInsertExecutionMetrics'")
+	uuid := "test_TestInsertExecutionMetrics"
+	_, err := dbClient.Insert("DELETE FROM metrics WHERE exec_uuid=?", uuid)
+	defer func() {
+		_, err := dbClient.Insert("DELETE FROM metrics WHERE exec_uuid=?", uuid)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 	if err != nil {
 		return
 	}
 
 	cpu := map[string]float64{
-		"vtgate":   111987.93,
+		"vtgate":   1987.93,
 		"vttablet": 789.12,
 	}
 	mem := map[string]float64{
@@ -100,27 +106,10 @@ func TestInsertExecutionMetrics(t *testing.T) {
 		ComponentsMemStatsAllocBytes:      mem,
 	}
 
-	err = metrics.InsertExecutionMetrics(dbClient, "test_TestInsertExecutionMetrics", execMetrics)
+	err = metrics.InsertExecutionMetrics(dbClient, uuid, execMetrics)
 	c.Assert(err, qt.IsNil)
 
-	selectQ := "select name,value from metrics where exec_uuid='test_TestInsertExecutionMetrics'"
-	rows, err := dbClient.Select(selectQ)
+	result, err := metrics.GetExecutionMetricsSQL(dbClient, uuid)
 	c.Assert(err, qt.IsNil)
-
-	res := []float64{
-		cpu["vtgate"] + cpu["vttablet"],
-		mem["vtgate"] + mem["vttablet"],
-		cpu["vtgate"],
-		cpu["vttablet"],
-		mem["vtgate"],
-		mem["vttablet"],
-	}
-	for i := 0; rows.Next(); i++ {
-		var name string
-		var value float64
-		err = rows.Scan(&name, &value)
-		c.Assert(err, qt.IsNil)
-		diff := math.Abs(value - res[i])
-		c.Assert(diff < 1, qt.IsTrue)
-	}
+	c.Assert(result, qt.DeepEquals, execMetrics)
 }
