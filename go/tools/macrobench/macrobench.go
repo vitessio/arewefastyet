@@ -89,15 +89,17 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 // Regular Sysbench: https://github.com/planetscale/sysbench
 // Sysbench-TPCC: https://github.com/planetscale/sysbench-tpcc
 func Run(mabcfg Config) error {
-	var err error
-	var sqlClient *psdb.Client
+	// get sql database client
+	sqlClient, err := createSQLClient(mabcfg.DatabaseConfig)
+	if err != nil {
+		return err
+	}
+	defer sqlClient.Close()
 
-	if mabcfg.DatabaseConfig != nil && mabcfg.DatabaseConfig.IsValid() {
-		sqlClient, err = mabcfg.DatabaseConfig.NewClient()
-		if err != nil {
-			return err
-		}
-		defer sqlClient.Close()
+	// get metrics database client
+	metricsClient, err := createMetricsDatabaseClient(mabcfg.MetricsDatabaseConfig)
+	if err != nil {
+		return err
 	}
 
 	// Create new macro benchmark in MySQL
@@ -132,19 +134,47 @@ func Run(mabcfg Config) error {
 		}
 	}
 
-	err = handleSysBenchResults(resStr, sqlClient, mabcfg.Type, macrobenchID)
-	if err != nil {
-		return err
-	}
-	err = handleMetricsResults(influxdb.Client{}, mabcfg.execUUID)
+	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func handleMetricsResults(client influxdb.Client, execUUID string) error {
-	_, err := metrics.GetExecutionMetrics(client, execUUID)
+func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int) error {
+	err := handleSysBenchResults(resStr, sqlClient, mabcfg.Type, macrobenchID)
+	if err != nil {
+		return err
+	}
+	err = handleMetricsResults(metricsClient, mabcfg.execUUID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func createSQLClient(dbConfig *psdb.Config) (client *psdb.Client, err error) {
+	if dbConfig != nil && dbConfig.IsValid() {
+		client, err = dbConfig.NewClient()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func createMetricsDatabaseClient(dbConfig *influxdb.Config) (client *influxdb.Client, err error) {
+	if dbConfig != nil && dbConfig.IsValid() {
+		client, err = dbConfig.NewClient()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func handleMetricsResults(client *influxdb.Client, execUUID string) error {
+	_, err := metrics.GetExecutionMetrics(*client, execUUID)
 	if err != nil {
 		return err
 	}
