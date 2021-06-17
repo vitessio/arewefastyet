@@ -1,5 +1,6 @@
-ansible==2.9.12
+ansible==2.9.20
 molecule[ansible, docker]
 supervisor
 ansible_runner
 jmespath
+passlib[bcrypt]

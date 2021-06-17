@@ -24,7 +24,7 @@ platforms:
       - sysbench
     image: centos:8
     privileged: True
-    command: /sbin/init
+    command: /lib/systemd/systemd
     exposed_ports:
       - 15999
     published_ports:

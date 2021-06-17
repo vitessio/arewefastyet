@@ -69,7 +69,10 @@
 
     - name: Install the MySQL 8 repository
       yum:
-        name='{{ mysql_repo_rpm }}'
+        name: '{{ mysql_repo_rpm }}'
+        state: present
+        disable_gpg_check: true
+
     - name: Register packages to install
       set_fact:
         mysql_packages:
