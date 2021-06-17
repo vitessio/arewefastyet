@@ -74,7 +74,7 @@ type (
 // Metrics are fetched using the given influxdb.Client and execUUID.
 func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
 	execMetrics := ExecutionMetrics{
-		ComponentsCPUTime: map[string]float64{},
+		ComponentsCPUTime:            map[string]float64{},
 		ComponentsMemStatsAllocBytes: map[string]float64{},
 	}
 
@@ -96,8 +96,25 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 }
 
 func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetrics ExecutionMetrics) error {
-
-	return nil
+	query := "INSERT INTO metrics(exec_uuid, `name`, `value`) VALUES (?, ?, ?), (?, ?, ?)"
+	args := []interface{}{
+		execUUID, "TotalComponentsCPUTime", execMetrics.TotalComponentsCPUTime,
+		execUUID, "TotalComponentsMemStatsAllocBytes", execMetrics.TotalComponentsMemStatsAllocBytes,
+	}
+	for k, v := range execMetrics.ComponentsCPUTime {
+		query += ", (?,?,?)"
+		args = append(args, []interface{}{
+			execUUID, "ComponentsCPUTime." + k, v,
+		}...)
+	}
+	for k, v := range execMetrics.ComponentsMemStatsAllocBytes {
+		query += ", (?,?,?)"
+		args = append(args, []interface{}{
+			execUUID, "ComponentsMemStatsAllocBytes." + k, v,
+		}...)
+	}
+	_, err := client.Insert(query, args...)
+	return err
 }
 
 // getSumFloatValueForQuery return the sum of a float value based on the given query, for
@@ -150,7 +167,7 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 		}
 	}
 	result := ExecutionMetrics{
-		ComponentsCPUTime: map[string]float64{},
+		ComponentsCPUTime:            map[string]float64{},
 		ComponentsMemStatsAllocBytes: map[string]float64{},
 	}
 	result.TotalComponentsCPUTime = awftmath.MedianFloat(interResults.totalComponentsCPUTime)
@@ -170,7 +187,7 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 // The percentage are returned through ExecutionMetrics.
 func CompareTwo(left, right ExecutionMetrics) ExecutionMetrics {
 	result := ExecutionMetrics{
-		ComponentsCPUTime: map[string]float64{},
+		ComponentsCPUTime:            map[string]float64{},
 		ComponentsMemStatsAllocBytes: map[string]float64{},
 	}
 	result.TotalComponentsCPUTime = compareSafe(left.TotalComponentsCPUTime, right.TotalComponentsCPUTime)
