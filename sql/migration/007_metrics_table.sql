@@ -25,6 +25,6 @@ CREATE TABLE `metrics` (
                            `id` INT(11) NOT NULL AUTO_INCREMENT,
                            `exec_uuid` VARCHAR(100) DEFAULT NULL,
                            `name` VARCHAR(250) DEFAULT NULL,
-                           `value` DECIMAL(8,2) DEFAULT NULL,
+                           `value` FLOAT DEFAULT NULL,
                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
