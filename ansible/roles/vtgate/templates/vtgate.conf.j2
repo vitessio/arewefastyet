@@ -20,6 +20,7 @@ ADDITIONAL_CELLS=""
 EXTRA_VTGATE_FLAGS="-vschema_ddl_authorized_users \"%\" \
     -vtgate-config-terse-errors \
     -gate_query_cache_size {{ vtgate_query_cache_size }} \
+    -tablet_types_to_wait REPLICA \
     {% if pprof_targets is defined %}
         {% for target in pprof_targets if target == "vtgate" %}
             -pprof {{ pprof_args }},path=/tmp/pprof/vtgate-{{ gateway.id }},waitSig
