@@ -22,6 +22,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"os"
 	"os/exec"
@@ -87,15 +89,17 @@ func buildSysbenchArgString(m map[string]string, step string) []string {
 // Regular Sysbench: https://github.com/planetscale/sysbench
 // Sysbench-TPCC: https://github.com/planetscale/sysbench-tpcc
 func Run(mabcfg Config) error {
-	var err error
-	var sqlClient *psdb.Client
+	// get sql database client
+	sqlClient, err := createSQLClient(mabcfg.DatabaseConfig)
+	if err != nil {
+		return err
+	}
+	defer sqlClient.Close()
 
-	if mabcfg.DatabaseConfig != nil && mabcfg.DatabaseConfig.IsValid() {
-		sqlClient, err = mabcfg.DatabaseConfig.NewClient()
-		if err != nil {
-			return err
-		}
-		defer sqlClient.Close()
+	// get metrics database client
+	metricsClient, err := createMetricsDatabaseClient(mabcfg.MetricsDatabaseConfig)
+	if err != nil {
+		return err
 	}
 
 	// Create new macro benchmark in MySQL
@@ -130,9 +134,61 @@ func Run(mabcfg Config) error {
 		}
 	}
 
+	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int) error {
+	err := handleSysBenchResults(resStr, sqlClient, mabcfg.Type, macrobenchID)
+	if err != nil {
+		return err
+	}
+	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func createSQLClient(dbConfig *psdb.Config) (client *psdb.Client, err error) {
+	if dbConfig != nil && dbConfig.IsValid() {
+		client, err = dbConfig.NewClient()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func createMetricsDatabaseClient(dbConfig *influxdb.Config) (client *influxdb.Client, err error) {
+	if dbConfig != nil && dbConfig.IsValid() {
+		client, err = dbConfig.NewClient()
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string) error {
+	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID)
+	if err != nil {
+		return err
+	}
+	err = metrics.InsertExecutionMetrics(sqlClient, execUUID, execMetrics)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchType Type, macrobenchID int) error {
 	// Parse results
 	var results []Result
-	err = json.Unmarshal(resStr, &results)
+	err := json.Unmarshal(resStr, &results)
 	if err != nil {
 		return fmt.Errorf("unmarshal results: %+v\n", err)
 	}
@@ -142,7 +198,7 @@ func Run(mabcfg Config) error {
 
 	// Save results
 	if sqlClient != nil {
-		err = results[0].insertToMySQL(mabcfg.Type, macrobenchID, sqlClient)
+		err = results[0].insertToMySQL(macrobenchType, macrobenchID, sqlClient)
 		if err != nil {
 			return err
 		}

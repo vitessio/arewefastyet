@@ -55,7 +55,7 @@ func (s *Server) sendNotificationForRegression(compInfo *CompareInfo) (err error
 			return err
 		}
 	} else if compInfo.typeOf == "oltp" || compInfo.typeOf == "tpcc" {
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, s.executionMetricsDBClient, compInfo.execMain.ref, compInfo.execComp.ref, macrobench.PlannerVersion(compInfo.plannerVersion))
+		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, compInfo.execMain.ref, compInfo.execComp.ref, macrobench.PlannerVersion(compInfo.plannerVersion))
 		if err != nil {
 			return err
 		}

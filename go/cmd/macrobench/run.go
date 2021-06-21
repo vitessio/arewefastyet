@@ -20,13 +20,15 @@ package macrobench
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
 
 func run() *cobra.Command {
 	mabcfg := macrobench.Config{
-		DatabaseConfig: &psdb.Config{},
+		DatabaseConfig:        &psdb.Config{},
+		MetricsDatabaseConfig: &influxdb.Config{},
 	}
 
 	cmd := &cobra.Command{

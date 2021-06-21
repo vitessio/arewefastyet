@@ -20,6 +20,11 @@ arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-
 
 ```
   -h, --help                                       help for run
+      --influx-database string                     Name of the database to use in InfluxDB.
+      --influx-hostname string                     Hostname of InfluxDB.
+      --influx-password string                     Password used to connect to InfluxDB.
+      --influx-port string                         Port on which to InfluxDB listens. (default "8086")
+      --influx-username string                     Username used to connect to InfluxDB.
       --macrobench-exec-uuid string                UUID of the parent execution, an empty string will set to NULL.
       --macrobench-git-ref string                  Git SHA referring to the macro benchmark.
       --macrobench-skip-steps strings              Slice of sysbench steps to skip.

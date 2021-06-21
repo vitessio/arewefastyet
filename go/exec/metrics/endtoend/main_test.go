@@ -21,9 +21,8 @@ package endtoend
 import (
 	qt "github.com/frankban/quicktest"
 	"github.com/spf13/viper"
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
-	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"log"
 	"os"
 	"testing"
@@ -36,9 +35,6 @@ var (
 
 	dbConfig = psdb.Config{}
 	dbClient = new(psdb.Client)
-
-	execMetricsConfig = influxdb.Config{}
-	execMetricsClient = new(influxdb.Client)
 )
 
 func TestMain(m *testing.M) {
@@ -72,47 +68,48 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
-	execMetricsConfig.AddToViper(v)
-	execMetricsClient, err = execMetricsConfig.NewClient()
-	if err != nil {
-		log.Fatal(err)
-	}
 	os.Exit(m.Run())
 }
 
-func TestCompareMacroBenchmark(t *testing.T) {
+func TestInsertExecutionMetrics(t *testing.T) {
 	c := qt.New(t)
 	if skip != "" {
 		c.Skip(skip)
 	}
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, "dff8d632908583cae5940b25a962eaa2e6550508", "f7304cd1893accfefee0525910098a8e0e68deec", macrobench.V3Planner)
+
+	uuid := "test_TestInsertExecutionMetrics"
+	_, err := dbClient.Insert("DELETE FROM metrics WHERE exec_uuid=?", uuid)
+	defer func() {
+		_, err := dbClient.Insert("DELETE FROM metrics WHERE exec_uuid=?", uuid)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
 	if err != nil {
-		c.Fatal(err)
-	}
-	c.Assert(macrosMatrices, qt.HasLen, len(macrobench.Types))
-}
-
-func BenchmarkCompareMacroBenchmark(b *testing.B) {
-	c := qt.New(b)
-
-	run := func(b *testing.B, planner macrobench.PlannerVersion, reference, compare string) {
-		if skip != "" {
-			c.Skip(skip)
-		}
-		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
-			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, reference, compare, planner)
-			if err != nil {
-				c.Fatal(err)
-			}
-			c.Assert(macrosMatrices, qt.HasLen, len(macrobench.Types))
-		}
+		return
 	}
 
-	b.Run("Gen4 planner", func(b *testing.B) {
-		run(b, macrobench.Gen4FallbackPlanner, "48dccf56282dc79903c0ab0b1d0177617f927403", "f7304cd1893accfefee0525910098a8e0e68deec")
-	})
-	b.Run("V3 planner", func(b *testing.B) {
-		run(b, macrobench.V3Planner, "48dccf56282dc79903c0ab0b1d0177617f927403", "f7304cd1893accfefee0525910098a8e0e68deec")
-	})
+	cpu := map[string]float64{
+		"vtgate":   1987.93,
+		"vttablet": 789.12,
+	}
+	mem := map[string]float64{
+		"vtgate":   789.15,
+		"vttablet": 456789.3,
+	}
+
+	execMetrics := metrics.ExecutionMetrics{
+		TotalComponentsCPUTime: cpu["vtgate"] + cpu["vttablet"],
+		ComponentsCPUTime:      cpu,
+
+		TotalComponentsMemStatsAllocBytes: mem["vtgate"] + mem["vttablet"],
+		ComponentsMemStatsAllocBytes:      mem,
+	}
+
+	err = metrics.InsertExecutionMetrics(dbClient, uuid, execMetrics)
+	c.Assert(err, qt.IsNil)
+
+	result, err := metrics.GetExecutionMetricsSQL(dbClient, uuid)
+	c.Assert(err, qt.IsNil)
+	c.Assert(result, qt.DeepEquals, execMetrics)
 }

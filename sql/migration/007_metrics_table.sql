@@ -16,12 +16,15 @@
  * /
  */
 
-package server
+--
+-- Table structure for table `metrics`
+--
 
-func (s *Server) createStorages() (err error) {
-	s.dbClient, err = s.dbCfg.NewClient()
-	if err != nil {
-		return
-	}
-	return
-}
+DROP TABLE IF EXISTS `metrics`;
+CREATE TABLE `metrics` (
+                           `id` INT(11) NOT NULL AUTO_INCREMENT,
+                           `exec_uuid` VARCHAR(100) DEFAULT NULL,
+                           `name` VARCHAR(250) DEFAULT NULL,
+                           `value` FLOAT DEFAULT NULL,
+                           PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -99,6 +99,19 @@ CREATE TABLE `qps` (
 ) ENGINE=InnoDB AUTO_INCREMENT=865 DEFAULT CHARSET=utf8;
 
 --
+-- Table structure for table `metrics`
+--
+
+DROP TABLE IF EXISTS `metrics`;
+CREATE TABLE `metrics` (
+                       `id` INT(11) NOT NULL AUTO_INCREMENT,
+                       `exec_uuid` VARCHAR(100) DEFAULT NULL,
+                       `name` VARCHAR(250) DEFAULT NULL,
+                       `value` DECIMAL(8,2) DEFAULT NULL,
+                       PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table structure for table `microbenchmark`
 --
 

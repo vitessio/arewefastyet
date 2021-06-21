@@ -21,6 +21,7 @@ package macrobench
 import (
 	"errors"
 	"github.com/vitessio/arewefastyet/go/storage"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"strings"
 
@@ -38,10 +39,15 @@ type Config struct {
 	// WorkloadPath defines the path to the lua file used by sysbench.
 	WorkloadPath string
 
-	// DatabaseConfig points to the required configuration to create
+	// DatabaseConfig points to the configuration used to create
 	// a *psdb.Client. If no configuration, results and reports will
-	// not be saved to MySQL, though the program won't fail.
+	// not be saved to a database, though the program won't fail.
 	DatabaseConfig *psdb.Config
+
+	// MetricsDatabaseConfig points to the required configuration to create
+	// a *influxdb.Client. If no configuration is provided results will not be
+	// saved to the database and the program will not fail.
+	MetricsDatabaseConfig *influxdb.Config
 
 	// M contains all metadata used to parameter sysbench execution.
 	// This key value map stores the value of each CLI parameters.
@@ -93,6 +99,7 @@ const (
 // the given *cobra.Command.
 func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	mabcfg.DatabaseConfig.AddToCommand(cmd)
+	mabcfg.MetricsDatabaseConfig.AddToCommand(cmd)
 
 	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "Path to the workload used by sysbench.")
 	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "Path to the sysbench binary.")
