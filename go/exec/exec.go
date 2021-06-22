@@ -108,6 +108,10 @@ type Exec struct {
 	VtgatePlannerVersion string
 }
 
+const (
+	SourceCron = "cron"
+)
+
 // SetStdout sets the standard output of Exec.
 func (e *Exec) SetStdout(stdout *os.File) {
 	e.stdout = stdout
@@ -192,6 +196,11 @@ func (e *Exec) Prepare() error {
 	if e.pullNB != 0 {
 		e.AnsibleConfig.ExtraVars["vitess_git_version_fetch_pr"] = "refs/pull/" + strconv.Itoa(e.pullNB) + "/head"
 		e.AnsibleConfig.ExtraVars["vitess_git_version_pr_nb"] = e.pullNB
+	}
+
+	// Enable schema tracking only if we execute macrobenchmark main CRONs
+	if e.Source == SourceCron && e.typeOf != "micro" {
+		e.AnsibleConfig.ExtraVars["vitess_schema_tracking"] = 1
 	}
 
 	e.prepared = true
