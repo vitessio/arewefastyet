@@ -194,9 +194,14 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	leftTag := c.Query("ltag")
 	leftSHA := ""
 	if leftTag == "" {
-		// get the latest cron job if leftTag is not specified
-		leftTag = "main"
-		leftSHA = lastrunCronSHA
+		// get the last release sha if rightSHA is not specified
+		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		leftSHA = rel.CommitHash
+		leftTag = rel.Name
 	} else {
 		leftSHA, err = findSHA(allReleases, leftTag)
 		if err != nil {
@@ -209,14 +214,9 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	rightTag := c.Query("rtag")
 	rightSHA := ""
 	if rightTag == "" {
-		// get the last release sha if rightSHA is not specified
-		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
-		if err != nil {
-			handleRenderErrors(c, err)
-			return
-		}
-		rightSHA = rel.CommitHash
-		rightTag = rel.Name
+		// get the latest cron job if leftTag is not specified
+		rightTag = "main"
+		rightSHA = lastrunCronSHA
 	} else {
 		rightSHA, err = findSHA(allReleases, rightTag)
 		if err != nil {
@@ -310,9 +310,14 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	leftTag := c.Query("ltag")
 	leftSHA := ""
 	if leftTag == "" {
-		// get the latest cron job if leftTag is not specified
-		leftTag = "main"
-		leftSHA = lastrunCronSHA
+		// get the last release sha if rightSHA is not specified
+		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
+		if err != nil {
+			handleRenderErrors(c, err)
+			return
+		}
+		leftSHA = rel.CommitHash
+		leftTag = rel.Name
 	} else {
 		leftSHA, err = findSHA(allReleases, leftTag)
 		if err != nil {
@@ -325,14 +330,9 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	rightTag := c.Query("rtag")
 	rightSHA := ""
 	if rightTag == "" {
-		// get the last release sha if rightSHA is not specified
-		rel, err := git.GetLastReleaseAndCommitHash(s.getVitessPath())
-		if err != nil {
-			handleRenderErrors(c, err)
-			return
-		}
-		rightSHA = rel.CommitHash
-		rightTag = rel.Name
+		// get the latest cron job if leftTag is not specified
+		rightTag = "main"
+		rightSHA = lastrunCronSHA
 	} else {
 		rightSHA, err = findSHA(allReleases, rightTag)
 		if err != nil {
