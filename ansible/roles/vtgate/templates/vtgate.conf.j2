@@ -29,6 +29,9 @@ EXTRA_VTGATE_FLAGS="-vschema_ddl_authorized_users \"%\" \
     {% if planner_version is defined %}
         -planner_version {{ planner_version }}
     {% endif %}
+    {% if vitess_schema_tracking is defined %}
+        -schema_change_signal \
+    {% endif %}
     {{gateway.extra_flags|default("")}} \
     {{extra_vtgate_flags|default("")}} \
 "

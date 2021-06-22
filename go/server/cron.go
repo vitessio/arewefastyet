@@ -31,44 +31,44 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/git"
 )
 
-// CompareInfo has the details required to compare two git commits
-type CompareInfo struct {
-	// config is the configuration file to use
-	config string
-	// execMain contains the details of the execution of the main commit
-	execMain *execInfo
-	// execComp contains the details of the execution of the secondary commit
-	// when execComp is nil, then there is no execution to be done
-	// when execComp.source == "", then we are sure that the results already exist and do not need to rerun
-	execComp *execInfo
-	// retry is the number of times we want to retry failed comparisons
-	retry int
-	// plannerVersion is the vtgate planner that we should be using for testing
-	plannerVersion string
-	// typeOf takes 3 values = [oltp, micro, tpcc]
-	typeOf string
-	// name is the name of the comparison, used in sending slack message
-	name string
-	// ignoreNonRegression is true when we want to send a slack message even when there is no regression
-	ignoreNonRegression bool
-}
+type (
+	// CompareInfo has the details required to compare two git commits
+	CompareInfo struct {
+		// config is the configuration file to use
+		config string
+		// execMain contains the details of the execution of the main commit
+		execMain *execInfo
+		// execComp contains the details of the execution of the secondary commit
+		// when execComp is nil, then there is no execution to be done
+		// when execComp.source == "", then we are sure that the results already exist and do not need to rerun
+		execComp *execInfo
+		// retry is the number of times we want to retry failed comparisons
+		retry int
+		// plannerVersion is the vtgate planner that we should be using for testing
+		plannerVersion string
+		// typeOf takes 3 values = [oltp, micro, tpcc]
+		typeOf string
+		// name is the name of the comparison, used in sending slack message
+		name string
+		// ignoreNonRegression is true when we want to send a slack message even when there is no regression
+		ignoreNonRegression bool
+	}
 
-// execInfo contains execution information regarding each exec, which is not common between the 2 executions
-type execInfo struct {
-	ref    string
-	pullNB int
-	source string
-}
+	// execInfo contains execution information regarding each exec, which is not common between the 2 executions
+	execInfo struct {
+		ref    string
+		pullNB int
+		source string
+	}
 
-type executionStatus int
+	executionStatus int
+)
 
 const (
 	executionFailed executionStatus = iota
 	executionSucceeded
 	executionExists
-)
 
-const (
 	// maxConcurJob is the maximum number of concurrent jobs that we can execute
 	maxConcurJob = 5
 )
@@ -144,22 +144,22 @@ func (s *Server) compareMainBranch() ([]*CompareInfo, error) {
 	// We compare main with the previous hash of main and with the latest release
 	for configType, configFile := range configs {
 		if configType == "micro" {
-			_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, "cron", ref)
+			_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, exec.SourceCron, ref)
 			if err != nil {
 				slog.Warn(err.Error())
 			} else if previousGitRef != "" {
-				compareInfos = append(compareInfos, newCompareInfo("Comparing main with previous main - micro", configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing main with previous main - micro", configFile, ref, exec.SourceCron, 0, previousGitRef, "", s.cronNbRetry, configType, "", false))
 			}
-			compareInfos = append(compareInfos, newCompareInfo("Comparing main with latest release - "+lastRelease.Name+" - micro", configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, "", false))
+			compareInfos = append(compareInfos, newCompareInfo("Comparing main with latest release - "+lastRelease.Name+" - micro", configFile, ref, exec.SourceCron, 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, "", false))
 		} else {
 			for _, version := range macrobench.PlannerVersions {
-				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, "cron", configType, string(version), ref)
+				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, exec.SourceCron, configType, string(version), ref)
 				if err != nil {
 					slog.Warn(err.Error())
 				} else if previousGitRef != "" {
-					compareInfos = append(compareInfos, newCompareInfo("Comparing main with previous main - "+configType+" - "+string(version), configFile, ref, "cron", 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
+					compareInfos = append(compareInfos, newCompareInfo("Comparing main with previous main - "+configType+" - "+string(version), configFile, ref, exec.SourceCron, 0, previousGitRef, "", s.cronNbRetry, configType, string(version), false))
 				}
-				compareInfos = append(compareInfos, newCompareInfo("Comparing main with latest release - "+lastRelease.Name+" - "+configType+" - "+string(version), configFile, ref, "cron", 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version), false))
+				compareInfos = append(compareInfos, newCompareInfo("Comparing main with latest release - "+lastRelease.Name+" - "+configType+" - "+string(version), configFile, ref, exec.SourceCron, 0, lastRelease.CommitHash, "cron_tags_"+lastRelease.Name, s.cronNbRetry, configType, string(version), false))
 			}
 		}
 	}
