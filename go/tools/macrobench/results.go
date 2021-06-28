@@ -296,6 +296,7 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 	if err != nil {
 		return nil, err
 	}
+	defer result.Close()
 	for result.Next() {
 		var res Details
 		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
@@ -328,6 +329,7 @@ func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVe
 	if err != nil {
 		return nil, err
 	}
+	defer result.Close()
 	for result.Next() {
 		var res Details
 		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
