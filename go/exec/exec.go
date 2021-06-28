@@ -276,7 +276,11 @@ func (e *Exec) Execute() (err error) {
 func (e *Exec) Success() {
 	// checking if the execution has not already failed
 	rows, errSQL := e.clientDB.Select("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
-	if errSQL != nil || rows.Next() {
+	if errSQL != nil {
+		return
+	}
+	defer rows.Close()
+	if rows.Next() {
 		return
 	}
 	_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
@@ -362,6 +366,7 @@ func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRe
 	if err != nil {
 		return
 	}
+	defer result.Close()
 	for result.Next() {
 		err = result.Scan(&execUUID, &gitRefOut)
 		if err != nil {
@@ -379,6 +384,7 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeO
 	if err != nil {
 		return
 	}
+	defer result.Close()
 	for result.Next() {
 		err = result.Scan(&execUUID, &gitRefOut)
 		if err != nil {
@@ -397,6 +403,7 @@ func GetLatestCronJobForMicrobenchmarks(client storage.SQLClient) (gitSha string
 		return "", err
 	}
 
+	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&gitSha)
 		return gitSha, err
@@ -413,6 +420,7 @@ func GetLatestCronJobForMacrobenchmarks(client storage.SQLClient) (gitSha string
 		return "", err
 	}
 
+	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&gitSha)
 		return gitSha, err
@@ -430,6 +438,7 @@ func Exists(client storage.SQLClient, gitRef, source, typeOf, status string, wan
 	if err != nil {
 		return false, err
 	}
+	defer result.Close()
 	return result.Next(), nil
 }
 
@@ -439,6 +448,7 @@ func ExistsStartedToday(client storage.SQLClient, gitRef, source, typeOf string)
 	if err != nil {
 		return false, err
 	}
+	defer result.Close()
 	return result.Next(), nil
 }
 
@@ -451,6 +461,7 @@ func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, stat
 	if err != nil {
 		return false, err
 	}
+	defer result.Close()
 	return result.Next(), nil
 }
 
@@ -461,6 +472,7 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 		return false, err
 	}
 	exists := result.Next()
+	result.Close()
 	if exists {
 		return true,nil
 	}
@@ -469,6 +481,7 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 	if err != nil {
 		return false, err
 	}
+	defer result.Close()
 	for result.Next() {
 		var exec_uuid string
 		err = result.Scan(&exec_uuid)
@@ -480,7 +493,9 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 		if err != nil {
 			return false, err
 		}
-		if !resultMacro.Next() {
+		next := resultMacro.Next()
+		resultMacro.Close()
+		if !next {
 			return true, nil
 		}
 	}
