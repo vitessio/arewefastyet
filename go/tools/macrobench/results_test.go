@@ -155,7 +155,7 @@ func TestCompareDetailsArrays(t *testing.T) {
 	resultOfOne := *newResult(qpsOfOne, 1.0, 1.0, 1.0, 1.0, 1, 1.0)
 	resultOfTwo := *newResult(qpsOfTwo, 2.0, 2.0, 2.0, 2.0, 2, 2.0)
 	qpsOfFifty := *newQPS(-100, -100, -100, -100)
-	resultOfFifty := *newResult(qpsOfFifty, -100, 50, -100, -100, -100, -100)
+	resultOfFifty := *newResult(qpsOfFifty, -100, 50, 50, -100, -100, -100)
 
 	tests := []struct {
 		name         string
@@ -197,7 +197,7 @@ func TestCompareDetailsArrays(t *testing.T) {
 			Comparison{
 				Reference:   *newDetails(*newBenchmarkID(4, "webhook", nil), "f78gh1p", resultOfTwo, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]float64{}, ComponentsMemStatsAllocBytes: map[string]float64{}}),
 				Compare:     *newDetails(*newBenchmarkID(3, "api_call", nil), "f78gh1p", resultOfOne, metrics.ExecutionMetrics{ComponentsCPUTime: map[string]float64{}, ComponentsMemStatsAllocBytes: map[string]float64{}}),
-				Diff:        *newResult(*newQPS(50, 50, 50, 50), 50, -100, 50, 50, 50, 50),
+				Diff:        *newResult(*newQPS(50, 50, 50, 50), 50, -100, -100, 50, 50, 50),
 				DiffMetrics: metrics.ExecutionMetrics{ComponentsCPUTime: map[string]float64{}, ComponentsMemStatsAllocBytes: map[string]float64{}},
 			},
 		}},
