@@ -198,8 +198,8 @@ func (e *Exec) Prepare() error {
 		e.AnsibleConfig.ExtraVars["vitess_git_version_pr_nb"] = e.pullNB
 	}
 
-	// Enable schema tracking only if we execute macrobenchmark main CRONs
-	if e.Source == SourceCron && e.typeOf != "micro" {
+	// Enable schema tracking only if we execute macrobenchmarks using the Gen4Fallback planner
+	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) && e.typeOf != "micro" {
 		e.AnsibleConfig.ExtraVars["vitess_schema_tracking"] = 1
 	}
 
