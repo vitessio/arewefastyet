@@ -14,7 +14,6 @@ require (
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.5.0
-	github.com/planetscale/planetscale-go v0.43.0
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/slack-go/slack v0.8.1
 	github.com/spf13/cobra v1.1.3
@@ -22,5 +21,6 @@ require (
 	github.com/spf13/viper v1.7.1
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
+	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5 // indirect
 	golang.org/x/tools v0.1.0
 )
