@@ -24,26 +24,27 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
 ### Options
 
 ```
-  -h, --help                                       help for web
-      --planetscale-db-branch string               PlanetscaleDB branch to use. (default "main")
-      --planetscale-db-database string             PlanetscaleDB database name.
-      --planetscale-db-org string                  Name of the PlanetscaleDB organization.
-      --planetscale-db-service-token string        PlanetscaleDB service token value.
-      --planetscale-db-service-token-name string   PlanetscaleDB service token name.
-      --slack-channel string                       Slack channel on which to post messages
-      --slack-token string                         Token used to authenticate Slack
-      --web-cron-nb-retry int                      Number of retries allowed for each cron job.
-      --web-cron-schedule string                   Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON. (default "@midnight")
-      --web-macrobench-oltp-config string          Path to the configuration file used to execute OLTP macrobenchmark.
-      --web-macrobench-tpcc-config string          Path to the configuration file used to execute TPCC macrobenchmark.
-      --web-microbench-config string               Path to the configuration file used to execute microbenchmark.
-      --web-mode string                            Specify the mode on which the server will run
-      --web-port string                            Port used for the HTTP server (default "8080")
-      --web-pr-label-trigger string                GitHub Pull Request label that will trigger the execution of new execution. (default "Benchmark me")
-      --web-pr-label-trigger-planner-v3 string     GitHub Pull Request label that will trigger the execution of new execution using the V3 planner. (default "Benchmark me (V3)")
-      --web-static-path string                     Path to the static directory
-      --web-template-path string                   Path to the template directory
-      --web-vitess-path string                     Absolute path where the vitess directory is located or where it should be cloned (default "/")
+  -h, --help                                     help for web
+      --planetscale-db-branch string             PlanetscaleDB branch to use. (default "main")
+      --planetscale-db-database string           PlanetscaleDB database name.
+      --planetscale-db-host string               Hostname of the PlanetscaleDB database.
+      --planetscale-db-org string                Name of the PlanetscaleDB organization.
+      --planetscale-db-password string           Password used to authenticate to PlanetscaleDB.
+      --planetscale-db-user string               Username used to authenticate to PlanetscaleDB.
+      --slack-channel string                     Slack channel on which to post messages
+      --slack-token string                       Token used to authenticate Slack
+      --web-cron-nb-retry int                    Number of retries allowed for each cron job.
+      --web-cron-schedule string                 Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON. (default "@midnight")
+      --web-macrobench-oltp-config string        Path to the configuration file used to execute OLTP macrobenchmark.
+      --web-macrobench-tpcc-config string        Path to the configuration file used to execute TPCC macrobenchmark.
+      --web-microbench-config string             Path to the configuration file used to execute microbenchmark.
+      --web-mode string                          Specify the mode on which the server will run
+      --web-port string                          Port used for the HTTP server (default "8080")
+      --web-pr-label-trigger string              GitHub Pull Request label that will trigger the execution of new execution. (default "Benchmark me")
+      --web-pr-label-trigger-planner-v3 string   GitHub Pull Request label that will trigger the execution of new execution using the V3 planner. (default "Benchmark me (V3)")
+      --web-static-path string                   Path to the static directory
+      --web-template-path string                 Path to the template directory
+      --web-vitess-path string                   Absolute path where the vitess directory is located or where it should be cloned (default "/")
 ```
 
 ### Options inherited from parent commands
