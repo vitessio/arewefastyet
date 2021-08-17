@@ -19,20 +19,21 @@ arewefastyet gen report --compare-from sha1 --compare-to sha2 --report-file repo
 ### Options
 
 ```
-      --compare-from string                        SHA for Vitess that we want to compare from
-      --compare-to string                          SHA for Vitess that we want to compare to
-  -h, --help                                       help for report
-      --influx-database string                     Name of the database to use in InfluxDB.
-      --influx-hostname string                     Hostname of InfluxDB.
-      --influx-password string                     Password used to connect to InfluxDB.
-      --influx-port string                         Port on which to InfluxDB listens. (default "8086")
-      --influx-username string                     Username used to connect to InfluxDB.
-      --planetscale-db-branch string               PlanetscaleDB branch to use. (default "main")
-      --planetscale-db-database string             PlanetscaleDB database name.
-      --planetscale-db-org string                  Name of the PlanetscaleDB organization.
-      --planetscale-db-service-token string        PlanetscaleDB service token value.
-      --planetscale-db-service-token-name string   PlanetscaleDB service token name.
-      --report-file string                         File created that stores the report. (default "./report.pdf")
+      --compare-from string              SHA for Vitess that we want to compare from
+      --compare-to string                SHA for Vitess that we want to compare to
+  -h, --help                             help for report
+      --influx-database string           Name of the database to use in InfluxDB.
+      --influx-hostname string           Hostname of InfluxDB.
+      --influx-password string           Password used to connect to InfluxDB.
+      --influx-port string               Port on which to InfluxDB listens. (default "8086")
+      --influx-username string           Username used to connect to InfluxDB.
+      --planetscale-db-branch string     PlanetscaleDB branch to use. (default "main")
+      --planetscale-db-database string   PlanetscaleDB database name.
+      --planetscale-db-host string       Hostname of the PlanetscaleDB database.
+      --planetscale-db-org string        Name of the PlanetscaleDB organization.
+      --planetscale-db-password string   Password used to authenticate to PlanetscaleDB.
+      --planetscale-db-user string       Username used to authenticate to PlanetscaleDB.
+      --report-file string               File created that stores the report. (default "./report.pdf")
 ```
 
 ### Options inherited from parent commands
