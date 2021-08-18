@@ -52,6 +52,8 @@ type (
 		name string
 		// ignoreNonRegression is true when we want to send a slack message even when there is no regression
 		ignoreNonRegression bool
+		// pullNb is the number of the related pull request if any
+		pullNb int
 	}
 
 	// execInfo contains execution information regarding each exec, which is not common between the 2 executions
@@ -386,7 +388,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 	}()
 
 	// check and execute the main execution
-	execStatusMain, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execMain.source, compInfo.execMain.ref, compInfo.typeOf, compInfo.plannerVersion)
+	execStatusMain, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execMain.source, compInfo.execMain.ref, compInfo.typeOf, compInfo.plannerVersion, compInfo.pullNb)
 	if err != nil {
 		slog.Errorf("Error while single execution: %v", err)
 		return
@@ -398,7 +400,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 		if compInfo.execComp.source == "" {
 			execStatusComp = executionExists
 		} else {
-			execStatusComp, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion)
+			execStatusComp, err = s.checkAndExecuteSingle(compInfo.config, compInfo.execComp.source, compInfo.execComp.ref, compInfo.typeOf, compInfo.plannerVersion, compInfo.pullNb)
 			if err != nil {
 				slog.Errorf("Error while single execution: %v", err)
 				return
@@ -425,7 +427,7 @@ func (s *Server) cronExecution(compInfo *CompareInfo) {
 // executionExists -> there already exist results from yesterdays cron jobs ; err will be nil
 // executionSucceeded -> results have been found today during cron jobs ; err will be nil
 // executionFailed -> an error occurred while reading results or execution ; requires not nil err
-func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersion string) (executionStatus, error) {
+func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersion string, pullNb int) (executionStatus, error) {
 	// First check if an old execution exists or not
 	exists, err := s.checkIfExists(ref, typeOf, plannerVersion, source, true)
 	if err != nil {
@@ -472,14 +474,14 @@ func (s *Server) checkAndExecuteSingle(config, source, ref, typeOf, plannerVersi
 	}
 
 	// try executing given the configuration.
-	err = s.executeSingle(config, source, ref, plannerVersion)
+	err = s.executeSingle(config, source, ref, plannerVersion, pullNb)
 	if err != nil {
 		return executionFailed, err
 	}
 	return executionSucceeded, nil
 }
 
-func (s *Server) executeSingle(config, source, ref, plannerVersion string) (err error) {
+func (s *Server) executeSingle(config, source, ref, plannerVersion string, pullNb int) (err error) {
 	var e *exec.Exec
 	defer func() {
 		if e != nil {
@@ -506,6 +508,7 @@ func (s *Server) executeSingle(config, source, ref, plannerVersion string) (err 
 	e.Source = source
 	e.GitRef = ref
 	e.VtgatePlannerVersion = plannerVersion
+	e.PullNB = pullNb
 
 	slog.Info("Started execution: ", e.UUID.String(), ", with git ref: ", ref)
 	err = e.Prepare()
@@ -538,6 +541,7 @@ func newCompareInfo(name, configFile, ref, source string, pullNB int, compareRef
 		},
 		execComp: &execInfo{
 			ref:    compareRef,
+			pullNB: pullNB,
 			source: compareSource,
 		},
 		retry:               retry,
@@ -545,6 +549,7 @@ func newCompareInfo(name, configFile, ref, source string, pullNB int, compareRef
 		typeOf:              configType,
 		ignoreNonRegression: ignoreNonRegression,
 		name:                name,
+		pullNb:              pullNB,
 	}
 }
 

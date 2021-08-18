@@ -11,13 +11,14 @@
 
 ---
 
-golang_gover: 1.15.8
+golang_gover: 1.17
 golang_hash_linux_amd64:
   1.13.7: 'sha256:b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3'
   1.13.11: 'sha256:a4d71ca9e02923fa96669a4b5faf78ee8331b18e7209b09dd87fe763b4838ada'
   1.14.3: 'sha256:1c39eac4ae95781b066c144c58e45d6859652247f7515f0d2cba7be7d57d2226'
   1.15.3: 'sha256:010a88df924a81ec21b293b5da8f9b11c176d27c0ee3962dc1738d2352d3c02d'
   1.15.8: 'sha256:d3379c32a90fdf9382166f8f48034c459a8cc433730bc9476d39d9082c94583b'
+  1.17: 'sha256:6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d'
 
 vitess_git_repo: "https://github.com/vitessio/vitess.git"
 vitess_git_version: "main"
