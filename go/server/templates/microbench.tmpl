@@ -105,7 +105,7 @@ limitations under the License.
                         <td><a href="/microbench/{{ $val.Name }}?subBenchmarkName={{ $val.SubBenchmarkName }}">{{ $val.SubBenchmarkName }}</a></td>
                         <td class="text-right">{{ $val.Last.OpsStr }}</td>
                         <td class="text-right">{{ $val.Current.OpsStr }}</td>
-                        <td class="text-right {{if le $val.Diff.Ops -10.0 }} bg-danger {{ else if ge $val.Diff.Ops 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.Ops }}</td>
+                        <td class="text-right {{if le $val.Diff.Ops -5.0 }} bg-danger {{ else if ge $val.Diff.Ops 5.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.Ops }}</td>
 
                         <td class="text-right">{{ $val.Last.NSPerOpToDurationStr }}</td>
                         <td class="text-right">{{ $val.Current.NSPerOpToDurationStr }}</td>
