@@ -75,8 +75,8 @@ type Exec struct {
 	// Defines the type of execution (oltp, tpcc, micro, ...)
 	typeOf string
 
-	// Defines the pull request number linked to this execution.
-	pullNB int
+	// PullNB defines the pull request number linked to this execution.
+	PullNB int
 
 	// Configuration used to interact with the SQL database.
 	configDB *psdb.Config
@@ -167,7 +167,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb) VALUES(?, ?, ?, ?, ?, ?)", e.UUID.String(), StatusCreated, e.Source, e.GitRef, e.typeOf, e.pullNB); err != nil {
+	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb) VALUES(?, ?, ?, ?, ?, ?)", e.UUID.String(), StatusCreated, e.Source, e.GitRef, e.typeOf, e.PullNB); err != nil {
 		return err
 	}
 	e.createdInDB = true
@@ -193,9 +193,9 @@ func (e *Exec) Prepare() error {
 	}
 	e.AnsibleConfig.ExtraVars = map[string]interface{}{}
 	e.statsRemoteDBConfig.AddToAnsible(&e.AnsibleConfig)
-	if e.pullNB != 0 {
-		e.AnsibleConfig.ExtraVars["vitess_git_version_fetch_pr"] = "refs/pull/" + strconv.Itoa(e.pullNB) + "/head"
-		e.AnsibleConfig.ExtraVars["vitess_git_version_pr_nb"] = e.pullNB
+	if e.PullNB != 0 {
+		e.AnsibleConfig.ExtraVars["vitess_git_version_fetch_pr"] = "refs/pull/" + strconv.Itoa(e.PullNB) + "/head"
+		e.AnsibleConfig.ExtraVars["vitess_git_version_pr_nb"] = e.PullNB
 	}
 
 	// Enable schema tracking only if we execute macrobenchmark main CRONs
