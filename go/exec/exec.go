@@ -57,6 +57,9 @@ const (
 
 	keyVtgatePlanner = "planner_version"
 
+	// keyGoVersion defines the golang version to use for the execution.
+	keyGoVersion = "golang_gover"
+
 	stderrFile = "exec-stderr.log"
 	stdoutFile = "exec-stdout.log"
 
@@ -106,6 +109,8 @@ type Exec struct {
 
 	// VtgatePlannerVersion is the planner version that vtgate is going to use
 	VtgatePlannerVersion string
+
+	golangVersion string
 }
 
 const (
@@ -167,7 +172,16 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb) VALUES(?, ?, ?, ?, ?, ?)", e.UUID.String(), StatusCreated, e.Source, e.GitRef, e.typeOf, e.PullNB); err != nil {
+	if _, err = e.clientDB.Insert(
+		"INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		e.UUID.String(),
+		StatusCreated,
+		e.Source,
+		e.GitRef,
+		e.typeOf,
+		e.PullNB,
+		e.golangVersion,
+	); err != nil {
 		return err
 	}
 	e.createdInDB = true
@@ -255,15 +269,7 @@ func (e *Exec) Execute() (err error) {
 		return err
 	}
 
-	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
-	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
-	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
-	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
-
-	// not adding the -planner_version flag to ansible if we did not specify it or if using the default value
-	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) {
-		e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
-	}
+	e.prepareAnsibleForExecution()
 
 	// Infra will run the given config.
 	err = e.Infra.Run(&e.AnsibleConfig)
@@ -271,6 +277,19 @@ func (e *Exec) Execute() (err error) {
 		return err
 	}
 	return nil
+}
+
+func (e *Exec) prepareAnsibleForExecution() {
+	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
+	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
+	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
+	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
+	e.AnsibleConfig.ExtraVars[keyGoVersion] = e.golangVersion
+
+	// not adding the -planner_version flag to ansible if we did not specify it or if using the default value
+	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) {
+		e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
+	}
 }
 
 func (e *Exec) Success() {
@@ -474,7 +493,7 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 	exists := result.Next()
 	result.Close()
 	if exists {
-		return true,nil
+		return true, nil
 	}
 	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
 	result, err = client.Select(query, gitRef, typeOf, source)
