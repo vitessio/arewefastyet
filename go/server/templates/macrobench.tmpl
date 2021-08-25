@@ -36,7 +36,7 @@ limitations under the License.
                 <div class="btn-group mr-2" role="group">
                     <div class="dropdown">
                         <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="leftTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Left Tag
+                            {{ .leftTag }}
                         </button>
                         <div class="dropdown-menu" style="height:200px; overflow-y: scroll;"  aria-labelledby="leftTagDropdownMenuButton">
                             {{range $val := .allReleases}}
@@ -49,7 +49,7 @@ limitations under the License.
                 <div class="btn-group mr-2" role="group">
                     <div class="dropdown">
                         <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="rightTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Right Tag
+                            {{ .rightTag }}
                         </button>
                         <div class="dropdown-menu" style="height:200px; overflow-y: scroll;" aria-labelledby="rightTagDropdownMenuButton">
                             {{range $val := .allReleases}}
