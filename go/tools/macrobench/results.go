@@ -286,8 +286,8 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
-		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
-		"WHERE b.DateTime BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW()) " +
+		"FROM execution AS e, macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
+		"WHERE e.uuid = b.exec_uuid AND e.status = \"finished\" AND b.DateTime BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW()) " +
 		"AND b.source = ? AND b.vtgate_planner_version = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
@@ -320,8 +320,8 @@ func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVe
 	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
 		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
 		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
-		"FROM macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
-		"WHERE b.commit = ? AND b.vtgate_planner_version = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+		"FROM execution AS e, macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
+		"WHERE e.uuid = b.exec_uuid AND e.status = \"finished\" AND b.commit = ? AND b.vtgate_planner_version = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
 
 	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
 

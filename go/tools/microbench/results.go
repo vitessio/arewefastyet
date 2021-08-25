@@ -207,8 +207,8 @@ func (mbd DetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool
 // containing all the Details linked to the given git commit SHA.
 func GetResultsForGitRef(ref string, client storage.SQLClient) (mrs DetailsArray, err error) {
 	result, err := client.Select("select m.pkg_name, m.name, md.name, md.n, md.ns_per_op, md.bytes_per_op,"+
-		" md.allocs_per_op, md.mb_per_sec FROM microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
-		"md.microbenchmark_no = m.microbenchmark_no order by m.microbenchmark_no desc", ref)
+		" md.allocs_per_op, md.mb_per_sec FROM execution e, microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
+		"md.microbenchmark_no = m.microbenchmark_no and e.uuid = m.exec_uuid and e.status = \"finished\" order by m.microbenchmark_no desc", ref)
 	if err != nil {
 		return nil, err
 	}
