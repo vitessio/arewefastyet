@@ -29,8 +29,6 @@ ExecStart=/bin/bash -c 'mysqlctld \
      --mysql_socket=${VTROOT}/socket/mysql%i.sock \
      --socket_file=${VTROOT}/socket/mysqlctl%i.sock \
      --wait_time=2h0m0s \
-     --general-log \
-     --log-output=${VTROOT}/tmp/mysql%i.log \
      ${EXTRA_MYSQLCTLD_FLAGS}'
 
 [Install]
