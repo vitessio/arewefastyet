@@ -30,6 +30,7 @@ const (
 	flagExecType             = "exec-type"
 	flagVtgatePlannerVersion = "exec-vtgate-planner-version"
 	flagExecPullNB           = "exec-pull-nb"
+	flagGolangVersion        = "exec-go-version"
 )
 
 func (e *Exec) AddToViper(v *viper.Viper) (err error) {
@@ -38,7 +39,8 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	_ = v.UnmarshalKey(flagSourceExec, &e.Source)
 	_ = v.UnmarshalKey(flagExecType, &e.typeOf)
 	_ = v.UnmarshalKey(flagVtgatePlannerVersion, &e.VtgatePlannerVersion)
-	_ = v.UnmarshalKey(flagExecPullNB, &e.pullNB)
+	_ = v.UnmarshalKey(flagExecPullNB, &e.PullNB)
+	_ = v.UnmarshalKey(flagGolangVersion, &e.golangVersion)
 
 	e.AnsibleConfig.AddToViper(v)
 	e.InfraConfig.AddToViper(v)
@@ -54,13 +56,15 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.Source, flagSourceExec, "", "Name of the source that triggered the execution.")
 	cmd.Flags().StringVar(&e.typeOf, flagExecType, "", "Defines the execution type (oltp, tpcc, micro).")
 	cmd.Flags().StringVar(&e.VtgatePlannerVersion, flagVtgatePlannerVersion, "V3", "Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback.")
-	cmd.Flags().IntVar(&e.pullNB, flagExecPullNB, 0, "Defines the number of the pull request against which to execute.")
+	cmd.Flags().IntVar(&e.PullNB, flagExecPullNB, 0, "Defines the number of the pull request against which to execute.")
+	cmd.Flags().StringVar(&e.golangVersion, flagGolangVersion, "1.17", "Defines the golang version that will be used by this execution.")
 
 	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
 	_ = viper.BindPFlag(flagGitRefExec, cmd.Flags().Lookup(flagGitRefExec))
 	_ = viper.BindPFlag(flagSourceExec, cmd.Flags().Lookup(flagSourceExec))
 	_ = viper.BindPFlag(flagExecType, cmd.Flags().Lookup(flagExecType))
 	_ = viper.BindPFlag(flagExecPullNB, cmd.Flags().Lookup(flagExecPullNB))
+	_ = viper.BindPFlag(flagGolangVersion, cmd.Flags().Lookup(flagGolangVersion))
 
 	e.AnsibleConfig.AddToPersistentCommand(cmd)
 	e.InfraConfig.AddToPersistentCommand(cmd)

@@ -36,9 +36,10 @@ arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-
       --macrobench-workload-path string            Path to the workload used by sysbench.
       --planetscale-db-branch string               PlanetscaleDB branch to use. (default "main")
       --planetscale-db-database string             PlanetscaleDB database name.
+      --planetscale-db-host string                 Hostname of the PlanetscaleDB database.
       --planetscale-db-org string                  Name of the PlanetscaleDB organization.
-      --planetscale-db-service-token string        PlanetscaleDB service token value.
-      --planetscale-db-service-token-name string   PlanetscaleDB service token name.
+      --planetscale-db-password string             Password used to authenticate to PlanetscaleDB.
+      --planetscale-db-user string                 Username used to authenticate to PlanetscaleDB.
 ```
 
 ### Options inherited from parent commands

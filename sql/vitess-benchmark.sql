@@ -30,6 +30,7 @@ CREATE TABLE `execution` (
                              `git_ref` varchar(100) DEFAULT NULL,
                              `type` varchar(100) DEFAULT '',
                              `pull_nb` int(11) DEFAULT 0,
+                             `go_version` varchar(16) DEFAULT NULL,
                              PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

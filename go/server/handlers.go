@@ -239,7 +239,7 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	}
 	rightMbd = rightMbd.ReduceSimpleMedianByName()
 
-	matrix := microbench.MergeDetails(leftMbd, rightMbd)
+	matrix := microbench.MergeDetails(rightMbd, leftMbd)
 	c.HTML(http.StatusOK, "microbench.tmpl", gin.H{
 		"title":        "Vitess benchmark - microbenchmark",
 		"leftSHA":      leftSHA,
@@ -270,7 +270,7 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 		return
 	}
 	results = results.ReduceSimpleMedianByGitRef()
-
+	results.SortByDate()
 	c.HTML(http.StatusOK, "microbench_single.tmpl", gin.H{
 		"title":            "Vitess benchmark - microbenchmark - " + name,
 		"name":             name,

@@ -102,20 +102,20 @@ func NewResult(ops, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *Result 
 
 // MergeDetails merges two DetailsArray into a single
 // ComparisonArray.
-func MergeDetails(currentMbd, lastReleaseMbd DetailsArray) (compareMbs ComparisonArray) {
+func MergeDetails(currentMbd, lastMbd DetailsArray) (compareMbs ComparisonArray) {
 	for _, details := range currentMbd {
 		compareMb := Comparison{
 			BenchmarkId: details.BenchmarkId,
 			Current:     details.Result,
 		}
-		for j := 0; j < len(lastReleaseMbd); j++ {
-			if lastReleaseMbd[j].BenchmarkId == details.BenchmarkId {
-				compareMb.Last = lastReleaseMbd[j].Result
-				compareMb.Diff.NSPerOp = (compareMb.Current.NSPerOp - compareMb.Last.NSPerOp) / compareMb.Current.NSPerOp * 100
-				compareMb.Diff.Ops = (compareMb.Current.Ops - compareMb.Last.Ops) / compareMb.Current.Ops * 100 * -1
-				compareMb.Diff.BytesPerOp = (compareMb.Current.BytesPerOp - compareMb.Last.BytesPerOp) / compareMb.Current.BytesPerOp * 100
-				compareMb.Diff.MBPerSec = (compareMb.Current.MBPerSec - compareMb.Last.MBPerSec) / compareMb.Current.MBPerSec * 100
-				compareMb.Diff.AllocsPerOp = (compareMb.Current.AllocsPerOp - compareMb.Last.AllocsPerOp) / compareMb.Current.AllocsPerOp * 100
+		for j := 0; j < len(lastMbd); j++ {
+			if lastMbd[j].BenchmarkId == details.BenchmarkId {
+				compareMb.Last = lastMbd[j].Result
+				compareMb.Diff.NSPerOp = (compareMb.Current.NSPerOp - compareMb.Last.NSPerOp) / compareMb.Current.NSPerOp * -100
+				compareMb.Diff.Ops = (compareMb.Current.Ops - compareMb.Last.Ops) / compareMb.Current.Ops * 100
+				compareMb.Diff.BytesPerOp = (compareMb.Current.BytesPerOp - compareMb.Last.BytesPerOp) / compareMb.Current.BytesPerOp * -100
+				compareMb.Diff.MBPerSec = (compareMb.Current.MBPerSec - compareMb.Last.MBPerSec) / compareMb.Current.MBPerSec * -100
+				compareMb.Diff.AllocsPerOp = (compareMb.Current.AllocsPerOp - compareMb.Last.AllocsPerOp) / compareMb.Current.AllocsPerOp * -100
 				math.CheckForNaN(&compareMb.Diff, 0)
 				break
 			}
@@ -158,6 +158,21 @@ func (mbd DetailsArray) ReduceSimpleMedianByGitRef() (reduceMbd DetailsArray) {
 		return mbd[i].GitRef == mbd[j].GitRef
 	})
 	return reduceMbd
+}
+
+// SortByDate will sort the given DetailsArray by ascending date
+func (mbd DetailsArray) SortByDate() {
+	sort.SliceStable(mbd, func(i, j int) bool {
+		parseLeft, err := time.Parse(time.RFC3339, mbd[i].StartedAt)
+		if err != nil {
+			return false
+		}
+		parseRight, err := time.Parse(time.RFC3339, mbd[j].StartedAt)
+		if err != nil {
+			return false
+		}
+		return parseRight.After(parseLeft)
+	})
 }
 
 // mergeUsingCondition is used to merge the DetailsArray based on the compare condition provided

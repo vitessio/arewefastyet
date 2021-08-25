@@ -20,10 +20,9 @@ package server
 
 import (
 	"errors"
+	"github.com/vitessio/arewefastyet/go/slack"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"html/template"
-
-	"github.com/vitessio/arewefastyet/go/slack"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
