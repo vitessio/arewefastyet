@@ -172,7 +172,16 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Insert("INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb) VALUES(?, ?, ?, ?, ?, ?)", e.UUID.String(), StatusCreated, e.Source, e.GitRef, e.typeOf, e.PullNB); err != nil {
+	if _, err = e.clientDB.Insert(
+		"INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		e.UUID.String(),
+		StatusCreated,
+		e.Source,
+		e.GitRef,
+		e.typeOf,
+		e.PullNB,
+		e.golangVersion,
+	); err != nil {
 		return err
 	}
 	e.createdInDB = true
