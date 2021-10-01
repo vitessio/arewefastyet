@@ -78,7 +78,7 @@ const (
 var (
 	execQueue        chan *CompareInfo
 	currentCountExec int
-	mtx              *sync.RWMutex
+	mtx              sync.RWMutex
 )
 
 func (s *Server) createNewCron() error {
@@ -86,7 +86,6 @@ func (s *Server) createNewCron() error {
 		return nil
 	}
 	execQueue = make(chan *CompareInfo)
-	mtx = &sync.RWMutex{}
 
 	c := cron.New()
 
