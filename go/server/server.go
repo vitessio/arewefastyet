@@ -42,6 +42,7 @@ const (
 	flagMacroBenchConfigFileOLTP             = "web-macrobench-oltp-config"
 	flagMacroBenchConfigFileTPCC             = "web-macrobench-tpcc-config"
 	flagCronSchedule                         = "web-cron-schedule"
+	flagCronSchedulePullRequests             = "web-cron-schedule-pull-requests"
 	flagPullRequestLabelTrigger              = "web-pr-label-trigger"
 	flagPullRequestLabelTriggerWithPlannerV3 = "web-pr-label-trigger-planner-v3"
 	flagCronNbRetry                          = "web-cron-nb-retry"
@@ -61,6 +62,7 @@ type Server struct {
 	slackConfig slack.Config
 
 	cronSchedule             string
+	cronSchedulePullRequests string
 	cronNbRetry              int
 	microbenchConfigPath     string
 	macrobenchConfigPathOLTP string
@@ -85,6 +87,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.macrobenchConfigPathOLTP, flagMacroBenchConfigFileOLTP, "", "Path to the configuration file used to execute OLTP macrobenchmark.")
 	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
 	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON.")
+	cmd.Flags().StringVar(&s.cronSchedulePullRequests, flagCronSchedulePullRequests, "*/5 * * * *", "Execution CRON schedule for pull requests benchmarks. An empty string will result in no CRON. Defaults to an execution every 5 minutes.")
 	cmd.Flags().IntVar(&s.cronNbRetry, flagCronNbRetry, 0, "Number of retries allowed for each cron job.")
 	cmd.Flags().StringVar(&s.prLabelTrigger, flagPullRequestLabelTrigger, "Benchmark me", "GitHub Pull Request label that will trigger the execution of new execution.")
 	cmd.Flags().StringVar(&s.prLabelTriggerV3, flagPullRequestLabelTriggerWithPlannerV3, "Benchmark me (V3)", "GitHub Pull Request label that will trigger the execution of new execution using the V3 planner.")
@@ -101,6 +104,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagMacroBenchConfigFileOLTP, cmd.Flags().Lookup(flagMacroBenchConfigFileOLTP))
 	_ = viper.BindPFlag(flagMacroBenchConfigFileTPCC, cmd.Flags().Lookup(flagMacroBenchConfigFileTPCC))
 	_ = viper.BindPFlag(flagCronSchedule, cmd.Flags().Lookup(flagCronSchedule))
+	_ = viper.BindPFlag(flagCronSchedulePullRequests, cmd.Flags().Lookup(flagCronSchedulePullRequests))
 	_ = viper.BindPFlag(flagCronNbRetry, cmd.Flags().Lookup(flagCronNbRetry))
 	_ = viper.BindPFlag(flagPullRequestLabelTrigger, cmd.Flags().Lookup(flagPullRequestLabelTrigger))
 	_ = viper.BindPFlag(flagPullRequestLabelTriggerWithPlannerV3, cmd.Flags().Lookup(flagPullRequestLabelTriggerWithPlannerV3))
@@ -144,10 +148,11 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	err := s.createNewCron()
+	err := s.createCrons()
 	if err != nil {
 		return err
 	}
+	go s.cronExecutionQueueWatcher()
 
 	s.router = gin.Default()
 	s.router.SetFuncMap(template.FuncMap{

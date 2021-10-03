@@ -114,7 +114,11 @@ type Exec struct {
 }
 
 const (
-	SourceCron = "cron"
+	SourceCron            = "cron"
+	SourcePullRequest     = "cron_pr"
+	SourcePullRequestBase = "cron_pr_base"
+	SourceTag             = "cron_tags_"
+	SourceReleaseBranch   = "cron_"
 )
 
 // SetStdout sets the standard output of Exec.

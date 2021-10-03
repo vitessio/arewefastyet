@@ -81,28 +81,42 @@ var (
 	mtx              *sync.RWMutex
 )
 
-func (s *Server) createNewCron() error {
+func createIndividualCron(schedule string, jobs []func()) error {
+	if schedule == "" {
+		return nil
+	}
+
+	c := cron.New()
+	for _, job := range jobs {
+		_, err := c.AddFunc(schedule, job)
+		if err != nil {
+			return err
+		}
+	}
+	c.Start()
+	return nil
+}
+
+func (s *Server) createCrons() error {
 	if s.cronSchedule == "" {
 		return nil
 	}
 	execQueue = make(chan *CompareInfo)
 	mtx = &sync.RWMutex{}
 
-	c := cron.New()
-
-	jobs := []func(){
+	err := createIndividualCron(s.cronSchedule, []func(){
 		s.cronBranchHandler,
-		s.cronPRLabels,
 		s.cronTags,
+	})
+	if err != nil {
+		return err
 	}
-	for _, job := range jobs {
-		_, err := c.AddFunc(s.cronSchedule, job)
-		if err != nil {
-			return err
-		}
+	err = createIndividualCron(s.cronSchedulePullRequests, []func(){s.cronPullRequests})
+	if err != nil {
+		return err
 	}
-	c.Start()
-	go s.cron()
+
+	go s.cronExecutionQueueWatcher()
 	return nil
 }
 
@@ -181,7 +195,7 @@ func (s *Server) compareReleaseBranches() ([]*CompareInfo, error) {
 	// We compare release-branches with the previous hash of that branch and with the latest patch release of that version
 	for _, release := range releases {
 		ref := release.CommitHash
-		source := "cron_" + release.Name
+		source := exec.SourceReleaseBranch + release.Name
 		lastPathRelease, err := git.GetLastPatchReleaseAndCommitHash(s.getVitessPath(), release.Number)
 		if err != nil {
 			slog.Warn(err.Error())
@@ -221,7 +235,7 @@ func (s *Server) compareReleaseBranches() ([]*CompareInfo, error) {
 	return compareInfos, nil
 }
 
-func (s Server) cronPRLabels() {
+func (s Server) cronPullRequests() {
 	configs := s.getConfigFiles()
 	prLabelsInfo := []struct {
 		label   string
@@ -233,7 +247,6 @@ func (s Server) cronPRLabels() {
 
 	// a slice of compareInfo's
 	var compareInfos []*CompareInfo
-	source := "cron_pr"
 
 	for _, labelInfo := range prLabelsInfo {
 		prInfos, err := git.GetPullRequestsFromGitHub([]string{labelInfo.label}, "vitessio/vitess")
@@ -249,14 +262,38 @@ func (s Server) cronPRLabels() {
 				previousGitRef := prInfo.Base
 				pullNb := prInfo.Number
 				if configType == "micro" {
-					compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro", configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, "", true))
+					compareInfos = append(compareInfos, newCompareInfo(
+						"Comparing pull request number - "+strconv.Itoa(pullNb)+" - micro",
+						configFile,
+						ref,
+						exec.SourcePullRequest,
+						pullNb,
+						previousGitRef,
+						exec.SourcePullRequestBase,
+						s.cronNbRetry,
+						configType,
+						"",
+						true,
+					))
 				} else {
 					versions := []macrobench.PlannerVersion{macrobench.V3Planner}
 					if labelInfo.useGen4 {
 						versions = append(versions, macrobench.Gen4FallbackPlanner)
 					}
 					for _, version := range versions {
-						compareInfos = append(compareInfos, newCompareInfo("Comparing pull request number - "+strconv.Itoa(pullNb)+" - "+configType+" - "+string(version), configFile, ref, source, pullNb, previousGitRef, "cron_pr_base", s.cronNbRetry, configType, string(version), true))
+						compareInfos = append(compareInfos, newCompareInfo(
+							"Comparing pull request number - "+strconv.Itoa(pullNb)+" - "+configType+" - "+string(version),
+							configFile,
+							ref,
+							exec.SourcePullRequest,
+							pullNb,
+							previousGitRef,
+							exec.SourcePullRequestBase,
+							s.cronNbRetry,
+							configType,
+							string(version),
+							true,
+						))
 					}
 				}
 			}
@@ -281,14 +318,14 @@ func (s *Server) cronTags() {
 	for _, release := range releases {
 		for configType, configFile := range configs {
 			if configType == "micro" {
-				compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, ""))
+				compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, exec.SourceTag+release.Name, s.cronNbRetry, configType, ""))
 			} else {
 				versions := []macrobench.PlannerVersion{macrobench.V3Planner}
 				if release.Number[0] >= 10 {
 					versions = append(versions, macrobench.Gen4FallbackPlanner)
 				}
 				for _, version := range versions {
-					compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, "cron_tags_"+release.Name, s.cronNbRetry, configType, string(version)))
+					compareInfos = append(compareInfos, newSingleExecution("Tag run", configFile, release.CommitHash, exec.SourceTag+release.Name, s.cronNbRetry, configType, string(version)))
 				}
 			}
 		}
@@ -351,7 +388,7 @@ func (s *Server) checkIfInProgress(ref, typeOf, plannerVersion, source string) (
 	return exist, nil
 }
 
-func (s *Server) cron() {
+func (s *Server) cronExecutionQueueWatcher() {
 	for {
 		time.Sleep(time.Second * 1)
 		mtx.RLock()
