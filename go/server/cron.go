@@ -236,7 +236,7 @@ func (s Server) cronPRLabels() {
 	source := "cron_pr"
 
 	for _, labelInfo := range prLabelsInfo {
-		prInfos, err := git.GetPullRequestHeadForLabels([]string{labelInfo.label}, "vitessio/vitess")
+		prInfos, err := git.GetPullRequestsFromGitHub([]string{labelInfo.label}, "vitessio/vitess")
 		if err != nil {
 			slog.Error(err)
 			return
