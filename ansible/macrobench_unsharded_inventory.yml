@@ -28,6 +28,8 @@ all:
     macrobench:
       hosts:
         DEVICE_IP_0:
+      vars:
+        vtgate_web_ports: "15001,15002"
     sysbench:
       hosts:
         DEVICE_IP_0:
