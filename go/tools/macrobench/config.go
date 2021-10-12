@@ -81,6 +81,9 @@ type Config struct {
 	// If this field if empty, the corresponding column in SQL will be set
 	// to NULL.
 	execUUID string
+
+	// vtgateWebPorts lists web endpoint of each VTGate
+	vtgateWebPorts []string
 }
 
 const (
@@ -93,6 +96,7 @@ const (
 	flagWorkingDirectory     = "macrobench-working-directory"
 	flagExecUUID             = "macrobench-exec-uuid"
 	flagVtgatePlannerVersion = "macrobench-vtgate-planner-version"
+	flagVtgateWebPorts       = "macrobench-vtgate-web-ports"
 )
 
 // AddToCommand will add the different CLI flags used by MacroBenchConfig into
@@ -110,6 +114,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "Git SHA referring to the macro benchmark.")
 	cmd.Flags().StringVar(&mabcfg.WorkingDirectory, flagWorkingDirectory, "", "Directory on which to execute sysbench.")
 	cmd.Flags().StringVar(&mabcfg.execUUID, flagExecUUID, "", "UUID of the parent execution, an empty string will set to NULL.")
+	cmd.Flags().StringSliceVar(&mabcfg.vtgateWebPorts, flagVtgateWebPorts, nil, "List of the web port for each VTGate.")
 
 	_ = viper.BindPFlag(flagSysbenchPath, cmd.Flags().Lookup(flagSysbenchPath))
 	_ = viper.BindPFlag(flagSysbenchExecutable, cmd.Flags().Lookup(flagSysbenchExecutable))
@@ -120,6 +125,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagVtgatePlannerVersion, cmd.Flags().Lookup(flagVtgatePlannerVersion))
 	_ = viper.BindPFlag(flagWorkingDirectory, cmd.Flags().Lookup(flagWorkingDirectory))
 	_ = viper.BindPFlag(flagExecUUID, cmd.Flags().Lookup(flagExecUUID))
+	_ = viper.BindPFlag(flagVtgateWebPorts, cmd.Flags().Lookup(flagVtgateWebPorts))
 }
 
 func (mabcfg *Config) parseIntoMap(prefix string) {
