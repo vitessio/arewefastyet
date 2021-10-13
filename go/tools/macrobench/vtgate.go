@@ -44,7 +44,45 @@ type VTGateQueryPlan struct {
 	Value VTGateQueryPlanValue
 }
 
+type VTGateQueryPlanComparer struct {
+	Left, Right *VTGateQueryPlan
+	Key         string
+}
+
 type VTGateQueryPlanMap map[string]VTGateQueryPlanValue
+
+func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanComparer {
+	res := []VTGateQueryPlanComparer{}
+	for i, plan := range left {
+		newCompare := VTGateQueryPlanComparer{
+			Key:  plan.Key,
+			Left: &left[i],
+		}
+		for j, rightPlan := range right {
+			if rightPlan.Key == plan.Key {
+				newCompare.Right = &right[j]
+				break
+			}
+		}
+		res = append(res, newCompare)
+	}
+	for _, plan := range right {
+		found := false
+		for _, resPlan := range res {
+			if plan.Key == resPlan.Key {
+				found = true
+				break
+			}
+		}
+		if !found {
+			res = append(res, VTGateQueryPlanComparer{
+				Right: &plan,
+				Key:   plan.Key,
+			})
+		}
+	}
+	return res
+}
 
 func normalizeVTGateQueryPlan(plan *VTGateQueryPlanValue) {
 	plan.ExecTime = plan.ExecTime / plan.ExecCount

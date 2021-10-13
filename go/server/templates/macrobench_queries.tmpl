@@ -28,8 +28,8 @@ limitations under the License.
                 <div class="card rounded">
                     <h2 class="text-center card-header">Query Plans</h2>
                     <div class="card-body">
-                        <p class="lead">Looking at query plans for <b><a href="https://github.com/vitessio/vitess/commit/{{ .gitRef.SHA }}" target="_blank">{{ .gitRef.short }}</a></b> produced by <b>{{ .macroType }}</b> benchmark using the <b>{{ .planner }}</b> query planner.</p>
-                        <p>Queries are ordered from the slowest to the fastest.</p>
+                        <p class="lead">Looking at query plans for <b><a href="https://github.com/vitessio/vitess/commit/{{ .gitRef.SHA }}" target="_blank">{{ .gitRef.short }}</a></b> produced by the <b>{{ .macroType }}</b> benchmark using the <b>{{ .planner }}</b> query planner.</p>
+                        <p>Queries are ordered from the slowest to the fastest. The 50 slowest queries are shown.</p>
                     </div>
                 </div>
             </div>
@@ -90,9 +90,7 @@ limitations under the License.
                             </div>
                             <div class="card" style="margin-top: 30px">
                                 <h5 class="card-header">Query Plan</h5>
-                                <div class="card-body">
-                                    <samp>{{$plan.Value.Instructions}}</samp>
-                                </div>
+                                <div class="card-body" style="white-space: pre-wrap;"><samp>{{toString $plan.Value.Instructions}}</samp></div>
                             </div>
                         </div>
                         {{ end }}

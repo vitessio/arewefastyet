@@ -388,7 +388,6 @@ func (s *Server) macrobenchmarkQueriesDetails(c *gin.Context) {
 }
 
 func (s *Server) macrobenchmarkCompareQueriesDetails(c *gin.Context) {
-	planner := getPlannerVersion(c)
 	leftGitRef := c.Query("left")
 	rightGitRef := c.Query("right")
 	macroType := macrobench.Type(c.Query("type"))
@@ -401,16 +400,43 @@ func (s *Server) macrobenchmarkCompareQueriesDetails(c *gin.Context) {
 		return
 	}
 
-	_, err := macrobench.GetVTGateSelectQueryPlansWithFilter(leftGitRef, macroType, planner, s.dbClient)
+	planner := getPlannerVersion(c)
+	leftPlanner := macrobench.PlannerVersion(c.Query("left_planner"))
+	rightPlanner := macrobench.PlannerVersion(c.Query("right_planner"))
+
+	if leftPlanner == "" {
+		leftPlanner = planner
+	}
+	if rightPlanner == "" {
+		rightPlanner = planner
+	}
+
+	plansLeft, err := macrobench.GetVTGateSelectQueryPlansWithFilter(leftGitRef, macroType, leftPlanner, s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
-	_, err = macrobench.GetVTGateSelectQueryPlansWithFilter(rightGitRef, macroType, planner, s.dbClient)
+	plansRight, err := macrobench.GetVTGateSelectQueryPlansWithFilter(rightGitRef, macroType, rightPlanner, s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
+	comparison := macrobench.CompareVTGateQueryPlans(plansLeft, plansRight)
+	c.HTML(http.StatusOK, "macrobench_compare_queries.tmpl", gin.H{
+		"title": "Vitess benchmark - macrobenchmark queries",
+		"gitRefLeft": map[string]interface{}{
+			"SHA":   leftGitRef,
+			"short": git.ShortenSHA(leftGitRef),
+		},
+		"gitRefRight": map[string]interface{}{
+			"SHA":   rightGitRef,
+			"short": git.ShortenSHA(rightGitRef),
+		},
+		"macroType":       macroType.String(),
+		"plannerLeft":     string(leftPlanner),
+		"plannerRight":    string(rightPlanner),
+		"plansComparison": comparison,
+	})
 }
 
 func (s *Server) v3VsGen4Handler(c *gin.Context) {
