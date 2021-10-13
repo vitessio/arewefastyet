@@ -23,12 +23,75 @@ limitations under the License.
     <!-- Navigation -->
     {{ template "navigation" "/macrobench" }}
 
-        <section class="py-5">
+        <section class="py-4">
             <div class="container">
                 <h1>Query Plans</h1>
                 <p class="lead">Looking at query plans for <b><a href="https://github.com/vitessio/vitess/commit/{{ .gitRef.SHA }}" target="_blank">{{ .gitRef.short }}</a></b> produced by <b>{{ .macroType }}</b> benchmark using the <b>{{ .planner }}</b> query planner.</p>
+                <p>Queries are ordered from the slowest to the fastest.</p>
             </div>
         </section>
+
+        <div class="container" style="padding-bottom: 15px;">
+            <div class="row">
+                <div class="col-5">
+                    <div class="list-group" id="list-of-plans" role="tablist">
+                        {{ range $i, $plan := .plans }}
+                        <a class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}" id="list-{{$i}}-list" data-toggle="list" href="#list-{{$i}}" role="tab" aria-controls="home">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small><samp>{{$plan.Key}}</samp></small>
+                                {{ if gt $plan.Value.Errors 0 }}
+                                <span class="badge badge-pill badge-danger">Has Errors</span>
+                                {{ end }}
+                            </div>
+                        </a>
+                        {{ end }}
+                    </div>
+                </div>
+                <div class="col-7">
+                    <div class="tab-content" id="nav-tabContent">
+                        {{ range $i, $plan := .plans }}
+                        <div class="tab-pane fade {{if eq $i 0}}show active{{end}}" id="list-{{$i}}" role="tabpanel" aria-labelledby="list-{{$i}}-list">
+                            <div class="card">
+                                <h5 class="card-header">Statistics</h5>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <tbody>
+                                        <tr style="border-top-style: hidden;">
+                                            <th scope="row">Query</th>
+                                            <td><samp class="text-muted user-select-all">{{$plan.Key}}</samp></td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Execution Count</th>
+                                            <td>{{$plan.Value.ExecCount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Execution Time</th>
+                                            <td>{{$plan.Value.ExecTime}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Rows Returned</th>
+                                            <td>{{$plan.Value.RowsReturned}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Errors</th>
+                                            <td>{{$plan.Value.Errors}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card" style="margin-top: 30px">
+                                <h5 class="card-header">Query Plan</h5>
+                                <div class="card-body">
+                                    <samp>{{$plan.Value.Instructions}}</samp>
+                                </div>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
