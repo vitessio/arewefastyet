@@ -55,8 +55,10 @@ limitations under the License.
                     <div class="list-group" id="list-of-plans" role="tablist">
                         {{ range $i, $plan := .plansComparison }}
                         <a class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}" id="list-{{$i}}-list" data-toggle="list" href="#list-{{$i}}" role="tab" aria-controls="home">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div>
                                 <small><samp>{{$plan.Key}}</samp></small>
+                            </div>
+                            <div>
                                 {{ if and $plan.Left $plan.Right }}
                                     {{if and (gt $plan.Left.Value.Errors 0) (gt $plan.Right.Value.Errors 0) }}
                                         <span class="badge badge-pill badge-danger">Both Have Errors</span>
@@ -71,10 +73,15 @@ limitations under the License.
                                     {{ end }}
                                     <span class="badge badge-pill badge-info">Only A</span>
                                 {{ else if $plan.Right }}
-                                    {{ if gt $plan.Left.Value.Errors 0 }}
+                                    {{ if gt $plan.Right.Value.Errors 0 }}
                                         <span class="badge badge-pill badge-danger">B Has Errros</span>
                                     {{ end }}
                                     <span class="badge badge-pill badge-info">Only B</span>
+                                {{ end }}
+                                {{ if gt $plan.ExecTimeDiff 5 }}
+                                    <span class="badge badge-pill badge-warning">A fastest</span>
+                                {{ else if lt $plan.ExecTimeDiff -5 }}
+                                    <span class="badge badge-pill badge-success">B fastest</span>
                                 {{ end }}
                             </div>
                         </a>
@@ -102,7 +109,7 @@ limitations under the License.
                                             <th scope="col"></th>
                                             <th scope="col">A</th>
                                             <th scope="col">B</th>
-                                            <th scope="col">Diff (A minus B)</th>
+                                            <th scope="col">Diff</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -110,25 +117,25 @@ limitations under the License.
                                             <th scope="row">Execution Count</th>
                                             <td>{{if $plan.Left}}{{$plan.Left.Value.ExecCount}}{{else}}N/A{{end}}</td>
                                             <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
-                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
+                                            <td>{{$plan.ExecCountDiff}}%</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Execution Time</th>
                                             <td>{{if $plan.Left}}{{$plan.Left.Value.ExecTime}}{{else}}N/A{{end}}</td>
                                             <td>{{if $plan.Right}}{{$plan.Right.Value.ExecTime}}{{else}}N/A{{end}}</td>
-                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecTime}}{{else}}N/A{{end}}</td>
+                                            <td>{{$plan.ExecTimeDiff}}%</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Rows Returned</th>
                                             <td>{{if $plan.Left}}{{$plan.Left.Value.RowsReturned}}{{else}}N/A{{end}}</td>
                                             <td>{{if $plan.Right}}{{$plan.Right.Value.RowsReturned}}{{else}}N/A{{end}}</td>
-                                            <td>{{if $plan.Right}}{{$plan.Right.Value.RowsReturned}}{{else}}N/A{{end}}</td>
+                                            <td>{{$plan.RowsReturnedDiff}}%</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Errors</th>
-                                            <td>{{if $plan.Left}}{{$plan.Left.Value.ExecCount}}{{else}}N/A{{end}}</td>
-                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
-                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Left}}{{$plan.Left.Value.Errors}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.Errors}}{{else}}N/A{{end}}</td>
+                                            <td>{{$plan.ErrorsDiff}}%</td>
                                         </tr>
                                         </tbody>
                                     </table>

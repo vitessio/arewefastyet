@@ -45,8 +45,12 @@ type VTGateQueryPlan struct {
 }
 
 type VTGateQueryPlanComparer struct {
-	Left, Right *VTGateQueryPlan
-	Key         string
+	Left, Right      *VTGateQueryPlan
+	Key              string
+	ExecCountDiff    int
+	ExecTimeDiff     int
+	RowsReturnedDiff int
+	ErrorsDiff       int
 }
 
 type VTGateQueryPlanMap map[string]VTGateQueryPlanValue
@@ -61,6 +65,18 @@ func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanCom
 		for j, rightPlan := range right {
 			if rightPlan.Key == plan.Key {
 				newCompare.Right = &right[j]
+				if plan.Value.ExecCount != 0 {
+					newCompare.ExecCountDiff = int(float64(rightPlan.Value.ExecCount-plan.Value.ExecCount) / float64(plan.Value.ExecCount) * 100)
+				}
+				if plan.Value.ExecTime != 0 {
+					newCompare.ExecTimeDiff = int(float64(rightPlan.Value.ExecTime-plan.Value.ExecTime) / float64(plan.Value.ExecTime) * 100)
+				}
+				if plan.Value.RowsReturned != 0 {
+					newCompare.RowsReturnedDiff = int(float64(rightPlan.Value.RowsReturned-plan.Value.RowsReturned) / float64(plan.Value.RowsReturned) * 100)
+				}
+				if plan.Value.Errors != 0 {
+					newCompare.ErrorsDiff = int(float64(rightPlan.Value.Errors-plan.Value.Errors) / float64(plan.Value.Errors) * 100)
+				}
 				break
 			}
 		}
