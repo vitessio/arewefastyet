@@ -23,147 +23,153 @@ limitations under the License.
     <!-- Navigation -->
     {{ template "navigation" "/macrobench" }}
 
-    <!--------------------------------------------------------------------------- Information ---------------------------------------------------------------------------------------------->
-
-    <section class="py-5">
+    <section class="py-4">
         <div class="container">
-            <h1>Macrobenchmarks</h1>
-            <p class="lead">Comparing results for <a href="https://github.com/vitessio/vitess/commit/{{ .leftSHA }}" target="_blank">{{ .leftTag }}</a> and <a href="https://github.com/vitessio/vitess/commit/{{ .rightSHA }}" target="_blank">{{ .rightTag }}</a> </p>
-        </div>
-
-        <div class="container" style="padding-bottom: 15px;">
-            <div class="btn-toolbar" role="toolbar" aria-label="Tags">
-                <div class="btn-group mr-2" role="group">
-                    <div class="dropdown">
-                        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="leftTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ .leftTag }}
-                        </button>
-                        <div class="dropdown-menu" style="height:200px; overflow-y: scroll;"  aria-labelledby="leftTagDropdownMenuButton">
-                            {{range $val := .allReleases}}
-                                <a class="dropdown-item" href="#">{{$val.Name}}</a>
-                                <div class="dropdown-divider"></div>
-                            {{end}}
+            <div class="card rounded">
+                <h2 class="text-center card-header">Compare Macrobenchmarks</h2>
+                <div class="card-body">
+                    <p class="lead">Comparing results for <a href="https://github.com/vitessio/vitess/commit/{{ .leftSHA }}" target="_blank">{{ .leftTag }}</a> and <a href="https://github.com/vitessio/vitess/commit/{{ .rightSHA }}" target="_blank">{{ .rightTag }}</a>.</p>
+                    <div class="btn-toolbar" role="toolbar" aria-label="Tags">
+                        <div class="btn-group mr-2" role="group">
+                            <div class="dropdown">
+                                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="leftTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ .leftTag }}
+                                </button>
+                                <div class="dropdown-menu" style="height:200px; overflow-y: scroll;"  aria-labelledby="leftTagDropdownMenuButton">
+                                    {{range $val := .allReleases}}
+                                    <a class="dropdown-item" href="#">{{$val.Name}}</a>
+                                    <div class="dropdown-divider"></div>
+                                    {{end}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group mr-2" role="group">
+                            <div class="dropdown">
+                                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="rightTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ .rightTag }}
+                                </button>
+                                <div class="dropdown-menu" style="height:200px; overflow-y: scroll;" aria-labelledby="rightTagDropdownMenuButton">
+                                    {{range $val := .allReleases}}
+                                    <a class="dropdown-item" href="#">{{$val.Name}}</a>
+                                    <div class="dropdown-divider"></div>
+                                    {{end}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-secondary" id="go-button">Go</button>
                         </div>
                     </div>
-                </div>
-                <div class="btn-group mr-2" role="group">
-                    <div class="dropdown">
-                        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="rightTagDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ .rightTag }}
-                        </button>
-                        <div class="dropdown-menu" style="height:200px; overflow-y: scroll;" aria-labelledby="rightTagDropdownMenuButton">
-                            {{range $val := .allReleases}}
-                                <a class="dropdown-item" href="#">{{$val.Name}}</a>
-                                <div class="dropdown-divider"></div>
-                            {{end}}
-                        </div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-secondary" id="go-button">Go</button>
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="container-xl">
-            {{ range $key, $val := .macrobenchmark }}
+    <div class="container-xl">
+        {{$leftSHA := .leftSHA}}
+        {{$rightSHA := .rightSHA}}
+        {{ range $key, $val := .macrobenchmark }}
 
-                <h4>{{ $key.ToUpper }}</h4>
-                {{ if $val }}
-                    <table class="table table-striped table-hover table-sm table-bordered" >
+        <div class="card rounded mb-3">
+            <h4 class="card-header">{{ $key.ToUpper }}</h4>
+            <div class="card-body">
+            {{ if $val }}
+                <p class="lead">Click <a href="/macrobench/queries/compare?left={{$leftSHA}}&right={{$rightSHA}}&type={{$key}}">here</a> to see the query plans comparison for this benchmark.</p>
+                <div class="table-responsive-xl">
+                    <table class="table table-hover table-sm">
                         <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $.leftSHA }}" target="_blank">{{ $.leftTag }}</a></th>
-                            <th scope="col" class="text-center"><a href="https://github.com/vitessio/vitess/commit/{{ $.rightSHA }}" target="_blank">{{ $.rightTag }}</a></th>
-                            <th scope="col" class="text-center">Improved by %</th>
-                        </tr>
+                            <tr style="border-top-style: hidden;">
+                                <th scope="col" style="width: 20%"></th>
+                                <th scope="col" class="text-center" style="width: 30%"><a href="https://github.com/vitessio/vitess/commit/{{ $.leftSHA }}" target="_blank">{{ $.leftTag }}</a></th>
+                                <th scope="col" class="text-center" style="width: 30%"><a href="https://github.com/vitessio/vitess/commit/{{ $.rightSHA }}" target="_blank">{{ $.rightTag }}</a></th>
+                                <th scope="col" class="text-center" style="width: 20%">Improved by %</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {{ range $elem := $val }}
                             <tr>
-                                <th scope="row" class="text-center">QPS Total</th>
+                                <th scope="row" class="text-right">QPS Total</th>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.TotalStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.QPS.TotalStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.TotalStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">QPS Reads</th>
+                                <th scope="row" class="text-right">QPS Reads</th>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.ReadsStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.QPS.ReadsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.ReadsStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">QPS Writes</th>
+                                <th scope="row" class="text-right">QPS Writes</th>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.WritesStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.QPS.WritesStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.WritesStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">QPS Other</th>
+                                <th scope="row" class="text-right">QPS Other</th>
                                 <td class="text-center">{{ $elem.Compare.Result.QPS.OtherStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.QPS.OtherStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.QPS.OtherStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">TPS</th>
+                                <th scope="row" class="text-right">TPS</th>
                                 <td class="text-center">{{ $elem.Compare.Result.TPSStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.TPSStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.TPSStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">Latency</th>
+                                <th scope="row" class="text-right">Latency</th>
                                 <td class="text-center">{{ $elem.Compare.Result.LatencyStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.LatencyStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.LatencyStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">Errors</th>
+                                <th scope="row" class="text-right">Errors</th>
                                 <td class="text-center">{{ $elem.Compare.Result.ErrorsStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.ErrorsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.ErrorsStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">Reconnects</th>
+                                <th scope="row" class="text-right">Reconnects</th>
                                 <td class="text-center">{{ $elem.Compare.Result.ReconnectsStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.ReconnectsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.ReconnectsStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">Time</th>
+                                <th scope="row" class="text-right">Time</th>
                                 <td class="text-center">{{ $elem.Compare.Result.TimeStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.TimeStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.TimeStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">Threads</th>
+                                <th scope="row" class="text-right">Threads</th>
                                 <td class="text-center">{{ $elem.Compare.Result.ThreadsStr }}</td>
                                 <td class="text-center">{{ $elem.Reference.Result.ThreadsStr }}</td>
                                 <td class="text-center">{{ $elem.Diff.ThreadsStr }}</td>
                             </tr>
                             <tr>
-                                <th scope="row" class="text-center">Total CPU time</th>
+                                <th scope="row" class="text-right">Total CPU time</th>
                                 <td class="text-center">{{ formatFloat $elem.Compare.Metrics.TotalComponentsCPUTime }}</td>
                                 <td class="text-center">{{ formatFloat $elem.Reference.Metrics.TotalComponentsCPUTime }}</td>
                                 <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsCPUTime }}</td>
                             </tr>
                             {{ range $componentCPUName, $componentCPUValue := $elem.Compare.Metrics.ComponentsCPUTime }}
-                                <tr>
-                                    <th scope="row" class="text-center">CPU time {{$componentCPUName}}</th>
-                                    <td class="text-center">{{ formatFloat (index $elem.Compare.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
-                                    <td class="text-center">{{ formatFloat (index $elem.Reference.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
-                                    <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsCPUTime $componentCPUName) }}</td>
-                                </tr>
+                            <tr>
+                                <th scope="row" class="text-right">CPU time {{$componentCPUName}}</th>
+                                <td class="text-center">{{ formatFloat (index $elem.Compare.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                <td class="text-center">{{ formatFloat (index $elem.Reference.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsCPUTime $componentCPUName) }}</td>
+                            </tr>
                             {{ end }}
                             <tr>
-                                <th scope="row" class="text-center">Total Allocs bytes</th>
+                                <th scope="row" class="text-right">Total Allocs bytes</th>
                                 <td class="text-center">{{ formatBytes $elem.Compare.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
                                 <td class="text-center">{{ formatBytes $elem.Reference.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
                                 <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsMemStatsAllocBytes }}</td>
                             </tr>
                             {{ range $componentAllocsName, $componentAllocsValue := $elem.Compare.Metrics.ComponentsMemStatsAllocBytes }}
                             <tr>
-                                <th scope="row" class="text-center">Allocs bytes {{$componentAllocsName}}</th>
+                                <th scope="row" class="text-right">Allocs bytes {{$componentAllocsName}}</th>
                                 <td class="text-center">{{ formatBytes (index $elem.Compare.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
                                 <td class="text-center">{{ formatBytes (index $elem.Reference.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
                                 <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
@@ -172,15 +178,17 @@ limitations under the License.
                         {{ end }}
                         </tbody>
                     </table>
-                    <canvas id="{{$key}}-bar-chart" height="75"></canvas>
-                {{ else if not $val }}
-                    <div class="alert alert-warning" role="alert">
-                        No {{ $key.ToUpper }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$.rightSHA}},{{ $.leftSHA }}]&type=macrobench-{{$key}}">request</a> a run.
-                    </div>
-                {{ end }}
+                </div>
+                <canvas id="{{$key}}-bar-chart" height="75"></canvas>
+            {{ else if not $val }}
+                <div class="alert alert-warning" role="alert">
+                    No {{ $key.ToUpper }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$.rightSHA}},{{ $.leftSHA }}]&type=macrobench-{{$key}}">request</a> a run.
+                </div>
             {{ end }}
+            </div>
         </div>
-    </section>
+        {{ end }}
+    </div>
 
     <script>
         $(document).ready(function(){
