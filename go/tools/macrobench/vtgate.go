@@ -94,6 +94,11 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	for _, plan := range response {
 		// keeping only select statements
 		if strings.HasPrefix(plan.Key, "select") {
+			jsonPlan, err := json.MarshalIndent(plan.Value.Instructions, "", "\t")
+			if err != nil {
+				return nil, err
+			}
+			plan.Value.Instructions = string(jsonPlan)
 			planMap[plan.Key] = plan.Value
 		}
 	}
