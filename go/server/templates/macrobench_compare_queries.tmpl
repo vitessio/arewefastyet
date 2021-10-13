@@ -57,18 +57,20 @@ limitations under the License.
                         <a class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}" id="list-{{$i}}-list" data-toggle="list" href="#list-{{$i}}" role="tab" aria-controls="home">
                             <div class="d-flex justify-content-between align-items-center">
                                 <small><samp>{{$plan.Key}}</samp></small>
-                                {{ if and $plan.Left (and $plan.Right (and (gt $plan.Left.Value.Errors 0) (gt $plan.Right.Value.Errors 0))) }}
-                                    <span class="badge badge-pill badge-danger">Both Have Errors</span>
-                                {{ else if and $plan.Left (and $plan.Right (gt $plan.Left.Value.Errors 0)) }}
-                                    <span class="badge badge-pill badge-danger">A Has Errors</span>
-                                {{ else if and $plan.Left (and $plan.Right (gt $plan.Right.Value.Errors 0)) }}
-                                    <span class="badge badge-pill badge-danger">B Has Errors</span>
-                                {{ else if and $plan.Left (not $plan.Right) }}
+                                {{ if and $plan.Left $plan.Right }}
+                                    {{if and (gt $plan.Left.Value.Errors 0) (gt $plan.Right.Value.Errors 0) }}
+                                        <span class="badge badge-pill badge-danger">Both Have Errors</span>
+                                    {{ else if gt $plan.Left.Value.Errors 0 }}
+                                        <span class="badge badge-pill badge-danger">A Has Errors</span>
+                                    {{ else if gt $plan.Right.Value.Errors 0 }}
+                                        <span class="badge badge-pill badge-danger">B Has Errors</span>
+                                    {{ end }}
+                                {{ else if $plan.Left }}
                                     {{ if gt $plan.Left.Value.Errors 0 }}
                                         <span class="badge badge-pill badge-danger">A Has Errors</span>
                                     {{ end }}
                                     <span class="badge badge-pill badge-info">Only A</span>
-                                {{ else if and $plan.Right (not $plan.Left) }}
+                                {{ else if $plan.Right }}
                                     {{ if gt $plan.Left.Value.Errors 0 }}
                                         <span class="badge badge-pill badge-danger">B Has Errros</span>
                                     {{ end }}
@@ -106,40 +108,44 @@ limitations under the License.
                                         <tbody>
                                         <tr>
                                             <th scope="row">Execution Count</th>
-                                            <td>{{$plan.Left.Value.ExecCount}}</td>
-                                            <td>{{$plan.Right.Value.ExecCount}}</td>
-                                            <td>{{$plan.Right.Value.ExecCount}}</td>
+                                            <td>{{if $plan.Left}}{{$plan.Left.Value.ExecCount}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Execution Time</th>
-                                            <td>{{$plan.Left.Value.ExecTime}}</td>
-                                            <td>{{$plan.Right.Value.ExecTime}}</td>
-                                            <td>{{$plan.Right.Value.ExecTime}}</td>
+                                            <td>{{if $plan.Left}}{{$plan.Left.Value.ExecTime}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecTime}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecTime}}{{else}}N/A{{end}}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Rows Returned</th>
-                                            <td>{{$plan.Left.Value.RowsReturned}}</td>
-                                            <td>{{$plan.Right.Value.RowsReturned}}</td>
-                                            <td>{{$plan.Right.Value.RowsReturned}}</td>
+                                            <td>{{if $plan.Left}}{{$plan.Left.Value.RowsReturned}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.RowsReturned}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.RowsReturned}}{{else}}N/A{{end}}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Errors</th>
-                                            <td>{{$plan.Left.Value.Errors}}</td>
-                                            <td>{{$plan.Right.Value.Errors}}</td>
-                                            <td>{{$plan.Right.Value.Errors}}</td>
+                                            <td>{{if $plan.Left}}{{$plan.Left.Value.ExecCount}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
+                                            <td>{{if $plan.Right}}{{$plan.Right.Value.ExecCount}}{{else}}N/A{{end}}</td>
                                         </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
+                            {{ if $plan.Left }}
                             <div class="card" style="margin-top: 30px">
                                 <h5 class="card-header">Query Plan A</h5>
                                 <div class="card-body" style="white-space: pre-wrap;"><samp>{{toString $plan.Left.Value.Instructions}}</samp></div>
                             </div>
+                            {{ end }}
+                            {{ if $plan.Right }}
                             <div class="card" style="margin-top: 30px">
                                 <h5 class="card-header">Query Plan B</h5>
                                 <div class="card-body" style="white-space: pre-wrap;"><samp>{{toString $plan.Right.Value.Instructions}}</samp></div>
                             </div>
+                            {{ end }}
                         </div>
                         {{ end }}
                     </div>
