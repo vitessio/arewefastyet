@@ -19,6 +19,7 @@
 package macrobench
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -46,6 +47,7 @@ type VTGateQueryPlan struct {
 
 type VTGateQueryPlanComparer struct {
 	Left, Right      *VTGateQueryPlan
+	SamePlan         bool
 	Key              string
 	ExecCountDiff    int
 	ExecTimeDiff     int
@@ -64,6 +66,13 @@ func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanCom
 		}
 		for j, rightPlan := range right {
 			if rightPlan.Key == plan.Key {
+				switch instructionRight := rightPlan.Value.Instructions.(type) {
+				case []byte:
+					switch instructionLeft := plan.Value.Instructions.(type) {
+					case []byte:
+						newCompare.SamePlan = bytes.Equal(instructionLeft, instructionRight)
+					}
+				}
 				newCompare.Right = &right[j]
 				if plan.Value.ExecCount != 0 {
 					newCompare.ExecCountDiff = int(float64(rightPlan.Value.ExecCount-plan.Value.ExecCount) / float64(plan.Value.ExecCount) * 100)

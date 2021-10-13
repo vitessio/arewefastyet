@@ -141,18 +141,34 @@ limitations under the License.
                                     </table>
                                 </div>
                             </div>
+                            {{ if $plan.SamePlan }}
+                            <div class="text-center alert alert-success mt-3" role="alert">
+                                Plans are equivalent.
+                            </div>
                             {{ if $plan.Left }}
-                            <div class="card" style="margin-top: 30px">
+                            <div class="card mt-3">
+                                <h5 class="card-header">Query Plan</h5>
+                                <div class="card-body" style="white-space: pre-wrap;"><samp>{{toString $plan.Left.Value.Instructions}}</samp></div>
+                            </div>
+                            {{ end }}
+                            {{ else }}
+                            <div class="text-center alert alert-warning mt-3" role="alert">
+                                Plans are different.
+                            </div>
+                            {{ if $plan.Left }}
+                            <div class="card mt-3">
                                 <h5 class="card-header">Query Plan A</h5>
                                 <div class="card-body" style="white-space: pre-wrap;"><samp>{{toString $plan.Left.Value.Instructions}}</samp></div>
                             </div>
                             {{ end }}
                             {{ if $plan.Right }}
-                            <div class="card" style="margin-top: 30px">
+                            <div class="card mt-3">
                                 <h5 class="card-header">Query Plan B</h5>
                                 <div class="card-body" style="white-space: pre-wrap;"><samp>{{toString $plan.Right.Value.Instructions}}</samp></div>
                             </div>
                             {{ end }}
+                            {{ end }}
+
                         </div>
                         {{ end }}
                     </div>
