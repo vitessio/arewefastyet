@@ -25,6 +25,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"net/http"
+	"strings"
 )
 
 type VTGateQueryPlanValue struct {
@@ -91,7 +92,10 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	}
 	planMap := VTGateQueryPlanMap{}
 	for _, plan := range response {
-		planMap[plan.Key] = plan.Value
+		// keeping only select statements
+		if strings.HasPrefix(plan.Key, "select") {
+			planMap[plan.Key] = plan.Value
+		}
 	}
 	return planMap, nil
 }
@@ -105,6 +109,38 @@ func getVTGatesQueryPlans(ports []string) (VTGateQueryPlanMap, error) {
 			return nil, err
 		}
 		res = mergeVTGateQueryPlans(res, plans)
+	}
+	return res, nil
+}
+
+func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner PlannerVersion, client storage.SQLClient) (VTGateQueryPlanMap, error) {
+	if macroType != OLTP && macroType != TPCC {
+		return nil, errors.New(IncorrectMacroBenchmarkType)
+	}
+	query := "select qp.`key` as `key`, qp.plan as plan, avg(qp.exec_time) as time, avg(qp.exec_count) as count, avg(qp.rows) as rows, avg(qp.errors) as errors " +
+		"from query_plans qp, macrobenchmark ma, execution ex " +
+		"where qp.macrobenchmark_id = ma.macrobenchmark_id " +
+		"and ex.uuid = qp.exec_uuid " +
+		"and qp.`key` like \"select%\" " +
+		"and ex.type = ?" +
+		"and ma.commit = ? " +
+		"and ma.vtgate_planner_version = ? " +
+		"group by qp.`key`, qp.plan order by time desc limit 100;"
+
+	result, err := client.Select(query, macroType.String(), gitRef, string(planner))
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+
+	res := VTGateQueryPlanMap{}
+	for result.Next() {
+		var plan VTGateQueryPlan
+		err = result.Scan(&plan.Key, &plan.Value.Instructions, &plan.Value.ExecTime, &plan.Value.ExecCount, &plan.Value.RowsReturned, &plan.Value.Errors)
+		if err != nil {
+			return nil, err
+		}
+		res[plan.Key] = plan.Value
 	}
 	return res, nil
 }
