@@ -183,6 +183,10 @@ func (s *Server) Run() error {
 	// Macrobenchmark comparison page
 	s.router.GET("/macrobench", s.macrobenchmarkResultsHandler)
 
+	// Macrobenchmark queries details
+	s.router.GET("/macrobench/queries/:git_ref", s.macrobenchmarkQueriesDetails)
+	s.router.GET("/macrobench/queries/compare", s.macrobenchmarkCompareQueriesDetails)
+
 	// V3 VS Gen4 comparison page
 	s.router.GET("/v3_VS_Gen4", s.v3VsGen4Handler)
 

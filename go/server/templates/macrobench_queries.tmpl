@@ -19,17 +19,21 @@ limitations under the License.
 {{template "headHTML" .}}
 
 <body>
-    {{ template "navigation" .url }}
+    <div style="min-height: 90vh;">
+    <!-- Navigation -->
+    {{ template "navigation" "/macrobench" }}
 
-    <section class="py-5">
-      <div class="container">
-        <h3 class="text-center">Sorry, an error occurred.</h3>
-      {{ if .error }}
-          <p class="text-center lead">{{.error}}</p>
-      {{ end }}
-        <p class="text-center lead">You may try again or navigate to the <a href="/">home page</a>.</p>
-      </div>
-    </section>
+        <section class="py-5">
+            <div class="container">
+                <h1>Query Plans</h1>
+                <p class="lead">Looking at query plans for <b><a href="https://github.com/vitessio/vitess/commit/{{ .gitRef.SHA }}" target="_blank">{{ .gitRef.short }}</a></b> produced by <b>{{ .macroType }}</b> benchmark using the <b>{{ .planner }}</b> query planner.</p>
+            </div>
+        </section>
+
+    </div>
+
+    {{template "footerHTML" .}}
+
 </body>
 
 </html>

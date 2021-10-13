@@ -76,7 +76,7 @@ func getPlannerVersion(c *gin.Context) macrobench.PlannerVersion {
 
 func (s *Server) homeHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"title":     "Vitess benchmark",
+		"title": "Vitess benchmark",
 	})
 }
 
@@ -356,6 +356,61 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 		"allReleases":    allReleases,
 		"macrobenchmark": macrosMatrices,
 	})
+}
+
+func (s *Server) macrobenchmarkQueriesDetails(c *gin.Context) {
+	planner := getPlannerVersion(c)
+	gitRef := c.Param("git_ref")
+	macroType := macrobench.Type(c.Query("type"))
+
+	if gitRef == "" || macroType == "" {
+		c.HTML(http.StatusOK, "error.tmpl", gin.H{
+			"title": "Vitess benchmark - macrobenchmark queries",
+			"error": "Invalid git SHA or macrobenchmark type (i.e: oltp, tpcc).",
+		})
+		return
+	}
+	plans, err := macrobench.GetVTGateSelectQueryPlansWithFilter(gitRef, macroType, planner, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	c.HTML(http.StatusOK, "macrobench_queries.tmpl", gin.H{
+		"title": "Vitess benchmark - macrobenchmark queries",
+		"gitRef": map[string]interface{}{
+			"SHA":   gitRef,
+			"short": git.ShortenSHA(gitRef),
+		},
+		"macroType": macroType.String(),
+		"planner":   string(planner),
+		"plans":     plans,
+	})
+}
+
+func (s *Server) macrobenchmarkCompareQueriesDetails(c *gin.Context) {
+	planner := getPlannerVersion(c)
+	leftGitRef := c.Query("left")
+	rightGitRef := c.Query("right")
+	macroType := macrobench.Type(c.Query("type"))
+
+	if leftGitRef == "" || rightGitRef == "" || macroType == "" {
+		c.HTML(http.StatusOK, "error.tmpl", gin.H{
+			"title": "Vitess benchmark - compare macrobenchmark queries",
+			"error": "Invalid git SHAs or macrobenchmark type (i.e: oltp, tpcc).",
+		})
+		return
+	}
+
+	_, err := macrobench.GetVTGateSelectQueryPlansWithFilter(leftGitRef, macroType, planner, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	_, err = macrobench.GetVTGateSelectQueryPlansWithFilter(rightGitRef, macroType, planner, s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
 }
 
 func (s *Server) v3VsGen4Handler(c *gin.Context) {
