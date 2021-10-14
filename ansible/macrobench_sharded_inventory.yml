@@ -17,8 +17,8 @@ all:
         device: nvme0n1
         partition: nvme0n1p1
   vars:
-    arewefastyet_git_repo: "https://github.com/frouioui/arewefastyet.git"
-    arewefastyet_git_version: "query-stats"
+    arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
+    arewefastyet_git_version: "HEAD"
     macrobenchmark_vschema_oltp: "./vitess-benchmark/sysbench.json"
     macrobenchmark_vschema_tpcc: "./vitess-benchmark/tpcc_vschema.json"
     macrobenchmarks_local_config: "LOCAL_CONFIG_PATH_0"
