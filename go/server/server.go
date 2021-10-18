@@ -88,7 +88,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
 	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON.")
 	cmd.Flags().StringVar(&s.cronSchedulePullRequests, flagCronSchedulePullRequests, "*/5 * * * *", "Execution CRON schedule for pull requests benchmarks. An empty string will result in no CRON. Defaults to an execution every 5 minutes.")
-	cmd.Flags().IntVar(&s.cronNbRetry, flagCronNbRetry, 0, "Number of retries allowed for each cron job.")
+	cmd.Flags().IntVar(&s.cronNbRetry, flagCronNbRetry, 1, "Number of retries allowed for each cron job.")
 	cmd.Flags().StringVar(&s.prLabelTrigger, flagPullRequestLabelTrigger, "Benchmark me", "GitHub Pull Request label that will trigger the execution of new execution.")
 	cmd.Flags().StringVar(&s.prLabelTriggerV3, flagPullRequestLabelTriggerWithPlannerV3, "Benchmark me (V3)", "GitHub Pull Request label that will trigger the execution of new execution using the V3 planner.")
 	_ = cmd.MarkFlagRequired(flagMicroBenchConfigFile)

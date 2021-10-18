@@ -28,45 +28,49 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
-func (s *Server) sendNotificationForRegression(compInfo *CompareInfo) (err error) {
+func (s *Server) sendNotificationForRegression(leftSource, rightSource, leftRef, rightRef, plannerVersion, benchmarkType string, pullNb int, notifyAlways bool) (err error) {
 	// regression header, appender to header in the event of a regression
 	regressionHeader := `*Observed a regression.*
 `
 
 	// header of the message, before the regression explanation
-	header := compInfo.name + "\n\n"
-	if compInfo.execInfo.pullNB > 0 {
-		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, compInfo.execInfo.pullNB)
-	} else {
-		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + compInfo.execInfo.ref + `|` + git.ShortenSHA(compInfo.execInfo.ref) + `> with old commit <https://github.com/vitessio/vitess/commit/` + compInfo.execComp.ref + `|` + git.ShortenSHA(compInfo.execComp.ref) + `>.`
+	header := fmt.Sprintf("Comparing %s with %s, with the %s benchmark", leftSource, rightSource, benchmarkType)
+	if benchmarkType != "micro" {
+		header += fmt.Sprintf(" using the %s query planner", plannerVersion)
 	}
-	header += `Comparison can be seen at : ` + getComparisonLink(compInfo.execInfo.ref, compInfo.execComp.ref) + `
+	header += "\n\n"
+	if pullNb > 0 {
+		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, pullNb)
+	} else {
+		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + leftRef + `|` + git.ShortenSHA(leftRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + rightRef + `|` + git.ShortenSHA(rightRef) + `>.`
+	}
+	header += `Comparison can be seen at : ` + getComparisonLink(leftRef, rightRef) + `
 
 `
 
-	if compInfo.typeOf == "micro" {
-		microBenchmarks, err := microbench.Compare(s.dbClient, compInfo.execInfo.ref, compInfo.execComp.ref)
+	if benchmarkType == "micro" {
+		microBenchmarks, err := microbench.Compare(s.dbClient, leftRef, rightRef)
 		if err != nil {
 			return err
 		}
 		regression := microBenchmarks.Regression()
-		err = s.sendMessageIfRegression(compInfo.ignoreNonRegression, regression, header, regressionHeader)
+		err = s.sendMessageIfRegression(notifyAlways, regression, header, regressionHeader)
 		if err != nil {
 			return err
 		}
-	} else if compInfo.typeOf == "oltp" || compInfo.typeOf == "tpcc" {
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, compInfo.execInfo.ref, compInfo.execComp.ref, macrobench.PlannerVersion(compInfo.plannerVersion))
+	} else if benchmarkType == "oltp" || benchmarkType == "tpcc" {
+		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, leftRef, rightRef, macrobench.PlannerVersion(plannerVersion))
 		if err != nil {
 			return err
 		}
 
-		macroResults := macrosMatrices[macrobench.Type(compInfo.typeOf)].(macrobench.ComparisonArray)
+		macroResults := macrosMatrices[macrobench.Type(benchmarkType)].(macrobench.ComparisonArray)
 		if len(macroResults) == 0 {
 			return fmt.Errorf("no macrobenchmark result")
 		}
 
 		regression := macroResults[0].Regression()
-		err = s.sendMessageIfRegression(compInfo.ignoreNonRegression, regression, header, regressionHeader)
+		err = s.sendMessageIfRegression(notifyAlways, regression, header, regressionHeader)
 		if err != nil {
 			return err
 		}

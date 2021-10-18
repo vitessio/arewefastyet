@@ -19,6 +19,7 @@
 package exec
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage"
@@ -296,17 +297,18 @@ func (e *Exec) prepareAnsibleForExecution() {
 	}
 }
 
-func (e *Exec) Success() {
+func (e *Exec) Success() error {
 	// checking if the execution has not already failed
-	rows, errSQL := e.clientDB.Select("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
-	if errSQL != nil {
-		return
+	rows, err := e.clientDB.Select("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
+	if err != nil {
+		return err
 	}
 	defer rows.Close()
 	if rows.Next() {
-		return
+		return nil
 	}
-	_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
+	_, err = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
+	return err
 }
 
 func (e *Exec) handleStepEnd(err error) {
@@ -381,6 +383,33 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	return e, nil
 }
 
+func GetFinishedExecution(client storage.SQLClient, gitRef, source, benchmarkType, plannerVersion string, pullNb int) (string, error) {
+	var eUUID string
+	var result *sql.Rows
+	var err error
+	query := ""
+	if plannerVersion == "" {
+		// no plannerVersion, meaning we are dealing with a micro benchmark
+		query = "SELECT e.uuid FROM execution e WHERE e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
+		result, err = client.Select(query, source, StatusFinished, benchmarkType, gitRef, pullNb)
+	} else {
+		// we have a plannerVersion, meaning we are dealing with a macro benchmark
+		query = "SELECT e.uuid FROM execution e, macrobenchmark m WHERE e.uuid = m.exec_uuid AND m.vtgate_planner_version = ? AND e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
+		result, err = client.Select(query, plannerVersion, source, StatusFinished, benchmarkType, gitRef, pullNb)
+	}
+	if err != nil {
+		return "", err
+	}
+	defer result.Close()
+	for result.Next() {
+		err = result.Scan(&eUUID)
+		if err != nil {
+			return "", err
+		}
+	}
+	return eUUID, nil
+}
+
 // GetPreviousFromSourceMicrobenchmark gets the previous execution from the same source for microbenchmarks
 func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
@@ -451,12 +480,8 @@ func GetLatestCronJobForMacrobenchmarks(client storage.SQLClient) (gitSha string
 	return "", nil
 }
 
-// TODO: For the following 4 functions, set the time frame for recent results according to the cron jobs schedule instead of using CURDATE always
-func Exists(client storage.SQLClient, gitRef, source, typeOf, status string, wantOnlyOld bool) (bool, error) {
+func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bool, error) {
 	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
-	if wantOnlyOld {
-		query += " AND started_at < CURDATE()"
-	}
 	result, err := client.Select(query, status, gitRef, typeOf, source)
 	if err != nil {
 		return false, err
@@ -465,21 +490,8 @@ func Exists(client storage.SQLClient, gitRef, source, typeOf, status string, wan
 	return result.Next(), nil
 }
 
-func ExistsStartedToday(client storage.SQLClient, gitRef, source, typeOf string) (bool, error) {
-	query := fmt.Sprintf("SELECT uuid FROM execution WHERE ( status = '%s' OR status = '%s' ) AND git_ref = ? AND type = ? AND source = ? AND started_at >= CURDATE()", StatusCreated, StatusStarted)
-	result, err := client.Select(query, gitRef, typeOf, source)
-	if err != nil {
-		return false, err
-	}
-	defer result.Close()
-	return result.Next(), nil
-}
-
-func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, status, planner string, wantOld bool) (bool, error) {
+func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, status, planner string) (bool, error) {
 	query := "SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
-	if wantOld {
-		query += " AND e.started_at < CURDATE()"
-	}
 	result, err := client.Select(query, status, gitRef, typeOf, source, planner)
 	if err != nil {
 		return false, err
@@ -488,8 +500,8 @@ func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, stat
 	return result.Next(), nil
 }
 
-func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, typeOf, planner string) (bool, error) {
-	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, typeOf, planner, status string) (bool, error) {
+	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", status)
 	result, err := client.Select(query, gitRef, typeOf, source, planner)
 	if err != nil {
 		return false, err
@@ -499,7 +511,7 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 	if exists {
 		return true, nil
 	}
-	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", status)
 	result, err = client.Select(query, gitRef, typeOf, source)
 	if err != nil {
 		return false, err
