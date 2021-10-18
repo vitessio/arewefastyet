@@ -118,7 +118,7 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	}
 	if !exists {
 		queue[element.identifier] = element
-		slog.Infof("%+v IS ADDED TO THE QUEUE", element.identifier)
+		slog.Infof("%+v is added to the queue", element.identifier)
 
 		// we sleep here to avoid adding too many similar elements to the queue at the same time.
 		time.Sleep(2 * time.Second)
