@@ -20,6 +20,7 @@ package git
 
 import (
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"os/exec"
 	"regexp"
 	"sort"
@@ -41,6 +42,14 @@ var (
 	// regex pattern accepts refs/remotes/origin/release-[Num].[Num].[Num]
 	regexPatternReleaseBranch = regexp.MustCompile(`^refs/remotes/origin/release-(\d+)\.(\d+)$`)
 )
+
+func GetPlannerVersionsForRelease(release *Release) []macrobench.PlannerVersion {
+	versions := []macrobench.PlannerVersion{macrobench.V3Planner}
+	if release.Number[0] >= 10 {
+		versions = append(versions, macrobench.Gen4FallbackPlanner)
+	}
+	return versions
+}
 
 // GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes given the directory of the clone of vitess
 func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {

@@ -152,7 +152,6 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-	go s.cronExecutionQueueWatcher()
 
 	s.router = gin.Default()
 	s.router.SetFuncMap(template.FuncMap{

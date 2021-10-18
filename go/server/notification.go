@@ -35,17 +35,17 @@ func (s *Server) sendNotificationForRegression(compInfo *CompareInfo) (err error
 
 	// header of the message, before the regression explanation
 	header := compInfo.name + "\n\n"
-	if compInfo.execMain.pullNB > 0 {
-		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, compInfo.execMain.pullNB)
+	if compInfo.execInfo.pullNB > 0 {
+		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, compInfo.execInfo.pullNB)
 	} else {
-		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + compInfo.execMain.ref + `|` + git.ShortenSHA(compInfo.execMain.ref) + `> with old commit <https://github.com/vitessio/vitess/commit/` + compInfo.execComp.ref + `|` + git.ShortenSHA(compInfo.execComp.ref) + `>.`
+		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + compInfo.execInfo.ref + `|` + git.ShortenSHA(compInfo.execInfo.ref) + `> with old commit <https://github.com/vitessio/vitess/commit/` + compInfo.execComp.ref + `|` + git.ShortenSHA(compInfo.execComp.ref) + `>.`
 	}
-	header += `Comparison can be seen at : ` + getComparisonLink(compInfo.execMain.ref, compInfo.execComp.ref) + `
+	header += `Comparison can be seen at : ` + getComparisonLink(compInfo.execInfo.ref, compInfo.execComp.ref) + `
 
 `
 
 	if compInfo.typeOf == "micro" {
-		microBenchmarks, err := microbench.Compare(s.dbClient, compInfo.execMain.ref, compInfo.execComp.ref)
+		microBenchmarks, err := microbench.Compare(s.dbClient, compInfo.execInfo.ref, compInfo.execComp.ref)
 		if err != nil {
 			return err
 		}
@@ -55,7 +55,7 @@ func (s *Server) sendNotificationForRegression(compInfo *CompareInfo) (err error
 			return err
 		}
 	} else if compInfo.typeOf == "oltp" || compInfo.typeOf == "tpcc" {
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, compInfo.execMain.ref, compInfo.execComp.ref, macrobench.PlannerVersion(compInfo.plannerVersion))
+		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, compInfo.execInfo.ref, compInfo.execComp.ref, macrobench.PlannerVersion(compInfo.plannerVersion))
 		if err != nil {
 			return err
 		}
