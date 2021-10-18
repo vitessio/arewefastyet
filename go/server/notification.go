@@ -40,9 +40,9 @@ func (s *Server) sendNotificationForRegression(leftSource, rightSource, leftRef,
 	}
 	header += "\n\n"
 	if pullNb > 0 {
-		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>.`, pullNb)
+		header += fmt.Sprintf(`Benchmarked PR #<https://github.com/vitessio/vitess/pull/%d>. `, pullNb)
 	} else {
-		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + leftRef + `|` + git.ShortenSHA(leftRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + rightRef + `|` + git.ShortenSHA(rightRef) + `>.`
+		header += `Comparing: recent commit <https://github.com/vitessio/vitess/commit/` + leftRef + `|` + git.ShortenSHA(leftRef) + `> with old commit <https://github.com/vitessio/vitess/commit/` + rightRef + `|` + git.ShortenSHA(rightRef) + `>. `
 	}
 	header += `Comparison can be seen at : ` + getComparisonLink(leftRef, rightRef) + `
 
