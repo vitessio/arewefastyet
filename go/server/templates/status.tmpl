@@ -33,7 +33,7 @@ limitations under the License.
     <div class="container-xxl">
       {{ if .queue }}
       <div class="card rounded mb-3">
-        <h4 class="card-header">Execution Queue</h4>
+        <h4 class="card-header text-center">Execution Queue</h4>
         <div class="card-body">
           <table class="table table-hover table-sm">
             <thead>
@@ -48,7 +48,9 @@ limitations under the License.
             <tbody>
               {{ range $key, $elem := .queue }}
               <tr>
-                <th class="text-center">{{ $key.GitRef }}</th>
+                <td class="text-center">
+                  <a target="_blank" href="https://github.com/vitessio/vitess/commit/{{$key.GitRef}}">{{ first8Letters $key.GitRef }}</a>
+                </td>
                 <td class="text-center">{{ $key.Source }}</td>
                 <td class="text-center">{{ $key.BenchmarkType }}</td>
                 <td class="text-center">{{ $key.PullNb }}</td>
