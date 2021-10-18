@@ -41,7 +41,7 @@ limitations under the License.
                 <th scope="col" class="text-center">SHA</th>
                 <th scope="col" class="text-center">Source</th>
                 <th scope="col" class="text-center">Type</th>
-                <th scope="col" class="text-center">PR NB</th>
+                <th scope="col" class="text-center">Pull Request</th>
                 <th scope="col" class="text-center">Planner Version</th>
               </tr>
             </thead>
@@ -53,7 +53,13 @@ limitations under the License.
                 </td>
                 <td class="text-center">{{ $key.Source }}</td>
                 <td class="text-center">{{ $key.BenchmarkType }}</td>
-                <td class="text-center">{{ $key.PullNb }}</td>
+                <td class="text-center">
+                  {{ if gt $key.PullNb 0 }}
+                    <a href="https://github.com/vitessio/vitess/pull/{{$key.PullNb}}">{{ $key.PullNb }}</a>
+                  {{ else }}
+                    {{ $key.PullNb }}
+                  {{ end }}
+                </td>
                 <td class="text-center">{{ $key.PlannerVersion }}</td>
               </tr>
               {{ end }}
