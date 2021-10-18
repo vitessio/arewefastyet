@@ -75,6 +75,12 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 
 func (s *Server) executeElement(element *executionQueueElement) {
 	if element.retry < 0 {
+		if _, found := queue[element.identifier]; found {
+			// removing the element from the queue since we are done with it
+			mtx.Lock()
+			delete(queue, element.identifier)
+			mtx.Unlock()
+		}
 		return
 	}
 
