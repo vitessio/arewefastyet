@@ -19,6 +19,7 @@
 package exec
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage"
@@ -75,8 +76,14 @@ type Exec struct {
 	Source        string
 	GitRef        string
 
+	// Status defines the status of the execution (canceled, finished, failed, etc)
+	Status string
+
+	StartedAt  *time.Time
+	FinishedAt *time.Time
+
 	// Defines the type of execution (oltp, tpcc, micro, ...)
-	typeOf string
+	TypeOf string
 
 	// PullNB defines the pull request number linked to this execution.
 	PullNB int
@@ -110,11 +117,15 @@ type Exec struct {
 	// VtgatePlannerVersion is the planner version that vtgate is going to use
 	VtgatePlannerVersion string
 
-	golangVersion string
+	GolangVersion string
 }
 
 const (
-	SourceCron = "cron"
+	SourceCron            = "cron"
+	SourcePullRequest     = "cron_pr"
+	SourcePullRequestBase = "cron_pr_base"
+	SourceTag             = "cron_tags_"
+	SourceReleaseBranch   = "cron_"
 )
 
 // SetStdout sets the standard output of Exec.
@@ -178,9 +189,9 @@ func (e *Exec) Prepare() error {
 		StatusCreated,
 		e.Source,
 		e.GitRef,
-		e.typeOf,
+		e.TypeOf,
 		e.PullNB,
-		e.golangVersion,
+		e.GolangVersion,
 	); err != nil {
 		return err
 	}
@@ -189,7 +200,7 @@ func (e *Exec) Prepare() error {
 	e.Infra.SetTags(map[string]string{
 		"execution_git_ref":         git.ShortenSHA(e.GitRef),
 		"execution_source":          e.Source,
-		"execution_type":            e.typeOf,
+		"execution_type":            e.TypeOf,
 		"execution_planner_version": e.VtgatePlannerVersion,
 	})
 
@@ -213,7 +224,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// Enable schema tracking only if we execute macrobenchmark main CRONs
-	if e.Source == SourceCron && e.typeOf != "micro" {
+	if e.Source == SourceCron && e.TypeOf != "micro" {
 		e.AnsibleConfig.ExtraVars["vitess_schema_tracking"] = 1
 	}
 
@@ -283,8 +294,8 @@ func (e *Exec) prepareAnsibleForExecution() {
 	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
-	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
-	e.AnsibleConfig.ExtraVars[keyGoVersion] = e.golangVersion
+	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.TypeOf
+	e.AnsibleConfig.ExtraVars[keyGoVersion] = e.GolangVersion
 
 	// not adding the -planner_version flag to ansible if we did not specify it or if using the default value
 	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) {
@@ -292,17 +303,18 @@ func (e *Exec) prepareAnsibleForExecution() {
 	}
 }
 
-func (e *Exec) Success() {
+func (e *Exec) Success() error {
 	// checking if the execution has not already failed
-	rows, errSQL := e.clientDB.Select("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
-	if errSQL != nil {
-		return
+	rows, err := e.clientDB.Select("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
+	if err != nil {
+		return err
 	}
 	defer rows.Close()
 	if rows.Next() {
-		return
+		return nil
 	}
-	_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
+	_, err = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
+	return err
 }
 
 func (e *Exec) handleStepEnd(err error) {
@@ -377,6 +389,71 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	return e, nil
 }
 
+func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
+	var res []*Exec
+	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, type, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 50"
+	result, err := client.Select(query)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	for result.Next() {
+		var eUUID string
+		exec := &Exec{}
+		err = result.Scan(&eUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.TypeOf, &exec.PullNB, &exec.GolangVersion)
+		if err != nil {
+			return nil, err
+		}
+		exec.UUID, err = uuid.Parse(eUUID)
+		if err != nil {
+			return nil, err
+		}
+		if exec.TypeOf != "micro" {
+			macroResult, err := client.Select("SELECT m.vtgate_planner_version FROM macrobenchmark m, execution e WHERE e.uuid = m.exec_uuid AND e.uuid = ? LIMIT 1", eUUID)
+			if err != nil {
+				return nil, err
+			}
+			var plannerVersion string
+			if macroResult.Next() {
+				err = macroResult.Scan(&plannerVersion)
+				if err != nil {
+					return nil, err
+				}
+			}
+			exec.VtgatePlannerVersion = plannerVersion
+		}
+		res = append(res, exec)
+	}
+	return res, nil
+}
+
+func GetFinishedExecution(client storage.SQLClient, gitRef, source, benchmarkType, plannerVersion string, pullNb int) (string, error) {
+	var eUUID string
+	var result *sql.Rows
+	var err error
+	query := ""
+	if plannerVersion == "" {
+		// no plannerVersion, meaning we are dealing with a micro benchmark
+		query = "SELECT e.uuid FROM execution e WHERE e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
+		result, err = client.Select(query, source, StatusFinished, benchmarkType, gitRef, pullNb)
+	} else {
+		// we have a plannerVersion, meaning we are dealing with a macro benchmark
+		query = "SELECT e.uuid FROM execution e, macrobenchmark m WHERE e.uuid = m.exec_uuid AND m.vtgate_planner_version = ? AND e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
+		result, err = client.Select(query, plannerVersion, source, StatusFinished, benchmarkType, gitRef, pullNb)
+	}
+	if err != nil {
+		return "", err
+	}
+	defer result.Close()
+	for result.Next() {
+		err = result.Scan(&eUUID)
+		if err != nil {
+			return "", err
+		}
+	}
+	return eUUID, nil
+}
+
 // GetPreviousFromSourceMicrobenchmark gets the previous execution from the same source for microbenchmarks
 func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
@@ -447,12 +524,8 @@ func GetLatestCronJobForMacrobenchmarks(client storage.SQLClient) (gitSha string
 	return "", nil
 }
 
-// TODO: For the following 4 functions, set the time frame for recent results according to the cron jobs schedule instead of using CURDATE always
-func Exists(client storage.SQLClient, gitRef, source, typeOf, status string, wantOnlyOld bool) (bool, error) {
+func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bool, error) {
 	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
-	if wantOnlyOld {
-		query += " AND started_at < CURDATE()"
-	}
 	result, err := client.Select(query, status, gitRef, typeOf, source)
 	if err != nil {
 		return false, err
@@ -461,21 +534,8 @@ func Exists(client storage.SQLClient, gitRef, source, typeOf, status string, wan
 	return result.Next(), nil
 }
 
-func ExistsStartedToday(client storage.SQLClient, gitRef, source, typeOf string) (bool, error) {
-	query := fmt.Sprintf("SELECT uuid FROM execution WHERE ( status = '%s' OR status = '%s' ) AND git_ref = ? AND type = ? AND source = ? AND started_at >= CURDATE()", StatusCreated, StatusStarted)
-	result, err := client.Select(query, gitRef, typeOf, source)
-	if err != nil {
-		return false, err
-	}
-	defer result.Close()
-	return result.Next(), nil
-}
-
-func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, status, planner string, wantOld bool) (bool, error) {
+func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, status, planner string) (bool, error) {
 	query := "SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
-	if wantOld {
-		query += " AND e.started_at < CURDATE()"
-	}
 	result, err := client.Select(query, status, gitRef, typeOf, source, planner)
 	if err != nil {
 		return false, err
@@ -484,8 +544,8 @@ func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, stat
 	return result.Next(), nil
 }
 
-func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, typeOf, planner string) (bool, error) {
-	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, typeOf, planner, status string) (bool, error) {
+	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", status)
 	result, err := client.Select(query, gitRef, typeOf, source, planner)
 	if err != nil {
 		return false, err
@@ -495,7 +555,7 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 	if exists {
 		return true, nil
 	}
-	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE ( e.status = '%s' OR e.status = '%s' ) AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", StatusCreated, StatusStarted)
+	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", status)
 	result, err = client.Select(query, gitRef, typeOf, source)
 	if err != nil {
 		return false, err
