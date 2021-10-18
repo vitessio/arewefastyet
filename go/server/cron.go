@@ -35,8 +35,8 @@ type (
 	}
 
 	executionIdentifier struct {
-		gitRef, source, benchmarkType, plannerVersion string
-		pullNb                                        int
+		GitRef, Source, BenchmarkType, PlannerVersion string
+		PullNb                                        int
 	}
 
 	executionQueue map[executionIdentifier]*executionQueueElement

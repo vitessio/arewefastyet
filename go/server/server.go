@@ -20,9 +20,11 @@ package server
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"github.com/vitessio/arewefastyet/go/slack"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"html/template"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
@@ -157,6 +159,19 @@ func (s *Server) Run() error {
 	s.router.SetFuncMap(template.FuncMap{
 		"formatFloat": func(f float64) string { return humanize.FormatFloat("#,###.##", f) },
 		"formatBytes": func(f float64) string { return humanize.Bytes(uint64(f)) },
+		"first8Letters": func(s string) string {
+			if len(s) < 8 {
+				return s
+			}
+			return s[:8]
+		},
+		"uuidToString": func(u uuid.UUID) string { return u.String() },
+		"timeToDateString": func(t *time.Time) string {
+			if t == nil {
+				return ""
+			}
+			return t.Format(time.RFC822)
+		},
 	})
 
 	s.router.Static("/static", s.staticPath)
@@ -189,6 +204,9 @@ func (s *Server) Run() error {
 
 	// V3 VS Gen4 comparison page
 	s.router.GET("/v3_VS_Gen4", s.v3VsGen4Handler)
+
+	// status page
+	s.router.GET("/status", s.statusHandler)
 
 	return s.router.Run(":" + s.port)
 }

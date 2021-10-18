@@ -172,11 +172,11 @@ func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, conf
 		retry:        s.cronNbRetry,
 		notifyAlways: notify,
 		identifier: executionIdentifier{
-			gitRef:         ref,
-			source:         source,
-			benchmarkType:  configType,
-			plannerVersion: plannerVersion,
-			pullNb:         pullNb,
+			GitRef:         ref,
+			Source:         source,
+			BenchmarkType:  configType,
+			PlannerVersion: plannerVersion,
+			PullNb:         pullNb,
 		},
 	}
 }

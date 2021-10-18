@@ -41,7 +41,7 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 				err = errSuccess
 				return
 			}
-			slog.Info("Finished execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.gitRef, "], Type: [", identifier.benchmarkType, "]")
+			slog.Info("Finished execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
 		}
 	}()
 
@@ -50,12 +50,12 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 		slog.Error(err.Error())
 		return err
 	}
-	e.Source = identifier.source
-	e.GitRef = identifier.gitRef
-	e.VtgatePlannerVersion = identifier.plannerVersion
-	e.PullNB = identifier.pullNb
+	e.Source = identifier.Source
+	e.GitRef = identifier.GitRef
+	e.VtgatePlannerVersion = identifier.PlannerVersion
+	e.PullNB = identifier.PullNb
 
-	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.gitRef, "], Type: [", identifier.benchmarkType, "]")
+	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
 	err = e.Prepare()
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("prepare step error: %v", err))
@@ -109,20 +109,20 @@ func (s *Server) compareElement(element *executionQueueElement) {
 	for done != len(element.compareWith) {
 		time.Sleep(1 * time.Second)
 		for _, comparer := range element.compareWith {
-			comparerUUID, err := exec.GetFinishedExecution(s.dbClient, comparer.gitRef, comparer.source, comparer.benchmarkType, comparer.plannerVersion, comparer.pullNb)
+			comparerUUID, err := exec.GetFinishedExecution(s.dbClient, comparer.GitRef, comparer.Source, comparer.BenchmarkType, comparer.PlannerVersion, comparer.PullNb)
 			if err != nil {
 				slog.Error(err)
 				return
 			}
 			if comparerUUID != "" {
 				err := s.sendNotificationForRegression(
-					element.identifier.source,
-					comparer.source,
-					element.identifier.gitRef,
-					comparer.gitRef,
-					element.identifier.plannerVersion,
-					element.identifier.benchmarkType,
-					element.identifier.pullNb,
+					element.identifier.Source,
+					comparer.Source,
+					element.identifier.GitRef,
+					comparer.GitRef,
+					element.identifier.PlannerVersion,
+					element.identifier.BenchmarkType,
+					element.identifier.PullNb,
 					element.notifyAlways,
 				)
 				if err != nil {
@@ -145,10 +145,10 @@ func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, e
 	for _, status := range checkStatus {
 		var exists bool
 		var err error
-		if identifier.benchmarkType == "micro" {
-			exists, err = exec.Exists(s.dbClient, identifier.gitRef, identifier.source, identifier.benchmarkType, status.status)
+		if identifier.BenchmarkType == "micro" {
+			exists, err = exec.Exists(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, status.status)
 		} else {
-			exists, err = exec.ExistsMacrobenchmark(s.dbClient, identifier.gitRef, identifier.source, identifier.benchmarkType, status.status, identifier.plannerVersion)
+			exists, err = exec.ExistsMacrobenchmark(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, status.status, identifier.PlannerVersion)
 		}
 		if err != nil {
 			slog.Error(err)

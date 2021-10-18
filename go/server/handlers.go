@@ -76,7 +76,20 @@ func getPlannerVersion(c *gin.Context) macrobench.PlannerVersion {
 
 func (s *Server) homeHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"title":     "Vitess benchmark",
+		"title": "Vitess benchmark",
+	})
+}
+
+func (s *Server) statusHandler(c *gin.Context) {
+	recentExecutions, err := exec.GetRecentExecutions(s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	c.HTML(http.StatusOK, "status.tmpl", gin.H{
+		"title":      "Vitess benchmark - Status",
+		"queue":      queue,
+		"executions": recentExecutions,
 	})
 }
 

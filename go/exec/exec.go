@@ -76,8 +76,14 @@ type Exec struct {
 	Source        string
 	GitRef        string
 
+	// Status defines the status of the execution (canceled, finished, failed, etc)
+	Status string
+
+	StartedAt  *time.Time
+	FinishedAt *time.Time
+
 	// Defines the type of execution (oltp, tpcc, micro, ...)
-	typeOf string
+	TypeOf string
 
 	// PullNB defines the pull request number linked to this execution.
 	PullNB int
@@ -111,7 +117,7 @@ type Exec struct {
 	// VtgatePlannerVersion is the planner version that vtgate is going to use
 	VtgatePlannerVersion string
 
-	golangVersion string
+	GolangVersion string
 }
 
 const (
@@ -183,9 +189,9 @@ func (e *Exec) Prepare() error {
 		StatusCreated,
 		e.Source,
 		e.GitRef,
-		e.typeOf,
+		e.TypeOf,
 		e.PullNB,
-		e.golangVersion,
+		e.GolangVersion,
 	); err != nil {
 		return err
 	}
@@ -194,7 +200,7 @@ func (e *Exec) Prepare() error {
 	e.Infra.SetTags(map[string]string{
 		"execution_git_ref":         git.ShortenSHA(e.GitRef),
 		"execution_source":          e.Source,
-		"execution_type":            e.typeOf,
+		"execution_type":            e.TypeOf,
 		"execution_planner_version": e.VtgatePlannerVersion,
 	})
 
@@ -218,7 +224,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// Enable schema tracking only if we execute macrobenchmark main CRONs
-	if e.Source == SourceCron && e.typeOf != "micro" {
+	if e.Source == SourceCron && e.TypeOf != "micro" {
 		e.AnsibleConfig.ExtraVars["vitess_schema_tracking"] = 1
 	}
 
@@ -288,8 +294,8 @@ func (e *Exec) prepareAnsibleForExecution() {
 	e.AnsibleConfig.ExtraVars[keyExecUUID] = e.UUID.String()
 	e.AnsibleConfig.ExtraVars[keyVitessVersion] = e.GitRef
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
-	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.typeOf
-	e.AnsibleConfig.ExtraVars[keyGoVersion] = e.golangVersion
+	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.TypeOf
+	e.AnsibleConfig.ExtraVars[keyGoVersion] = e.GolangVersion
 
 	// not adding the -planner_version flag to ansible if we did not specify it or if using the default value
 	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) {
@@ -381,6 +387,44 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	}
 	e.configPath = pathConfig
 	return e, nil
+}
+
+func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
+	var res []*Exec
+	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, type, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 50"
+	result, err := client.Select(query)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	for result.Next() {
+		var eUUID string
+		exec := &Exec{}
+		err = result.Scan(&eUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.TypeOf, &exec.PullNB, &exec.GolangVersion)
+		if err != nil {
+			return nil, err
+		}
+		exec.UUID, err = uuid.Parse(eUUID)
+		if err != nil {
+			return nil, err
+		}
+		if exec.TypeOf != "micro" {
+			macroResult, err := client.Select("SELECT m.vtgate_planner_version FROM macrobenchmark m, execution e WHERE e.uuid = m.exec_uuid AND e.uuid = ? LIMIT 1", eUUID)
+			if err != nil {
+				return nil, err
+			}
+			var plannerVersion string
+			if macroResult.Next() {
+				err = macroResult.Scan(&plannerVersion)
+				if err != nil {
+					return nil, err
+				}
+			}
+			exec.VtgatePlannerVersion = plannerVersion
+		}
+		res = append(res, exec)
+	}
+	return res, nil
 }
 
 func GetFinishedExecution(client storage.SQLClient, gitRef, source, benchmarkType, plannerVersion string, pullNb int) (string, error) {
