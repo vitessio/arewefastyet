@@ -33,7 +33,7 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
       --planetscale-db-user string               Username used to authenticate to PlanetscaleDB.
       --slack-channel string                     Slack channel on which to post messages
       --slack-token string                       Token used to authenticate Slack
-      --web-cron-nb-retry int                    Number of retries allowed for each cron job.
+      --web-cron-nb-retry int                    Number of retries allowed for each cron job. (default 1)
       --web-cron-schedule string                 Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON. (default "@midnight")
       --web-cron-schedule-pull-requests string   Execution CRON schedule for pull requests benchmarks. An empty string will result in no CRON. Defaults to an execution every 5 minutes. (default "*/5 * * * *")
       --web-macrobench-oltp-config string        Path to the configuration file used to execute OLTP macrobenchmark.
