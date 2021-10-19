@@ -80,6 +80,19 @@ func (s *Server) homeHandler(c *gin.Context) {
 	})
 }
 
+func (s *Server) statusHandler(c *gin.Context) {
+	recentExecutions, err := exec.GetRecentExecutions(s.dbClient)
+	if err != nil {
+		handleRenderErrors(c, err)
+		return
+	}
+	c.HTML(http.StatusOK, "status.tmpl", gin.H{
+		"title":      "Vitess benchmark - Status",
+		"queue":      queue,
+		"executions": recentExecutions,
+	})
+}
+
 func (s *Server) compareHandler(c *gin.Context) {
 	planner := getPlannerVersion(c)
 	reference := c.Query("r")

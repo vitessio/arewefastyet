@@ -19,22 +19,13 @@
 package git
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
 	"net/url"
 )
 
-type PRInfo struct {
-	Number int
-	Base string
-	SHA  string
-}
-
-// GetPullRequestHeadForLabels fetches every pull requests in the provided repo that have the
+// GetPullRequestsFromGitHub fetches every pull requests in the provided repo that have the
 // given set of labels. It then returns each pull request's head SHA.
 // The format for repo is: "{USERNAME}/{REPO_NAME}", i.e "vitessio/vitess".
-func GetPullRequestHeadForLabels(labels []string, repo string) ([]PRInfo, error) {
+func GetPullRequestsFromGitHub(labels []string, repo string) ([]PRInfo, error) {
 	pulls, err := getPullRequestsForLabels(labelsToURL(labels), repo)
 	if err != nil {
 		return nil, err
@@ -42,7 +33,7 @@ func GetPullRequestHeadForLabels(labels []string, repo string) ([]PRInfo, error)
 
 	prInfos := []PRInfo{}
 	for _, pull := range pulls {
-		prInfo, err := GetPullRequestHeadAndBase(pull)
+		prInfo, err := getPullRequestHeadAndBase(pull)
 		if err != nil {
 			return nil, err
 		}
@@ -60,71 +51,4 @@ func labelsToURL(labels []string) string {
 		}
 	}
 	return result
-}
-
-func getPullRequestsForLabels(labels, repo string) ([]string, error) {
-	query := fmt.Sprintf("https://api.github.com/search/issues?q=repo:%s+is:pr+is:open", repo)
-	if labels != "" {
-		query += "+" + labels
-	}
-	client := http.Client{}
-	request, err := http.NewRequest(http.MethodGet, query, nil)
-	if err != nil {
-		return nil, err
-	}
-	response, err := client.Do(request)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-
-	res := struct {
-		Items []struct {
-			PullRequest struct {
-				URL string `json:"url"`
-			} `json:"pull_request"`
-		} `json:"items"`
-	}{}
-	err = json.NewDecoder(response.Body).Decode(&res)
-	if err != nil {
-		return nil, err
-	}
-	var pulls []string
-	for _, r := range res.Items {
-		pulls = append(pulls, r.PullRequest.URL)
-	}
-	return pulls, nil
-}
-
-func GetPullRequestHeadAndBase(url string) (PRInfo, error) {
-	client := http.Client{}
-	request, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return PRInfo{}, err
-	}
-	response, err := client.Do(request)
-	if err != nil {
-		return PRInfo{}, err
-	}
-	defer response.Body.Close()
-
-	res := struct {
-		Number int `json:"number"`
-		Head struct {
-			SHA string `json:"sha"`
-		} `json:"head"`
-		Base struct {
-			SHA string `json:"sha"`
-		} `json:"base"`
-	}{}
-	err = json.NewDecoder(response.Body).Decode(&res)
-	if err != nil {
-		return PRInfo{}, err
-	}
-	prInfo := PRInfo{
-		Number: res.Number,
-		Base:   res.Base.SHA,
-		SHA:    res.Head.SHA,
-	}
-	return prInfo, nil
 }
