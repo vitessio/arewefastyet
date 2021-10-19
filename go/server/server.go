@@ -159,6 +159,15 @@ func (s *Server) Run() error {
 	s.router.SetFuncMap(template.FuncMap{
 		"formatFloat": func(f float64) string { return humanize.FormatFloat("#,###.##", f) },
 		"formatBytes": func(f float64) string { return humanize.Bytes(uint64(f)) },
+		"toString": func(i interface{}) string {
+			switch i := i.(type) {
+			case string:
+				return i
+			case []byte:
+				return string(i)
+			}
+			return ""
+		},
 		"first8Letters": func(s string) string {
 			if len(s) < 8 {
 				return s
@@ -201,6 +210,10 @@ func (s *Server) Run() error {
 
 	// Macrobenchmark comparison page
 	s.router.GET("/macrobench", s.macrobenchmarkResultsHandler)
+
+	// Macrobenchmark queries details
+	s.router.GET("/macrobench/queries/:git_ref", s.macrobenchmarkQueriesDetails)
+	s.router.GET("/macrobench/queries/compare", s.macrobenchmarkCompareQueriesDetails)
 
 	// V3 VS Gen4 comparison page
 	s.router.GET("/v3_VS_Gen4", s.v3VsGen4Handler)

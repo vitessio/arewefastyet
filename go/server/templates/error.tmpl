@@ -24,6 +24,9 @@ limitations under the License.
     <section class="py-5">
       <div class="container">
         <h3 class="text-center">Sorry, an error occurred.</h3>
+      {{ if .error }}
+          <p class="text-center lead">{{.error}}</p>
+      {{ end }}
         <p class="text-center lead">You may try again or navigate to the <a href="/">home page</a>.</p>
       </div>
     </section>

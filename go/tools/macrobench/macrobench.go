@@ -150,6 +150,10 @@ func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metrics
 	if err != nil {
 		return err
 	}
+	err = handleVTGateResults(mabcfg.vtgateWebPorts, sqlClient, mabcfg.execUUID, macrobenchID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -171,6 +175,14 @@ func createMetricsDatabaseClient(dbConfig *influxdb.Config) (client *influxdb.Cl
 		}
 	}
 	return
+}
+
+func handleVTGateResults(ports []string, sqlClient *psdb.Client, execUUID string, macrobenchID int) error {
+	plans, err := getVTGatesQueryPlans(ports)
+	if err != nil {
+		return err
+	}
+	return insertVTGateQueryMapToMySQL(sqlClient, execUUID, plans, macrobenchID)
 }
 
 func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string) error {
