@@ -413,6 +413,8 @@ func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 			if err != nil {
 				return nil, err
 			}
+			defer macroResult.Close()
+
 			var plannerVersion string
 			if macroResult.Next() {
 				err = macroResult.Scan(&plannerVersion)
@@ -572,6 +574,8 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 		if err != nil {
 			return false, err
 		}
+		defer resultMacro.Close()
+
 		next := resultMacro.Next()
 		resultMacro.Close()
 		if !next {
