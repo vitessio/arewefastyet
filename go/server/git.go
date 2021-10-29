@@ -49,7 +49,7 @@ func (s *Server) getVitessPath() string {
 
 // pullLocalVitess is used to execute
 func (s *Server) pullLocalVitess() error {
-	_, err := git.ExecCmd(s.getVitessPath(), "git", "fetch", "origin")
+	_, err := git.ExecCmd(s.getVitessPath(), "git", "fetch", "origin", "--tags")
 	if err != nil {
 		return err
 	}
