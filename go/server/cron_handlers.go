@@ -240,6 +240,13 @@ func (s Server) createPullRequestElementWithBaseComparison(configFile, ref, conf
 }
 
 func (s *Server) tagsCronHandler() {
+	// update the local clone of vitess from remote
+	err := s.pullLocalVitess()
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+
 	configs := s.getConfigFiles()
 
 	releases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
