@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy:
@@ -22,7 +22,7 @@ jobs:
             cd $HOME/arewefastyet
             git reset --hard FETCH_HEAD
             git clean -fd
-            git fetch origin master
+            git fetch origin main
             git checkout FETCH_HEAD
             /usr/local/go/bin/go build ./go/main.go
             ./supervisor/update.sh
