@@ -24,6 +24,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/slack"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"html/template"
+	"sync"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -51,11 +52,13 @@ const (
 )
 
 type Server struct {
-	port            string
-	templatePath    string
-	staticPath      string
+	port         string
+	templatePath string
+	staticPath   string
+	router       *gin.Engine
+
+	vitessPathMu    sync.Mutex
 	localVitessPath string
-	router          *gin.Engine
 
 	dbCfg    *psdb.Config
 	dbClient *psdb.Client

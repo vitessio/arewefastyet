@@ -26,6 +26,8 @@ import (
 
 func (s *Server) branchCronHandler() {
 	// update the local clone of vitess from remote
+	s.vitessPathMu.Lock()
+	defer s.vitessPathMu.Unlock()
 	err := s.pullLocalVitess()
 	if err != nil {
 		slog.Error(err.Error())
@@ -241,6 +243,8 @@ func (s Server) createPullRequestElementWithBaseComparison(configFile, ref, conf
 
 func (s *Server) tagsCronHandler() {
 	// update the local clone of vitess from remote
+	s.vitessPathMu.Lock()
+	defer s.vitessPathMu.Unlock()
 	err := s.pullLocalVitess()
 	if err != nil {
 		slog.Error(err.Error())
