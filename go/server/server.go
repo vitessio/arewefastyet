@@ -121,7 +121,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	s.dbCfg.AddToCommand(cmd)
 }
 
-func (s Server) isReady() bool {
+func (s *Server) isReady() bool {
 	return s.port != "" && s.templatePath != "" && s.staticPath != "" &&
 		s.microbenchConfigPath != "" && s.macrobenchConfigPathOLTP != "" && s.macrobenchConfigPathTPCC != "" && s.localVitessPath != ""
 }

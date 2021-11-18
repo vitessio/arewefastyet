@@ -183,7 +183,7 @@ func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, conf
 	}
 }
 
-func (s Server) pullRequestsCronHandler() {
+func (s *Server) pullRequestsCronHandler() {
 	configs := s.getConfigFiles()
 	prLabelsInfo := []struct {
 		label   string
@@ -226,7 +226,7 @@ func (s Server) pullRequestsCronHandler() {
 	}
 }
 
-func (s Server) createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef string, version macrobench.PlannerVersion, pullNb int) []*executionQueueElement {
+func (s *Server) createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef string, version macrobench.PlannerVersion, pullNb int) []*executionQueueElement {
 	var elements []*executionQueueElement
 
 	newExecutionElement := s.createSimpleExecutionQueueElement(exec.SourcePullRequest, configFile, ref, configType, string(version), true, pullNb)
