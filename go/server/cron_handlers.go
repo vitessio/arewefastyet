@@ -26,6 +26,8 @@ import (
 
 func (s *Server) branchCronHandler() {
 	// update the local clone of vitess from remote
+	s.vitessPathMu.Lock()
+	defer s.vitessPathMu.Unlock()
 	err := s.pullLocalVitess()
 	if err != nil {
 		slog.Error(err.Error())
@@ -181,7 +183,7 @@ func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, conf
 	}
 }
 
-func (s Server) pullRequestsCronHandler() {
+func (s *Server) pullRequestsCronHandler() {
 	configs := s.getConfigFiles()
 	prLabelsInfo := []struct {
 		label   string
@@ -224,7 +226,7 @@ func (s Server) pullRequestsCronHandler() {
 	}
 }
 
-func (s Server) createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef string, version macrobench.PlannerVersion, pullNb int) []*executionQueueElement {
+func (s *Server) createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef string, version macrobench.PlannerVersion, pullNb int) []*executionQueueElement {
 	var elements []*executionQueueElement
 
 	newExecutionElement := s.createSimpleExecutionQueueElement(exec.SourcePullRequest, configFile, ref, configType, string(version), true, pullNb)
@@ -241,6 +243,8 @@ func (s Server) createPullRequestElementWithBaseComparison(configFile, ref, conf
 
 func (s *Server) tagsCronHandler() {
 	// update the local clone of vitess from remote
+	s.vitessPathMu.Lock()
+	defer s.vitessPathMu.Unlock()
 	err := s.pullLocalVitess()
 	if err != nil {
 		slog.Error(err.Error())

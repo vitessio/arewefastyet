@@ -37,7 +37,7 @@ func initLogger(mode Mode) (err error) {
 	return nil
 }
 
-func (s Server) initLogger() (err error) {
+func (s *Server) initLogger() (err error) {
 	return initLogger(s.Mode)
 }
 
