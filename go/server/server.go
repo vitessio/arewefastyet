@@ -158,6 +158,7 @@ func (s *Server) Run() error {
 		return err
 	}
 
+	s.prepareGin()
 	s.router = gin.Default()
 	s.router.SetFuncMap(template.FuncMap{
 		"formatFloat": func(f float64) string { return humanize.FormatFloat("#,###.##", f) },
@@ -225,6 +226,15 @@ func (s *Server) Run() error {
 	s.router.GET("/status", s.statusHandler)
 
 	return s.router.Run(":" + s.port)
+}
+
+func (s *Server) prepareGin() {
+	switch s.Mode {
+	case ProductionMode:
+		gin.SetMode(gin.ReleaseMode)
+	case DevelopmentMode:
+		gin.SetMode(gin.DebugMode)
+	}
 }
 
 func Run(port, templatePath, staticPath, localVitessPath string) error {
