@@ -26,6 +26,8 @@
     - vtctld
 
 - hosts: vtgate
+  vars:
+    gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
   roles:
     - vtgate
 

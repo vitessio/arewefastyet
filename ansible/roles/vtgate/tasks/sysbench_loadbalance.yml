@@ -1,0 +1,36 @@
+# Copyright 2021 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+- name: Install iptables
+  package:
+    name: 'iptables'
+    state: present
+    update_cache: true
+
+- name: Set up Masquerading
+  shell: |
+    iptables -t nat -A POSTROUTING -j MASQUERADE
+    sysctl -w net.ipv4.conf.lo.route_localnet=1
+  changed_when: false
+
+- name: Flush all rules
+  shell: |
+    iptables -t nat -F OUTPUT
+  changed_when: false
+
+- name: Set up VTGate Loadbalancing
+  shell: iptables -t nat -A OUTPUT -p tcp --dport 13306 -m state --state NEW -m statistic --mode nth --every {{ ((gateways_loadbalance | length) - index) }} --packet 0 -j DNAT --to-destination {{ gateway }}
+  with_items: '{{ gateways_loadbalance }}'
+  changed_when: false
+  loop_control:
+    loop_var: gateway
+    index_var: index

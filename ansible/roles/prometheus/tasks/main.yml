@@ -10,7 +10,11 @@
 # limitations under the License.
 
 ---
-- name: Install MySQL
-  apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
-  with_items:
-    - mysql-server
+- name: stopping Prometheus
+  when: not prom_start | bool
+  become: yes
+  become_user: root
+  service:
+    name: prometheus
+    state: stopped
+  changed_when: false

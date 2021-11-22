@@ -25,7 +25,12 @@
   file:
     state: absent
     path: /var/lib/etcd
-  when: clean is defined
 
 - include_tasks: install.yml
+  when: not etcd_launch | bool
+
 - include_tasks: enable.yml
+  when: not etcd_launch | bool
+
+- include_tasks: start.yml
+  when: etcd_launch | bool
