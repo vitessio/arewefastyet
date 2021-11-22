@@ -10,6 +10,11 @@
 # limitations under the License.
 
 ---
+- name: make sure vtctld is stopped
+  include_role:
+    name: "vtctld"
+    tasks_from: "clean"
+
 - name: ensure vitess group
   become: yes
   become_user: root
@@ -28,11 +33,14 @@
 - name: ensure vitess directories
   become: yes
   become_user: root
+  with_items:
+    - '{{ vitess_root }}'
+    - '{{ vitess_root }}/tmp'
   file:
     state: directory
-    path:   '{{ vitess_root }}'
-    owner:  '{{ vitess_user }}'
-    group:  '{{ vitess_group }}'
+    path: '{{ item }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
     mode: 0755
 
 - name: ensure config directories

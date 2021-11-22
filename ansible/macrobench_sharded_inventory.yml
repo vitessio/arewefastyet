@@ -12,7 +12,7 @@
 ---
 all:
   hosts:
-    DEVICE_IP_0:
+    147.75.87.247:
       storage_device:
         device: nvme0n1
         partition: nvme0n1p1
@@ -28,27 +28,27 @@ all:
   children:
     macrobench:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
       vars:
         vtgate_web_ports: "15001,15002,15003,15004,15005,15006"
     sysbench:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     prometheus:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     etcd:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     vtctld:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     vtgate:
       vars:
         vtgate_query_cache_size: 1000
-        vtgate_max_goproc: 6
+        vtgate_max_goproc: 12
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
           gateways:
             - id: 1
               port: 15001
@@ -80,7 +80,7 @@ all:
         vttablet_query_cache_size: 10000
         vttablet_max_goproc: 24
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
           tablets:
             - id: 1001
               keyspace: main

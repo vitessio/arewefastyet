@@ -4,7 +4,9 @@ After=network.service
 
 [Service]
 Environment="VTROOT={{vitess_root}}"
+Environment="VTDATAROOT={{vitess_root}}"
 EnvironmentFile=/etc/vitess/conf/vtctld-%i.conf
+WorkingDirectory={{vitess_root}}
 Type=oneshot
 User={{vitess_user}}
 ExecStart=/bin/bash -c 'vtctl \

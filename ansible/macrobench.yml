@@ -10,174 +10,171 @@
 # limitations under the License.
 
 ---
-- hosts: all
+- name: Build Vitess
+  hosts: all
   roles:
-    - host
-    - cloudalchemy.node_exporter
     - vitess_build
-  tasks:
 
-- hosts: etcd
-  roles:
+- name: Install and build sysbench
+  hosts:
+    - all
+  tasks:
+    - name: Install sysbench
+      include_role:
+        name: sysbench
+        tasks_from: install
+
+- name: Start etcd
+  hosts:
     - etcd
+  roles:
+    - role: etcd
+      vars:
+        - etcd_launch: True
 
 - hosts: vtctld
   roles:
     - vtctld
 
 - hosts: vtgate
-  vars:
-    gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
   roles:
-    - vtgate
+    - role: vtgate
+      vars:
+        - gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
 
-- hosts: vttablet
-  roles:
-    - vttablet
-  tags:
-    - configuration
-
-- hosts: sysbench
-  become: yes
-  become_user: root
-  roles:
-    - sysbench
-  vars:
-    gateways: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-  tags:
-    - test
-
-- hosts: prometheus
-  become: yes
-  become_user: root
-  tags:
-    - prometheus
-  roles:
-    - { role: cloudalchemy.prometheus, when: stats_remote_db_host is defined }
-  vars:
-    vitess_cluster: 'main'
-    mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-    tablet_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.port | default(16001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-    gateway_targets: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (gateway.port | default(15001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-    vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port | default(15000) | string )) }}{% endfor -%}{{ targets }}"
-    node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
-    prometheus_version: 2.26.0
-    prometheus_targets:
-      tablets:
-      - targets: '{{ tablet_targets }}'
-        labels:
-          component: vttablet
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
-          keyspace: '{{ keyspace }}'
-      mysqld:
-      - targets: '{{ mysqld_targets }}'
-        labels:
-          component: mysqld
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
-          keyspace: '{{ keyspace }}'
-      gateways:
-      - targets: '{{ gateway_targets }}'
-        labels:
-          component: vtgate
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
-      vtctld:
-      - targets: '{{ vtctld_targets }}'
-        labels:
-          component: vtctld
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
-      nodes:
-      - targets: '{{ node_targets }}'
-        labels:
-          component: node
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-    prometheus_scrape_configs:
-      - job_name: "node"
-        file_sd_configs:
-          - files:
-              - "{{ prometheus_config_dir }}/file_sd/nodes.yml"
-      - job_name: "vitess-vttablet"
-        file_sd_configs:
-          - files:
-              - "{{ prometheus_config_dir }}/file_sd/tablets.yml"
-      - job_name: "mysql"
-        file_sd_configs:
-          - files:
-              - "{{ prometheus_config_dir }}/file_sd/mysqld.yml"
-      - job_name: "vitess-vtctld"
-        file_sd_configs:
-          - files:
-              - "{{ prometheus_config_dir }}/file_sd/vtctld.yml"
-      - job_name: "vitess-vtgate"
-        file_sd_configs:
-          - files:
-              - "{{ prometheus_config_dir }}/file_sd/gateways.yml"
-    prometheus_remote_write:
-      - url: "http://{{ stats_remote_db_host }}/prom/api/v1/write"
-        basic_auth:
-          username: "{{ stats_remote_db_user }}"
-          password: "{{ stats_remote_db_password }}"
-      - url: "http://{{ stats_remote_db_host }}:{{ stats_remote_db_port }}/api/v1/prom/write?db={{ stats_remote_db_database }}&u={{ stats_remote_db_user }}&p={{ stats_remote_db_password }}"
-    prometheus_external_labels:
-      exec_uuid: "{{ arewefastyet_exec_uuid }}"
-
-
-- hosts: vtctld
-  tasks:
-    - name: Gather facts
-      setup:
-        gather_subset: network
-
-- hosts: vtctld
-  tasks:
-    - name: print
-      debug:
-        msg: Groups {{ groups['vtctld'][0] }}
-
-    - name: Ensure Master
-      shell: |
-        alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
-        for keyspace in $(vc GetKeyspaces); do
-            echo "working on ${keyspace}"
-            for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
-                echo "working on ${shard}"
-                master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
-                if [ -z "${master}" ]; then
-                  echo "setting master for ${keyspace}/${shard}"
-                  vc InitShardMaster -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
-                else
-                  vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
-                fi
-            done
-        done
-      changed_when: false
-
-    - name: Get VSchema for OLTP
-      ansible.builtin.copy:
-        src: "{{ macrobenchmark_vschema_oltp }}"
-        dest: /tmp/vschema_sysbench.json
-        mode: '0644'
-      when: arewefastyet_execution_type == 'oltp'
-
-    - name: Get VSchema for TPCC
-      ansible.builtin.copy:
-        src: "{{ macrobenchmark_vschema_tpcc }}"
-        dest: /tmp/vschema_sysbench.json
-        mode: '0644'
-      when: arewefastyet_execution_type == 'tpcc'
-
-    - name: Ensure VSchmea
-      shell: |
-        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
-
-- hosts: macrobench
-  roles:
-    - macrobench
+#- hosts: vttablet
+#  roles:
+#    - vttablet
+#
+#- hosts: vtctld
+#  tasks:
+#    - name: Gather facts
+#      setup:
+#        gather_subset: network
+#
+#- hosts: vtctld
+#  tasks:
+#    - name: print
+#      debug:
+#        msg: Groups {{ groups['vtctld'][0] }}
+#
+#    - name: Ensure Master
+#      shell: |
+#        alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
+#        for keyspace in $(vc GetKeyspaces); do
+#            echo "working on ${keyspace}"
+#            for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
+#                echo "working on ${shard}"
+#                master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
+#                if [ -z "${master}" ]; then
+#                  echo "setting master for ${keyspace}/${shard}"
+#                  vc InitShardMaster -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
+#                else
+#                  vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
+#                fi
+#            done
+#        done
+#      changed_when: false
+#
+#    - name: Get VSchema for OLTP
+#      ansible.builtin.copy:
+#        src: "{{ macrobenchmark_vschema_oltp }}"
+#        dest: /tmp/vschema_sysbench.json
+#        mode: '0644'
+#      when: arewefastyet_execution_type == 'oltp'
+#
+#    - name: Get VSchema for TPCC
+#      ansible.builtin.copy:
+#        src: "{{ macrobenchmark_vschema_tpcc }}"
+#        dest: /tmp/vschema_sysbench.json
+#        mode: '0644'
+#      when: arewefastyet_execution_type == 'tpcc'
+#
+#    - name: Ensure VSchmea
+#      shell: |
+#        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
+#
+#- hosts: prometheus
+#  become: yes
+#  become_user: root
+#  tags:
+#    - prometheus
+#  roles:
+#    - { role: cloudalchemy.prometheus, when: stats_remote_db_host is defined }
+#  vars:
+#    vitess_cluster: 'main'
+#    mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
+#    tablet_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.port | default(16001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
+#    gateway_targets: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (gateway.port | default(15001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
+#    vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port | default(15000) | string )) }}{% endfor -%}{{ targets }}"
+#    node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
+#    prometheus_targets:
+#      tablets:
+#        - targets: '{{ tablet_targets }}'
+#          labels:
+#            component: vttablet
+#            app: vitess
+#            cluster: '{{ vitess_cluster }}'
+#            region: '{{ cell }}'
+#            keyspace: '{{ keyspace }}'
+#      mysqld:
+#        - targets: '{{ mysqld_targets }}'
+#          labels:
+#            component: mysqld
+#            app: vitess
+#            cluster: '{{ vitess_cluster }}'
+#            region: '{{ cell }}'
+#            keyspace: '{{ keyspace }}'
+#      gateways:
+#        - targets: '{{ gateway_targets }}'
+#          labels:
+#            component: vtgate
+#            app: vitess
+#            cluster: '{{ vitess_cluster }}'
+#            region: '{{ cell }}'
+#      vtctld:
+#        - targets: '{{ vtctld_targets }}'
+#          labels:
+#            component: vtctld
+#            app: vitess
+#            cluster: '{{ vitess_cluster }}'
+#            region: '{{ cell }}'
+#      nodes:
+#        - targets: '{{ node_targets }}'
+#          labels:
+#            component: node
+#            app: vitess
+#            cluster: '{{ vitess_cluster }}'
+#    prometheus_scrape_configs:
+#      - job_name: "node"
+#        file_sd_configs:
+#          - files:
+#              - "{{ prometheus_config_dir }}/file_sd/nodes.yml"
+#      - job_name: "vitess-vttablet"
+#        file_sd_configs:
+#          - files:
+#              - "{{ prometheus_config_dir }}/file_sd/tablets.yml"
+#      - job_name: "mysql"
+#        file_sd_configs:
+#          - files:
+#              - "{{ prometheus_config_dir }}/file_sd/mysqld.yml"
+#      - job_name: "vitess-vtctld"
+#        file_sd_configs:
+#          - files:
+#              - "{{ prometheus_config_dir }}/file_sd/vtctld.yml"
+#      - job_name: "vitess-vtgate"
+#        file_sd_configs:
+#          - files:
+#              - "{{ prometheus_config_dir }}/file_sd/gateways.yml"
+#    prometheus_remote_write:
+#      - url: "http://{{ stats_remote_db_host }}/prom/api/v1/write"
+#        basic_auth:
+#          username: "{{ stats_remote_db_user }}"
+#          password: "{{ stats_remote_db_password }}"
+#      - url: "http://{{ stats_remote_db_host }}:{{ stats_remote_db_port }}/api/v1/prom/write?db={{ stats_remote_db_database }}&u={{ stats_remote_db_user }}&p={{ stats_remote_db_password }}"
+#    prometheus_external_labels:
+#      exec_uuid: "{{ arewefastyet_exec_uuid }}"
+#
+#- hosts: macrobench
+#  roles:
+#    - macrobench
