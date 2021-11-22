@@ -10,19 +10,10 @@
 # limitations under the License.
 
 ---
-- name: Disable SELinux
-  become: yes
-  become_user: root
-  selinux:
-    state: disabled
-  ignore_errors: yes
-  when: ansible_os_family == 'RedHat'
-
-- name: Check if repo exists
-  become: yes
-  become_user: root
-  stat: path=/go/src/vitess.io/vitess
-  register: vitessrepopath
+- name: Clean
+  include_role:
+    name: "vitess_build"
+    tasks_from: clean
 
 - name: Update Vitess
   become: yes
@@ -36,25 +27,13 @@
         refspec: "{{ vitess_git_version_fetch_pr if vitess_git_version_pr_nb is defined else '' | default('') }}"
         force: false
 
-    - name: Tmp directory gopath
-      become: yes
-      become_user: root
-      file:
-        state: directory
-        path: '{{ item }}'
-        mode: 0755
-      with_items:
-        - /root/tmp
-
     - name: Build Vitess Binaries
       shell: |
-        export TMPDIR=~/tmp
         cd /go/src/vitess.io/vitess
         make build
 
     - name: Install Vitess Binaries
       shell: |
-        export TMPDIR=~/tmp
         cd /go/src/vitess.io/vitess
         make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
       changed_when: false
@@ -64,19 +43,8 @@
         cd /go/src/vitess.io/vitess
         cp bin/vtctl /usr/local/bin/
 
-  when:
-    - vtroot is undefined
-    - not vitessrepopath.stat.exists
-
-- name: Copy Vitess Binaries
-  become: yes
-  become_user: root
-  block:
-    - name: File Glob the copy
-      copy:
-        src: '{{ item }}'
-        dest: /usr/local/bin
-        mode: '0755'
-      with_fileglob:
-        - '{{ vtroot }}/bin/*'
-  when: vtroot is defined
+- name: Disbale AppArmor
+  shell: |
+    ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+    apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+  ignore_errors: true

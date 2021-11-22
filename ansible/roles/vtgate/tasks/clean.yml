@@ -10,18 +10,23 @@
 # limitations under the License.
 
 ---
-- name: Stop old load balancing
-  shell: |
-    sysctl -w net.ipv4.conf.lo.route_localnet=0
-    iptables -t nat -F
-  changed_when: false
+- name: clean all vtgate
+  include_tasks: clean_one.yml
+  loop: '{{ gateways }}'
+  loop_control:
+    loop_var: gateway
 
-- name: Make sure vtctld is stopped
-  include_role:
-    name: "vtctld"
-    tasks_from: clean
+- name: remove old config
+  become: yes
+  become_user: root
+  with_items:
+    - '/etc/systemd/system/vtgate@.service'
+  file:
+    state: absent
+    path: '{{ item }}'
 
-- name: Make sure vtgate is stopped
-  include_role:
-    name: "vtgate"
-    tasks_from: clean
+- name: systemctl daemon-reload
+  become: yes
+  become_user: root
+  systemd:
+    daemon_reload: yes

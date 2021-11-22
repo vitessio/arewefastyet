@@ -9,12 +9,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: ensure profile directory
+- name: ensure vtgate directories
   become: yes
   become_user: root
   with_items:
-    - '/tmp/pprof'
-    - '/tmp/pprof/vtgate-{{ gateway.id }}'
+    - '{{ vitess_root }}/tmp'
+    - '{{ vitess_root }}/tmp/vtgate-{{gateway.id}}'
   file:
     state: directory
     path: '{{ item }}'
