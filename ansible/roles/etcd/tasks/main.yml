@@ -29,6 +29,42 @@
 - include_tasks: install.yml
   when: not etcd_launch | bool
 
+- name: Collect facts
+  set_fact:
+    cacheable: yes
+    etcd_listen_public: '{{ "0.0.0.0" if etcd_iface_public == "all" else ansible_default_ipv4.address if etcd_iface_public == "default" else hostvars[inventory_hostname]["ansible_" ~ etcd_iface_public]["ipv4"]["address"] }}'
+    etcd_listen_cluster: '{{ "0.0.0.0" if etcd_iface_cluster == "all" else ansible_default_ipv4.address if etcd_iface_cluster == "default" else hostvars[inventory_hostname]["ansible_" ~ etcd_iface_cluster]["ipv4"]["address"] }}'
+    etcd_address_public: '{{ ansible_fqdn if not etcd_use_ips | bool else ansible_default_ipv4.address if etcd_iface_public is in [ "all", "default" ] else hostvars[inventory_hostname]["ansible_" ~ etcd_iface_public]["ipv4"]["address"] }}'
+    etcd_address_cluster: '{{ ansible_fqdn if not etcd_use_ips | bool else ansible_default_ipv4.address if etcd_iface_cluster is in [ "all", "default" ] else hostvars[inventory_hostname]["ansible_" ~ etcd_iface_cluster]["ipv4"]["address"] }}'
+
+- name: create etcd group
+  become: yes
+  become_user: root
+  group:
+    name: '{{ etcd_group }}'
+    state: present
+
+- name: create etcd user
+  become: yes
+  become_user: root
+  user:
+    name: '{{ etcd_user }}'
+    group: '{{ etcd_group }}'
+    home: '{{ etcd_data_dir }}'
+    state: present
+
+- name: create dirs...
+  become: yes
+  become_user: root
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: '{{ etcd_user }}'
+    group: '{{ etcd_group }}'
+    mode: 0755
+  with_items:
+    - /etc/etcd
+
 - include_tasks: enable.yml
   when: not etcd_launch | bool
 
