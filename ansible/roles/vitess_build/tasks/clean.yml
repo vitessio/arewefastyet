@@ -16,6 +16,11 @@
     iptables -t nat -F
   changed_when: false
 
+- name: Clean vtdataroot
+  file:
+    path: '{{ vitess_root }}'
+    state: absent
+
 - name: Make sure vtctld is stopped
   include_role:
     name: "vtctld"
