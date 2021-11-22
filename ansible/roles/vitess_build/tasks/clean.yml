@@ -30,3 +30,8 @@
   include_role:
     name: "vtgate"
     tasks_from: clean
+
+- name: make sure vttablet is stopped
+  include_role:
+    name: "vttablet"
+    tasks_from: "clean"

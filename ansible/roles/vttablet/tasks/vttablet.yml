@@ -10,12 +10,12 @@
 # limitations under the License.
 
 ---
-- name: ensure profile directory
+- name: ensure vttablet directories
   become: yes
   become_user: root
   with_items:
-    - '/tmp/pprof'
-    - '/tmp/pprof/vttablet-{{ tablet.id }}'
+    - '{{ vitess_root }}/tmp/'
+    - '{{ vitess_root }}/tmp/vttablet-{{ tablet.id }}'
   file:
     state: directory
     path: '{{ item }}'
