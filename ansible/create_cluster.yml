@@ -61,7 +61,7 @@
                 echo "working on ${shard}"
                 master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
                 if [ -z "${master}" ]; then
-                  echo "setting master for ${keyspace}/${shard}"
+                  echo "setting primary for ${keyspace}/${shard}"
                   vc InitShardPrimary -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
                 else
                   vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
