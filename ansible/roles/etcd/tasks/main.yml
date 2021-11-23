@@ -10,21 +10,7 @@
 # limitations under the License.
 
 ---
-- name: Turn off etcd
-  become: yes
-  become_user: root
-  service:
-    name: etcd
-    state: stopped
-  ignore_errors: yes
-  changed_when: false
-
-- name: remove storage
-  become: yes
-  become_user: root
-  file:
-    state: absent
-    path: /var/lib/etcd
+- include_tasks: clean.yml
 
 - include_tasks: install.yml
   when: not etcd_launch | bool

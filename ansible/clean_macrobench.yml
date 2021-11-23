@@ -10,10 +10,13 @@
 # limitations under the License.
 
 ---
-# Even if this benchmark is a micro benchmark, we make sure to clean previous trace of execution
-- name: Clean Post Benchmark
-  import_playbook: clean_macrobench.yml
-
-- hosts: microbench
+- name: Stop prometheus
+  hosts:
+    - all
   roles:
-    - microbench
+    - role: prometheus
+      vars:
+        - prom_start: False
+
+- name: Teardown Cluster
+  import_playbook: teardown_cluster.yml

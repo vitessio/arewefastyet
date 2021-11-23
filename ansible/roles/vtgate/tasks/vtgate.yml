@@ -9,6 +9,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+---
 - name: ensure vtgate directories
   become: yes
   become_user: root
@@ -47,3 +48,10 @@
     enabled: yes
     state: started
   changed_when: false
+
+- name: Turn on loadbalancing
+  vars:
+    - loadbalancing: True
+  include_role:
+    name: vtgate
+    tasks_from: sysbench_loadbalance.yml

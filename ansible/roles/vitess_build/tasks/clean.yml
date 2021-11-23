@@ -10,11 +10,12 @@
 # limitations under the License.
 
 ---
-- name: Stop old load balancing
-  shell: |
-    sysctl -w net.ipv4.conf.lo.route_localnet=0
-    iptables -t nat -F
-  changed_when: false
+- name: Turn off loadbalancing
+  vars:
+    - loadbalancing: False
+  include_role:
+    name: vtgate
+    tasks_from: sysbench_loadbalance.yml
 
 - name: Clean vtdataroot
   file:

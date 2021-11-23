@@ -10,10 +10,18 @@
 # limitations under the License.
 
 ---
-# Even if this benchmark is a micro benchmark, we make sure to clean previous trace of execution
-- name: Clean Post Benchmark
-  import_playbook: clean_macrobench.yml
+- name: Turn off etcd
+  become: yes
+  become_user: root
+  service:
+    name: etcd
+    state: stopped
+  ignore_errors: yes
+  changed_when: false
 
-- hosts: microbench
-  roles:
-    - microbench
+- name: remove storage
+  become: yes
+  become_user: root
+  file:
+    state: absent
+    path: /var/lib/etcd

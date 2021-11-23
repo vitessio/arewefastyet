@@ -10,10 +10,16 @@
 # limitations under the License.
 
 ---
-# Even if this benchmark is a micro benchmark, we make sure to clean previous trace of execution
-- name: Clean Post Benchmark
-  import_playbook: clean_macrobench.yml
+- name: Teardown Cluster
+  hosts:
+    - all
+  tasks:
+    - name: Teardown Vitess components
+      include_role:
+        name: vitess_build
+        tasks_from: clean
 
-- hosts: microbench
-  roles:
-    - microbench
+    - name: Teardown etcd
+      include_role:
+        name: etcd
+        tasks_from: clean

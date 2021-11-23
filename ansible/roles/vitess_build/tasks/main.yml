@@ -10,11 +10,6 @@
 # limitations under the License.
 
 ---
-- name: Clean
-  include_role:
-    name: "vitess_build"
-    tasks_from: clean
-
 - name: Update Vitess
   become: yes
   become_user: root

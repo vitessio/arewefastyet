@@ -72,6 +72,3 @@
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
-
-- name: turn on loadbalancing
-  include_tasks: sysbench_loadbalance.yml

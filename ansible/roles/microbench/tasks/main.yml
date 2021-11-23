@@ -10,16 +10,6 @@
 # limitations under the License.
 
 ---
-- name: Install base dependencies
-  include_role:
-    name: "host"
-    tasks_from: install_deps
-
-- name: Install Golang
-  include_role:
-    name: "vitess_build"
-    tasks_from: golang
-
 - name: Install Vitess
   include_role:
     name: "vitess_build"
