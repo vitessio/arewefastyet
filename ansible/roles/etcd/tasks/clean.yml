@@ -25,3 +25,4 @@
   file:
     state: absent
     path: /var/lib/etcd
+  changed_when: false
