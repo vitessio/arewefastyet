@@ -18,7 +18,6 @@ Vitess has to ensure it's delivering flawless performance to its users. In order
 
 * [arewefastyet exec](arewefastyet_exec.md)	 - Execute a task
 * [arewefastyet gen](arewefastyet_gen.md)	 - Generate things
-* [arewefastyet infra](arewefastyet_infra.md)	 - Manage infrastructure
 * [arewefastyet macrobench](arewefastyet_macrobench.md)	 - Top level command to manage macrobenchmarks
 * [arewefastyet microbench](arewefastyet_microbench.md)	 - Top level command to manage microbenchmarks
 * [arewefastyet web](arewefastyet_web.md)	 - Starts the HTTP web server

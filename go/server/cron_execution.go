@@ -28,14 +28,8 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 	var e *exec.Exec
 	defer func() {
 		if e != nil {
-			errCleanUp := e.CleanUp()
-			if errCleanUp != nil {
-				slog.Errorf("CleanUp step: %v", errCleanUp)
-				if err != nil {
-					err = fmt.Errorf("%v: %v", errCleanUp, err)
-				} else {
-					err = errCleanUp
-				}
+			if err != nil {
+				err = fmt.Errorf("%v", err)
 			}
 			if errSuccess := e.Success(); errSuccess != nil {
 				err = errSuccess

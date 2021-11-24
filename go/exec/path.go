@@ -27,7 +27,6 @@ import (
 
 const (
 	execDir      = "./exec/"
-	terraformDir = "./terraform/"
 	ansibleDir = "./ansible"
 )
 
@@ -65,14 +64,7 @@ func createSubDir(rootDir, subDir string, call func(dir string) error) error {
 }
 
 func (e *Exec) copyAllDirs() error {
-	err := createSubDir(e.dirPath, terraformDir, func(dir string) error {
-		return e.InfraConfig.CopyTerraformDirectory(dir)
-	})
-	if err != nil {
-		return err
-	}
-
-	err = createSubDir(e.dirPath, ansibleDir, func(dir string) error {
+	err := createSubDir(e.dirPath, ansibleDir, func(dir string) error {
 		return e.AnsibleConfig.CopyRootDirectory(dir)
 	})
 	if err != nil {

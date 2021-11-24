@@ -44,7 +44,7 @@ type (
 
 const (
 	// maxConcurJob is the maximum number of concurrent jobs that we can execute
-	maxConcurJob = 5
+	maxConcurJob = 1
 )
 
 var (
@@ -101,6 +101,10 @@ func (s *Server) getConfigFiles() map[string]string {
 }
 
 func (s *Server) addToQueue(element *executionQueueElement) {
+	if element.identifier.BenchmarkType == "micro" {
+		return
+	}
+
 	mtx.Lock()
 	defer func() {
 		mtx.Unlock()
