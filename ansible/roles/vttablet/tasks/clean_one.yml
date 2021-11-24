@@ -1,0 +1,80 @@
+# Copyright 2021 The Vitess Authors.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#    http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+# MySQL Ctld
+
+- name: check if there is a mysqlctld service
+  shell: service mysqlctld@{{ tablet.id }} status
+  register: mysql_status
+  failed_when: not(mysql_status.rc == 3 or mysql_status.rc == 4 or mysql_status.rc == 0)
+
+- name: stop old mysqlctld
+  become: yes
+  become_user: root
+  service:
+    name: 'mysqlctld@{{ tablet.id }}'
+    enabled: false
+    state: stopped
+  changed_when: false
+  when: mysql_status.rc == 0
+
+# MySQLd Exporter
+
+- name: check if there is a mysqld_exporter service
+  shell: service mysqld_exporter@{{ tablet.id }} status
+  register: mysqld_exporter_status
+  failed_when: not(mysqld_exporter_status.rc == 3 or mysqld_exporter_status.rc == 4 or mysqld_exporter_status.rc == 0)
+
+- name: stop old mysqld_exporter
+  become: yes
+  become_user: root
+  service:
+    name: 'mysqld_exporter@{{ tablet.id }}'
+    enabled: false
+    state: stopped
+  changed_when: false
+  when: mysqld_exporter_status.rc == 0
+
+# VTTablets
+
+- name: check if there is a vttablet service
+  shell: service vttablet@{{ tablet.id }} status
+  register: vttablet_status
+  failed_when: not(vttablet_status.rc == 3 or vttablet_status.rc == 4 or vttablet_status.rc == 0)
+
+- name: stop old vtgate
+  become: yes
+  become_user: root
+  service:
+    name: 'vttablet@{{ tablet.id }}'
+    enabled: false
+    state: stopped
+  changed_when: false
+  when: vttablet_status.rc == 0
+
+- name: remove old config
+  become: yes
+  become_user: root
+  with_items:
+    - '/etc/vitess/conf/vttablet-{{ tablet.id }}.conf'
+    - '/etc/vitess/extra_my{{ tablet.id }}.conf'
+  file:
+    state: absent
+    path: '{{ item }}'
+  when: vttablet_status.rc == 0
+
+- name: systemctl daemon-reload
+  become: yes
+  become_user: root
+  systemd:
+    daemon_reload: yes
+  when: vttablet_status.rc == 0

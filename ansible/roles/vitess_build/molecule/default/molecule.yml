@@ -32,5 +32,11 @@ platforms:
       - SYS_ADMIN
 provisioner:
   name: ansible
+  inventory:
+    host_vars:
+      instance:
+        clean_vtctld: False
+        clean_vtgate: False
+        clean_vttablet: False
 verifier:
   name: ansible

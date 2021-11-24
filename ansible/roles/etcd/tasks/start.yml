@@ -10,41 +10,43 @@
 # limitations under the License.
 
 ---
-- name: ensure vtgate directories
+- name: install etcd.service configuration
   become: yes
   become_user: root
   with_items:
-    - '{{ vitess_root }}/tmp'
-    - '{{ vitess_root }}/tmp/vtgate-{{ gateway.id }}'
-  file:
-    state: directory
-    path: '{{ item }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-
-- name: install config
-  become: yes
-  become_user: root
-  register: vtgate_service_modified
-  with_items:
-    - s: vtgate.conf
-      d: '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
+    - f: etcd.conf
+      d: /etc/etcd
   template:
-    src: '{{ item.s }}.j2'
-    dest: '{{ item.d }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
-  notify:
-    - restart vtgate
+    src: '{{ item.f }}.j2'
+    dest: '{{ item.d }}/{{ item.f }}'
+    owner: '{{ etcd_user }}'
+    group: '{{ etcd_group }}'
 
-- name: start vtgate
+- name: install etcd.service systemd unit
   become: yes
   become_user: root
-  when:
-    - enable_vtgate | bool
+  register: etcd_service_modified
+  with_items:
+    - f: etcd.service
+      d: /etc/systemd/system
+  template:
+    src: '{{ item.f }}.j2'
+    dest: '{{ item.d }}/{{ item.f }}'
+    mode: '{{ item.m | default("0644") }}'
+
+- name: systemctl daemon-reload
+  become: yes
+  become_user: root
+  when: etcd_launch and etcd_service_modified is changed
+  systemd:
+    daemon_reload: yes
+
+- name: launching etcd...
+  when: etcd_launch | bool
+  become: yes
+  become_user: root
   service:
-    name: 'vtgate@{{ gateway.id }}'
+    name: etcd
     enabled: yes
     state: started
   changed_when: false

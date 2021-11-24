@@ -21,7 +21,7 @@ LimitMEMLOCK=infinity
 OOMScoreAdjust=-1000
 ExecStart=/bin/bash -c 'mysqlctld \
      --alsologtostderr \
-     --log_dir ${VTROOT}/tmp \
+     --log_dir ${VTROOT}/tmp/vttablet-%i \
      --db-config-dba-uname=vt_dba \
      --db_charset=utf8 \
      --tablet_uid %i \

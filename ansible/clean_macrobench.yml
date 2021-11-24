@@ -10,11 +10,13 @@
 # limitations under the License.
 
 ---
-# This is an example playbook to execute Ansible tests.
+- name: Stop prometheus
+  hosts:
+    - all
+  roles:
+    - role: prometheus
+      vars:
+        - prom_start: False
 
-- name: Verify
-  hosts: all
-  tasks:
-  - name: Example assertion
-    assert:
-      that: true
+- name: Teardown Cluster
+  import_playbook: teardown_cluster.yml

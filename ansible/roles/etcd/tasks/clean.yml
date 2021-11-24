@@ -10,11 +10,19 @@
 # limitations under the License.
 
 ---
-# This is an example playbook to execute Ansible tests.
+- name: Turn off etcd
+  become: yes
+  become_user: root
+  service:
+    name: etcd
+    state: stopped
+  ignore_errors: yes
+  changed_when: false
 
-- name: Verify
-  hosts: all
-  tasks:
-  - name: Example assertion
-    assert:
-      that: true
+- name: remove storage
+  become: yes
+  become_user: root
+  file:
+    state: absent
+    path: /var/lib/etcd
+  changed_when: false

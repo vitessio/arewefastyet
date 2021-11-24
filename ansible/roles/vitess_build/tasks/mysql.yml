@@ -10,80 +10,16 @@
 # limitations under the License.
 
 ---
-- name: Debian Install
-  block:
-    - name: Add Mysql apt key
-      become: yes
-      become_user: root
-      apt_key:
-        keyserver: '{{ mysql_apt_keyserver }}'
-        id: '{{ mysql_apt_key_id }}'
-        state: present
-        register: apt_key_install
-        until: apt_key_install is succeeded
+- name: Install MySQL apt
+  apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
+  with_items:
+    - mysql-server
+    - mysql-server
+  when: ansible_os_family == 'Ubuntu'
 
-    - name: Copy mysql.list
-      become: yes
-      become_user: root
-      template:
-        src: 'mysql.list.j2'
-        dest: /etc/apt/sources.list.d/mysql.list
-        owner: root
-        group: root
-        mode: 0644
-    - name: Register packages to install
-      set_fact:
-        mysql_packages:
-          - mysql-server
-          - python-pymysql
-  when: ansible_os_family == 'Debian'
-- name: AWS Install
-  block:
-    - name: Add repository
-      yum:
-        name='https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'
-
-    - name: Enable Repository
-      shell: |
-        yum-config-manager --enable epel
-
-    - name: Install the MySQL 8 repository
-      yum:
-        name='{{ mysql_repo_7_rpm }}'
-    - name: Register packages to install
-      set_fact:
-        mysql_packages:
-          - mysql-server
-          - python2-PyMySQL
-  when: ansible_os_family == 'RedHat' and ansible_distribution == 'Amazon'
-
-- name: RedHat Install
-  block:
-    - name: Add repository
-      yum_repository:
-        name: epel
-        description: EPEL YUM repo
-        # baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
-        metalink: https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir
-        gpgcheck: false
-
-    - name: Install the MySQL 8 repository
-      yum:
-        name: '{{ mysql_repo_rpm }}'
-        state: present
-        disable_gpg_check: true
-
-    - name: Register packages to install
-      set_fact:
-        mysql_packages:
-          - mysql-server
-          - python2-PyMySQL
-  when: ansible_os_family == 'RedHat' and ansible_distribution != 'Amazon'
-
-- name: Install Mysql
-  package:
-    name: '{{ mysql_packages }}'
-    state: present
-    update_cache: true
-  register: task_result
-  until: task_result is succeeded
+- name: Install MySQL dnf
+  dnf:
+    name:
+      - mysql-server
+      - mysql-devel
+  when: ansible_os_family == 'RedHat'

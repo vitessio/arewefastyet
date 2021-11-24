@@ -30,6 +30,7 @@ vtgate_mysql_port: '3306'
 vtgate_grpc_port: '15306'
 
 enable_vtgate: True
+clean_vtgate: True
 
 vtgate_query_cache_size: 1000
 vtgate_max_goproc: 24

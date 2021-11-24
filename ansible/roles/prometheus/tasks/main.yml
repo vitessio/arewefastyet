@@ -10,11 +10,11 @@
 # limitations under the License.
 
 ---
-
-- name: Start async profiler-stop
-  shell: |
-    sleep {{ vtgate_deadline_pprof }}
-    kill -s USR1 $(pgrep -d " " vtgate)
-  when: pprof_targets is defined and "vtgate" in pprof_targets
-  async: 400
-  poll: 0
+- name: stopping Prometheus
+  when: not prom_start | bool
+  become: yes
+  become_user: root
+  service:
+    name: prometheus
+    state: stopped
+  changed_when: false

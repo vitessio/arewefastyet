@@ -10,11 +10,23 @@
 # limitations under the License.
 
 ---
-# This is an example playbook to execute Ansible tests.
+- name: clean all vtgate
+  include_tasks: clean_one.yml
+  loop: '{{ gateways }}'
+  loop_control:
+    loop_var: gateway
 
-- name: Verify
-  hosts: all
-  tasks:
-  - name: Example assertion
-    assert:
-      that: true
+- name: remove old config
+  become: yes
+  become_user: root
+  with_items:
+    - '/etc/systemd/system/vtgate@.service'
+  file:
+    state: absent
+    path: '{{ item }}'
+
+- name: systemctl daemon-reload
+  become: yes
+  become_user: root
+  systemd:
+    daemon_reload: yes

@@ -44,7 +44,7 @@ ExecStart=/bin/bash -c 'vttablet \
     --port ${TABLET_PORT} \
     --grpc_port ${GRPC_PORT} \
     --tablet-path ${CELL}-%i \
-    --log_dir ${VTROOT}/tmp \
+    --log_dir ${VTROOT}/tmp/vttablet-%i \
     --topo_implementation ${TOPO_IMPLEMENTATION} \
     --topo_global_root ${TOPO_GLOBAL_ROOT} \
     --topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \

@@ -10,112 +10,24 @@
 # limitations under the License.
 
 ---
-- include: clean.yml
-  become: yes
-  become_user: root
-
-- include: golang.yml
-  become: yes
-  become_user: root
-
-- include: mysql.yml
-  become: yes
-  become_user: root
-
-- include: mysqld_exporter.yml
-  become: yes
-  become_user: root
-- name: Set dependent packages for RedHat
-  set_fact:
-    vitess_dependencies:
-      - make
-      - unzip
-      - gcc-c++
-      - curl
-      - git
-      - wget
-      - ant
-      - maven
-      - zip
-      - gcc
-      - tmux
-      - htop
-      - jq
-  when: ansible_os_family == 'RedHat'
-
-- name: Set dependent packages for Debian
-  set_fact:
-    vitess_dependencies:
-      - make
-      - unzip
-      - g++
-      - curl
-      - git
-      - wget
-      - ant
-      - maven
-      - zip
-      - default-jdk
-      - tmux
-      - htop
-      - jq
-  when: ansible_os_family == 'Ubuntu'
-
-- name: Install Mysql
-  become: yes
-  become_user: root
-  package:
-    name: '{{ vitess_dependencies }}'
-    state: present
-    update_cache: true
-  register: task_result
-  until: task_result is succeeded
-
-- name: Disable SELinux
-  become: yes
-  become_user: root
-  selinux:
-    state: disabled
-  ignore_errors: yes
-  when: ansible_os_family == 'RedHat'
-
-- name: Check if repo exists
-  become: yes
-  become_user: root
-  stat: path=/go/src/vitess.io/vitess
-  register: vitessrepopath
+- name: Stop existing Vitess to build a new one
+  include_tasks: clean.yml
 
 - name: Update Vitess
   become: yes
   become_user: root
   block:
     - name: Fetch Updated Vitess
-      git:
-        repo: "{{ vitess_git_repo }}"
-        dest: /go/src/vitess.io/vitess
-        version: "{{ vitess_git_version }}"
-        refspec: "{{ vitess_git_version_fetch_pr if vitess_git_version_pr_nb is defined else '' | default('') }}"
-        force: false
-
-    - name: Tmp directory gopath
-      become: yes
-      become_user: root
-      file:
-        state: directory
-        path: '{{ item }}'
-        mode: 0755
-      with_items:
-        - /root/tmp
+      include_tasks: install_vitess.yml
 
     - name: Build Vitess Binaries
       shell: |
-        export TMPDIR=~/tmp
         cd /go/src/vitess.io/vitess
         make build
+      changed_when: false
 
     - name: Install Vitess Binaries
       shell: |
-        export TMPDIR=~/tmp
         cd /go/src/vitess.io/vitess
         make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
       changed_when: false
@@ -124,20 +36,21 @@
       shell: |
         cd /go/src/vitess.io/vitess
         cp bin/vtctl /usr/local/bin/
+      changed_when: false
 
-  when:
-    - vtroot is undefined
-    - not vitessrepopath.stat.exists
-
-- name: Copy Vitess Binaries
-  become: yes
-  become_user: root
+- name: Disbale AppArmor
   block:
-    - name: File Glob the copy
-      copy:
-        src: '{{ item }}'
-        dest: /usr/local/bin
-        mode: '0755'
-      with_fileglob:
-        - '{{ vtroot }}/bin/*'
-  when: vtroot is defined
+    - name: link apparmor
+      file:
+        state: link
+        src: /etc/apparmor.d/usr.sbin.mysqld
+        dest: /etc/apparmor.d/disable/
+        owner: root
+        group: root
+      ignore_errors: true
+      changed_when: false
+
+    - name: disable apparmor for mysqld
+      shell: apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+      changed_when: false
+      ignore_errors: true

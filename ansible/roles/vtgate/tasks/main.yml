@@ -10,6 +10,12 @@
 # limitations under the License.
 
 ---
+- name: make sure old vtgate are stopped
+  when: clean_vtgate | bool
+  include_role:
+    name: "vtgate"
+    tasks_from: clean
+
 - name: ensure vitess group
   become: yes
   become_user: root
@@ -31,6 +37,7 @@
   with_items:
     - '{{ vitess_root }}'
     - '{{ vitess_root }}/socket'
+    - '/etc/vitess/conf'
   file:
     state: directory
     path:   '{{ item }}'
@@ -38,21 +45,11 @@
     group:  '{{ vitess_group }}'
     mode: 0755
 
-- name: ensure config directories
-  become: yes
-  become_user: root
-  with_items:
-    - '/etc/vitess/conf'
-  file:
-    state: directory
-    path: '{{ item }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-
 - name: install systemd units
   become: yes
   become_user: root
   register: vtgate_service_modified
+  changed_when: false
   with_items:
     - s: vtgate@.service
       d: /etc/systemd/system/vtgate@.service
@@ -62,8 +59,7 @@
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
     mode: '0644'
-  notify:
-    - restart vtgate
+    force: true
 
 - name: systemctl daemon-reload
   become: yes
@@ -77,3 +73,12 @@
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
+
+- name: Turn on loadbalancing
+  vars:
+    - loadbalancing: True
+  when:
+    - enable_vtgate | bool
+  include_role:
+    name: vtgate
+    tasks_from: sysbench_loadbalance.yml

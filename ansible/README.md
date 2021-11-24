@@ -64,13 +64,3 @@ This will update an existing deployment and the run the tests. It will not clean
 `sysbench --luajit-cmd=off --threads=50 --time=300 --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --auto-inc=off --tables=50 --table_size=5000000 --range_selects=0 --rand-type=uniform oltp_read_write prepare`
 
 `sysbench --luajit-cmd=off --threads=50 --time=300 --mysql-db=main --mysql-host=127.0.0.1 --mysql-port=3306 --db-ps-mode=disable --db-driver=mysql --report-interval=10 --auto-inc=off --tables=50 --table_size=5000000  --range_selects=0 --rand-type=uniform oltp_read_write run`
-
-### Get Performance Data
-
-## Vtgate
-
-`go tool pprof -seconds=120 -http ':8080' http://139.178.85.73:15001/debug/pprof/profile`
-
-## Vttablet
-
-`go tool pprof -seconds=120 -http ':8080' http://139.178.85.73:16001/debug/pprof/profile`

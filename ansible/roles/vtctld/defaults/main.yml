@@ -20,3 +20,4 @@ vitess_root: '/vt'
 vtctld_port: '15000'
 vtctld_grpc_port: '15999'
 enable_vtctld: True
+clean_vtctld: True

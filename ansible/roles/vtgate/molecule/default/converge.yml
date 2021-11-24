@@ -13,6 +13,8 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include vtgate"
+    - name: "Prepare vtgate"
+      vars:
+        - clean_vtgate: False
       include_role:
         name: "vtgate"

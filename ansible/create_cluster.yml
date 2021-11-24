@@ -10,72 +10,8 @@
 # limitations under the License.
 
 ---
-- name: Setup node exporter
-  hosts:
-    - all
-  roles:
-    - cloudalchemy.node_exporter
-
-- name: Setup Vitess deps
-  hosts: all
-  tasks:
-    - name: Install Golang
-      include_role:
-        name: vitess_build
-        tasks_from: golang
-
-    - name: Install MySQL
-      include_role:
-        name: vitess_build
-        tasks_from: mysql
-
-    - name: Install mysqld_exporter
-      include_role:
-        name: vitess_build
-        tasks_from: mysqld_exporter
-
-- name: Setup etcd
-  hosts:
-    - all
-  roles:
-    - role: etcd
-      vars:
-        - etcd_launch: False
-
-- name: Setup sysbench
-  hosts:
-    - all
-  roles:
-    - role: sysbench
-
-- name: Setup prometheus
-  hosts: all
-  become: yes
-  become_user: root
-  tags:
-    - prometheus
-  roles:
-    - cloudalchemy.prometheus
-  vars:
-    node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
-    prometheus_targets:
-      nodes:
-        - targets: '{{ node_targets }}'
-          labels:
-            component: node
-    prometheus_scrape_configs:
-      - job_name: "node"
-        file_sd_configs:
-          - files:
-              - "{{ prometheus_config_dir }}/file_sd/nodes.yml"
-
-- name: Stop prometheus
-  hosts:
-    - all
-  roles:
-    - role: prometheus
-      vars:
-        - prom_start: False
+- name: Clean Post Macrobench
+  import_playbook: clean_macrobench.yml
 
 - name: Build Vitess
   hosts: all
@@ -84,33 +20,33 @@
 
 - name: Start etcd
   hosts:
-    - all
+    - etcd
   roles:
     - role: etcd
       vars:
         - etcd_launch: True
 
-- hosts: all
+- hosts: vtctld
   roles:
     - vtctld
 
-- hosts: all
+- hosts: vtgate
   roles:
     - role: vtgate
       vars:
         - gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
 
-- hosts: all
+- hosts: vttablet
   roles:
     - vttablet
 
-- hosts: all
+- hosts: vtctld
   tasks:
     - name: Gather facts
       setup:
         gather_subset: network
 
-- hosts: all
+- hosts: vtctld
   tasks:
     - name: print
       debug:
@@ -133,3 +69,21 @@
             done
         done
       changed_when: false
+
+    - name: Get VSchema for OLTP
+      ansible.builtin.copy:
+        src: "{{ macrobenchmark_vschema_oltp }}"
+        dest: /tmp/vschema_sysbench.json
+        mode: '0644'
+      when: arewefastyet_execution_type == 'oltp'
+
+    - name: Get VSchema for TPCC
+      ansible.builtin.copy:
+        src: "{{ macrobenchmark_vschema_tpcc }}"
+        dest: /tmp/vschema_sysbench.json
+        mode: '0644'
+      when: arewefastyet_execution_type == 'tpcc'
+
+    - name: Ensure VSchmea
+      shell: |
+        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main

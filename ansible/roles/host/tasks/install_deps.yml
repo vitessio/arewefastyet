@@ -22,8 +22,11 @@
       - wget
       - zip
       - tmux
+      - ant
+      - maven
+      - htop
+      - jq
   when: ansible_os_family == 'RedHat'
-
 
 - name: Set base dependencies for Ubuntu distributions
   set_fact:
@@ -39,6 +42,8 @@
       - zip
       - default-jdk
       - tmux
+      - htop
+      - jq
   when: ansible_os_family == 'Ubuntu'
 
 - name: Install base dependencies

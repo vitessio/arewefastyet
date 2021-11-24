@@ -4,6 +4,7 @@ After=network.service
 
 [Service]
 Environment="VTROOT={{vitess_root}}"
+Environment="VTDATAROOT={{vitess_root}}"
 Environment="USER={{vitess_user}}"
 Environment="VTCTLD_PORT={{vtctld_port}}"
 Environment="GRPC_PORT={{vtctld_grpc_port}}"

@@ -10,6 +10,12 @@
 # limitations under the License.
 
 ---
+- name: make sure vttablet is stopped
+  when: clean_vttablet | bool
+  include_role:
+    name: "vttablet"
+    tasks_from: "clean"
+
 - name: ensure vitess group
   become: yes
   become_user: root

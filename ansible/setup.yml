@@ -10,14 +10,16 @@
 # limitations under the License.
 
 ---
-- name: Setup node exporter
+- name: Setup all the hosts
   hosts:
     - all
   roles:
+    - host
     - cloudalchemy.node_exporter
 
 - name: Setup Vitess deps
-  hosts: all
+  hosts:
+    - all
   tasks:
     - name: Install Golang
       include_role:
@@ -60,9 +62,9 @@
     node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
     prometheus_targets:
       nodes:
-        - targets: '{{ node_targets }}'
-          labels:
-            component: node
+      - targets: '{{ node_targets }}'
+        labels:
+          component: node
     prometheus_scrape_configs:
       - job_name: "node"
         file_sd_configs:
@@ -76,60 +78,3 @@
     - role: prometheus
       vars:
         - prom_start: False
-
-- name: Build Vitess
-  hosts: all
-  roles:
-    - vitess_build
-
-- name: Start etcd
-  hosts:
-    - all
-  roles:
-    - role: etcd
-      vars:
-        - etcd_launch: True
-
-- hosts: all
-  roles:
-    - vtctld
-
-- hosts: all
-  roles:
-    - role: vtgate
-      vars:
-        - gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-
-- hosts: all
-  roles:
-    - vttablet
-
-- hosts: all
-  tasks:
-    - name: Gather facts
-      setup:
-        gather_subset: network
-
-- hosts: all
-  tasks:
-    - name: print
-      debug:
-        msg: Groups {{ groups['vtctld'][0] }}
-
-    - name: Ensure Primary
-      shell: |
-        alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
-        for keyspace in $(vc GetKeyspaces); do
-            echo "working on ${keyspace}"
-            for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
-                echo "working on ${shard}"
-                master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
-                if [ -z "${master}" ]; then
-                  echo "setting primary for ${keyspace}/${shard}"
-                  vc InitShardPrimary -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
-                else
-                  vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
-                fi
-            done
-        done
-      changed_when: false

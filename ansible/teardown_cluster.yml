@@ -10,11 +10,16 @@
 # limitations under the License.
 
 ---
-# This is an example playbook to execute Ansible tests.
-
-- name: Verify
-  hosts: all
+- name: Teardown Cluster
+  hosts:
+    - all
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+    - name: Teardown Vitess components
+      include_role:
+        name: vitess_build
+        tasks_from: clean
+
+    - name: Teardown etcd
+      include_role:
+        name: etcd
+        tasks_from: clean

@@ -9,25 +9,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Turn off everything
-  shell: |
-    systemctl stop mysqlctld@* || /bin/true
-    systemctl stop vttablet@* || /bin/true
-    systemctl stop vtctld@* || /bin/true
-    systemctl stop cell@* || /bin/true
-    systemctl stop vtgate@* || /bin/true
-  ignore_errors: yes
-  when: clean is defined
-
-- name: Find Elements to remove
-  find:
-    path: /vt
-    file_type: directory
-  register: directories
-
-- name: Remove Elements
+---
+- name: Clean vtdataroot
   file:
+    path: '{{ vitess_root }}'
     state: absent
-    path: '{{ item.path }}'
-  loop: '{{ directories.files }}'
-  when: clean is defined and ((directories.files | length) > 0)
+
+- name: Make sure vtctld is stopped
+  when: clean_vtctld | bool
+  include_role:
+    name: "vtctld"
+    tasks_from: clean
+
+- name: Make sure vtgate is stopped
+  when: clean_vtgate | bool
+  include_role:
+    name: "vtgate"
+    tasks_from: clean
+
+- name: make sure vttablet is stopped
+  when: clean_vttablet | bool
+  include_role:
+    name: "vttablet"
+    tasks_from: "clean"

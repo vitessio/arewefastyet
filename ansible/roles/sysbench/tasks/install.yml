@@ -10,11 +10,33 @@
 # limitations under the License.
 
 ---
-# This is an example playbook to execute Ansible tests.
+- name: Update Sysbench
+  become: yes
+  become_user: root
+  git:
+    repo: https://github.com/planetscale/sysbench
+    dest: /src/sysbench
+    version: master
+    depth: 1
+    force: 1
 
-- name: Verify
-  hosts: all
-  tasks:
-  - name: Example assertion
-    assert:
-      that: true
+- name: Build sysbench
+  become: yes
+  become_user: root
+  shell: |
+    cd /src/sysbench
+    ./autogen.sh
+    ./configure
+    make -j
+    make install
+  changed_when: false
+
+- name: Get tpcc
+  become: yes
+  become_user: root
+  git:
+    repo: https://github.com/planetscale/sysbench-tpcc
+    dest: /src/sysbench-tpcc
+    version: master
+    depth: 1
+    force: 1

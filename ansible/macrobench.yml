@@ -10,40 +10,17 @@
 # limitations under the License.
 
 ---
-- hosts: all
-  roles:
-    - host
-    - cloudalchemy.node_exporter
-    - vitess_build
+- name: Create Cluster
+  import_playbook: create_cluster.yml
+
+- name: Install and build sysbench
+  hosts:
+    - all
   tasks:
-
-- hosts: etcd
-  roles:
-    - etcd
-
-- hosts: vtctld
-  roles:
-    - vtctld
-
-- hosts: vtgate
-  roles:
-    - vtgate
-
-- hosts: vttablet
-  roles:
-    - vttablet
-  tags:
-    - configuration
-
-- hosts: sysbench
-  become: yes
-  become_user: root
-  roles:
-    - sysbench
-  vars:
-    gateways: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-  tags:
-    - test
+    - name: Install sysbench
+      include_role:
+        name: sysbench
+        tasks_from: install
 
 - hosts: prometheus
   become: yes
@@ -59,44 +36,49 @@
     gateway_targets: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (gateway.port | default(15001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
     vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port | default(15000) | string )) }}{% endfor -%}{{ targets }}"
     node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
-    prometheus_version: 2.26.0
+    prometheus_skip_install: true
     prometheus_targets:
       tablets:
-      - targets: '{{ tablet_targets }}'
-        labels:
-          component: vttablet
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
-          keyspace: '{{ keyspace }}'
+        - targets: '{{ tablet_targets }}'
+          labels:
+            component: vttablet
+            app: vitess
+            cluster: '{{ vitess_cluster }}'
+            region: '{{ cell }}'
+            keyspace: '{{ keyspace }}'
+            exec_uuid: "{{ arewefastyet_exec_uuid }}"
       mysqld:
-      - targets: '{{ mysqld_targets }}'
-        labels:
-          component: mysqld
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
-          keyspace: '{{ keyspace }}'
+        - targets: '{{ mysqld_targets }}'
+          labels:
+            component: mysqld
+            app: vitess
+            cluster: '{{ vitess_cluster }}'
+            region: '{{ cell }}'
+            keyspace: '{{ keyspace }}'
+            exec_uuid: "{{ arewefastyet_exec_uuid }}"
       gateways:
-      - targets: '{{ gateway_targets }}'
-        labels:
-          component: vtgate
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
+        - targets: '{{ gateway_targets }}'
+          labels:
+            component: vtgate
+            app: vitess
+            cluster: '{{ vitess_cluster }}'
+            region: '{{ cell }}'
+            exec_uuid: "{{ arewefastyet_exec_uuid }}"
       vtctld:
-      - targets: '{{ vtctld_targets }}'
-        labels:
-          component: vtctld
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
-          region: '{{ cell }}'
+        - targets: '{{ vtctld_targets }}'
+          labels:
+            component: vtctld
+            app: vitess
+            cluster: '{{ vitess_cluster }}'
+            region: '{{ cell }}'
+            exec_uuid: "{{ arewefastyet_exec_uuid }}"
       nodes:
-      - targets: '{{ node_targets }}'
-        labels:
-          component: node
-          app: vitess
-          cluster: '{{ vitess_cluster }}'
+        - targets: '{{ node_targets }}'
+          labels:
+            component: node
+            app: vitess
+            cluster: '{{ vitess_cluster }}'
+            exec_uuid: "{{ arewefastyet_exec_uuid }}"
     prometheus_scrape_configs:
       - job_name: "node"
         file_sd_configs:
@@ -127,55 +109,10 @@
     prometheus_external_labels:
       exec_uuid: "{{ arewefastyet_exec_uuid }}"
 
-
-- hosts: vtctld
-  tasks:
-    - name: Gather facts
-      setup:
-        gather_subset: network
-
-- hosts: vtctld
-  tasks:
-    - name: print
-      debug:
-        msg: Groups {{ groups['vtctld'][0] }}
-
-    - name: Ensure Master
-      shell: |
-        alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
-        for keyspace in $(vc GetKeyspaces); do
-            echo "working on ${keyspace}"
-            for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
-                echo "working on ${shard}"
-                master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
-                if [ -z "${master}" ]; then
-                  echo "setting master for ${keyspace}/${shard}"
-                  vc InitShardMaster -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
-                else
-                  vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
-                fi
-            done
-        done
-      changed_when: false
-
-    - name: Get VSchema for OLTP
-      ansible.builtin.copy:
-        src: "{{ macrobenchmark_vschema_oltp }}"
-        dest: /tmp/vschema_sysbench.json
-        mode: '0644'
-      when: arewefastyet_execution_type == 'oltp'
-
-    - name: Get VSchema for TPCC
-      ansible.builtin.copy:
-        src: "{{ macrobenchmark_vschema_tpcc }}"
-        dest: /tmp/vschema_sysbench.json
-        mode: '0644'
-      when: arewefastyet_execution_type == 'tpcc'
-
-    - name: Ensure VSchmea
-      shell: |
-        vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
-
 - hosts: macrobench
   roles:
     - macrobench
+
+- name: Clean Post Macrobench
+  when: skip_post_cleanup is undefined or not skip_post_cleanup | bool
+  import_playbook: clean_macrobench.yml

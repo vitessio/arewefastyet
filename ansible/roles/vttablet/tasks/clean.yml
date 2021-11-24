@@ -10,11 +10,25 @@
 # limitations under the License.
 
 ---
-# This is an example playbook to execute Ansible tests.
+- name: clean all vttablet
+  include_tasks: clean_one.yml
+  loop: '{{ tablets }}'
+  loop_control:
+    loop_var: tablet
 
-- name: Verify
-  hosts: all
-  tasks:
-  - name: Example assertion
-    assert:
-      that: true
+- name: remove old config
+  become: yes
+  become_user: root
+  with_items:
+    - '/etc/systemd/system/vttablet@.service'
+    - '/etc/systemd/system/mysqlctld@.service'
+    - '/etc/systemd/system/mysqld_exporter@.service'
+  file:
+    state: absent
+    path: '{{ item }}'
+
+- name: systemctl daemon-reload
+  become: yes
+  become_user: root
+  systemd:
+    daemon_reload: yes
