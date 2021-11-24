@@ -10,29 +10,25 @@
 # limitations under the License.
 
 ---
-- name: Turn off loadbalancing
-  vars:
-    - loadbalancing: False
-  include_role:
-    name: vtgate
-    tasks_from: sysbench_loadbalance.yml
-
 - name: Clean vtdataroot
   file:
     path: '{{ vitess_root }}'
     state: absent
 
 - name: Make sure vtctld is stopped
+  when: clean_vtctld | bool
   include_role:
     name: "vtctld"
     tasks_from: clean
 
 - name: Make sure vtgate is stopped
+  when: clean_vtgate | bool
   include_role:
     name: "vtgate"
     tasks_from: clean
 
 - name: make sure vttablet is stopped
+  when: clean_vttablet | bool
   include_role:
     name: "vttablet"
     tasks_from: "clean"

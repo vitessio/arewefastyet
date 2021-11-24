@@ -13,6 +13,8 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include vttablet"
+    - name: "Prepare vttablet"
+      vars:
+        - clean_vttablet: False
       include_role:
         name: "vttablet"

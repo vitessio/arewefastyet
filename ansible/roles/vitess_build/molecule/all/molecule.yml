@@ -38,5 +38,48 @@ provisioner:
   name: ansible
   playbooks:
     prep: prep.yml
+  inventory:
+    host_vars:
+      instance:
+        clean_vtctld: False
+        clean_vtgate: False
+        clean_vttablet: False
+        gateways:
+          - id: 1
+            port: 15001
+            mysql_port: 13306
+            grpc_port: 15306
+        tablets:
+          - id: 1001
+            keyspace: main
+            shard: -80
+            pool_size: 500
+            transaction_cap: 2000
+            port: 16001
+            grpc_port: 17001
+            mysql_port: 18001
+            mysqld_exporter_port: 9104
+          - id: 2001
+            keyspace: main
+            shard: 80-
+            pool_size: 500
+            transaction_cap: 2000
+            port: 16002
+            grpc_port: 17002
+            mysql_port: 18002
+            mysqld_exporter_port: 9105
 verifier:
   name: ansible
+scenario:
+  name: all
+  test_sequence:
+    - lint
+    - destroy
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - destroy

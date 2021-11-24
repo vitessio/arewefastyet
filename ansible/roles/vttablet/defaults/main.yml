@@ -33,6 +33,7 @@ vttablet_mysql_port: '18001'
 mysqld_exporter_port: '9104'
 
 enable_vttablet: True
+clean_vttablet: True
 vitess_memory_ratio: 0.6
 vttablet_connection_pool_size: 300
 vttablet_transaction_cap: 300

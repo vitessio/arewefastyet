@@ -13,6 +13,8 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include vtctld"
+    - name: "Prepare vtctld"
+      vars:
+        - clean_vtctld: False
       include_role:
         name: "vtctld"

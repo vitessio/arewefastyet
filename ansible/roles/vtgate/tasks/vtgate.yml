@@ -15,7 +15,7 @@
   become_user: root
   with_items:
     - '{{ vitess_root }}/tmp'
-    - '{{ vitess_root }}/tmp/vtgate-{{gateway.id}}'
+    - '{{ vitess_root }}/tmp/vtgate-{{ gateway.id }}'
   file:
     state: directory
     path: '{{ item }}'
@@ -48,10 +48,3 @@
     enabled: yes
     state: started
   changed_when: false
-
-- name: Turn on loadbalancing
-  vars:
-    - loadbalancing: True
-  include_role:
-    name: vtgate
-    tasks_from: sysbench_loadbalance.yml

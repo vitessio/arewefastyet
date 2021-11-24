@@ -10,22 +10,21 @@
 # limitations under the License.
 
 ---
+- name: Stop existing Vitess to build a new one
+  include_tasks: clean.yml
+
 - name: Update Vitess
   become: yes
   become_user: root
   block:
     - name: Fetch Updated Vitess
-      git:
-        repo: "{{ vitess_git_repo }}"
-        dest: /go/src/vitess.io/vitess
-        version: "{{ vitess_git_version }}"
-        refspec: "{{ vitess_git_version_fetch_pr if vitess_git_version_pr_nb is defined else '' | default('') }}"
-        force: false
+      include_tasks: install_vitess.yml
 
     - name: Build Vitess Binaries
       shell: |
         cd /go/src/vitess.io/vitess
         make build
+      changed_when: false
 
     - name: Install Vitess Binaries
       shell: |
@@ -37,9 +36,21 @@
       shell: |
         cd /go/src/vitess.io/vitess
         cp bin/vtctl /usr/local/bin/
+      changed_when: false
 
 - name: Disbale AppArmor
-  shell: |
-    ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
-    apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
-  ignore_errors: true
+  block:
+    - name: link apparmor
+      file:
+        state: link
+        src: /etc/apparmor.d/usr.sbin.mysqld
+        dest: /etc/apparmor.d/disable/
+        owner: root
+        group: root
+      ignore_errors: true
+      changed_when: false
+
+    - name: disable apparmor for mysqld
+      shell: apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+      changed_when: false
+      ignore_errors: true

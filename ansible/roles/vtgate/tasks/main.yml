@@ -11,6 +11,7 @@
 
 ---
 - name: make sure old vtgate are stopped
+  when: clean_vtgate | bool
   include_role:
     name: "vtgate"
     tasks_from: clean
@@ -72,3 +73,12 @@
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
+
+- name: Turn on loadbalancing
+  vars:
+    - loadbalancing: True
+  when:
+    - enable_vtgate | bool
+  include_role:
+    name: vtgate
+    tasks_from: sysbench_loadbalance.yml

@@ -11,6 +11,7 @@
 
 ---
 - name: make sure vttablet is stopped
+  when: clean_vttablet | bool
   include_role:
     name: "vttablet"
     tasks_from: "clean"

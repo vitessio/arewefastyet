@@ -13,6 +13,33 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include vitess_build"
+    - name: Set base dependencies
+      set_fact:
+        base_dependencies:
+          - make
+          - unzip
+          - gcc-c++
+          - gcc
+          - curl
+          - git
+          - wget
+          - zip
+
+    - name: Install base dependencies
+      become: yes
+      become_user: root
+      package:
+        name: '{{ base_dependencies }}'
+        state: present
+        update_cache: true
+      register: task_result
+      until: task_result is succeeded
+
+    - name: Prepare Golang
+      include_role:
+        name: "vitess_build"
+        tasks_from: golang
+
+    - name: Prepare vitess_build
       include_role:
         name: "vitess_build"

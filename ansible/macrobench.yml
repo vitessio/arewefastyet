@@ -114,4 +114,5 @@
     - macrobench
 
 - name: Clean Post Macrobench
+  when: skip_post_cleanup is undefined or not skip_post_cleanup | bool
   import_playbook: clean_macrobench.yml

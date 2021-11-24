@@ -12,7 +12,7 @@
 ---
 all:
   hosts:
-    DEVICE_IP_0:
+    147.75.87.247:
       storage_device:
         device: nvme0n1
         partition: nvme0n1p1
@@ -21,34 +21,34 @@ all:
     arewefastyet_git_version: "HEAD"
     macrobenchmark_vschema_oltp: "./vitess-benchmark/sysbench.json"
     macrobenchmark_vschema_tpcc: "./vitess-benchmark/tpcc_vschema.json"
-    macrobenchmarks_local_config: "LOCAL_CONFIG_PATH_0"
+    macrobenchmarks_local_config: "../config/test_gen4_oltp_query_stats.yaml"
     cell: local
     keyspace: main
     provision: 1
   children:
     macrobench:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
       vars:
         vtgate_web_ports: "15001,15002,15003,15004,15005,15006"
     sysbench:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     prometheus:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     etcd:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     vtctld:
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
     vtgate:
       vars:
         vtgate_query_cache_size: 1000
         vtgate_max_goproc: 12
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
           gateways:
             - id: 1
               port: 15001
@@ -80,7 +80,7 @@ all:
         vttablet_query_cache_size: 10000
         vttablet_max_goproc: 24
       hosts:
-        DEVICE_IP_0:
+        147.75.87.247:
           tablets:
             - id: 1001
               keyspace: main

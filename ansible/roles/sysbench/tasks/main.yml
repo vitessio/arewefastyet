@@ -21,6 +21,20 @@
       - libmysqlclient-dev
       - libssl-dev
       - git
+  when: ansible_os_family == 'Ubuntu'
+
+- name: Set sysbench dependencies
+  set_fact:
+    sysbench_dependencies:
+      - make
+      - automake
+      - libtool
+      - pkgconfig
+      - libaio-devel
+      - mysql-devel
+      - openssl-devel
+      - git
+  when: ansible_os_family == 'RedHat'
 
 - name: Install sysbench dependencies
   become: yes

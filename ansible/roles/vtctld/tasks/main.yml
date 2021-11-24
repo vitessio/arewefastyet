@@ -11,6 +11,7 @@
 
 ---
 - name: make sure vtctld is stopped
+  when: clean_vtctld | bool
   include_role:
     name: "vtctld"
     tasks_from: "clean"

@@ -10,8 +10,16 @@
 # limitations under the License.
 
 ---
-- name: Install MySQL
+- name: Install MySQL apt
   apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
   with_items:
     - mysql-server
     - mysql-server
+  when: ansible_os_family == 'Ubuntu'
+
+- name: Install MySQL dnf
+  dnf:
+    name:
+      - mysql-server
+      - mysql-devel
+  when: ansible_os_family == 'RedHat'
