@@ -111,8 +111,10 @@ type Exec struct {
 	// VtgatePlannerVersion is the planner version that vtgate is going to use
 	VtgatePlannerVersion string
 
+	// GolangVersion is the go version to use while executing the benchmark on the remote host
 	GolangVersion string
 
+	// ServerAddress is the IP address on which the benchmark will be executed.
 	ServerAddress string
 }
 

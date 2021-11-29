@@ -16,7 +16,11 @@
 - name: Build Vitess
   hosts: all
   roles:
-    - vitess_build
+    - role: vitess_build
+      vars:
+        - clean_vtgate: False
+        - clean_vttablet: False
+        - clean_vtctld: False
 
 - name: Start etcd
   hosts:
@@ -28,17 +32,22 @@
 
 - hosts: vtctld
   roles:
-    - vtctld
+    - role: vtctld
+      vars:
+        - clean_vtctld: False
 
 - hosts: vtgate
   roles:
     - role: vtgate
       vars:
+        - clean_vtgate: False
         - gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
 
 - hosts: vttablet
   roles:
-    - vttablet
+    - role: vttablet
+      vars:
+        - clean_vttablet: False
 
 - name: Install and build sysbench
   hosts:

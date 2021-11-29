@@ -101,10 +101,6 @@ func (s *Server) getConfigFiles() map[string]string {
 }
 
 func (s *Server) addToQueue(element *executionQueueElement) {
-	if element.identifier.BenchmarkType == "micro" {
-		return
-	}
-
 	mtx.Lock()
 	defer func() {
 		mtx.Unlock()
