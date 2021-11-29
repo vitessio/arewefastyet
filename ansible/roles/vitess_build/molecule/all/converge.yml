@@ -104,32 +104,16 @@
   roles:
     - vttablet
 
-- hosts: all
+- hosts: vtctld
   tasks:
     - name: Gather facts
       setup:
         gather_subset: network
 
-- hosts: all
-  tasks:
     - name: print
       debug:
         msg: Groups {{ groups['vtctld'][0] }}
 
-    - name: Ensure Primary
-      shell: |
-        alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
-        for keyspace in $(vc GetKeyspaces); do
-            echo "working on ${keyspace}"
-            for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
-                echo "working on ${shard}"
-                master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
-                if [ -z "${master}" ]; then
-                  echo "setting primary for ${keyspace}/${shard}"
-                  vc InitShardPrimary -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
-                else
-                  vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
-                fi
-            done
-        done
-      changed_when: false
+    - include_role:
+        name: vtctld
+        tasks_from: ensure
