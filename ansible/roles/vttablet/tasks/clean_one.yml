@@ -73,7 +73,6 @@
   file:
     state: absent
     path: '{{ item }}'
-  when: vttablet_status.rc == 0
   failed_when: false
 
 - name: systemctl daemon-reload
@@ -81,5 +80,4 @@
   become_user: root
   systemd:
     daemon_reload: yes
-  when: vttablet_status.rc == 0
   failed_when: false

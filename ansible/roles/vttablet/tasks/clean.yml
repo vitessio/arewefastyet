@@ -10,6 +10,9 @@
 # limitations under the License.
 
 ---
+- name: reinstall systemd unit if needed
+  include_tasks: systemd.yml
+
 - name: clean all vttablet
   include_tasks: clean_one.yml
   loop: '{{ tablets }}'
@@ -32,3 +35,6 @@
   become_user: root
   systemd:
     daemon_reload: yes
+
+- name: remove binary
+  shell: rm -f $(which vttablet) $(which mysqlctld)

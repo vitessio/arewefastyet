@@ -10,6 +10,10 @@
 # limitations under the License.
 
 ---
+- name: reinstall systemd unit if needed
+  include_tasks: systemd.yml
+  when: arewefastyet_execution_type is undefined or arewefastyet_execution_type != 'micro'
+
 - name: check if there is a vtctld service
   shell: service vtctld@{{ vitess_cell }} status
   register: vtctld_status
@@ -29,7 +33,7 @@
 - name: check if there is a cell service
   shell: service cell@{{ vitess_cell }} status
   register: cell_status
-  failed_when: not(cell_status.rc == 4 or cell_status.rc == 0)
+  failed_when: not(vtctld_status.rc == 3 or cell_status.rc == 4 or cell_status.rc == 0)
 
 - name: stop old cell
   become: yes
@@ -52,7 +56,6 @@
   file:
     state: absent
     path: '{{ item }}'
-  when: vtctld_status.rc == 0 or cell_status.rc == 0
   failed_when: false
 
 - name: systemctl daemon-reload
@@ -60,5 +63,7 @@
   become_user: root
   systemd:
     daemon_reload: yes
-  when: vtctld_status.rc == 0 or cell_status.rc == 0
   failed_when: false
+
+- name: remove binary
+  shell: rm -f $(which vtctld)
