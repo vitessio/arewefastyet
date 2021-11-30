@@ -24,6 +24,7 @@
     state: stopped
   changed_when: false
   when: vtctld_status.rc == 0
+  failed_when: false
 
 - name: check if there is a cell service
   shell: service cell@{{ vitess_cell }} status
@@ -39,6 +40,7 @@
     state: stopped
   changed_when: false
   when: cell_status.rc == 0
+  failed_when: false
 
 - name: remove old config
   become: yes
@@ -51,6 +53,7 @@
     state: absent
     path: '{{ item }}'
   when: vtctld_status.rc == 0 or cell_status.rc == 0
+  failed_when: false
 
 - name: systemctl daemon-reload
   become: yes
@@ -58,3 +61,4 @@
   systemd:
     daemon_reload: yes
   when: vtctld_status.rc == 0 or cell_status.rc == 0
+  failed_when: false

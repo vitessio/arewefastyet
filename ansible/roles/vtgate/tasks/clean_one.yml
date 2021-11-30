@@ -13,7 +13,7 @@
 - name: check if there is a vtgate service
   shell: service vtgate@{{ gateway.id }} status
   register: vtgate_status
-  failed_when: not(vtgate_status.rc == 3 or vtgate_status.rc == 4 or vtgate_status.rc == 0)
+  failed_when: not(vtgate_status.rc == 1 or vtgate_status.rc == 3 or vtgate_status.rc == 4 or vtgate_status.rc == 0)
 
 - name: stop old vtgate
   become: yes
@@ -24,6 +24,7 @@
     state: stopped
   changed_when: false
   when: vtgate_status.rc == 0
+  failed_when: false
 
 - name: remove old config
   become: yes
@@ -34,6 +35,7 @@
     state: absent
     path: '{{ item }}'
   when: vtgate_status.rc == 0
+  failed_when: false
 
 - name: systemctl daemon-reload
   become: yes
@@ -41,3 +43,4 @@
   systemd:
     daemon_reload: yes
   when: vtgate_status.rc == 0
+  failed_when: false

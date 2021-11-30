@@ -75,6 +75,7 @@ func (s *Server) executeElement(element *executionQueueElement) {
 			delete(queue, element.identifier)
 			mtx.Unlock()
 		}
+		decrementNumberOfOnGoingExecution()
 		return
 	}
 
@@ -98,10 +99,7 @@ func (s *Server) executeElement(element *executionQueueElement) {
 		mtx.Unlock()
 	}()
 
-	// execution is done, we decrement the current number of execution
-	mtx.Lock()
-	currentCountExec--
-	mtx.Unlock()
+	decrementNumberOfOnGoingExecution()
 }
 
 func (s *Server) compareElement(element *executionQueueElement) {
@@ -181,4 +179,10 @@ func (s *Server) cronExecutionQueueWatcher() {
 		}
 		mtx.Unlock()
 	}
+}
+
+func decrementNumberOfOnGoingExecution() {
+	mtx.Lock()
+	currentCountExec--
+	mtx.Unlock()
 }
