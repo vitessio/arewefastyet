@@ -27,8 +27,6 @@
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
     mode: '0644'
-  notify:
-    - restart vtctld
 
 - name: systemctl daemon-reload
   become: yes
