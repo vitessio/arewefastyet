@@ -19,7 +19,6 @@
 package exec
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -44,19 +43,9 @@ It handles the creation, configuration, and cleanup of the infrastructure.`,
 `,
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			defer func() {
-				errCleanUp := ex.CleanUp()
 				if errSuccess := ex.Success(); errSuccess != nil {
 					err = errSuccess
-					return
 				}
-				if errCleanUp == nil {
-					return
-				}
-				if err != nil {
-					err = fmt.Errorf("%v: %v", errCleanUp, err)
-					return
-				}
-				err = errCleanUp
 			}()
 
 			// prepare

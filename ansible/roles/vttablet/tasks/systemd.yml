@@ -10,35 +10,27 @@
 # limitations under the License.
 
 ---
-- name: check if there is a vtgate service
-  shell: service vtgate@{{ gateway.id }} status
-  register: vtgate_status
-  failed_when: not(vtgate_status.rc == 1 or vtgate_status.rc == 3 or vtgate_status.rc == 4 or vtgate_status.rc == 0)
-
-- name: stop old vtgate
+- name: install systemd units
   become: yes
   become_user: root
-  service:
-    name: 'vtgate@{{ gateway.id }}'
-    enabled: false
-    state: stopped
-  changed_when: false
-  when: vtgate_status.rc == 0
-  failed_when: false
-
-- name: remove old config
-  become: yes
-  become_user: root
+  register: vttablet_service_modified
   with_items:
-    - '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
-  file:
-    state: absent
-    path: '{{ item }}'
-  failed_when: false
+    - s: vttablet@.service
+      d: /etc/systemd/system/vttablet@.service
+    - s: mysqlctld@.service
+      d: /etc/systemd/system/mysqlctld@.service
+    - s: mysqld_exporter@.service
+      d: /etc/systemd/system/mysqld_exporter@.service
+  template:
+    src: '{{ item.s }}.j2'
+    dest: '{{ item.d }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+    mode: '0644'
 
 - name: systemctl daemon-reload
   become: yes
   become_user: root
+  when: vttablet_service_modified is changed
   systemd:
     daemon_reload: yes
-  failed_when: false

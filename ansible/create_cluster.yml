@@ -16,7 +16,11 @@
 - name: Build Vitess
   hosts: all
   roles:
-    - vitess_build
+    - role: vitess_build
+      vars:
+        - clean_vtgate: False
+        - clean_vttablet: False
+        - clean_vtctld: False
 
 - name: Start etcd
   hosts:
@@ -28,17 +32,31 @@
 
 - hosts: vtctld
   roles:
-    - vtctld
+    - role: vtctld
+      vars:
+        - clean_vtctld: False
 
 - hosts: vtgate
   roles:
     - role: vtgate
       vars:
+        - clean_vtgate: False
         - gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
 
 - hosts: vttablet
   roles:
-    - vttablet
+    - role: vttablet
+      vars:
+        - clean_vttablet: False
+
+- name: Install and build sysbench
+  hosts:
+    - all
+  tasks:
+    - name: Install sysbench
+      include_role:
+        name: sysbench
+        tasks_from: install
 
 - hosts: vtctld
   tasks:
@@ -46,44 +64,30 @@
       setup:
         gather_subset: network
 
-- hosts: vtctld
-  tasks:
     - name: print
       debug:
         msg: Groups {{ groups['vtctld'][0] }}
 
-    - name: Ensure Primary
-      shell: |
-        alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
-        for keyspace in $(vc GetKeyspaces); do
-            echo "working on ${keyspace}"
-            for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
-                echo "working on ${shard}"
-                master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
-                if [ -z "${master}" ]; then
-                  echo "setting primary for ${keyspace}/${shard}"
-                  vc InitShardPrimary -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
-                else
-                  vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
-                fi
-            done
-        done
-      changed_when: false
+    - include_role:
+        name: vtctld
+        tasks_from: ensure
 
     - name: Get VSchema for OLTP
-      ansible.builtin.copy:
+      copy:
         src: "{{ macrobenchmark_vschema_oltp }}"
         dest: /tmp/vschema_sysbench.json
         mode: '0644'
+        force: true
       when: arewefastyet_execution_type == 'oltp'
 
     - name: Get VSchema for TPCC
-      ansible.builtin.copy:
+      copy:
         src: "{{ macrobenchmark_vschema_tpcc }}"
         dest: /tmp/vschema_sysbench.json
         mode: '0644'
+        force: true
       when: arewefastyet_execution_type == 'tpcc'
 
-    - name: Ensure VSchmea
+    - name: Apply VSchmea
       shell: |
         vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main

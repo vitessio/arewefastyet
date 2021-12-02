@@ -26,6 +26,7 @@
     state: stopped
   changed_when: false
   when: mysql_status.rc == 0
+  failed_when: false
 
 # MySQLd Exporter
 
@@ -43,6 +44,7 @@
     state: stopped
   changed_when: false
   when: mysqld_exporter_status.rc == 0
+  failed_when: false
 
 # VTTablets
 
@@ -51,7 +53,7 @@
   register: vttablet_status
   failed_when: not(vttablet_status.rc == 3 or vttablet_status.rc == 4 or vttablet_status.rc == 0)
 
-- name: stop old vtgate
+- name: stop old vttablet
   become: yes
   become_user: root
   service:
@@ -60,6 +62,7 @@
     state: stopped
   changed_when: false
   when: vttablet_status.rc == 0
+  failed_when: false
 
 - name: remove old config
   become: yes
@@ -70,11 +73,11 @@
   file:
     state: absent
     path: '{{ item }}'
-  when: vttablet_status.rc == 0
+  failed_when: false
 
 - name: systemctl daemon-reload
   become: yes
   become_user: root
   systemd:
     daemon_reload: yes
-  when: vttablet_status.rc == 0
+  failed_when: false

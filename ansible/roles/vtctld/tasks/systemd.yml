@@ -10,11 +10,27 @@
 # limitations under the License.
 
 ---
-- name: restart vtctld
+- name: install config
   become: yes
   become_user: root
-  when:
-    - enable_vtctld | bool
-  service:
-    name: vtctld@{{ vitess_cell }}
-    state: restarted
+  register: vtctld_service_modified
+  with_items:
+    - s: vtctld.conf
+      d: '/etc/vitess/conf/vtctld-{{ vitess_cell }}.conf'
+    - s: vtctld@.service
+      d: /etc/systemd/system/vtctld@.service
+    - s: cell@.service
+      d: /etc/systemd/system/cell@.service
+  template:
+    src: '{{ item.s }}.j2'
+    dest: '{{ item.d }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+    mode: '0644'
+
+- name: systemctl daemon-reload
+  become: yes
+  become_user: root
+  when: vtctld_service_modified is changed
+  systemd:
+    daemon_reload: yes

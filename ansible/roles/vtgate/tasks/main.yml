@@ -45,28 +45,10 @@
     group:  '{{ vitess_group }}'
     mode: 0755
 
-- name: install systemd units
-  become: yes
-  become_user: root
-  register: vtgate_service_modified
-  changed_when: false
-  with_items:
-    - s: vtgate@.service
-      d: /etc/systemd/system/vtgate@.service
-  template:
-    src: '{{ item.s }}.j2'
-    dest: '{{ item.d }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
-    force: true
-
-- name: systemctl daemon-reload
-  become: yes
-  become_user: root
-  when: vtgate_service_modified is changed
-  systemd:
-    daemon_reload: yes
+- name: install systemd unit
+  include_role:
+    name: "vtgate"
+    tasks_from: systemd
 
 - name: install config files
   include_tasks: vtgate.yml

@@ -44,7 +44,7 @@ type (
 
 const (
 	// maxConcurJob is the maximum number of concurrent jobs that we can execute
-	maxConcurJob = 5
+	maxConcurJob = 1
 )
 
 var (

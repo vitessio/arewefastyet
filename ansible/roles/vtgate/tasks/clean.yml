@@ -10,6 +10,9 @@
 # limitations under the License.
 
 ---
+- name: re-install systemd
+  include_tasks: systemd.yml
+
 - name: clean all vtgate
   include_tasks: clean_one.yml
   loop: '{{ gateways }}'
@@ -30,3 +33,6 @@
   become_user: root
   systemd:
     daemon_reload: yes
+
+- name: remove binary
+  shell: rm -f $(which vtgate)

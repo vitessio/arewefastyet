@@ -56,29 +56,7 @@
     group: '{{ vitess_group }}'
 
 - name: install systemd units
-  become: yes
-  become_user: root
-  register: vttablet_service_modified
-  with_items:
-    - s: vttablet@.service
-      d: /etc/systemd/system/vttablet@.service
-    - s: mysqlctld@.service
-      d: /etc/systemd/system/mysqlctld@.service
-    - s: mysqld_exporter@.service
-      d: /etc/systemd/system/mysqld_exporter@.service
-  template:
-    src: '{{ item.s }}.j2'
-    dest: '{{ item.d }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
-
-- name: systemctl daemon-reload
-  become: yes
-  become_user: root
-  when: vttablet_service_modified is changed
-  systemd:
-    daemon_reload: yes
+  include_tasks: systemd.yml
 
 - name: install config files
   include_tasks: vttablet.yml
