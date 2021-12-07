@@ -13,7 +13,6 @@
 - name: install systemd units
   become: yes
   become_user: root
-  register: vtgate_service_modified
   changed_when: false
   with_items:
     - s: vtgate@.service
@@ -29,6 +28,6 @@
 - name: systemctl daemon-reload
   become: yes
   become_user: root
-  when: vtgate_service_modified is changed
+  changed_when: false
   systemd:
     daemon_reload: yes

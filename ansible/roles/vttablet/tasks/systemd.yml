@@ -13,7 +13,6 @@
 - name: install systemd units
   become: yes
   become_user: root
-  register: vttablet_service_modified
   with_items:
     - s: vttablet@.service
       d: /etc/systemd/system/vttablet@.service
@@ -31,6 +30,6 @@
 - name: systemctl daemon-reload
   become: yes
   become_user: root
-  when: vttablet_service_modified is changed
+  changed_when: false
   systemd:
     daemon_reload: yes
