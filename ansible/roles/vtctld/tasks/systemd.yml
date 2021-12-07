@@ -13,7 +13,6 @@
 - name: install config
   become: yes
   become_user: root
-  register: vtctld_service_modified
   with_items:
     - s: vtctld.conf
       d: '/etc/vitess/conf/vtctld-{{ vitess_cell }}.conf'
@@ -31,6 +30,6 @@
 - name: systemctl daemon-reload
   become: yes
   become_user: root
-  when: vtctld_service_modified is changed
+  changed_when: false
   systemd:
     daemon_reload: yes
