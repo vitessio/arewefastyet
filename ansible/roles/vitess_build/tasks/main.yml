@@ -33,13 +33,13 @@
     - name: Build Vitess Binaries
       changed_when: false
       shell: |
-        export TMPDIR=~/tmp
+        export TMPDIR=/root/tmp
         cd /go/src/vitess.io/vitess
         make build
 
     - name: Install Vitess Binaries
       shell: |
-        export TMPDIR=~/tmp
+        export TMPDIR=/root/tmp
         cd /go/src/vitess.io/vitess
         make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
       changed_when: false
