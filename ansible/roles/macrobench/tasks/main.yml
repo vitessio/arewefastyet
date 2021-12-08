@@ -31,6 +31,7 @@
     - name: Install arewefastyet CLI
       shell: |
         cd /go/src/github.com/vitessio/arewefastyet
+        rm -f /usr/bin/arewefastyetcli
         cp arewefastyetcli /usr/bin/arewefastyetcli
       changed_when: false
 
