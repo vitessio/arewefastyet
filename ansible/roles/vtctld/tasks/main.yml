@@ -10,12 +10,6 @@
 # limitations under the License.
 
 ---
-- name: make sure vtctld is stopped
-  when: clean_vtctld | bool
-  include_role:
-    name: "vtctld"
-    tasks_from: "clean"
-
 - name: ensure vitess group
   become: yes
   become_user: root
@@ -30,6 +24,13 @@
     name: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
     state: present
+
+- name: make sure vtctld is stopped
+  when: clean_vtctld | bool
+  include_role:
+    name: "vtctld"
+    tasks_from: "clean"
+
 
 - name: ensure vitess directories
   become: yes
