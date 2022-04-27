@@ -93,9 +93,9 @@ func (s *Server) createCrons() error {
 
 func (s *Server) getConfigFiles() map[string]string {
 	configs := map[string]string{
-		"micro": s.microbenchConfigPath,
-		"oltp":  s.macrobenchConfigPathOLTP,
-		"tpcc":  s.macrobenchConfigPathTPCC,
+		// "micro": s.microbenchConfigPath,
+		"oltp": s.macrobenchConfigPathOLTP,
+		// "tpcc":  s.macrobenchConfigPathTPCC,
 	}
 	return configs
 }
