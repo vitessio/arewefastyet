@@ -10,11 +10,6 @@
 # limitations under the License.
 
 ---
-- name: Clean vtdataroot
-  file:
-    path: '{{ vitess_root }}'
-    state: absent
-
 - name: Make sure vtctld is stopped
   when: clean_vtctld | bool
   include_role:
@@ -32,3 +27,9 @@
   include_role:
     name: "vttablet"
     tasks_from: "clean"
+
+- name: Clean vtdataroot
+  file:
+    path: '{{ vitess_root }}'
+    state: absent
+
