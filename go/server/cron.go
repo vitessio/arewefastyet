@@ -76,16 +76,17 @@ func (s *Server) createCrons() error {
 	queue = make(executionQueue)
 
 	err := createIndividualCron(s.cronSchedule, []func(){
-		s.branchCronHandler,
-		s.tagsCronHandler,
+		s.analyticsCronHandler,
+		// s.branchCronHandler,
+		// s.tagsCronHandler,
 	})
 	if err != nil {
 		return err
 	}
-	err = createIndividualCron(s.cronSchedulePullRequests, []func(){s.pullRequestsCronHandler})
-	if err != nil {
-		return err
-	}
+	// err = createIndividualCron(s.cronSchedulePullRequests, []func(){s.pullRequestsCronHandler})
+	// if err != nil {
+	// 	return err
+	// }
 
 	go s.cronExecutionQueueWatcher()
 	return nil
