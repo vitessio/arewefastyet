@@ -23,7 +23,6 @@ LimitNPROC=infinity
 LimitNOFILE=infinity
 LimitMEMLOCK=infinity
 ExecStart=/bin/bash -c 'vtgate \
-    -gateway_implementation discoverygateway \
     -service_map "grpc-vtgateservice" \
     -alsologtostderr \
     -enable_buffer \
