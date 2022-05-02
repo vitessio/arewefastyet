@@ -18,7 +18,7 @@
         echo "working on ${keyspace}"
         for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
             echo "working on ${shard}"
-            master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
+            master=$(vc ListShardTablets ${keyspace}/${shard} | grep primary)
             if [ -z "${master}" ]; then
               echo "setting primary for ${keyspace}/${shard}"
               vc InitShardPrimary -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')

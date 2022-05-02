@@ -9,6 +9,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Install deps
+  include_tasks: install_deps.yml
+
 - name: Turn on Jumbo Frames
   become: true
   become_user: root
