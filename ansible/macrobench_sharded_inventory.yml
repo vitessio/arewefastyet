@@ -30,7 +30,7 @@ all:
       hosts:
         DEVICE_IP_0:
       vars:
-        vtgate_web_ports: "15001,15002,15003,15004,15005,15006"
+        vtgate_web_ports: "15001,15002,15003"
     sysbench:
       hosts:
         DEVICE_IP_0:
@@ -45,8 +45,8 @@ all:
         DEVICE_IP_0:
     vtgate:
       vars:
-        vtgate_query_cache_size: 1000
-        vtgate_max_goproc: 12
+        vtgate_query_cache_size: 5000
+        vtgate_max_goproc: 42
       hosts:
         DEVICE_IP_0:
           gateways:
@@ -62,23 +62,11 @@ all:
               port: 15003
               mysql_port: 13308
               grpc_port: 15308
-            - id: 4
-              port: 15004
-              mysql_port: 13309
-              grpc_port: 15309
-            - id: 5
-              port: 15005
-              mysql_port: 13310
-              grpc_port: 15310
-            - id: 6
-              port: 15006
-              mysql_port: 13311
-              grpc_port: 15311
     vttablet:
       vars:
-        vitess_memory_ratio: 0.6
-        vttablet_query_cache_size: 10000
-        vttablet_max_goproc: 24
+        vitess_memory_ratio: 0.8
+        vttablet_query_cache_size: 5000
+        vttablet_max_goproc: 42
       hosts:
         DEVICE_IP_0:
           tablets:
@@ -87,16 +75,34 @@ all:
               shard: -80
               pool_size: 500
               transaction_cap: 2000
-              port: 16001
-              grpc_port: 17001
-              mysql_port: 18001
+              port: 16011
+              grpc_port: 17011
+              mysql_port: 18011
               mysqld_exporter_port: 9104
+            - id: 1002
+              keyspace: main
+              shard: -80
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16012
+              grpc_port: 17012
+              mysql_port: 18012
+              mysqld_exporter_port: 9105
             - id: 2001
               keyspace: main
               shard: 80-
               pool_size: 500
               transaction_cap: 2000
-              port: 16002
-              grpc_port: 17002
-              mysql_port: 18002
-              mysqld_exporter_port: 9105
+              port: 16021
+              grpc_port: 17021
+              mysql_port: 18021
+              mysqld_exporter_port: 9106
+            - id: 2002
+              keyspace: main
+              shard: 80-
+              pool_size: 500
+              transaction_cap: 2000
+              port: 160022
+              grpc_port: 17022
+              mysql_port: 18022
+              mysqld_exporter_port: 9107
