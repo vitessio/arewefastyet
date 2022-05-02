@@ -28,8 +28,29 @@
     name: "vttablet"
     tasks_from: "clean"
 
+- name: Mount the Drive
+  mount:
+    path: /vt
+    src: '/dev/{{ storage_device.partition }}'
+    fstype: xfs
+    state: unmounted
+  when: storage_device is defined
+
 - name: Clean vtdataroot
   file:
     path: '{{ vitess_root }}'
     state: absent
 
+- name: create folder for mount
+  file:
+    path: /vt
+    state: directory
+    recurse: yes
+
+- name: Mount the Drive
+  mount:
+    path: /vt
+    src: '/dev/{{ storage_device.partition }}'
+    fstype: xfs
+    state: mounted
+  when: storage_device is defined
