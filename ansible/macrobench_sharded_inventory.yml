@@ -102,7 +102,7 @@ all:
               shard: 80-
               pool_size: 500
               transaction_cap: 2000
-              port: 160022
+              port: 16022
               grpc_port: 17022
               mysql_port: 18022
               mysqld_exporter_port: 9107
