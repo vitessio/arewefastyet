@@ -33,7 +33,7 @@
     device: '/dev/{{ storage_device.partition }}'
     fstype: xfs
 
-- name: Mount the Drive
+- name: Unmount the Drive
   mount:
     path: /vt
     src: '/dev/{{ storage_device.partition }}'
