@@ -44,7 +44,7 @@
       - tmux
       - htop
       - jq
-  when: ansible_os_family == 'Ubuntu'
+  when: ansible_os_family == 'Debian'
 
 - name: Install base dependencies
   become: yes

@@ -28,6 +28,11 @@
     name: "vttablet"
     tasks_from: "clean"
 
+- name: Format the Drive
+  filesystem:
+    device: '/dev/{{ storage_device.partition }}'
+    fstype: xfs
+
 - name: Mount the Drive
   mount:
     path: /vt

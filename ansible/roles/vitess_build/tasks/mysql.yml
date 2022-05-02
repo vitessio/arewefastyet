@@ -14,8 +14,7 @@
   apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
   with_items:
     - mysql-server
-    - mysql-server
-  when: ansible_os_family == 'Ubuntu'
+  when: ansible_os_family == 'Debian'
 
 - name: Install MySQL dnf
   dnf:
