@@ -194,6 +194,8 @@ func (s *Server) Run() error {
 	// Information page
 	s.router.GET("/cron", s.cronHandler)
 
+	s.router.GET("/analytics", s.analyticsHandler)
+
 	// Home page
 	s.router.GET("/", s.homeHandler)
 
