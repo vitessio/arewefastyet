@@ -16,7 +16,7 @@
     alias vc="vtctlclient --server {{ groups['vtctld'][0] }}:15999"
     for keyspace in $(vc GetKeyspaces); do
         echo "working on ${keyspace}"
-        for shard in $(- ${keyspace} | jq -r 'keys[]'); do
+        for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
             echo "working on ${shard}"
             master=$(vc ListShardTablets ${keyspace}/${shard} | grep primary)
             if [ -z "${master}" ]; then
