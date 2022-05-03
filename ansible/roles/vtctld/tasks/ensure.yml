@@ -28,7 +28,6 @@
         done
     done
   changed_when: false
-  failed_when: false
 
 - name: Ensure Master
   when: not ensure.rc == 0
