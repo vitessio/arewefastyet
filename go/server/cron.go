@@ -112,16 +112,16 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	if found {
 		return
 	}
-	exists, err := s.checkIfExecutionExists(element.identifier)
-	if err != nil {
-		slog.Error(err.Error())
-		return
-	}
-	if !exists {
-		queue[element.identifier] = element
-		slog.Infof("%+v is added to the queue", element.identifier)
+	// exists, err := s.checkIfExecutionExists(element.identifier)
+	// if err != nil {
+	// 	slog.Error(err.Error())
+	// 	return
+	// }
+	// if !exists {
+	queue[element.identifier] = element
+	slog.Infof("%+v is added to the queue", element.identifier)
 
-		// we sleep here to avoid adding too many similar elements to the queue at the same time.
-		time.Sleep(2 * time.Second)
-	}
+	// we sleep here to avoid adding too many similar elements to the queue at the same time.
+	time.Sleep(2 * time.Second)
+	// }
 }
