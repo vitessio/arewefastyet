@@ -19,7 +19,19 @@
         state: present
         update_cache: true
 
-    - name: Partition the Drive
+    - name: Remove the Drive
+      parted:
+        label: gpt
+        name: data
+        device: '/dev/{{ disk.key }}'
+        number: 1
+        state: absent
+      loop: '{{ ansible_devices|dict2items }}'
+      when: disk.key.startswith(storage_device.device) and ((disk.value.partitions | length) == 0)
+      loop_control:
+        loop_var: disk
+
+    - name: Create the Drive
       parted:
         label: gpt
         name: data
