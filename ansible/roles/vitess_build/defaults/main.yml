@@ -44,3 +44,5 @@ vitess_root: '/vt'
 clean_vtgate: True
 clean_vttablet: True
 clean_vtctld: True
+vitess_group: vitess
+vitess_user: vitess
