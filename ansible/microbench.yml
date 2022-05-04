@@ -10,6 +10,21 @@
 # limitations under the License.
 
 ---
+- name: ensure vitess group
+  become: yes
+  become_user: root
+  group:
+    name: '{{ vitess_group }}'
+    state: present
+
+- name: ensure vitess user
+  become: yes
+  become_user: root
+  user:
+    name: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+    state: present
+
 # Even if this benchmark is a micro benchmark, we make sure to clean previous trace of execution
 - name: Clean Post Benchmark
   import_playbook: clean_macrobench.yml
