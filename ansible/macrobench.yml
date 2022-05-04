@@ -10,20 +10,12 @@
 # limitations under the License.
 
 ---
-- name: ensure vitess group
-  become: yes
-  become_user: root
-  group:
-    name: '{{ vitess_group }}'
-    state: present
-
-- name: ensure vitess user
-  become: yes
-  become_user: root
-  user:
-    name: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    state: present
+- hosts: all
+  tasks:
+    - name: Ensure users are created
+      include_role:
+        name: vitess_build
+        tasks_from: create_users
 
 - name: Create Cluster
   import_playbook: create_cluster.yml

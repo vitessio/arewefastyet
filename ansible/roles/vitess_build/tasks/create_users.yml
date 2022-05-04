@@ -1,4 +1,4 @@
-# Copyright 2021 The Vitess Authors.
+# Copyright 2022 The Vitess Authors.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -10,17 +10,17 @@
 # limitations under the License.
 
 ---
-- hosts: microbench
-  tasks:
-    - name: Ensure users are created
-      include_role:
-        name: vitess_build
-        tasks_from: create_users
+- name: ensure vitess group
+  become: yes
+  become_user: root
+  group:
+    name: '{{ vitess_group }}'
+    state: present
 
-# Even if this benchmark is a micro benchmark, we make sure to clean previous trace of execution
-- name: Clean Post Benchmark
-  import_playbook: clean_macrobench.yml
-
-- hosts: microbench
-  roles:
-    - microbench
+- name: ensure vitess user
+  become: yes
+  become_user: root
+  user:
+    name: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+    state: present
