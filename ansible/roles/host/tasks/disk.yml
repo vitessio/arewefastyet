@@ -19,18 +19,6 @@
         state: present
         update_cache: true
 
-    - name: Remove the Drive
-      parted:
-        label: gpt
-        name: data
-        device: '/dev/{{ disk.key }}'
-        number: 1
-        state: absent
-      loop: '{{ ansible_devices|dict2items }}'
-      when: disk.key.startswith(storage_device.device) and ((disk.value.partitions | length) == 0)
-      loop_control:
-        loop_var: disk
-
     - name: Create the Drive
       parted:
         label: gpt
@@ -60,4 +48,18 @@
         src: '/dev/{{ storage_device.partition }}'
         fstype: xfs
         state: mounted
+
+    - name: Register files to delete in /vt
+      find:
+        paths: /vt
+        patterns: "*"
+        file_type: any
+        hidden: true
+      register: files_to_delete
+
+    - name: Delete files in /vt
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ files_to_delete.files }}"
   when: storage_device is defined
