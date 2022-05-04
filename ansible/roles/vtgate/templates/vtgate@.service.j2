@@ -39,7 +39,6 @@ ExecStart=/bin/bash -c 'vtgate \
     -topo_implementation ${TOPO_IMPLEMENTATION} \
     -topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \
     -log_dir ${VTROOT}/tmp/vtgate-%i \
-    -log_queries_to_file ${VTROOT}/tmp/vtgate-%i/vtgate_querylog.txt \
     ${EXTRA_VTGATE_FLAGS}'
 
 [Install]
