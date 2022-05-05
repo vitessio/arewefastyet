@@ -64,10 +64,6 @@
       setup:
         gather_subset: network
 
-    - name: print
-      debug:
-        msg: Groups {{ groups['vtctld'][0] }}
-
     - include_role:
         name: vtctld
         tasks_from: ensure
