@@ -76,17 +76,17 @@ func (s *Server) createCrons() error {
 	queue = make(executionQueue)
 
 	err := createIndividualCron(s.cronSchedule, []func(){
-		s.analyticsCronHandler,
+		// s.analyticsCronHandler,
 		// s.branchCronHandler,
 		// s.tagsCronHandler,
 	})
 	if err != nil {
 		return err
 	}
-	// err = createIndividualCron(s.cronSchedulePullRequests, []func(){s.pullRequestsCronHandler})
-	// if err != nil {
-	// 	return err
-	// }
+	err = createIndividualCron(s.cronSchedulePullRequests, []func(){s.pullRequestsCronHandler})
+	if err != nil {
+		return err
+	}
 
 	go s.cronExecutionQueueWatcher()
 	return nil
@@ -94,9 +94,9 @@ func (s *Server) createCrons() error {
 
 func (s *Server) getConfigFiles() map[string]string {
 	configs := map[string]string{
-		// "micro": s.microbenchConfigPath,
-		"oltp": s.macrobenchConfigPathOLTP,
-		// "tpcc":  s.macrobenchConfigPathTPCC,
+		"micro": s.microbenchConfigPath,
+		"oltp":  s.macrobenchConfigPathOLTP,
+		"tpcc":  s.macrobenchConfigPathTPCC,
 	}
 	return configs
 }
@@ -112,16 +112,16 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	if found {
 		return
 	}
-	// exists, err := s.checkIfExecutionExists(element.identifier)
-	// if err != nil {
-	// 	slog.Error(err.Error())
-	// 	return
-	// }
-	// if !exists {
-	queue[element.identifier] = element
-	slog.Infof("%+v is added to the queue", element.identifier)
+	exists, err := s.checkIfExecutionExists(element.identifier)
+	if err != nil {
+		slog.Error(err.Error())
+		return
+	}
+	if !exists {
+		queue[element.identifier] = element
+		slog.Infof("%+v is added to the queue", element.identifier)
 
-	// we sleep here to avoid adding too many similar elements to the queue at the same time.
-	time.Sleep(2 * time.Second)
-	// }
+		// we sleep here to avoid adding too many similar elements to the queue at the same time.
+		time.Sleep(2 * time.Second)
+	}
 }

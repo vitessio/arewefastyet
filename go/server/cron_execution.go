@@ -60,7 +60,11 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 		return fmt.Errorf(fmt.Sprintf("prepare outputs step error: %v", err))
 	}
 
-	err = e.ExecuteWithTimeout(time.Hour * 2)
+	timeout := 2 * time.Hour
+	if identifier.BenchmarkType == "micro" {
+		timeout = 4 * time.Hour
+	}
+	err = e.ExecuteWithTimeout(timeout)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("execution step error: %v", err))
 	}
@@ -136,8 +140,8 @@ func (s *Server) compareElement(element *executionQueueElement) {
 func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, error) {
 	checkStatus := []struct {
 		status string
-		today bool
-	} {
+		today  bool
+	}{
 		{status: exec.StatusFinished, today: false},
 	}
 	for _, status := range checkStatus {
