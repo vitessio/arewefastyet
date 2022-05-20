@@ -36,6 +36,7 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
       --web-cron-nb-retry int                    Number of retries allowed for each cron job. (default 1)
       --web-cron-schedule string                 Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON. (default "@midnight")
       --web-cron-schedule-pull-requests string   Execution CRON schedule for pull requests benchmarks. An empty string will result in no CRON. Defaults to an execution every 5 minutes. (default "*/5 * * * *")
+      --web-cron-schedule-tags string            Execution CRON schedule for tags/releases benchmarks. An empty string will result in no CRON. Defaults to an execution every minute. (default "*/1 * * * *")
       --web-macrobench-oltp-config string        Path to the configuration file used to execute OLTP macrobenchmark.
       --web-macrobench-tpcc-config string        Path to the configuration file used to execute TPCC macrobenchmark.
       --web-microbench-config string             Path to the configuration file used to execute microbenchmark.

@@ -46,6 +46,7 @@ const (
 	flagMacroBenchConfigFileTPCC             = "web-macrobench-tpcc-config"
 	flagCronSchedule                         = "web-cron-schedule"
 	flagCronSchedulePullRequests             = "web-cron-schedule-pull-requests"
+	flagCronScheduleTags                     = "web-cron-schedule-tags"
 	flagPullRequestLabelTrigger              = "web-pr-label-trigger"
 	flagPullRequestLabelTriggerWithPlannerV3 = "web-pr-label-trigger-planner-v3"
 	flagCronNbRetry                          = "web-cron-nb-retry"
@@ -68,6 +69,7 @@ type Server struct {
 
 	cronSchedule             string
 	cronSchedulePullRequests string
+	cronScheduleTags         string
 	cronNbRetry              int
 	microbenchConfigPath     string
 	macrobenchConfigPathOLTP string
@@ -93,6 +95,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
 	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON.")
 	cmd.Flags().StringVar(&s.cronSchedulePullRequests, flagCronSchedulePullRequests, "*/5 * * * *", "Execution CRON schedule for pull requests benchmarks. An empty string will result in no CRON. Defaults to an execution every 5 minutes.")
+	cmd.Flags().StringVar(&s.cronScheduleTags, flagCronScheduleTags, "*/1 * * * *", "Execution CRON schedule for tags/releases benchmarks. An empty string will result in no CRON. Defaults to an execution every minute.")
 	cmd.Flags().IntVar(&s.cronNbRetry, flagCronNbRetry, 1, "Number of retries allowed for each cron job.")
 	cmd.Flags().StringVar(&s.prLabelTrigger, flagPullRequestLabelTrigger, "Benchmark me", "GitHub Pull Request label that will trigger the execution of new execution.")
 	cmd.Flags().StringVar(&s.prLabelTriggerV3, flagPullRequestLabelTriggerWithPlannerV3, "Benchmark me (V3)", "GitHub Pull Request label that will trigger the execution of new execution using the V3 planner.")
@@ -110,6 +113,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagMacroBenchConfigFileTPCC, cmd.Flags().Lookup(flagMacroBenchConfigFileTPCC))
 	_ = viper.BindPFlag(flagCronSchedule, cmd.Flags().Lookup(flagCronSchedule))
 	_ = viper.BindPFlag(flagCronSchedulePullRequests, cmd.Flags().Lookup(flagCronSchedulePullRequests))
+	_ = viper.BindPFlag(flagCronScheduleTags, cmd.Flags().Lookup(flagCronScheduleTags))
 	_ = viper.BindPFlag(flagCronNbRetry, cmd.Flags().Lookup(flagCronNbRetry))
 	_ = viper.BindPFlag(flagPullRequestLabelTrigger, cmd.Flags().Lookup(flagPullRequestLabelTrigger))
 	_ = viper.BindPFlag(flagPullRequestLabelTriggerWithPlannerV3, cmd.Flags().Lookup(flagPullRequestLabelTriggerWithPlannerV3))

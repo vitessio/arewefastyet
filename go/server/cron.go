@@ -53,17 +53,15 @@ var (
 	queue            executionQueue
 )
 
-func createIndividualCron(schedule string, jobs []func()) error {
+func createIndividualCron(schedule string, job func()) error {
 	if schedule == "" {
 		return nil
 	}
 
 	c := cron.New()
-	for _, job := range jobs {
-		_, err := c.AddFunc(schedule, job)
-		if err != nil {
-			return err
-		}
+	_, err := c.AddFunc(schedule, job)
+	if err != nil {
+		return err
 	}
 	c.Start()
 	return nil
@@ -75,18 +73,20 @@ func (s *Server) createCrons() error {
 	}
 	queue = make(executionQueue)
 
-	err := createIndividualCron(s.cronSchedule, []func(){
-		s.branchCronHandler,
-		s.tagsCronHandler,
-	})
-	if err != nil {
-		return err
+	crons := []struct {
+		schedule string
+		f        func()
+	}{
+		{schedule: s.cronSchedule, f: s.branchCronHandler},
+		{schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
+		{schedule: s.cronScheduleTags, f: s.tagsCronHandler},
 	}
-	err = createIndividualCron(s.cronSchedulePullRequests, []func(){s.pullRequestsCronHandler})
-	if err != nil {
-		return err
+	for _, c := range crons {
+		err := createIndividualCron(c.schedule, c.f)
+		if err != nil {
+			return err
+		}
 	}
-
 	go s.cronExecutionQueueWatcher()
 	return nil
 }
