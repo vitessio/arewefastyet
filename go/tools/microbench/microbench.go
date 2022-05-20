@@ -171,17 +171,23 @@ func Run(cfg Config) error {
 			log.Println(err.Error())
 		}
 
-		profiles := []string{profileMem, profileCPU}
-		for _, profile := range profiles {
-			err = benchmark.executeProfile(cfg.RootDir, profile, w)
-			if err != nil && err.Error() != errorInvalidProfileType {
-				// not stopping execution on error
-				log.Println(err.Error())
-			}
+		if cfg.runProfile {
+			benchmark.runProfiles(cfg, w)
 		}
 		log.Println()
 	}
 	return nil
+}
+
+func (b benchmark) runProfiles(cfg Config, w *os.File) {
+	profiles := []string{profileMem, profileCPU}
+	for _, profile := range profiles {
+		err := b.executeProfile(cfg.RootDir, profile, w)
+		if err != nil && err.Error() != errorInvalidProfileType {
+			// not stopping execution on error
+			log.Println(err.Error())
+		}
+	}
 }
 
 func findBenchmarks(loaded []*packages.Package) (benchmarks []benchmark, err error) {

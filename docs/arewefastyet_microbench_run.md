@@ -22,6 +22,7 @@ arewastyet microbenchmark run ~/vitess ./go/vt/sqlparser output.txt
 ```
   -h, --help                             help for run
       --microbench-exec-uuid string      UUID of the parent execution, an empty string will set to NULL.
+      --microbench-run-profile           Run goproc profiling for each micro-benchmark.
       --planetscale-db-branch string     PlanetscaleDB branch to use. (default "main")
       --planetscale-db-database string   PlanetscaleDB database name.
       --planetscale-db-host string       Hostname of the PlanetscaleDB database.
