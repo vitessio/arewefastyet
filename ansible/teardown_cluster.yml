@@ -20,9 +20,9 @@
         tasks_from: kill
 
     - name: Stop arewefastyetcli
-        include_role:
-          name: arewefastyet
-          tasks_from: kill
+      include_role:
+        name: arewefastyet
+        tasks_from: kill
 
     - name: Teardown etcd
       include_role:
