@@ -24,41 +24,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
 
-func (s *Server) analyticsCronHandler() {
-	// update the local clone of vitess from remote
-	s.vitessPathMu.Lock()
-	defer s.vitessPathMu.Unlock()
-	err := s.pullLocalVitess()
-	if err != nil {
-		slog.Error(err.Error())
-		return
-	}
-
-	elems := s.analyticsCreateCronHandler()
-	for _, elem := range elems {
-		s.addToQueue(elem)
-	}
-}
-
-func (s *Server) analyticsCreateCronHandler() []*executionQueueElement {
-	var elements []*executionQueueElement
-	configs := s.getConfigFiles()
-
-	ref := "331f4e837388547b60b72d25edffc31ffb689f4f"
-
-	// We compare main with the previous hash of main and with the latest release
-	for configType, configFile := range configs {
-		if configType == "micro" {
-			elements = append(elements, s.createSimpleExecutionQueueElement("cron_analytics", configFile, ref, configType, "", true, 0))
-		} else {
-			for _, version := range macrobench.PlannerVersions {
-				elements = append(elements, s.createSimpleExecutionQueueElement("cron_analytics", configFile, ref, configType, string(version), true, 0))
-			}
-		}
-	}
-	return elements
-}
-
 func (s *Server) branchCronHandler() {
 	// update the local clone of vitess from remote
 	s.vitessPathMu.Lock()
@@ -203,21 +168,6 @@ func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(configFil
 	return elements
 }
 
-func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion string, notify bool, pullNb int) *executionQueueElement {
-	return &executionQueueElement{
-		config:       configFile,
-		retry:        s.cronNbRetry,
-		notifyAlways: notify,
-		identifier: executionIdentifier{
-			GitRef:         ref,
-			Source:         source,
-			BenchmarkType:  configType,
-			PlannerVersion: plannerVersion,
-			PullNb:         pullNb,
-		},
-	}
-}
-
 func (s *Server) pullRequestsCronHandler() {
 	configs := s.getConfigFiles()
 	prLabelsInfo := []struct {
@@ -238,10 +188,13 @@ func (s *Server) pullRequestsCronHandler() {
 		}
 
 		for _, prInfo := range prInfos {
+			ref := prInfo.SHA
+			previousGitRef := prInfo.Base
+			pullNb := prInfo.Number
+			if ref == "" || pullNb == 0 {
+				continue
+			}
 			for configType, configFile := range configs {
-				ref := prInfo.SHA
-				previousGitRef := prInfo.Base
-				pullNb := prInfo.Number
 				if configType == "micro" {
 					elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, "", pullNb)...)
 				} else {
@@ -312,5 +265,20 @@ func (s *Server) tagsCronHandler() {
 	}
 	for _, element := range elements {
 		s.addToQueue(element)
+	}
+}
+
+func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion string, notify bool, pullNb int) *executionQueueElement {
+	return &executionQueueElement{
+		config:       configFile,
+		retry:        s.cronNbRetry,
+		notifyAlways: notify,
+		identifier: executionIdentifier{
+			GitRef:         ref,
+			Source:         source,
+			BenchmarkType:  configType,
+			PlannerVersion: plannerVersion,
+			PullNb:         pullNb,
+		},
 	}
 }
