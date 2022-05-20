@@ -107,10 +107,16 @@ func (s *Server) executeElement(element *executionQueueElement) {
 }
 
 func (s *Server) compareElement(element *executionQueueElement) {
+	// map that contains all the comparison we saw and analyzed
+	seen := map[executionIdentifier]bool{}
 	done := 0
 	for done != len(element.compareWith) {
 		time.Sleep(1 * time.Second)
 		for _, comparer := range element.compareWith {
+			// checking if we have already seen this comparison, if we did, we can skip it.
+			if _, ok := seen[comparer]; ok {
+				continue
+			}
 			comparerUUID, err := exec.GetFinishedExecution(s.dbClient, comparer.GitRef, comparer.Source, comparer.BenchmarkType, comparer.PlannerVersion, comparer.PullNb)
 			if err != nil {
 				slog.Error(err)
@@ -131,6 +137,7 @@ func (s *Server) compareElement(element *executionQueueElement) {
 					slog.Error(err)
 					return
 				}
+				seen[comparer] = true
 				done++
 			}
 		}
