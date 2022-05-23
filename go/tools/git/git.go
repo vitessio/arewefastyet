@@ -135,7 +135,7 @@ func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	}
 	var latestReleases []*Release
 	for _, release := range allReleases {
-		if release.Number[0] > 6 {
+		if release.Number[0] >= 12 {
 			latestReleases = append(latestReleases, release)
 		}
 	}
@@ -198,7 +198,7 @@ func GetLatestVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) 
 	}
 	var latestReleaseBranches []*Release
 	for _, release := range res {
-		if release.Number[0] > 6 {
+		if release.Number[0] >= 12 {
 			latestReleaseBranches = append(latestReleaseBranches, release)
 		}
 	}
