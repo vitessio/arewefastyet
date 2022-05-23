@@ -50,3 +50,15 @@
 - hosts: frontend
   roles:
     - role: cloudalchemy.grafana
+
+- hosts: frontend
+  tasks:
+    - name: encrypt grafana datasource secrets
+      shell: |
+        grafana-cli admin data-migration encrypt-datasource-passwords
+
+    - name: restart grafana service
+      service:
+        name: grafana
+        state: restarted
+        enabled: yes
