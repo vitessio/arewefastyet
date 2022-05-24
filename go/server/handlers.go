@@ -62,10 +62,32 @@ func (s *Server) cronHandler(c *gin.Context) {
 	})
 }
 
-func (s *Server) analyticsHandler(c *gin.Context) {
+func (s *Server) analyticsHandlerOLTP(c *gin.Context) {
 	planner := getPlannerVersion(c)
 
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron_analytics", planner, 31, s.dbClient)
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+
+	for i, data := range oltpData {
+		m, err := metrics.GetExecutionMetricsSQL(s.dbClient, data.ExecUUID)
+		if err != nil {
+			slog.Warn(err.Error())
+		}
+		oltpData[i].Metrics = m
+	}
+
+	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
+		"title":     "Vitess benchmark - analytics",
+		"data_oltp": oltpData,
+	})
+}
+
+func (s *Server) analyticsHandlerTPCC(c *gin.Context) {
+	planner := getPlannerVersion(c)
+
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron_analytics", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
