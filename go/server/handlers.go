@@ -78,9 +78,13 @@ func (s *Server) analyticsHandlerOLTP(c *gin.Context) {
 		oltpData[i].Metrics = m
 	}
 
+	variation, variationPercentage := macrobench.GetVarianceForMacroBenchmarks(oltpData)
+
 	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
-		"title":     "Vitess benchmark - analytics",
-		"data_oltp": oltpData,
+		"title":                "Vitess benchmark - analytics",
+		"data_oltp":            oltpData,
+		"variation":            variation,
+		"variation_percentage": variationPercentage,
 	})
 }
 
@@ -100,9 +104,13 @@ func (s *Server) analyticsHandlerTPCC(c *gin.Context) {
 		oltpData[i].Metrics = m
 	}
 
+	variation, variationPercentage := macrobench.GetVarianceForMacroBenchmarks(oltpData)
+
 	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
-		"title":     "Vitess benchmark - analytics",
-		"data_oltp": oltpData,
+		"title":                "Vitess benchmark - analytics",
+		"data_oltp":            oltpData,
+		"variation":            variation,
+		"variation_percentage": variationPercentage,
 	})
 }
 

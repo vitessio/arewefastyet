@@ -47,6 +47,60 @@
             </tr>
             </thead>
             <tbody>
+            <tr>
+                <td>n/a</td>
+                <td>{{ formatFloat .variation.Result.QPS.Total }}</td>
+                <td>{{ formatFloat .variation.Result.QPS.Reads }}</td>
+                <td>{{ formatFloat .variation.Result.QPS.Writes }}</td>
+                <td>{{ formatFloat .variation.Result.QPS.Other }}</td>
+                <td>{{ formatFloat .variation.Result.TPS }}</td>
+                <td>{{ formatFloat .variation.Result.Latency }}</td>
+                <td>n/a</td>
+                <td>{{ formatFloat .variation.Metrics.TotalComponentsCPUTime }}</td>
+                <td>{{ formatFloat (index .variation.Metrics.ComponentsCPUTime "vtgate") }}</td>
+                <td>{{ formatFloat (index .variation.Metrics.ComponentsCPUTime "vttablet") }}</td>
+                <td>{{ formatBytes .variation.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                <td>{{ formatBytes (index .variation.Metrics.ComponentsMemStatsAllocBytes "vtgate") }}</td>
+                <td>{{ formatBytes (index .variation.Metrics.ComponentsMemStatsAllocBytes "vttablet") }}</td>
+            </tr>
+            <tr>
+                <td>n/a</td>
+                <td>{{ formatFloat .variation_percentage.Result.QPS.Total }}</td>
+                <td>{{ formatFloat .variation_percentage.Result.QPS.Reads }}</td>
+                <td>{{ formatFloat .variation_percentage.Result.QPS.Writes }}</td>
+                <td>{{ formatFloat .variation_percentage.Result.QPS.Other }}</td>
+                <td>{{ formatFloat .variation_percentage.Result.TPS }}</td>
+                <td>{{ formatFloat .variation_percentage.Result.Latency }}</td>
+                <td>n/a</td>
+                <td>{{ formatFloat .variation_percentage.Metrics.TotalComponentsCPUTime }}</td>
+                <td>{{ formatFloat (index .variation_percentage.Metrics.ComponentsCPUTime "vtgate") }}</td>
+                <td>{{ formatFloat (index .variation_percentage.Metrics.ComponentsCPUTime "vttablet") }}</td>
+                <td>{{ formatFloat .variation_percentage.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                <td>{{ formatFloat (index .variation_percentage.Metrics.ComponentsMemStatsAllocBytes "vtgate") }}</td>
+                <td>{{ formatFloat (index .variation_percentage.Metrics.ComponentsMemStatsAllocBytes "vttablet") }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped table-hover table-sm table-bordered">
+            <thead>
+            <tr>
+                <th scope="col" class="text-center">UUID</th>
+                <th scope="col" class="text-center">QPS</th>
+                <th scope="col" class="text-center">Reads</th>
+                <th scope="col" class="text-center">Writes</th>
+                <th scope="col" class="text-center">Other</th>
+                <th scope="col" class="text-center">TPS</th>
+                <th scope="col" class="text-center">Latency</th>
+                <th scope="col" class="text-center">Errors</th>
+                <th scope="col" class="text-center">CPU Total</th>
+                <th scope="col" class="text-center">CPU Gate</th>
+                <th scope="col" class="text-center">CPU Tablet</th>
+                <th scope="col" class="text-center">Mem Total</th>
+                <th scope="col" class="text-center">Mem Gate</th>
+                <th scope="col" class="text-center">Mem Tablet</th>
+            </tr>
+            </thead>
+            <tbody>
             {{range $val := .data_oltp}}
             <tr>
                 <td>{{ first8Letters ($val.ExecUUID) }}</td>
