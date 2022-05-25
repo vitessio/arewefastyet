@@ -200,6 +200,7 @@ func (s *Server) Run() error {
 
 	s.router.GET("/analytics", s.analyticsHandlerOLTP)
 	s.router.GET("/analytics_tpcc", s.analyticsHandlerTPCC)
+	s.router.GET("/analytics_mixed", s.analyticsHandlerMixed)
 
 	// Home page
 	s.router.GET("/", s.homeHandler)

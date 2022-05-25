@@ -49,10 +49,10 @@ func (s *Server) analyticsCreateCronHandler() []*executionQueueElement {
 	// We compare main with the previous hash of main and with the latest release
 	for configType, configFile := range configs {
 		if configType == "micro" {
-			elements = append(elements, s.createSimpleExecutionQueueElement("cron_analytics", configFile, ref, configType, "", true, 0))
+			elements = append(elements, s.createSimpleExecutionQueueElement("cron_analytics_mixed", configFile, ref, configType, "", true, 0))
 		} else {
 			for _, version := range macrobench.PlannerVersions {
-				elements = append(elements, s.createSimpleExecutionQueueElement("cron_analytics", configFile, ref, configType, string(version), true, 0))
+				elements = append(elements, s.createSimpleExecutionQueueElement("cron_analytics_mixed", configFile, ref, configType, string(version), true, 0))
 			}
 		}
 	}

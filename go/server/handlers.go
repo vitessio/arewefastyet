@@ -20,6 +20,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"net/http"
 
 	"github.com/vitessio/arewefastyet/go/exec"
@@ -62,27 +63,49 @@ func (s *Server) cronHandler(c *gin.Context) {
 	})
 }
 
-func (s *Server) analyticsHandlerOLTP(c *gin.Context) {
-	planner := getPlannerVersion(c)
-
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron_analytics", planner, 31, s.dbClient)
+func getAnalyticsData(planner macrobench.PlannerVersion, dbClient *psdb.Client, t macrobench.Type, source string) (macrobench.DetailsArray, macrobench.Details, macrobench.Details) {
+	data, err := macrobench.GetResultsForLastDays(t, source, planner, 31, dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
 
-	for i, data := range oltpData {
-		m, err := metrics.GetExecutionMetricsSQL(s.dbClient, data.ExecUUID)
+	for i, d := range data {
+		m, err := metrics.GetExecutionMetricsSQL(dbClient, d.ExecUUID)
 		if err != nil {
 			slog.Warn(err.Error())
 		}
-		oltpData[i].Metrics = m
+		data[i].Metrics = m
 	}
 
-	variation, variationPercentage := macrobench.GetVarianceForMacroBenchmarks(oltpData)
+	variation, variationPercentage := macrobench.GetVarianceForMacroBenchmarks(data)
+	return data, variation, variationPercentage
+}
+
+func (s *Server) analyticsHandlerMixed(c *gin.Context) {
+	planner := getPlannerVersion(c)
+
+	oltpData, variationOLTP, variationPercentageOLTP := getAnalyticsData(planner, s.dbClient, macrobench.OLTP, "cron_analytics_mixed")
+	tpccData, variationTPCC, variationPercentageTPCC := getAnalyticsData(planner, s.dbClient, macrobench.TPCC, "cron_analytics_mixed")
+
+	c.HTML(http.StatusOK, "analytics_mixed.tmpl", gin.H{
+		"title":                     "Vitess benchmark - analytics",
+		"data_oltp":                 oltpData,
+		"variation_oltp":            variationOLTP,
+		"variation_oltp_percentage": variationPercentageOLTP,
+		"data_tpcc":                 tpccData,
+		"variation_tpcc":            variationTPCC,
+		"variation_tpcc_percentage": variationPercentageTPCC,
+	})
+}
+
+func (s *Server) analyticsHandlerOLTP(c *gin.Context) {
+	planner := getPlannerVersion(c)
+
+	oltpData, variation, variationPercentage := getAnalyticsData(planner, s.dbClient, macrobench.OLTP, "cron_analytics")
 
 	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
 		"title":                "Vitess benchmark - analytics",
-		"data_oltp":            oltpData,
+		"data":                 oltpData,
 		"variation":            variation,
 		"variation_percentage": variationPercentage,
 	})
@@ -91,24 +114,11 @@ func (s *Server) analyticsHandlerOLTP(c *gin.Context) {
 func (s *Server) analyticsHandlerTPCC(c *gin.Context) {
 	planner := getPlannerVersion(c)
 
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron_analytics", planner, 31, s.dbClient)
-	if err != nil {
-		slog.Warn(err.Error())
-	}
-
-	for i, data := range oltpData {
-		m, err := metrics.GetExecutionMetricsSQL(s.dbClient, data.ExecUUID)
-		if err != nil {
-			slog.Warn(err.Error())
-		}
-		oltpData[i].Metrics = m
-	}
-
-	variation, variationPercentage := macrobench.GetVarianceForMacroBenchmarks(oltpData)
+	tpccData, variation, variationPercentage := getAnalyticsData(planner, s.dbClient, macrobench.TPCC, "cron_analytics")
 
 	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
 		"title":                "Vitess benchmark - analytics",
-		"data_oltp":            oltpData,
+		"data":                 tpccData,
 		"variation":            variation,
 		"variation_percentage": variationPercentage,
 	})

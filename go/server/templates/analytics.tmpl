@@ -101,7 +101,7 @@
             </tr>
             </thead>
             <tbody>
-            {{range $val := .data_oltp}}
+            {{range $val := .data}}
             <tr>
                 <td>{{ first8Letters ($val.ExecUUID) }}</td>
                 <td>{{ $val.Result.QPS.Total }}</td>
