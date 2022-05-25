@@ -10,6 +10,13 @@
 # limitations under the License.
 
 ---
+- hosts: all
+  tasks:
+    - name: Ensure users are created
+      include_role:
+        name: vitess_build
+        tasks_from: create_users
+
 - name: Create Cluster
   import_playbook: create_cluster.yml
 

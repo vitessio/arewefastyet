@@ -60,7 +60,11 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 		return fmt.Errorf(fmt.Sprintf("prepare outputs step error: %v", err))
 	}
 
-	err = e.ExecuteWithTimeout(time.Hour * 2)
+	timeout := 2 * time.Hour
+	if identifier.BenchmarkType == "micro" {
+		timeout = 4 * time.Hour
+	}
+	err = e.ExecuteWithTimeout(timeout)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("execution step error: %v", err))
 	}
@@ -103,10 +107,16 @@ func (s *Server) executeElement(element *executionQueueElement) {
 }
 
 func (s *Server) compareElement(element *executionQueueElement) {
+	// map that contains all the comparison we saw and analyzed
+	seen := map[executionIdentifier]bool{}
 	done := 0
 	for done != len(element.compareWith) {
 		time.Sleep(1 * time.Second)
 		for _, comparer := range element.compareWith {
+			// checking if we have already seen this comparison, if we did, we can skip it.
+			if _, ok := seen[comparer]; ok {
+				continue
+			}
 			comparerUUID, err := exec.GetFinishedExecution(s.dbClient, comparer.GitRef, comparer.Source, comparer.BenchmarkType, comparer.PlannerVersion, comparer.PullNb)
 			if err != nil {
 				slog.Error(err)
@@ -127,6 +137,7 @@ func (s *Server) compareElement(element *executionQueueElement) {
 					slog.Error(err)
 					return
 				}
+				seen[comparer] = true
 				done++
 			}
 		}
@@ -136,8 +147,8 @@ func (s *Server) compareElement(element *executionQueueElement) {
 func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, error) {
 	checkStatus := []struct {
 		status string
-		today bool
-	} {
+		today  bool
+	}{
 		{status: exec.StatusFinished, today: false},
 	}
 	for _, status := range checkStatus {

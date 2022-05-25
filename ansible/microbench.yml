@@ -10,6 +10,13 @@
 # limitations under the License.
 
 ---
+- hosts: microbench
+  tasks:
+    - name: Ensure users are created
+      include_role:
+        name: vitess_build
+        tasks_from: create_users
+
 # Even if this benchmark is a micro benchmark, we make sure to clean previous trace of execution
 - name: Clean Post Benchmark
   import_playbook: clean_macrobench.yml

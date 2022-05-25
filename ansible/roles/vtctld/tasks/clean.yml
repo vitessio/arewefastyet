@@ -10,6 +10,17 @@
 # limitations under the License.
 
 ---
+- name: Ensure config directory
+  become: yes
+  become_user: root
+  with_items:
+    - /etc/vitess/conf
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: '{{ vitess_user }}'
+    group: '{{ vitess_group }}'
+
 - name: reinstall systemd unit if needed
   include_tasks: systemd.yml
   when: arewefastyet_execution_type is undefined or arewefastyet_execution_type != 'micro'

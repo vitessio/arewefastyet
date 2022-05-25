@@ -14,6 +14,16 @@
   hosts:
     - all
   tasks:
+    - name: Stop sysbench
+      include_role:
+        name: sysbench
+        tasks_from: kill
+
+    - name: Stop arewefastyetcli
+      include_role:
+        name: arewefastyet
+        tasks_from: kill
+
     - name: Teardown etcd
       include_role:
         name: etcd

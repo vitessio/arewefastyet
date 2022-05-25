@@ -23,19 +23,20 @@ import (
 )
 
 const (
-	flagExecUUID = "microbench-exec-uuid"
+	flagExecUUID   = "microbench-exec-uuid"
+	flagRunProfile = "microbench-run-profile"
 )
 
 type Config struct {
 	// RootDir is the root path from where micro benchmarks will
 	// be executed.
-	RootDir        string
+	RootDir string
 
 	// Package we want to microbenchmark.
-	Package        string
+	Package string
 
 	// Output file on which to print the intermediate results.
-	Output         string
+	Output string
 
 	// DatabaseConfig used to save results to SQL. If this field
 	// is nil, saving results will be skipped and no error will
@@ -46,12 +47,18 @@ type Config struct {
 	// If this field is empty, the corresponding column in SQL
 	// will be set to NULL.
 	execUUID string
+
+	// runProfile defines whether the goproc profile shall be run for every micro-benchmark
+	// this option is set to false by default
+	runProfile bool
 }
 
 func (mbc *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&mbc.execUUID, flagExecUUID, "", "UUID of the parent execution, an empty string will set to NULL.")
+	cmd.Flags().BoolVar(&mbc.runProfile, flagRunProfile, false, "Run goproc profiling for each micro-benchmark.")
 
 	_ = viper.BindPFlag(flagExecUUID, cmd.Flags().Lookup(flagExecUUID))
+	_ = viper.BindPFlag(flagRunProfile, cmd.Flags().Lookup(flagRunProfile))
 
 	mbc.DatabaseConfig.AddToCommand(cmd)
 }

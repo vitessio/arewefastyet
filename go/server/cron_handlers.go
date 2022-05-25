@@ -168,21 +168,6 @@ func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(configFil
 	return elements
 }
 
-func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion string, notify bool, pullNb int) *executionQueueElement {
-	return &executionQueueElement{
-		config:       configFile,
-		retry:        s.cronNbRetry,
-		notifyAlways: notify,
-		identifier: executionIdentifier{
-			GitRef:         ref,
-			Source:         source,
-			BenchmarkType:  configType,
-			PlannerVersion: plannerVersion,
-			PullNb:         pullNb,
-		},
-	}
-}
-
 func (s *Server) pullRequestsCronHandler() {
 	configs := s.getConfigFiles()
 	prLabelsInfo := []struct {
@@ -203,10 +188,13 @@ func (s *Server) pullRequestsCronHandler() {
 		}
 
 		for _, prInfo := range prInfos {
+			ref := prInfo.SHA
+			previousGitRef := prInfo.Base
+			pullNb := prInfo.Number
+			if ref == "" || pullNb == 0 {
+				continue
+			}
 			for configType, configFile := range configs {
-				ref := prInfo.SHA
-				previousGitRef := prInfo.Base
-				pullNb := prInfo.Number
 				if configType == "micro" {
 					elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, "", pullNb)...)
 				} else {
@@ -263,7 +251,7 @@ func (s *Server) tagsCronHandler() {
 
 	// We add single executions for the tags, we do not compare them against anything
 	for _, release := range releases {
-		source := exec.SourceTag+release.Name
+		source := exec.SourceTag + release.Name
 		for configType, configFile := range configs {
 			if configType == "micro" {
 				elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, "", true, 0))
@@ -277,5 +265,20 @@ func (s *Server) tagsCronHandler() {
 	}
 	for _, element := range elements {
 		s.addToQueue(element)
+	}
+}
+
+func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion string, notify bool, pullNb int) *executionQueueElement {
+	return &executionQueueElement{
+		config:       configFile,
+		retry:        s.cronNbRetry,
+		notifyAlways: notify,
+		identifier: executionIdentifier{
+			GitRef:         ref,
+			Source:         source,
+			BenchmarkType:  configType,
+			PlannerVersion: plannerVersion,
+			PullNb:         pullNb,
+		},
 	}
 }

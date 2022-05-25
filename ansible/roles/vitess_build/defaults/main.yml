@@ -11,7 +11,7 @@
 
 ---
 
-golang_gover: '1.18'
+golang_gover: '1.18.1'
 golang_hash_linux_amd64:
   '1.13.7': 'sha256:b3dd4bd781a0271b33168e627f7f43886b4c5d1c794a4015abf34e99c6526ca3'
   '1.13.11': 'sha256:a4d71ca9e02923fa96669a4b5faf78ee8331b18e7209b09dd87fe763b4838ada'
@@ -21,6 +21,7 @@ golang_hash_linux_amd64:
   '1.16': 'sha256:013a489ebb3e24ef3d915abe5b94c3286c070dfe0818d5bca8108f1d6e8440d2'
   '1.17': 'sha256:6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d'
   '1.18': 'sha256:e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f'
+  '1.18.1': 'sha256:b3b815f47ababac13810fc6021eb73d65478e0b2db4b09d348eefad9581a2334'
 
 vitess_git_repo: "https://github.com/vitessio/vitess.git"
 vitess_git_version: "main"
@@ -43,3 +44,5 @@ vitess_root: '/vt'
 clean_vtgate: True
 clean_vttablet: True
 clean_vtctld: True
+vitess_group: vitess
+vitess_user: vitess

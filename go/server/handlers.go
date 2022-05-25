@@ -25,6 +25,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/exec"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
@@ -58,6 +59,28 @@ func (s *Server) cronHandler(c *gin.Context) {
 		"title":     "Vitess benchmark - cron",
 		"data_oltp": oltpData,
 		"data_tpcc": tpccData,
+	})
+}
+
+func (s *Server) analyticsHandler(c *gin.Context) {
+	planner := getPlannerVersion(c)
+
+	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron_analytics", planner, 31, s.dbClient)
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+
+	for i, data := range oltpData {
+		m, err := metrics.GetExecutionMetricsSQL(s.dbClient, data.ExecUUID)
+		if err != nil {
+			slog.Warn(err.Error())
+		}
+		oltpData[i].Metrics = m
+	}
+
+	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
+		"title":     "Vitess benchmark - analytics",
+		"data_oltp": oltpData,
 	})
 }
 

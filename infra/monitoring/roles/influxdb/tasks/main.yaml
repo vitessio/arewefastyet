@@ -28,6 +28,12 @@
     state: present
   when: create_influxdb is defined
 
+- name: Create InfluxDB directory
+  file:
+    state: directory
+    path: '/etc/influxdb'
+    mode: 0755
+
 - name: Modify InfluxDB hostname
   replace:
     dest: /etc/influxdb/influxdb.conf
@@ -69,6 +75,13 @@
     dest: /etc/influxdb/influxdb.conf
     regexp: '# auth-enabled = false'
     replace: 'auth-enabled = true'
+    backup: yes
+
+- name: Enable query service
+  replace:
+    dest: /etc/influxdb/influxdb.conf
+    regexp: '# flux-enabled = false'
+    replace: 'flux-enabled = true'
     backup: yes
 
 - name: Restart Service

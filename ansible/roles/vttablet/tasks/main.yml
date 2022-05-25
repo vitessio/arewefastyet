@@ -16,20 +16,10 @@
     name: "vttablet"
     tasks_from: "clean"
 
-- name: ensure vitess group
-  become: yes
-  become_user: root
-  group:
-    name: '{{ vitess_group }}'
-    state: present
-
-- name: ensure vitess user
-  become: yes
-  become_user: root
-  user:
-    name: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    state: present
+- name: Create users
+  include_role:
+    name: "vitess_build"
+    tasks_from: create_users
 
 - name: ensure vitess directories
   become: yes

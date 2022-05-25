@@ -5,22 +5,22 @@ macrobench_all_mysql-port: 13306
 macrobench_all_db-ps-mode: disable
 macrobench_all_db-driver: mysql
 macrobench_all_luajit-cmd: "off"
-macrobench_all_threads: 100
+macrobench_all_threads: 42
 macrobench_all_auto-inc: "off"
-macrobench_all_tables: 50
-macrobench_all_table_size: 10000000
-macrobench_all_range_selects: 0
+macrobench_all_tables: 10
+macrobench_all_table_size: 10000
 macrobench_all_rand-type: uniform
+macrobench_all_rand-seed: 1
 
 ## Sysbench prepare step
-macrobench_prepare_time: 30
+macrobench_prepare_time: 60
 macrobench_prepare_report-interval: 10
 
 ## Sysbench warm up step
-macrobench_warmup_time: 10
+macrobench_warmup_time: 60
 macrobench_warmup_report-interval: 10
 
 ## Sysbench run step
-macrobench_run_time: 900
+macrobench_run_time: 600
 macrobench_run_report_json: true
 macrobench_run_verbosity: 0
