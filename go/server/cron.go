@@ -77,10 +77,10 @@ func (s *Server) createCrons() error {
 		schedule string
 		f        func()
 	}{
-		// {schedule: s.cronSchedule, f: s.branchCronHandler},
-		// {schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
-		// {schedule: s.cronScheduleTags, f: s.tagsCronHandler},
-		{schedule: s.cronScheduleTags, f: s.analyticsCronHandler},
+		{schedule: s.cronSchedule, f: s.branchCronHandler},
+		{schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
+		{schedule: s.cronScheduleTags, f: s.tagsCronHandler},
+		// {schedule: s.cronScheduleTags, f: s.analyticsCronHandler}, TODO: implemented a proper analytics schedule
 	}
 	for _, c := range crons {
 		err := createIndividualCron(c.schedule, c.f)
@@ -94,9 +94,9 @@ func (s *Server) createCrons() error {
 
 func (s *Server) getConfigFiles() map[string]string {
 	configs := map[string]string{
-		// "micro": s.microbenchConfigPath,
-		"oltp": s.macrobenchConfigPathOLTP,
-		"tpcc": s.macrobenchConfigPathTPCC,
+		"micro": s.microbenchConfigPath,
+		"oltp":  s.macrobenchConfigPathOLTP,
+		"tpcc":  s.macrobenchConfigPathTPCC,
 	}
 	return configs
 }
@@ -117,7 +117,7 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 		slog.Error(err.Error())
 		return
 	}
-	if !exists || exists {
+	if !exists {
 		queue[element.identifier] = element
 		slog.Infof("%+v is added to the queue", element.identifier)
 
