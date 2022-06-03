@@ -80,6 +80,7 @@ func (s *Server) createCrons() error {
 		{schedule: s.cronSchedule, f: s.branchCronHandler},
 		{schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
 		{schedule: s.cronScheduleTags, f: s.tagsCronHandler},
+		// {schedule: s.cronScheduleTags, f: s.analyticsCronHandler}, TODO: implemented a proper analytics schedule
 	}
 	for _, c := range crons {
 		err := createIndividualCron(c.schedule, c.f)

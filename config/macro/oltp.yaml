@@ -5,9 +5,9 @@ macrobench_all_mysql-port: 13306
 macrobench_all_db-ps-mode: disable
 macrobench_all_db-driver: mysql
 macrobench_all_luajit-cmd: "off"
-macrobench_all_threads: 42
+macrobench_all_threads: 400
 macrobench_all_auto-inc: "off"
-macrobench_all_tables: 10
+macrobench_all_tables: 100
 macrobench_all_table_size: 10000
 macrobench_all_rand-type: uniform
 macrobench_all_rand-seed: 1

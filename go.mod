@@ -12,6 +12,7 @@ require (
 	github.com/influxdata/influxdb-client-go/v2 v2.3.0
 	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/montanaflynn/stats v0.6.6
 	github.com/otiai10/copy v1.5.0
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/slack-go/slack v0.8.1
