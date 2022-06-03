@@ -24,6 +24,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
 
+// nolint
 func (s *Server) analyticsCronHandler() {
 	// update the local clone of vitess from remote
 	s.vitessPathMu.Lock()
@@ -40,6 +41,7 @@ func (s *Server) analyticsCronHandler() {
 	}
 }
 
+// nolint
 func (s *Server) analyticsCreateCronHandler() []*executionQueueElement {
 	var elements []*executionQueueElement
 	configs := s.getConfigFiles()
