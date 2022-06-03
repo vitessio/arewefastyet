@@ -88,7 +88,7 @@ func (s *Server) analyticsHandlerMixed(c *gin.Context) {
 	tpccData, variationTPCC, variationPercentageTPCC := getAnalyticsData(planner, s.dbClient, macrobench.TPCC, "cron_analytics_mixed")
 
 	c.HTML(http.StatusOK, "analytics_mixed.tmpl", gin.H{
-		"title":                     "Vitess benchmark - analytics",
+		"title":                     "Vitess benchmark - analytics - oltp",
 		"data_oltp":                 oltpData,
 		"variation_oltp":            variationOLTP,
 		"variation_oltp_percentage": variationPercentageOLTP,
@@ -104,7 +104,7 @@ func (s *Server) analyticsHandlerOLTP(c *gin.Context) {
 	oltpData, variation, variationPercentage := getAnalyticsData(planner, s.dbClient, macrobench.OLTP, "cron_analytics")
 
 	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
-		"title":                "Vitess benchmark - analytics",
+		"title":                "Vitess benchmark - analytics - tpcc",
 		"data":                 oltpData,
 		"variation":            variation,
 		"variation_percentage": variationPercentage,
@@ -117,7 +117,7 @@ func (s *Server) analyticsHandlerTPCC(c *gin.Context) {
 	tpccData, variation, variationPercentage := getAnalyticsData(planner, s.dbClient, macrobench.TPCC, "cron_analytics")
 
 	c.HTML(http.StatusOK, "analytics.tmpl", gin.H{
-		"title":                "Vitess benchmark - analytics",
+		"title":                "Vitess benchmark - analytics - mixed",
 		"data":                 tpccData,
 		"variation":            variation,
 		"variation_percentage": variationPercentage,
