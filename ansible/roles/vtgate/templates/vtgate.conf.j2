@@ -21,13 +21,11 @@ EXTRA_VTGATE_FLAGS="-vschema_ddl_authorized_users \"%\" \
     -vtgate-config-terse-errors \
     -gate_query_cache_size {{ vtgate_query_cache_size }} \
     -tablet_types_to_wait REPLICA \
+    -planner-version {{ planner_version }} \
     {% if pprof_targets is defined %}
         {% for target in pprof_targets if target == "vtgate" %}
             -pprof {{ pprof_args }},path=/tmp/pprof/vtgate-{{ gateway.id }},waitSig
         {%- endfor %}
-    {% endif %}
-    {% if planner_version is defined %}
-        -planner_version {{ planner_version }}
     {% endif %}
     {% if vitess_schema_tracking is defined %}
         -schema_change_signal \
