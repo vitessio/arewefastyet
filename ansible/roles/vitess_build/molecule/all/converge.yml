@@ -51,14 +51,6 @@
   roles:
     - vitess_build
 
-- name: Start etcd
-  hosts:
-    - all
-  roles:
-    - role: etcd
-      vars:
-        - etcd_launch: True
-
 - hosts: all
   roles:
     - vtctld
