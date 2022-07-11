@@ -79,7 +79,7 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 			}
 			elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, "", exec.SourceCron, lastRelease)...)
 		} else {
-			for _, version := range macrobench.PlannerVersions {
+			for _, version := range git.GetPlannerVersions() {
 				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, exec.SourceCron, configType, string(version), ref)
 				if err != nil {
 					slog.Warn(err.Error())
@@ -123,7 +123,7 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 
 				elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, "", source, lastPatchRelease)...)
 			} else {
-				versions := git.GetPlannerVersionsForRelease(release)
+				versions := git.GetPlannerVersions()
 
 				for _, version := range versions {
 					_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, source, configType, string(version), ref)
@@ -200,7 +200,7 @@ func (s *Server) pullRequestsCronHandler() {
 				} else {
 					versions := []macrobench.PlannerVersion{macrobench.V3Planner}
 					if labelInfo.useGen4 {
-						versions = append(versions, macrobench.Gen4FallbackPlanner)
+						versions = []macrobench.PlannerVersion{macrobench.Gen4Planner}
 					}
 					for _, version := range versions {
 						elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, version, pullNb)...)
@@ -256,7 +256,7 @@ func (s *Server) tagsCronHandler() {
 			if configType == "micro" {
 				elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, "", true, 0))
 			} else {
-				versions := git.GetPlannerVersionsForRelease(release)
+				versions := git.GetPlannerVersions()
 				for _, version := range versions {
 					elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, string(version), true, 0))
 				}

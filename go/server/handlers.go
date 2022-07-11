@@ -43,7 +43,7 @@ func handleRenderErrors(c *gin.Context, err error) {
 }
 
 func (s *Server) cronHandler(c *gin.Context) {
-	planner := getPlannerVersion(c)
+	planner := getPlannerVersion()
 
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", planner, 31, s.dbClient)
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *Server) cronHandler(c *gin.Context) {
 }
 
 func (s *Server) analyticsHandler(c *gin.Context) {
-	planner := getPlannerVersion(c)
+	planner := getPlannerVersion()
 
 	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron_analytics", planner, 31, s.dbClient)
 	if err != nil {
@@ -84,17 +84,8 @@ func (s *Server) analyticsHandler(c *gin.Context) {
 	})
 }
 
-func getPlannerVersion(c *gin.Context) macrobench.PlannerVersion {
-	planner := macrobench.V3Planner
-	plannerStr, err := c.Cookie("vtgatePlanner")
-	if err != nil {
-		// cookie is not set, then use the default
-		return planner
-	}
-	if plannerStr == string(macrobench.Gen4FallbackPlanner) {
-		planner = macrobench.Gen4FallbackPlanner
-	}
-	return planner
+func getPlannerVersion() macrobench.PlannerVersion {
+	return macrobench.Gen4Planner
 }
 
 func (s *Server) homeHandler(c *gin.Context) {
@@ -117,7 +108,7 @@ func (s *Server) statusHandler(c *gin.Context) {
 }
 
 func (s *Server) compareHandler(c *gin.Context) {
-	planner := getPlannerVersion(c)
+	planner := getPlannerVersion()
 	reference := c.Query("r")
 	compare := c.Query("c")
 
@@ -162,7 +153,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 }
 
 func (s *Server) searchHandler(c *gin.Context) {
-	planner := getPlannerVersion(c)
+	planner := getPlannerVersion()
 	search := c.Query("s")
 	if search == "" {
 		c.HTML(http.StatusOK, "search.tmpl", gin.H{
@@ -317,7 +308,7 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 
 func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	var err error
-	planner := getPlannerVersion(c)
+	planner := getPlannerVersion()
 	// get all the latest releases and the last cron job for main
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
@@ -395,7 +386,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 }
 
 func (s *Server) macrobenchmarkQueriesDetails(c *gin.Context) {
-	planner := getPlannerVersion(c)
+	planner := getPlannerVersion()
 	gitRef := c.Param("git_ref")
 	macroType := macrobench.Type(c.Query("type"))
 
@@ -436,7 +427,7 @@ func (s *Server) macrobenchmarkCompareQueriesDetails(c *gin.Context) {
 		return
 	}
 
-	planner := getPlannerVersion(c)
+	planner := getPlannerVersion()
 	leftPlanner := macrobench.PlannerVersion(c.Query("left_planner"))
 	rightPlanner := macrobench.PlannerVersion(c.Query("right_planner"))
 

@@ -39,10 +39,11 @@ const (
 
 	V3Planner           PlannerVersion = "V3"
 	Gen4FallbackPlanner PlannerVersion = "Gen4Fallback"
+	Gen4Planner         PlannerVersion = "Gen4"
 )
 
 var (
-	PlannerVersions = []PlannerVersion{
+	LegacyPlannerVersions = []PlannerVersion{
 		V3Planner,
 		Gen4FallbackPlanner,
 	}
