@@ -43,12 +43,8 @@ var (
 	regexPatternReleaseBranch = regexp.MustCompile(`^refs/remotes/origin/release-(\d+)\.(\d+)$`)
 )
 
-func GetPlannerVersionsForRelease(release *Release) []macrobench.PlannerVersion {
-	versions := []macrobench.PlannerVersion{macrobench.V3Planner}
-	if release.Number[0] >= 10 {
-		versions = append(versions, macrobench.Gen4FallbackPlanner)
-	}
-	return versions
+func GetPlannerVersions() []macrobench.PlannerVersion {
+	return []macrobench.PlannerVersion{macrobench.Gen4Planner}
 }
 
 // GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes given the directory of the clone of vitess
