@@ -10,10 +10,6 @@
 # limitations under the License.
 
 ---
-- name: Setup node exporter
-  hosts:
-    - all
-
 - name: Setup Vitess deps
   hosts: all
   tasks:
@@ -32,49 +28,8 @@
         name: vitess_build
         tasks_from: mysqld_exporter
 
-- name: Setup etcd
-  hosts:
-    - all
-  roles:
-    - role: etcd
-      vars:
-        - etcd_launch: False
-
-- name: Setup sysbench
-  hosts:
-    - all
-  roles:
-    - role: sysbench
-
 - name: Build Vitess
   hosts: all
   roles:
     - vitess_build
 
-- hosts: all
-  roles:
-    - vtctld
-
-- hosts: all
-  roles:
-    - role: vtgate
-      vars:
-        - gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-
-- hosts: all
-  roles:
-    - vttablet
-
-- hosts: vtctld
-  tasks:
-    - name: Gather facts
-      setup:
-        gather_subset: network
-
-    - name: print
-      debug:
-        msg: Groups {{ groups['vtctld'][0] }}
-
-    - include_role:
-        name: vtctld
-        tasks_from: ensure
