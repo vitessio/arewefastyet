@@ -52,7 +52,7 @@ func ComparePlanners(client storage.SQLClient, sha string) (map[Type]interface{}
 	// Get macro benchmarks from all the different types
 	var err error
 	macros := map[string]map[Type]DetailsArray{}
-	for _, planner := range PlannerVersions {
+	for _, planner := range LegacyPlannerVersions {
 		macros[string(planner)], err = GetDetailsArraysFromAllTypes(sha, planner, client)
 		if err != nil {
 			return nil, err

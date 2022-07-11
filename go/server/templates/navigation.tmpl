@@ -26,10 +26,6 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="custom-control custom-switch" data-toggle="tooltip"  data-placement="bottom" title="See results from VTGate's Gen4 planner. Defaults to V3 planner." style="margin-left: 10px;">
-            <input type="checkbox" class="custom-control-input" id="vtgateplanner-switch" onclick="switchVtgatePlanner()">
-            <label class="custom-control-label" for="vtgateplanner-switch" style="color: white">Gen4</label>
-        </div>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item {{if eq . `/`}} active {{end}}">
@@ -96,53 +92,8 @@
                         {{ end }}
                     </a>
                 </li>
-                <li class="nav-item {{if eq . `/v3_VS_Gen4`}} active {{end}}">
-                    <a class="nav-link" href="/v3_VS_Gen4">
-                        v3 vs Gen4
-                        {{ if eq . "/v3_VS_Gen4" }}
-                            <span class="sr-only">(current)</span>
-                        {{ end }}
-                    </a>
-                </li>
             </ul>
         </div>
     </div>
 </nav>
-<script>
-    vtgatePlanner = "V3"
-
-    // get our planner cookie
-    vtgatePlannerCookie = document.cookie.split('; ').find(row => row.startsWith('vtgatePlanner='));
-    if (vtgatePlannerCookie !== undefined) {
-        vtgatePlanner = vtgatePlannerCookie.split('=')[1]
-        if (vtgatePlanner !== "Gen4Fallback") {
-            vtgatePlanner = "V3"
-        }
-        console.log(vtgatePlanner)
-    }
-    // change the switch
-    if (vtgatePlanner === "Gen4Fallback") {
-        $("#vtgateplanner-switch").prop('checked', true)
-    } else {
-        $("#vtgateplanner-switch").prop('checked', false)
-    }
-
-    function switchVtgatePlanner() {
-        function setCookie(cname, cvalue, exdays) {
-            var d = new Date();
-            d.setTime(d.getTime() + (exdays*24*60*60*1000));
-            var expires = "expires="+ d.toUTCString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-        }
-        if ($("#vtgateplanner-switch").is(":checked")) {
-            setCookie("vtgatePlanner", "Gen4Fallback", 7)
-        } else {
-            setCookie("vtgatePlanner", "V3", 7)
-        }
-        location.reload()
-    }
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
-</script>
 {{ end }}
