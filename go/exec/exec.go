@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
-	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"io"
 	"os"
 	"path"
@@ -278,11 +277,7 @@ func (e *Exec) prepareAnsibleForExecution() {
 	e.AnsibleConfig.ExtraVars[keyExecSource] = e.Source
 	e.AnsibleConfig.ExtraVars[keyExecutionType] = e.TypeOf
 	e.AnsibleConfig.ExtraVars[keyGoVersion] = e.GolangVersion
-
-	// not adding the -planner_version flag to ansible if we did not specify it or if using the default value
-	if e.VtgatePlannerVersion == string(macrobench.Gen4FallbackPlanner) {
-		e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
-	}
+	e.AnsibleConfig.ExtraVars[keyVtgatePlanner] = e.VtgatePlannerVersion
 }
 
 func (e *Exec) Success() error {
@@ -309,7 +304,7 @@ func (e *Exec) handleStepEnd(err error) {
 // as a constructed infra.Infra.
 func NewExec() (*Exec, error) {
 	ex := Exec{
-		UUID:  uuid.New(),
+		UUID: uuid.New(),
 
 		// By default Exec prints os.Stdout and os.Stderr.
 		// This can be changed later by explicitly using
