@@ -42,9 +42,6 @@ EXTRA_VTTABLET_FLAGS="-alsologtostderr \
             -pprof {{ pprof_args }},path=/tmp/pprof/vttablet-{{ tablet.id }},waitSig \
         {%- endfor %}
     {% endif %}
-    {% if vitess_schema_tracking is defined %}
-        -queryserver-config-schema-change-signal \
-    {% endif %}
     {{ tablet.extra_flags | default("") }} \
     {{ extra_vttablet_flags | default("") }} \
 "

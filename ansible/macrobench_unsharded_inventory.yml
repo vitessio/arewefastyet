@@ -20,7 +20,6 @@ all:
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "HEAD"
     macrobenchmark_vschema: "./vitess-benchmark/sysbench.json"
-    macrobenchmarks_local_config: "LOCAL_CONFIG_PATH_0"
     cell: local
     keyspace: main
     provision: 1

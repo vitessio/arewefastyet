@@ -22,7 +22,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/infra/ansible"
-	"strings"
 )
 
 const (
@@ -73,9 +72,9 @@ func (rdbcfg RemoteDBConfig) AddToAnsible(ansibleCfg *ansible.Config) {
 	if !rdbcfg.valid() {
 		return
 	}
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBHost, "-", "_")] = rdbcfg.Host
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBDatabase, "-", "_")] = rdbcfg.DbName
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPort, "-", "_")] = rdbcfg.Port
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBUser, "-", "_")] = rdbcfg.User
-	ansibleCfg.ExtraVars[strings.ReplaceAll(statsRemoteDBPassword, "-", "_")] = rdbcfg.Password
+	ansibleCfg.AddExtraVar(ansible.KeyStatsDBHost, rdbcfg.Host)
+	ansibleCfg.AddExtraVar(ansible.KeyStatsDBName, rdbcfg.DbName)
+	ansibleCfg.AddExtraVar(ansible.KeyStatsDBPort, rdbcfg.Port)
+	ansibleCfg.AddExtraVar(ansible.KeyStatsDBUser, rdbcfg.User)
+	ansibleCfg.AddExtraVar(ansible.KeyStatsDBPassword, rdbcfg.Password)
 }

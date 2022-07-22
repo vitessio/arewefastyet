@@ -46,7 +46,7 @@
 # or directly from arewefastyet's code.
 - name: Get microbenchmarks config.yaml
   ansible.builtin.copy:
-    src: "{{ microbenchmarks_local_config }}"
+    src: "{{ arewefastyet_configuration_file_path }}"
     dest: /tmp/config.yaml
     mode: '0644'
 
