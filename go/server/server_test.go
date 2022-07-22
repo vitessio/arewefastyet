@@ -89,11 +89,11 @@ func TestServer_isReady(t *testing.T) {
 		{name: "Missing port", s: &Server{templatePath: "./", staticPath: "./", localVitessPath: "~/"}},
 		{name: "Missing template path", s: &Server{port: "8888", staticPath: "./", localVitessPath: "~/"}},
 		{name: "Missing static path", s: &Server{port: "9999", templatePath: "./", localVitessPath: "~/"}},
-		{name: "Missing api key", s: &Server{port: "8080", templatePath: "./", staticPath: "./static", localVitessPath: "~/"}},
+		{name: "Missing api key", s: &Server{port: "8080", templatePath: "./", staticPath: "./static", localVitessPath: "~/"}, want: true},
 		{name: "Missing local vitess path", s: &Server{port: "8080", templatePath: "./", staticPath: "./static"}},
 		{name: "Missing multiple elements (1)", s: &Server{port: "8080", staticPath: "", localVitessPath: "~/"}},
 		{name: "Missing multiple elements (2)", s: &Server{templatePath: "", staticPath: "./", localVitessPath: "~/"}},
-		{name: "Missing execution configuration paths", s: &Server{port: "8080", templatePath: "./", staticPath: "./", localVitessPath: "~/"}},
+		{name: "Missing execution configuration paths", s: &Server{port: "8080", templatePath: "./", staticPath: "./", localVitessPath: "~/"}, want: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

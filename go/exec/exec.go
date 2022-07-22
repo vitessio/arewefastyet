@@ -379,7 +379,7 @@ func (e *Exec) defineVersionNameOfVitess() error {
 		}
 		matches := matchRelease.FindStringSubmatch(branch)
 		if len(matches) == 2 {
-			e.VitessVersionName = fmt.Sprintf("%s%d", VitessPreviousVersion, matches[1])
+			e.VitessVersionName = fmt.Sprintf("%s%s", VitessPreviousVersion, matches[1])
 			return nil
 		}
 	}
