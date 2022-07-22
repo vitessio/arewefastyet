@@ -29,8 +29,10 @@ ExecStart=/bin/bash -c 'vttablet \
     --db-config-filtered-uname=vt_filtered \
     --db-config-repl-uname=vt_repl \
     --queryserver-config-passthrough-dmls \
-    --enable-autocommit \
-    --binlog_use_v3_resharding_mode \
+	{% if vitess_version_name != "latest" %}
+    	--enable-autocommit \
+    	--binlog_use_v3_resharding_mode \
+	{% endif %}
     --enable_replication_reporter \
     --health_check_interval 5s \
     --alsologtostderr \

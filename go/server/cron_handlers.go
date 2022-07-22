@@ -71,6 +71,9 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 
 	// We compare main with the previous hash of main and with the latest release
 	for configType, configFile := range configs {
+		if configFile == "" {
+			continue
+		}
 		if configType == "micro" {
 			_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, exec.SourceCron, ref)
 			if err != nil {
@@ -114,6 +117,9 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 		}
 
 		for configType, configFile := range configs {
+			if configFile == "" {
+				continue
+			}
 			if configType == "micro" {
 				_, previousGitRef, err := exec.GetPreviousFromSourceMicrobenchmark(s.dbClient, source, ref)
 				if err != nil {
@@ -195,6 +201,9 @@ func (s *Server) pullRequestsCronHandler() {
 				continue
 			}
 			for configType, configFile := range configs {
+				if configFile == "" {
+					continue
+				}
 				if configType == "micro" {
 					elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, "", pullNb)...)
 				} else {
@@ -218,6 +227,7 @@ func (s *Server) createPullRequestElementWithBaseComparison(configFile, ref, con
 	var elements []*executionQueueElement
 
 	newExecutionElement := s.createSimpleExecutionQueueElement(exec.SourcePullRequest, configFile, ref, configType, string(version), true, pullNb)
+	newExecutionElement.identifier.PullBaseRef = previousGitRef
 	elements = append(elements, newExecutionElement)
 
 	if previousGitRef != "" {
@@ -253,6 +263,9 @@ func (s *Server) tagsCronHandler() {
 	for _, release := range releases {
 		source := exec.SourceTag + release.Name
 		for configType, configFile := range configs {
+			if configFile == "" {
+				continue
+			}
 			if configType == "micro" {
 				elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, "", true, 0))
 			} else {

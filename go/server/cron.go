@@ -37,6 +37,7 @@ type (
 	executionIdentifier struct {
 		GitRef, Source, BenchmarkType, PlannerVersion string
 		PullNb                                        int
+		PullBaseRef                                   string
 	}
 
 	executionQueue map[executionIdentifier]*executionQueueElement
@@ -68,20 +69,22 @@ func createIndividualCron(schedule string, job func()) error {
 }
 
 func (s *Server) createCrons() error {
-	if s.cronSchedule == "" {
-		return nil
-	}
 	queue = make(executionQueue)
 
 	crons := []struct {
 		schedule string
 		f        func()
+		name     string
 	}{
-		{schedule: s.cronSchedule, f: s.branchCronHandler},
-		{schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
-		{schedule: s.cronScheduleTags, f: s.tagsCronHandler},
+		{name: "branch", schedule: s.cronSchedule, f: s.branchCronHandler},
+		{name: "pull_requests", schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
+		{name: "tags", schedule: s.cronScheduleTags, f: s.tagsCronHandler},
 	}
 	for _, c := range crons {
+		if c.schedule == "none" {
+			continue
+		}
+		slog.Info("Starting the CRON ", c.name, " with schedule: ", c.schedule)
 		err := createIndividualCron(c.schedule, c.f)
 		if err != nil {
 			return err

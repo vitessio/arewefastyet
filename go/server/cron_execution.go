@@ -41,23 +41,30 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 
 	e, err = exec.NewExecWithConfig(config)
 	if err != nil {
-		slog.Error(err.Error())
-		return err
+		nErr := fmt.Errorf(fmt.Sprintf("new exec error: %v", err))
+		slog.Error(nErr.Error())
+		return nErr
 	}
 	e.Source = identifier.Source
 	e.GitRef = identifier.GitRef
 	e.VtgatePlannerVersion = identifier.PlannerVersion
 	e.PullNB = identifier.PullNb
+	e.PullBaseBranchRef = identifier.PullBaseRef
+	e.RepoDir = s.getVitessPath()
 
 	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
 	err = e.Prepare()
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("prepare step error: %v", err))
+		nErr := fmt.Errorf(fmt.Sprintf("prepare error: %v", err))
+		slog.Error(nErr.Error())
+		return nErr
 	}
 
 	err = e.SetOutputToDefaultPath()
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("prepare outputs step error: %v", err))
+		nErr := fmt.Errorf(fmt.Sprintf("prepare output error: %v", err))
+		slog.Error(nErr.Error())
+		return nErr
 	}
 
 	timeout := 2 * time.Hour
@@ -66,7 +73,9 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 	}
 	err = e.ExecuteWithTimeout(timeout)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("execution step error: %v", err))
+		nErr := fmt.Errorf(fmt.Sprintf("execute with timeout error: %v", err))
+		slog.Error(nErr.Error())
+		return nErr
 	}
 	return nil
 }
