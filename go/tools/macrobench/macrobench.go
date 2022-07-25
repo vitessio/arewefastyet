@@ -22,12 +22,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/exec/metrics"
-	"github.com/vitessio/arewefastyet/go/storage/influxdb"
-	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
+	"github.com/vitessio/arewefastyet/go/storage/influxdb"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 )
 
 type PlannerVersion string
@@ -110,6 +111,7 @@ func Run(mabcfg Config) error {
 		if err != nil {
 			return err
 		}
+		return nil
 	}
 
 	// Prepare
