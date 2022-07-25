@@ -111,7 +111,6 @@ func Run(mabcfg Config) error {
 		if err != nil {
 			return err
 		}
-		return nil
 	}
 
 	// Prepare

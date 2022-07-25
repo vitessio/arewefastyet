@@ -31,7 +31,7 @@ type (
 		retry                   int
 		identifier              executionIdentifier
 		compareWith             []executionIdentifier
-		notifyAlways, executing bool
+		notifyAlways, Executing bool
 	}
 
 	executionIdentifier struct {
