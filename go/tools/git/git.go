@@ -273,6 +273,13 @@ func GetCommitHash(repoDir string) (hash string, err error) {
 	return strings.TrimSpace(string(out)), err
 }
 
+// GetBranchesForCommit gets the branches where the commit belong
+func GetBranchesForCommit(repoDir, sha string) (branches []string, err error) {
+	out, err := ExecCmd(repoDir, "git", "branch", "-a", "--contains", sha)
+	branches = strings.Split(string(out), "\n")
+	return
+}
+
 // ShortenSHA will return the first 7 characters of a SHA.
 // If the given SHA is too short, it will be returned untouched.
 func ShortenSHA(sha string) string {

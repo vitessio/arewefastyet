@@ -50,7 +50,20 @@ type Config struct {
 
 	// ExtraVars is a key value map that will be passed to Ansible
 	// as extra variable using --extra-vars.
+	// The corresponding keys are defined as constants in the `vars.go` file of this package.
+	// This map gets filled by the Executor before the execution of Ansible.
+	// It contains all the required information to run the Ansible roles and tasks properly.
 	ExtraVars map[string]interface{}
+}
+
+func NewConfig() Config {
+	return Config{
+		ExtraVars: map[string]interface{}{},
+	}
+}
+
+func (c *Config) AddExtraVar(key string, value interface{}) {
+	c.ExtraVars[key] = value
 }
 
 func (c *Config) AddToViper(v *viper.Viper) {

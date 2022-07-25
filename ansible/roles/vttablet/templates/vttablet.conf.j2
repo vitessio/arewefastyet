@@ -28,7 +28,10 @@ EXTRA_VTTABLET_FLAGS="-alsologtostderr \
     --queryserver-config-max-result-size=100000 \
     --queryserver-config-pool-size={{ tablet.connection_pool_size | default(vttablet_connection_pool_size) }} \
     --queryserver-config-stream-pool-size={{ tablet.stream_pool_size | default(vttablet_stream_pool_size) }} \
-    --client-found-rows-pool-size={{ tablet.found_rows_pool_size | default(vttablet_found_rows_pool_size) }} \
+	{% if vitess_version_name != "latest" %}
+    	--client-found-rows-pool-size={{ tablet.found_rows_pool_size | default(vttablet_found_rows_pool_size) }} \
+    	--binlog_use_v3_resharding_mode=true \
+	{% endif %}
     --queryserver-config-transaction-cap={{ tablet.transaction_cap | default(vttablet_transaction_cap) }} \
     --queryserver-config-query-cache-size={{ tablet.query_cache_size | default(vttablet_query_cache_size) }} \
     --queryserver-config-query-timeout=900 \
@@ -36,14 +39,10 @@ EXTRA_VTTABLET_FLAGS="-alsologtostderr \
     --queryserver-config-transaction-timeout=300 \
     --grpc_max_message_size=67108864 \
     --db_charset=utf8 \
-    --binlog_use_v3_resharding_mode=true \
     {% if pprof_targets is defined %}
         {% for target in pprof_targets if target == "vttablet" %}
             -pprof {{ pprof_args }},path=/tmp/pprof/vttablet-{{ tablet.id }},waitSig \
         {%- endfor %}
-    {% endif %}
-    {% if vitess_schema_tracking is defined %}
-        -queryserver-config-schema-change-signal \
     {% endif %}
     {{ tablet.extra_flags | default("") }} \
     {{ extra_vttablet_flags | default("") }} \

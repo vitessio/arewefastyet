@@ -22,13 +22,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path"
-	"path/filepath"
 	"strings"
 )
 
 const (
-	tokenDeviceIP        = "DEVICE_IP"
-	tokenLocalConfigPath = "LOCAL_CONFIG_PATH"
+	tokenDeviceIP = "DEVICE_IP"
 )
 
 func insertMetaSliceToFile(values []string, file, root, token string) error {
@@ -67,23 +65,6 @@ func AddIPsToFiles(IPs []string, c Config) error {
 	}
 
 	err = insetMetaSliceToFiles(IPs, c.InventoryFiles, c.RootDir, tokenDeviceIP)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func AddLocalConfigPathToFiles(configPath string, c Config) error {
-	absConfigPath, err := filepath.Abs(configPath)
-	if err != nil {
-		return err
-	}
-	err = insetMetaSliceToFiles([]string{absConfigPath}, c.InventoryFiles, c.RootDir, tokenLocalConfigPath)
-	if err != nil {
-		return err
-	}
-
-	err = insetMetaSliceToFiles([]string{absConfigPath}, c.PlaybookFiles, c.RootDir, tokenLocalConfigPath)
 	if err != nil {
 		return err
 	}

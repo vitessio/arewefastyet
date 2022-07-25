@@ -21,7 +21,6 @@ all:
     arewefastyet_git_version: "HEAD"
     macrobenchmark_vschema_oltp: "./vitess-benchmark/sysbench.json"
     macrobenchmark_vschema_tpcc: "./vitess-benchmark/tpcc_vschema.json"
-    macrobenchmarks_local_config: "LOCAL_CONFIG_PATH_0"
     cell: local
     keyspace: main
     provision: 1
