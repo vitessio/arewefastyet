@@ -20,8 +20,9 @@ package server
 
 import (
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/exec"
 	"time"
+
+	"github.com/vitessio/arewefastyet/go/exec"
 )
 
 func (s *Server) executeSingle(config string, identifier executionIdentifier) (err error) {
@@ -104,12 +105,13 @@ func (s *Server) executeElement(element *executionQueueElement) {
 	}
 
 	go func() {
-		s.compareElement(element)
-
 		// removing the element from the queue since we are done with it
 		mtx.Lock()
 		delete(queue, element.identifier)
 		mtx.Unlock()
+
+		// we will wait for the benchmarks we need to compare it against and notify users if needed
+		s.compareElement(element)
 	}()
 
 	decrementNumberOfOnGoingExecution()
@@ -156,9 +158,8 @@ func (s *Server) compareElement(element *executionQueueElement) {
 func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, error) {
 	checkStatus := []struct {
 		status string
-		today  bool
 	}{
-		{status: exec.StatusFinished, today: false},
+		{status: exec.StatusFinished},
 	}
 	for _, status := range checkStatus {
 		var exists bool
@@ -188,11 +189,11 @@ func (s *Server) cronExecutionQueueWatcher() {
 			continue
 		}
 		for _, element := range queue {
-			if !element.executing {
+			if !element.Executing {
 				currentCountExec++
 
-				// setting this element to `executing = true`, so we do not execute it twice in the future
-				element.executing = true
+				// setting this element to `Executing = true`, so we do not execute it twice in the future
+				element.Executing = true
 				go s.executeElement(element)
 				break
 			}
