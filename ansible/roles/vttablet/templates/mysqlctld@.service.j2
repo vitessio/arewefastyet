@@ -6,7 +6,7 @@ After=network.service
 Environment="VTROOT={{ vitess_root }}"
 Environment="USER={{vitess_user}}"
 Environment="MYSQL_PORT={{vttablet_mysql_port}}"
-Environment="EXTRA_MYSQLCTLD_FLAGS=-alsologtostderr"
+Environment="EXTRA_MYSQLCTLD_FLAGS=--alsologtostderr"
 
 EnvironmentFile=/etc/vitess/conf/vttablet-%i.conf
 Type=simple

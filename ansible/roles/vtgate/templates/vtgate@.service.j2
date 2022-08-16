@@ -23,22 +23,41 @@ LimitNPROC=infinity
 LimitNOFILE=infinity
 LimitMEMLOCK=infinity
 ExecStart=/bin/bash -c 'vtgate \
-    -service_map "grpc-vtgateservice" \
-    -alsologtostderr \
-    -enable_buffer \
-    -buffer_size=${VTGATE_BUFFER_SIZE} \
-    -buffer_max_failover_duration ${VTGATE_BUFFER_DURATION} \
-    -cell ${CELL} \
-    -cells_to_watch ${CELL}${ADDITIONAL_CELLS} \
-    -mysql_server_port ${MYSQL_PORT} \
-    -mysql_server_socket_path ${VTROOT}/socket/gateway-%i.sock \
-    -grpc_port ${GRPC_PORT} \
-    -port ${VTGATE_PORT} \
-    -mysql_auth_server_impl none \
-    -topo_global_root ${TOPO_GLOBAL_ROOT} \
-    -topo_implementation ${TOPO_IMPLEMENTATION} \
-    -topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \
-    -log_dir ${VTROOT}/tmp/vtgate-%i \
+	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" %}
+		-service_map "grpc-vtgateservice" \
+		-alsologtostderr \
+		-enable_buffer \
+		-buffer_size=${VTGATE_BUFFER_SIZE} \
+		-buffer_max_failover_duration ${VTGATE_BUFFER_DURATION} \
+		-cell ${CELL} \
+		-cells_to_watch ${CELL}${ADDITIONAL_CELLS} \
+		-mysql_server_port ${MYSQL_PORT} \
+		-mysql_server_socket_path ${VTROOT}/socket/gateway-%i.sock \
+		-grpc_port ${GRPC_PORT} \
+		-port ${VTGATE_PORT} \
+		-mysql_auth_server_impl none \
+		-topo_global_root ${TOPO_GLOBAL_ROOT} \
+		-topo_implementation ${TOPO_IMPLEMENTATION} \
+		-topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \
+		-log_dir ${VTROOT}/tmp/vtgate-%i \
+	{% else %}
+		--service_map "grpc-vtgateservice" \
+		--alsologtostderr \
+		--enable_buffer \
+		--buffer_size=${VTGATE_BUFFER_SIZE} \
+		--buffer_max_failover_duration ${VTGATE_BUFFER_DURATION} \
+		--cell ${CELL} \
+		--cells_to_watch ${CELL}${ADDITIONAL_CELLS} \
+		--mysql_server_port ${MYSQL_PORT} \
+		--mysql_server_socket_path ${VTROOT}/socket/gateway-%i.sock \
+		--grpc_port ${GRPC_PORT} \
+		--port ${VTGATE_PORT} \
+		--mysql_auth_server_impl none \
+		--topo_global_root ${TOPO_GLOBAL_ROOT} \
+		--topo_implementation ${TOPO_IMPLEMENTATION} \
+		--topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \
+		--log_dir ${VTROOT}/tmp/vtgate-%i \
+	{% endif %}
     ${EXTRA_VTGATE_FLAGS}'
 
 [Install]

@@ -7,7 +7,7 @@ Environment="VTROOT=/vt"
 Environment="USER=vitess"
 Environment="VTCTLD_PORT=15000"
 Environment="GRPC_PORT=15999"
-Environment="EXTRA_VTCTLD_FLAGS=-alsologtostderr"
+Environment="EXTRA_VTCTLD_FLAGS=--alsologtostderr"
 EnvironmentFile=/etc/vitess/conf/vtctld-%i.conf
 Type=simple
 Restart=always
