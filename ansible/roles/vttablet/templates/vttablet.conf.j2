@@ -24,7 +24,7 @@ MYSQLD_EXPORTER_PORT=:{{ tablet.mysqld_exporter_port | default(mysqld_exporter_p
 
 EXTRA_MY_CNF=/etc/vitess/extra_my{{ tablet.id | default('') }}.cnf
 
-EXTRA_VTTABLET_FLAGS="-alsologtostderr \
+EXTRA_VTTABLET_FLAGS="--alsologtostderr \
     --queryserver-config-max-result-size=100000 \
     --queryserver-config-pool-size={{ tablet.connection_pool_size | default(vttablet_connection_pool_size) }} \
     --queryserver-config-stream-pool-size={{ tablet.stream_pool_size | default(vttablet_stream_pool_size) }} \
