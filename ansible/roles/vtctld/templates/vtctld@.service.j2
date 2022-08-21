@@ -35,7 +35,6 @@ ExecStart=/bin/bash -c 'vtctld \
 		--enable_realtime_stats \
 		--workflow_manager_init \
 		--workflow_manager_use_election \
-		--enable_queries \
 		--log_dir ${VTROOT}/tmp \
 		--port ${VTCTLD_PORT} \
 		--grpc_port ${GRPC_PORT} \
