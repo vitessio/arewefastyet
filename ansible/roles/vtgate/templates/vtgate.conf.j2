@@ -27,11 +27,11 @@ EXTRA_VTGATE_FLAGS="\
 		{{gateway.extra_flags|default("")}} \
 		{{extra_vtgate_flags|default("")}} \
 	{% else %}
-		-planner-version {{ vitess_planner_version }} \
+		--planner-version {{ vitess_planner_version }} \
 		--vschema_ddl_authorized_users \"%\" \
 		--vtgate-config-terse-errors \
 		--gate_query_cache_size {{ vtgate_query_cache_size }} \
-		-tablet_types_to_wait REPLICA \
+		--tablet_types_to_wait REPLICA \
 		{{gateway.extra_flags|default("")}} \
 		{{extra_vtgate_flags|default("")}} \
 	{% endif %}
