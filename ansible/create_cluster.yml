@@ -85,6 +85,12 @@
       when: arewefastyet_execution_type == 'tpcc'
 
     - name: Apply VSchema
+      when: vitess_version_name == 'latest'
+      shell: |
+        vtctlclient --server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -- --vschema="$(cat /tmp/vschema_sysbench.json)" main
+
+    - name: Apply VSchema
+      when: vitess_version_name != 'latest'
       shell: |
         vtctlclient -server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -vschema="$(cat /tmp/vschema_sysbench.json)" main
 
