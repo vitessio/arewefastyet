@@ -11,6 +11,28 @@
 
 ---
 - name: Ensure Primary
+  when: vitess_version_name == "latest"
+  register: ensure_latest
+  shell: |
+    alias vc="vtctlclient --server {{ groups['vtctld'][0] }}:15999"
+    for keyspace in $(vc GetKeyspaces); do
+        echo "working on ${keyspace}"
+        for shard in $(vc FindAllShardsInKeyspace -- ${keyspace} | jq -r 'keys[]'); do
+            echo "working on ${shard}"
+            master=$(vc ListShardTablets -- ${keyspace}/${shard} | grep primary)
+            if [ -z "${master}" ]; then
+              echo "setting primary for ${keyspace}/${shard}"
+              vc InitShardPrimary -- --force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }' | head -n1)
+            else
+              vc SetReadWrite -- $(echo ${master} | awk '{ print $1 }' | head -n1)
+            fi
+        done
+    done
+  changed_when: false
+  failed_when: false
+
+- name: Ensure Primary
+  when: vitess_version_name != "latest"
   register: ensure
   shell: |
     alias vc="vtctlclient --server {{ groups['vtctld'][0] }}:15999"
@@ -24,26 +46,6 @@
               vc InitShardPrimary --force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }' | head -n1)
             else
               vc SetReadWrite $(echo ${master} | awk '{ print $1 }' | head -n1)
-            fi
-        done
-    done
-  changed_when: false
-  failed_when: false
-
-- name: Ensure Master
-  when: not ensure.rc == 0
-  shell: |
-    alias vc="vtctlclient -server {{ groups['vtctld'][0] }}:15999"
-    for keyspace in $(vc GetKeyspaces); do
-        echo "working on ${keyspace}"
-        for shard in $(vc FindAllShardsInKeyspace ${keyspace} | jq -r 'keys[]'); do
-            echo "working on ${shard}"
-            master=$(vc ListShardTablets ${keyspace}/${shard} | grep master)
-            if [ -z "${master}" ]; then
-              echo "setting master for ${keyspace}/${shard}"
-              vc InitShardMaster -force ${keyspace}/${shard} $(vc ListShardTablets ${keyspace}/${shard} | awk '{ print $1 }')
-            else
-              vc SetReadWrite $(echo ${master} | awk '{ print $1 }')
             fi
         done
     done
