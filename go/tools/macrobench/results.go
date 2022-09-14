@@ -22,6 +22,7 @@ import (
 	"errors"
 	"math"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/vitessio/arewefastyet/go/storage"
@@ -252,9 +253,9 @@ func (qps QPS) OtherStr() string {
 }
 
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
-func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient) (map[Type]DetailsArray, error) {
-	macros := map[Type]DetailsArray{}
-	for _, mtype := range Types {
+func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]DetailsArray, error) {
+	macros := map[string]DetailsArray{}
+	for _, mtype := range types {
 		macro, err := GetResultsForGitRefAndPlanner(mtype, sha, planner, dbclient)
 		if err != nil {
 			return nil, err
@@ -305,8 +306,8 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 
 // GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
 // and macro benchmark Type.
-func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	upperMacroType := macroType.ToUpper().String()
+func GetResultsForGitRefAndPlanner(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
+	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(info.exec_uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +

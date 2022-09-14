@@ -21,6 +21,8 @@ package server
 import (
 	"errors"
 	"html/template"
+	"path"
+	"strings"
 	"sync"
 	"time"
 
@@ -76,6 +78,9 @@ type Server struct {
 	prLabelTrigger   string
 	prLabelTriggerV3 string
 
+	benchmarkConfig map[string]string
+	benchmarkTypes  []string
+
 	// Mode used to run the server.
 	Mode
 }
@@ -119,7 +124,7 @@ func (s *Server) isReady() bool {
 	return s.port != "" && s.templatePath != "" && s.staticPath != "" && s.localVitessPath != ""
 }
 
-func (s *Server) Run() error {
+func (s *Server) Init() error {
 	if s.Mode != "" && !s.Mode.correct() {
 		return errors.New(ErrorIncorrectMode)
 	} else if s.Mode == "" {
@@ -134,16 +139,32 @@ func (s *Server) Run() error {
 		defer cleanLogger()
 	}
 
-	if !s.isReady() {
-		return errors.New(ErrorIncorrectConfiguration)
-	}
-
 	if err := s.setupLocalVitess(); err != nil {
 		return err
 	}
 
 	if err := s.createStorages(); err != nil {
 		return err
+	}
+
+	s.benchmarkConfig = map[string]string{
+		"micro":    path.Join(s.benchmarkConfigPath, "micro.yaml"),
+		"oltp":     path.Join(s.benchmarkConfigPath, "oltp.yaml"),
+		"oltp-set": path.Join(s.benchmarkConfigPath, "oltp-set.yaml"),
+		"tpcc":     path.Join(s.benchmarkConfigPath, "tpcc.yaml"),
+	}
+	for configName, _ := range s.benchmarkConfig {
+		if configName == "micro" {
+			continue
+		}
+		s.benchmarkTypes = append(s.benchmarkTypes, strings.ToUpper(configName))
+	}
+	return nil
+}
+
+func (s *Server) Run() error {
+	if !s.isReady() {
+		return errors.New(ErrorIncorrectConfiguration)
 	}
 
 	err := s.createCrons()
@@ -238,6 +259,10 @@ func Run(port, templatePath, staticPath, localVitessPath string) error {
 		templatePath:    templatePath,
 		staticPath:      staticPath,
 		localVitessPath: localVitessPath,
+	}
+	err := s.Init()
+	if err != nil {
+		return err
 	}
 	return s.Run()
 }

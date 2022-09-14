@@ -19,14 +19,15 @@
 package endtoend
 
 import (
+	"log"
+	"os"
+	"testing"
+
 	qt "github.com/frankban/quicktest"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
-	"log"
-	"os"
-	"testing"
 )
 
 var (
@@ -85,7 +86,7 @@ func TestCompareMacroBenchmark(t *testing.T) {
 	if skip != "" {
 		c.Skip(skip)
 	}
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, "dff8d632908583cae5940b25a962eaa2e6550508", "f7304cd1893accfefee0525910098a8e0e68deec", macrobench.V3Planner)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, "dff8d632908583cae5940b25a962eaa2e6550508", "f7304cd1893accfefee0525910098a8e0e68deec", macrobench.V3Planner, nil)
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -101,7 +102,7 @@ func BenchmarkCompareMacroBenchmark(b *testing.B) {
 		}
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, reference, compare, planner)
+			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, reference, compare, planner, nil)
 			if err != nil {
 				c.Fatal(err)
 			}

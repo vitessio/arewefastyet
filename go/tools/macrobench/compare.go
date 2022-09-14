@@ -20,18 +20,19 @@ package macrobench
 
 import (
 	"fmt"
+
 	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 // CompareMacroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the macrobenchmark
 // results for the 2 SHAs and compares them. The result is a map with the key being the macrobenchmark name.
-func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string, planner PlannerVersion) (map[Type]interface{}, error) {
+func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string, planner PlannerVersion, types []string) (map[string]interface{}, error) {
 	// Get macro benchmarks from all the different types
 	SHAs := []string{reference, compare}
 	var err error
-	macros := map[string]map[Type]DetailsArray{}
+	macros := map[string]map[string]DetailsArray{}
 	for _, sha := range SHAs {
-		macros[sha], err = GetDetailsArraysFromAllTypes(sha, planner, client)
+		macros[sha], err = GetDetailsArraysFromAllTypes(sha, planner, client, types)
 		if err != nil {
 			return nil, err
 		}
@@ -39,8 +40,8 @@ func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string,
 			macros[sha][mtype] = macros[sha][mtype].ReduceSimpleMedian()
 		}
 	}
-	macrosMatrixes := map[Type]interface{}{}
-	for _, mtype := range Types {
+	macrosMatrixes := map[string]interface{}{}
+	for _, mtype := range types {
 		macrosMatrixes[mtype] = CompareDetailsArrays(macros[reference][mtype], macros[compare][mtype])
 	}
 	return macrosMatrixes, nil
@@ -48,12 +49,12 @@ func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string,
 
 // ComparePlanners takes in 2 arguments, the database, and a SHA. It reads from the database, the macrobenchmark
 // results for the 2 planners corresponding to the sha and compares them. The result is a map with the key being the macrobenchmark name.
-func ComparePlanners(client storage.SQLClient, sha string) (map[Type]interface{}, error) {
+func ComparePlanners(client storage.SQLClient, sha string, types []string) (map[string]interface{}, error) {
 	// Get macro benchmarks from all the different types
 	var err error
-	macros := map[string]map[Type]DetailsArray{}
+	macros := map[string]map[string]DetailsArray{}
 	for _, planner := range LegacyPlannerVersions {
-		macros[string(planner)], err = GetDetailsArraysFromAllTypes(sha, planner, client)
+		macros[string(planner)], err = GetDetailsArraysFromAllTypes(sha, planner, client, types)
 		if err != nil {
 			return nil, err
 		}
@@ -61,8 +62,8 @@ func ComparePlanners(client storage.SQLClient, sha string) (map[Type]interface{}
 			macros[string(planner)][mtype] = macros[string(planner)][mtype].ReduceSimpleMedian()
 		}
 	}
-	macrosMatrixes := map[Type]interface{}{}
-	for _, mtype := range Types {
+	macrosMatrixes := map[string]interface{}{}
+	for _, mtype := range types {
 		macrosMatrixes[mtype] = CompareDetailsArrays(macros[string(Gen4FallbackPlanner)][mtype], macros[string(V3Planner)][mtype])
 	}
 	return macrosMatrixes, nil

@@ -19,7 +19,6 @@
 package server
 
 import (
-	"path"
 	"sync"
 	"time"
 
@@ -96,13 +95,7 @@ func (s *Server) createCrons() error {
 }
 
 func (s *Server) getConfigFiles() map[string]string {
-	configs := map[string]string{
-		// "micro":    path.Join(s.benchmarkConfigPath, "micro.yaml"),
-		// "oltp":     path.Join(s.benchmarkConfigPath, "oltp.yaml"),
-		"oltp-set": path.Join(s.benchmarkConfigPath, "oltp-set.yaml"),
-		// "tpcc":     path.Join(s.benchmarkConfigPath, "tpcc.yaml"),
-	}
-	return configs
+	return s.benchmarkConfig
 }
 
 func (s *Server) addToQueue(element *executionQueueElement) {

@@ -38,6 +38,10 @@ It uses a MySQL and InfluxDB instances to read the metrics that will be displaye
 --web-webhook-config ./config.yaml`,
 		Aliases: []string{"w"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			err := srv.Init()
+			if err != nil {
+				return err
+			}
 			return srv.Run()
 		},
 	}

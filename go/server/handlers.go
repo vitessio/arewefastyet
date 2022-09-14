@@ -130,7 +130,7 @@ func (s *Server) compareHandler(c *gin.Context) {
 	}
 
 	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, reference, compare, planner)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, reference, compare, planner, s.benchmarkTypes)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -162,7 +162,7 @@ func (s *Server) searchHandler(c *gin.Context) {
 		return
 	}
 
-	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, planner, s.dbClient)
+	macros, err := macrobench.GetDetailsArraysFromAllTypes(search, planner, s.dbClient, s.benchmarkTypes)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -369,7 +369,7 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	}
 
 	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, rightSHA, leftSHA, planner)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, rightSHA, leftSHA, planner, s.benchmarkTypes)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -509,7 +509,7 @@ func (s *Server) v3VsGen4Handler(c *gin.Context) {
 	}
 
 	// Compare Macrobenchmarks for the two planners for the given SHA.
-	macrosMatrices, err := macrobench.ComparePlanners(s.dbClient, sha)
+	macrosMatrices, err := macrobench.ComparePlanners(s.dbClient, sha, s.benchmarkTypes)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
