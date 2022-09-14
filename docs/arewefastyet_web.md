@@ -33,13 +33,11 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
       --planetscale-db-user string               Username used to authenticate to PlanetscaleDB.
       --slack-channel string                     Slack channel on which to post messages
       --slack-token string                       Token used to authenticate Slack
+      --web-benchmark-config-path string         Path to the configuration file folder for the benchmarks.
       --web-cron-nb-retry int                    Number of retries allowed for each cron job. (default 1)
       --web-cron-schedule string                 Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON. (default "@midnight")
       --web-cron-schedule-pull-requests string   Execution CRON schedule for pull requests benchmarks. An empty string will result in no CRON. Defaults to an execution every 5 minutes. (default "*/5 * * * *")
       --web-cron-schedule-tags string            Execution CRON schedule for tags/releases benchmarks. An empty string will result in no CRON. Defaults to an execution every minute. (default "*/1 * * * *")
-      --web-macrobench-oltp-config string        Path to the configuration file used to execute OLTP macrobenchmark.
-      --web-macrobench-tpcc-config string        Path to the configuration file used to execute TPCC macrobenchmark.
-      --web-microbench-config string             Path to the configuration file used to execute microbenchmark.
       --web-mode string                          Specify the mode on which the server will run
       --web-port string                          Port used for the HTTP server (default "8080")
       --web-pr-label-trigger string              GitHub Pull Request label that will trigger the execution of new execution. (default "Benchmark me")
@@ -52,7 +50,8 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --config string    config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --secrets string   secrets file
 ```
 
 ### SEE ALSO
