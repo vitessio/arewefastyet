@@ -125,6 +125,10 @@ func (s *Server) isReady() bool {
 }
 
 func (s *Server) Init() error {
+	if !s.isReady() {
+		return errors.New(ErrorIncorrectConfiguration)
+	}
+
 	if s.Mode != "" && !s.Mode.correct() {
 		return errors.New(ErrorIncorrectMode)
 	} else if s.Mode == "" {
@@ -153,7 +157,7 @@ func (s *Server) Init() error {
 		"oltp-set": path.Join(s.benchmarkConfigPath, "oltp-set.yaml"),
 		"tpcc":     path.Join(s.benchmarkConfigPath, "tpcc.yaml"),
 	}
-	for configName, _ := range s.benchmarkConfig {
+	for configName := range s.benchmarkConfig {
 		if configName == "micro" {
 			continue
 		}
