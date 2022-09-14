@@ -86,11 +86,12 @@ func TestCompareMacroBenchmark(t *testing.T) {
 	if skip != "" {
 		c.Skip(skip)
 	}
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, "dff8d632908583cae5940b25a962eaa2e6550508", "f7304cd1893accfefee0525910098a8e0e68deec", macrobench.V3Planner, nil)
+	types := []string{"OLTP", "TPCC"}
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, "dff8d632908583cae5940b25a962eaa2e6550508", "f7304cd1893accfefee0525910098a8e0e68deec", macrobench.V3Planner, types)
 	if err != nil {
 		c.Fatal(err)
 	}
-	c.Assert(macrosMatrices, qt.HasLen, len(macrobench.Types))
+	c.Assert(macrosMatrices, qt.HasLen, len(types))
 }
 
 func BenchmarkCompareMacroBenchmark(b *testing.B) {
@@ -101,12 +102,13 @@ func BenchmarkCompareMacroBenchmark(b *testing.B) {
 			c.Skip(skip)
 		}
 		b.ReportAllocs()
+		types := []string{"OLTP", "TPCC"}
 		for i := 0; i < b.N; i++ {
-			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, reference, compare, planner, nil)
+			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, reference, compare, planner, types)
 			if err != nil {
 				c.Fatal(err)
 			}
-			c.Assert(macrosMatrices, qt.HasLen, len(macrobench.Types))
+			c.Assert(macrosMatrices, qt.HasLen, len(types))
 		}
 	}
 
