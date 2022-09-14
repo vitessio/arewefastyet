@@ -140,10 +140,6 @@ cython_debug/
 # pyc extension
 *.pyc
 
-# Config files
-config/**/*.yaml
-!config/macro/*.yaml
-
 # hide config-lock.json
 config-lock.json
 
@@ -196,3 +192,5 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 arewefastyetcli
+
+config/**/secrets.yaml

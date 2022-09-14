@@ -1,0 +1,16 @@
+exec-go-version: "1.18.5"
+
+web-port: 9090
+web-template-path: ./go/server/templates
+web-static-path: ./go/server/static
+web-benchmark-config-path: ./config/benchmarks/
+
+web-pr-label-trigger: '"Benchmark me"'
+web-pr-label-trigger-planner-v3: '"Benchmark me (V3)"'
+web-vitess-path: /tmp
+
+web-cron-schedule: "*/1 * * * *"
+web-cron-schedule-pull-requests: "*/1 * * * *"
+web-cron-schedule-tags: "none"
+
+ansible-root-directory: "./ansible/"

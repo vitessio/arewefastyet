@@ -20,12 +20,13 @@ package server
 
 import (
 	"errors"
-	"github.com/google/uuid"
-	"github.com/vitessio/arewefastyet/go/slack"
-	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"html/template"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/vitessio/arewefastyet/go/slack"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
@@ -41,15 +42,13 @@ const (
 	flagStaticPath                           = "web-static-path"
 	flagVitessPath                           = "web-vitess-path"
 	flagMode                                 = "web-mode"
-	flagMicroBenchConfigFile                 = "web-microbench-config"
-	flagMacroBenchConfigFileOLTP             = "web-macrobench-oltp-config"
-	flagMacroBenchConfigFileTPCC             = "web-macrobench-tpcc-config"
 	flagCronSchedule                         = "web-cron-schedule"
 	flagCronSchedulePullRequests             = "web-cron-schedule-pull-requests"
 	flagCronScheduleTags                     = "web-cron-schedule-tags"
 	flagPullRequestLabelTrigger              = "web-pr-label-trigger"
 	flagPullRequestLabelTriggerWithPlannerV3 = "web-pr-label-trigger-planner-v3"
 	flagCronNbRetry                          = "web-cron-nb-retry"
+	flagBenchmarkConfigPath                  = "web-benchmark-config-path"
 )
 
 type Server struct {
@@ -71,9 +70,8 @@ type Server struct {
 	cronSchedulePullRequests string
 	cronScheduleTags         string
 	cronNbRetry              int
-	microbenchConfigPath     string
-	macrobenchConfigPathOLTP string
-	macrobenchConfigPathTPCC string
+
+	benchmarkConfigPath string
 
 	prLabelTrigger   string
 	prLabelTriggerV3 string
@@ -90,9 +88,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().Var(&s.Mode, flagMode, "Specify the mode on which the server will run")
 
 	// execution configuration flags
-	cmd.Flags().StringVar(&s.microbenchConfigPath, flagMicroBenchConfigFile, "", "Path to the configuration file used to execute microbenchmark.")
-	cmd.Flags().StringVar(&s.macrobenchConfigPathOLTP, flagMacroBenchConfigFileOLTP, "", "Path to the configuration file used to execute OLTP macrobenchmark.")
-	cmd.Flags().StringVar(&s.macrobenchConfigPathTPCC, flagMacroBenchConfigFileTPCC, "", "Path to the configuration file used to execute TPCC macrobenchmark.")
+	cmd.Flags().StringVar(&s.benchmarkConfigPath, flagBenchmarkConfigPath, "", "Path to the configuration file folder for the benchmarks.")
 	cmd.Flags().StringVar(&s.cronSchedule, flagCronSchedule, "@midnight", "Execution CRON schedule defaults to every day at midnight. An empty string will result in no CRON.")
 	cmd.Flags().StringVar(&s.cronSchedulePullRequests, flagCronSchedulePullRequests, "*/5 * * * *", "Execution CRON schedule for pull requests benchmarks. An empty string will result in no CRON. Defaults to an execution every 5 minutes.")
 	cmd.Flags().StringVar(&s.cronScheduleTags, flagCronScheduleTags, "*/1 * * * *", "Execution CRON schedule for tags/releases benchmarks. An empty string will result in no CRON. Defaults to an execution every minute.")
@@ -105,9 +101,6 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagStaticPath, cmd.Flags().Lookup(flagStaticPath))
 	_ = viper.BindPFlag(flagVitessPath, cmd.Flags().Lookup(flagVitessPath))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
-	_ = viper.BindPFlag(flagMicroBenchConfigFile, cmd.Flags().Lookup(flagMicroBenchConfigFile))
-	_ = viper.BindPFlag(flagMacroBenchConfigFileOLTP, cmd.Flags().Lookup(flagMacroBenchConfigFileOLTP))
-	_ = viper.BindPFlag(flagMacroBenchConfigFileTPCC, cmd.Flags().Lookup(flagMacroBenchConfigFileTPCC))
 	_ = viper.BindPFlag(flagCronSchedule, cmd.Flags().Lookup(flagCronSchedule))
 	_ = viper.BindPFlag(flagCronSchedulePullRequests, cmd.Flags().Lookup(flagCronSchedulePullRequests))
 	_ = viper.BindPFlag(flagCronScheduleTags, cmd.Flags().Lookup(flagCronScheduleTags))
@@ -241,13 +234,10 @@ func (s *Server) prepareGin() {
 
 func Run(port, templatePath, staticPath, localVitessPath string) error {
 	s := Server{
-		port:                     port,
-		templatePath:             templatePath,
-		staticPath:               staticPath,
-		localVitessPath:          localVitessPath,
-		microbenchConfigPath:     "/",
-		macrobenchConfigPathOLTP: "/",
-		macrobenchConfigPathTPCC: "/",
+		port:            port,
+		templatePath:    templatePath,
+		staticPath:      staticPath,
+		localVitessPath: localVitessPath,
 	}
 	return s.Run()
 }

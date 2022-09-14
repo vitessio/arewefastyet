@@ -41,8 +41,14 @@
     dest: /tmp/config.yaml
     mode: '0644'
 
+- name: Get macrobenchmarks secrets.yaml
+  ansible.builtin.copy:
+    src: "{{ arewefastyet_secrets_file_path }}"
+    dest: /tmp/secrets.yaml
+    mode: '0644'
+
 - name: Run macrobenchmarks
   shell: |
-    arewefastyetcli macrobench run --config /tmp/config.yaml --macrobench-git-ref {{ vitess_git_version }} --macrobench-exec-uuid {{ arewefastyet_exec_uuid }} --macrobench-source {{ arewefastyet_source }} --macrobench-vtgate-planner-version {{ vitess_planner_version }} --macrobench-vtgate-web-ports {{ vtgate_web_ports }}
+    arewefastyetcli macrobench run --config /tmp/config.yaml --secrets /tmp/secrets.yaml --macrobench-git-ref {{ vitess_git_version }} --macrobench-exec-uuid {{ arewefastyet_exec_uuid }} --macrobench-source {{ arewefastyet_source }} --macrobench-vtgate-planner-version {{ vitess_planner_version }} --macrobench-vtgate-web-ports {{ vtgate_web_ports }}
   register: arewefastyetcli
   changed_when: False

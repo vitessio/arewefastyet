@@ -19,6 +19,7 @@
 package server
 
 import (
+	"path"
 	"sync"
 	"time"
 
@@ -96,9 +97,9 @@ func (s *Server) createCrons() error {
 
 func (s *Server) getConfigFiles() map[string]string {
 	configs := map[string]string{
-		"micro": s.microbenchConfigPath,
-		"oltp":  s.macrobenchConfigPathOLTP,
-		"tpcc":  s.macrobenchConfigPathTPCC,
+		"micro": path.Join(s.benchmarkConfigPath, "micro.yaml"),
+		"oltp":  path.Join(s.benchmarkConfigPath, "oltp.yaml"),
+		"tpcc":  path.Join(s.benchmarkConfigPath, "tpcc.yaml"),
 	}
 	return configs
 }

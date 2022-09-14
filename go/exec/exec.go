@@ -22,9 +22,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage"
-	"github.com/vitessio/arewefastyet/go/storage/psdb"
-	"github.com/vitessio/arewefastyet/go/tools/git"
 	"io"
 	"os"
 	"path"
@@ -33,6 +30,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/vitessio/arewefastyet/go/storage"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
@@ -93,6 +94,7 @@ type Exec struct {
 	createdInDB bool
 	prepared    bool
 	configPath  string
+	secretsPath string
 
 	// VtgatePlannerVersion is the planner version that vtgate is going to use
 	VtgatePlannerVersion string
@@ -144,14 +146,14 @@ func NewExecWithConfig(pathConfig string) (*Exec, error) {
 	if err != nil {
 		return nil, err
 	}
-	v := viper.New()
 
-	v.SetConfigFile(pathConfig)
-	if err := v.ReadInConfig(); err != nil {
+	viper.SetConfigFile(pathConfig)
+	err = viper.MergeInConfig()
+	if err != nil {
 		return nil, err
 	}
 
-	err = e.AddToViper(v)
+	err = e.AddToViper(viper.GetViper())
 	if err != nil {
 		return nil, err
 	}
@@ -236,6 +238,9 @@ func (e *Exec) Prepare() error {
 	if e.configPath == "" {
 		e.configPath = viper.ConfigFileUsed()
 	}
+	if e.secretsPath == "" {
+		e.secretsPath = viper.GetString("secrets")
+	}
 
 	// TODO: optimize tokenization of Ansible files.
 	err = ansible.AddIPsToFiles([]string{e.ServerAddress}, e.AnsibleConfig)
@@ -307,6 +312,12 @@ func (e *Exec) prepareAnsibleForExecution() error {
 		return err
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyBenchmarkConfigPath, absConfigPath)
+
+	absSecretsPath, err := filepath.Abs(e.secretsPath)
+	if err != nil {
+		return err
+	}
+	e.AnsibleConfig.AddExtraVar(ansible.KeyBenchmarkSecretsPath, absSecretsPath)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecUUID, e.UUID.String())
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecSource, e.Source)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionType, e.TypeOf)

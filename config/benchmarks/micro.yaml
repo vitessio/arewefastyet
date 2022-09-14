@@ -1,0 +1,6 @@
+## Exec configuration
+exec-type: micro
+
+## Ansible
+ansible-inventory-files: microbench_inventory.yml
+ansible-playbook-files: microbench.yml

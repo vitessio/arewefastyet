@@ -1,3 +1,16 @@
+## Exec Config
+exec-type: oltp
+
+## Ansible
+ansible-inventory-files: macrobench_sharded_inventory.yml
+ansible-playbook-files: macrobench.yml
+
+## Macrobench cmd
+macrobench-sysbench-executable: /usr/local/bin/sysbench
+macrobench-workload-path: oltp_read_write
+macrobench-skip-steps:
+macrobench-type: oltp
+
 ## Sysbench all steps
 macrobench_all_mysql-db: main
 macrobench_all_mysql-host: 127.0.0.1

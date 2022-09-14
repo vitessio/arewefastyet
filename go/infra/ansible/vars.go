@@ -46,6 +46,11 @@ const (
 	// server.
 	KeyBenchmarkConfigPath = "arewefastyet_configuration_file_path"
 
+	// KeyBenchmarkSecretsPath corresponding value in the map is the path to the secrets
+	// file that will be used to execute the benchmark by arewefastyet inside the benchmarking
+	// server.
+	KeyBenchmarkSecretsPath = "arewefastyet_secrets_file_path"
+
 	// Vitess related keys
 
 	// KeyVitessVersion corresponding value in the map is the git reference of SHA

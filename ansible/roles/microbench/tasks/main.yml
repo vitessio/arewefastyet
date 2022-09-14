@@ -50,9 +50,15 @@
     dest: /tmp/config.yaml
     mode: '0644'
 
+- name: Get microbenchmarks secrets.yaml
+  ansible.builtin.copy:
+    src: "{{ arewefastyet_secrets_file_path }}"
+    dest: /tmp/secrets.yaml
+    mode: '0644'
+
 - name: Run microbenchmarks
   shell: |
     cd /go/src/vitess.io/vitess
-    arewefastyetcli microbench run {{ microbenchmarks_vitess_package }} output.txt --config /tmp/config.yaml --microbench-exec-uuid {{ arewefastyet_exec_uuid }}
+    arewefastyetcli microbench run {{ microbenchmarks_vitess_package }} output.txt --config /tmp/config.yaml --secrets /tmp/secrets.yaml --microbench-exec-uuid {{ arewefastyet_exec_uuid }}
   register: arewefastyetcli
   changed_when: False
