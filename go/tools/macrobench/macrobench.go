@@ -144,7 +144,7 @@ func Run(mabcfg Config) error {
 }
 
 func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int) error {
-	err := handleSysBenchResults(resStr, sqlClient, mabcfg.Type, macrobenchID)
+	err := handleSysBenchResults(resStr, sqlClient, macrobenchID)
 	if err != nil {
 		return err
 	}
@@ -199,7 +199,7 @@ func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execU
 	return nil
 }
 
-func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchType Type, macrobenchID int) error {
+func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchID int) error {
 	// Parse results
 	var results []Result
 	err := json.Unmarshal(resStr, &results)
@@ -212,7 +212,7 @@ func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchType
 
 	// Save results
 	if sqlClient != nil {
-		err = results[0].insertToMySQL(macrobenchType, macrobenchID, sqlClient)
+		err = results[0].insertToMySQL(macrobenchID, sqlClient)
 		if err != nil {
 			return err
 		}

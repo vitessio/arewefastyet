@@ -20,12 +20,11 @@ package macrobench
 
 import (
 	"errors"
-	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage"
 	"math"
 	"sort"
-	"strings"
 	"time"
+
+	"github.com/vitessio/arewefastyet/go/storage"
 
 	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
@@ -278,21 +277,15 @@ func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient s
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
 func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	if macroType != OLTP && macroType != TPCC {
-		return nil, errors.New(IncorrectMacroBenchmarkType)
-	}
-
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
-		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
-		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
-		"FROM execution AS e, macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
-		"WHERE e.uuid = b.exec_uuid AND e.status = \"finished\" AND b.DateTime BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND b.source = ? AND b.vtgate_planner_version = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+	query := "SELECT info.macrobenchmark_id, info.commit, info.source, info.DateTime, IFNULL(info.exec_uuid, ''), " +
+		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
+		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
+		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
+		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ?"
 
-	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
-
-	result, err := client.Select(query, lastDays, source, planner)
+	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +293,7 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 	for result.Next() {
 		var res Details
 		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
-			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
+			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
 			return nil, err
@@ -311,21 +304,16 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 }
 
 // GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
-// and macro benchmark Type. The type must be either OLTP or TPCC.
+// and macro benchmark Type.
 func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	if macroType != OLTP && macroType != TPCC {
-		return nil, errors.New(IncorrectMacroBenchmarkType)
-	}
 	upperMacroType := macroType.ToUpper().String()
-	query := "SELECT b.macrobenchmark_id, b.commit, b.source, b.DateTime, IFNULL(b.exec_uuid, ''), " +
-		"macrotype.tps, macrotype.latency, macrotype.errors, macrotype.reconnects, macrotype.time, macrotype.threads, " +
-		"qps.qps_no, qps.total_qps, qps.reads_qps, qps.writes_qps, qps.other_qps " +
-		"FROM execution AS e, macrobenchmark AS b, $(MBTYPE) AS macrotype, qps AS qps " +
-		"WHERE e.uuid = b.exec_uuid AND e.status = \"finished\" AND b.commit = ? AND b.vtgate_planner_version = ? AND b.macrobenchmark_id = macrotype.macrobenchmark_id AND macrotype.$(MBTYPE)_no = qps.$(MBTYPE)_no"
+	query := "SELECT info.macrobenchmark_id, info.commit, info.source, info.DateTime, IFNULL(info.exec_uuid, ''), " +
+		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
+		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
+		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.git_ref = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ?"
 
-	query = strings.ReplaceAll(query, "$(MBTYPE)", upperMacroType)
-
-	result, err := client.Select(query, ref, planner)
+	result, err := client.Select(query, ref, planner, upperMacroType)
 	if err != nil {
 		return nil, err
 	}
@@ -333,7 +321,7 @@ func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVe
 	for result.Next() {
 		var res Details
 		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
-			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads, &res.Result.QPS.ID,
+			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads,
 			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
 		if err != nil {
 			return nil, err
@@ -347,24 +335,14 @@ func GetResultsForGitRefAndPlanner(macroType Type, ref string, planner PlannerVe
 // The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
 // Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
 // The children table QPS is also inserted.
-func (mbr *Result) insertToMySQL(benchmarkType Type, macrobenchmarkID int, client storage.SQLClient) error {
+func (mbr *Result) insertToMySQL(macrobenchmarkID int, client storage.SQLClient) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
-	if benchmarkType == "" {
-		return errors.New(IncorrectMacroBenchmarkType)
-	}
 
 	// insert Result
-	queryResult := fmt.Sprintf("INSERT INTO %s(macrobenchmark_id, tps, latency, errors, reconnects, time, threads) VALUES(?, ?, ?, ?, ?, ?, ?)", benchmarkType.ToUpper().String())
-	resultID, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads)
-	if err != nil {
-		return err
-	}
-
-	// insert QPS
-	queryQPS := fmt.Sprintf("INSERT INTO qps(%s, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?)", benchmarkType.ToUpper().String()+"_no")
-	_, err = client.Insert(queryQPS, resultID, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
+	queryResult := "INSERT INTO macrobenchmark_results(macrobenchmark_id, tps, latency, errors, reconnects, time, threads, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+	_, err := client.Insert(queryResult, macrobenchmarkID, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
 	if err != nil {
 		return err
 	}

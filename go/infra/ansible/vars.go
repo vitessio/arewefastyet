@@ -33,10 +33,6 @@ const (
 	// current benchmark.
 	KeyExecUUID = "arewefastyet_exec_uuid"
 
-	// KeyExecSource corresponding value in the map is the source (the name) of
-	// trigger that triggered this benchmark.
-	KeyExecSource = "arewefastyet_source"
-
 	// KeyExecutionType corresponding value in the map is the type of execution for
 	// this benchmark.
 	KeyExecutionType = "arewefastyet_execution_type"

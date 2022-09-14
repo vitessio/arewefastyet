@@ -319,7 +319,6 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyBenchmarkSecretsPath, absSecretsPath)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecUUID, e.UUID.String())
-	e.AnsibleConfig.AddExtraVar(ansible.KeyExecSource, e.Source)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionType, e.TypeOf)
 
 	// vitess related values
