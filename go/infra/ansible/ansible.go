@@ -21,15 +21,16 @@ package ansible
 import (
 	"context"
 	"errors"
+	"io"
+	"os"
+	"path"
+
 	"github.com/apenella/go-ansible/pkg/execute"
 	"github.com/apenella/go-ansible/pkg/options"
 	"github.com/apenella/go-ansible/pkg/playbook"
 	"github.com/otiai10/copy"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io"
-	"os"
-	"path"
 )
 
 const (
@@ -73,9 +74,9 @@ func (c *Config) AddToViper(v *viper.Viper) {
 }
 
 func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringVar(&c.RootDir, flagAnsibleRoot, "", "Root directory of Ansible")
-	cmd.PersistentFlags().StringSliceVar(&c.InventoryFiles, flagInventoryFiles, []string{}, "List of inventory files used by Ansible")
-	cmd.PersistentFlags().StringSliceVar(&c.PlaybookFiles, flagPlaybookFiles, []string{}, "List of playbook files used by Ansible")
+	cmd.Flags().StringVar(&c.RootDir, flagAnsibleRoot, "", "Root directory of Ansible")
+	cmd.Flags().StringSliceVar(&c.InventoryFiles, flagInventoryFiles, []string{}, "List of inventory files used by Ansible")
+	cmd.Flags().StringSliceVar(&c.PlaybookFiles, flagPlaybookFiles, []string{}, "List of playbook files used by Ansible")
 
 	_ = viper.BindPFlag(flagAnsibleRoot, cmd.Flags().Lookup(flagAnsibleRoot))
 	_ = viper.BindPFlag(flagInventoryFiles, cmd.Flags().Lookup(flagInventoryFiles))

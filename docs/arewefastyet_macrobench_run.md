@@ -28,7 +28,6 @@ arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-
       --macrobench-exec-uuid string                UUID of the parent execution, an empty string will set to NULL.
       --macrobench-git-ref string                  Git SHA referring to the macro benchmark.
       --macrobench-skip-steps strings              Slice of sysbench steps to skip.
-      --macrobench-source string                   The source or origin of the macro benchmark trigger.
       --macrobench-sysbench-executable string      Path to the sysbench binary.
       --macrobench-type Type                       Type of macro benchmark.
       --macrobench-vtgate-planner-version string   Vtgate planner version running on Vitess
@@ -46,7 +45,8 @@ arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --config string    config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --secrets string   secrets file
 ```
 
 ### SEE ALSO

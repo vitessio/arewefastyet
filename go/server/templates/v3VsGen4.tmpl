@@ -60,7 +60,7 @@ limitations under the License.
         {{ range $key, $val := .macrobenchmark }}
 
         <div class="card rounded mb-3">
-            <h4 class="card-header">{{ $key.ToUpper }}</h4>
+            <h4 class="card-header">{{ $key }}</h4>
             <div class="card-body">
             {{ if $val }}
                 <p class="lead">Click <a href="/macrobench/queries/compare?left={{$sha}}&right={{$sha}}&type={{$key}}&left_planner=V3&right_planner=Gen4Fallback">here</a> to see the query plans comparison for this benchmark.</p>
@@ -169,7 +169,7 @@ limitations under the License.
                 <canvas id="{{$key}}-bar-chart" height="75"></canvas>
                 {{ else if not $val }}
                 <div class="alert alert-warning" role="alert">
-                    No {{ $key.ToUpper }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$.sha}}]&type=macrobench-{{$key}}">request</a> a run.
+                    No {{ $key }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$.sha}}]&type=macrobench-{{$key}}">request</a> a run.
                 </div>
                 {{ end }}
             </div>

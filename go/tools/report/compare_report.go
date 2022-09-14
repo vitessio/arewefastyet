@@ -17,9 +17,10 @@ limitations under the License.
 package report
 
 import (
-	"github.com/vitessio/arewefastyet/go/storage"
 	"strconv"
 	"strings"
+
+	"github.com/vitessio/arewefastyet/go/storage"
 
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 
@@ -74,7 +75,7 @@ type tableCell struct {
 // to read the results. It also takes as an argument the name of the report that will be generated
 func GenerateCompareReport(client storage.SQLClient, metricsClient *influxdb.Client, fromSHA, toSHA, reportFile string) error {
 	// Compare macrobenchmark results for the 2 SHAs
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(client, fromSHA, toSHA, macrobench.V3Planner)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(client, fromSHA, toSHA, macrobench.V3Planner, nil)
 	if err != nil {
 		return err
 	}
@@ -114,7 +115,7 @@ func GenerateCompareReport(client storage.SQLClient, metricsClient *influxdb.Cli
 			macroCompArr := value.(macrobench.ComparisonArray)
 			if len(macroCompArr) > 0 {
 				macroComp := macroCompArr[0]
-				macroTable = append(macroTable, []tableCell{{value: strings.ToUpper(key.String()), styleIndex: 2}})
+				macroTable = append(macroTable, []tableCell{{value: strings.ToUpper(key), styleIndex: 2}})
 				macroTable = append(macroTable, []tableCell{{value: "TPS", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.TPS), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.TPS), styleIndex: 1}})
 				macroTable = append(macroTable, []tableCell{{value: "QPS Reads", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Reads), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Reads), styleIndex: 1}})
 				macroTable = append(macroTable, []tableCell{{value: "QPS Writes", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Writes), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Writes), styleIndex: 1}})

@@ -32,7 +32,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile     string
+	secretsFile string
+)
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -55,6 +58,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/arewefastyet/config.yaml)")
+	rootCmd.PersistentFlags().StringVar(&secretsFile, "secrets", "", "secrets file")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -88,6 +92,14 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			log.Println(err)
+			os.Exit(1)
+		}
+	}
+	if secretsFile != "" {
+		viper.SetConfigFile(secretsFile)
+		err := viper.MergeInConfig()
+		if err != nil {
 			log.Println(err)
 			os.Exit(1)
 		}

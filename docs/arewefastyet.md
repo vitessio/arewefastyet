@@ -9,9 +9,10 @@ Vitess has to ensure it's delivering flawless performance to its users. In order
 ### Options
 
 ```
-      --config string   config file (default is $HOME/.config/arewefastyet/config.yaml)
-  -h, --help            help for arewefastyet
-  -t, --toggle          Help message for toggle
+      --config string    config file (default is $HOME/.config/arewefastyet/config.yaml)
+  -h, --help             help for arewefastyet
+      --secrets string   secrets file
+  -t, --toggle           Help message for toggle
 ```
 
 ### SEE ALSO

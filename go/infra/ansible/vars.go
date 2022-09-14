@@ -33,10 +33,6 @@ const (
 	// current benchmark.
 	KeyExecUUID = "arewefastyet_exec_uuid"
 
-	// KeyExecSource corresponding value in the map is the source (the name) of
-	// trigger that triggered this benchmark.
-	KeyExecSource = "arewefastyet_source"
-
 	// KeyExecutionType corresponding value in the map is the type of execution for
 	// this benchmark.
 	KeyExecutionType = "arewefastyet_execution_type"
@@ -45,6 +41,11 @@ const (
 	// file that will be used to execute the benchmark by arewefastyet inside the benchmarking
 	// server.
 	KeyBenchmarkConfigPath = "arewefastyet_configuration_file_path"
+
+	// KeyBenchmarkSecretsPath corresponding value in the map is the path to the secrets
+	// file that will be used to execute the benchmark by arewefastyet inside the benchmarking
+	// server.
+	KeyBenchmarkSecretsPath = "arewefastyet_secrets_file_path"
 
 	// Vitess related keys
 

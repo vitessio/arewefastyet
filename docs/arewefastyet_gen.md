@@ -15,7 +15,8 @@ Top level command to generate files like documentation and reports
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --config string    config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --secrets string   secrets file
 ```
 
 ### SEE ALSO

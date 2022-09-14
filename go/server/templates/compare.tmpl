@@ -54,7 +54,7 @@ limitations under the License.
                 {{ if .macrobenchmark }}
                     {{ range $key, $val := .macrobenchmark }}
 
-                    <h4>{{ $key.ToUpper }}</h4>
+                    <h4>{{ $key }}</h4>
                     {{ if $val }}
                     <table class="table table-striped table-hover table-sm table-bordered" >
                         <thead>
@@ -161,7 +161,7 @@ limitations under the License.
                     <canvas id="{{$key}}-bar-chart" height="75"></canvas>
                     {{ else if not $val }}
                         <div class="alert alert-warning" role="alert">
-                            No {{ $key.ToUpper }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$referenceSHAs.SHA}},{{ $compareSHAs.SHA }}]&type=macrobench-{{$key}}">request</a> a run.
+                            No {{ $key }} macro benchmark results. You can <a href="/request_benchmark?s=[{{$referenceSHAs.SHA}},{{ $compareSHAs.SHA }}]&type=macrobench-{{$key}}">request</a> a run.
                         </div>
                     {{ end }}
                 {{ end }}

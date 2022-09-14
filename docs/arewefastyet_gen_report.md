@@ -39,7 +39,8 @@ arewefastyet gen report --compare-from sha1 --compare-to sha2 --report-file repo
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --config string    config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --secrets string   secrets file
 ```
 
 ### SEE ALSO

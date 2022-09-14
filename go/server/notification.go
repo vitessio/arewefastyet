@@ -59,12 +59,12 @@ func (s *Server) sendNotificationForRegression(leftSource, rightSource, leftRef,
 			return err
 		}
 	} else if benchmarkType == "oltp" || benchmarkType == "tpcc" {
-		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, leftRef, rightRef, macrobench.PlannerVersion(plannerVersion))
+		macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, leftRef, rightRef, macrobench.PlannerVersion(plannerVersion), s.benchmarkTypes)
 		if err != nil {
 			return err
 		}
 
-		macroResults := macrosMatrices[macrobench.Type(benchmarkType)].(macrobench.ComparisonArray)
+		macroResults := macrosMatrices[benchmarkType].(macrobench.ComparisonArray)
 		if len(macroResults) == 0 {
 			return fmt.Errorf("no macrobenchmark result")
 		}

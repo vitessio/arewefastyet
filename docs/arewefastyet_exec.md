@@ -51,7 +51,8 @@ arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --pla
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --config string    config file (default is $HOME/.config/arewefastyet/config.yaml)
+      --secrets string   secrets file
 ```
 
 ### SEE ALSO

@@ -1,0 +1,16 @@
+exec-go-version: "1.18.5"
+
+web-cron-schedule: "@midnight"
+web-cron-schedule-pull-requests: "*/5 * * * *"
+web-cron-schedule-tags: "*/1 * * * *"
+
+web-port: 8080
+web-template-path: /root/arewefastyet/go/server/templates
+web-static-path: /root/arewefastyet/go/server/static
+web-benchmark-config-path: /root/arewefastyet/config/benchmarks/
+
+
+web-pr-label-trigger: '"Benchmark me"'
+web-pr-label-trigger-planner-v3: '"Benchmark me (V3)"'
+
+ansible-root-directory: /root/arewefastyet/ansible/
