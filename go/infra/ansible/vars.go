@@ -70,6 +70,16 @@ const (
 	// that will be used to execute the benchmark.
 	KeyVtgatePlanner = "vitess_planner_version"
 
+	// KeyExtraFlagsVTGate represents the list of VTGate flag that will be passed down
+	// to VTGate during startup. The flags are represented as follows in the string:
+	// 		"--flag1 --flag2"
+	KeyExtraFlagsVTGate = "extra_vtgate_flags"
+
+	// KeyExtraFlagsVTTablet represents the list of VTTablet flag that will be passed down
+	// to VTTablet during startup. The flags are represented as follows in the string:
+	// 		"--flag1 --flag2"
+	KeyExtraFlagsVTTablet = "extra_vttablet_flags"
+
 	// Runtime related keys
 
 	// KeyGoVersion corresponding value in the map is the golang version to use for

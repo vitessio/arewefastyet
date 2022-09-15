@@ -68,6 +68,7 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 	if err != nil {
 		return nil, err
 	}
+	currVesion := git.Version{Major: lastRelease.Version.Major + 1}
 
 	// We compare main with the previous hash of main and with the latest release
 	for configType, configFile := range configs {
@@ -80,7 +81,7 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 				slog.Warn(err.Error())
 				continue
 			}
-			elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, "", exec.SourceCron, lastRelease)...)
+			elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, "", exec.SourceCron, lastRelease, currVesion)...)
 		} else {
 			for _, version := range git.GetPlannerVersions() {
 				_, previousGitRef, err := exec.GetPreviousFromSourceMacrobenchmark(s.dbClient, exec.SourceCron, configType, string(version), ref)
@@ -88,7 +89,7 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 					slog.Warn(err.Error())
 					continue
 				}
-				elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, string(version), exec.SourceCron, lastRelease)...)
+				elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, string(version), exec.SourceCron, lastRelease, currVesion)...)
 			}
 		}
 	}
@@ -110,11 +111,14 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 	for _, release := range releases {
 		ref := release.CommitHash
 		source := exec.SourceReleaseBranch + release.Name
-		lastPatchRelease, err := git.GetLastPatchReleaseAndCommitHash(vitesLocalPath, release.Number)
+		lastPatchRelease, err := git.GetLastPatchReleaseAndCommitHash(vitesLocalPath, release.Version)
 		if err != nil {
 			slog.Warn(err.Error())
 			continue
 		}
+
+		currVesion := lastPatchRelease.Version
+		currVesion.Patch += 1
 
 		for configType, configFile := range configs {
 			if configFile == "" {
@@ -127,7 +131,7 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 					continue
 				}
 
-				elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, "", source, lastPatchRelease)...)
+				elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, "", source, lastPatchRelease, currVesion)...)
 			} else {
 				versions := git.GetPlannerVersions()
 
@@ -138,7 +142,7 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 						continue
 					}
 
-					elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, string(version), source, lastPatchRelease)...)
+					elements = append(elements, s.createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, string(version), source, lastPatchRelease, currVesion)...)
 				}
 			}
 		}
@@ -146,18 +150,18 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 	return elements, nil
 }
 
-func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, plannerVersion, source string, lastRelease *git.Release) []*executionQueueElement {
+func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(configFile, ref, configType, previousGitRef, plannerVersion, source string, lastRelease *git.Release, version git.Version) []*executionQueueElement {
 	var elements []*executionQueueElement
 
 	// creating a benchmark for the latest commit on the branch with SourceCron as a source
 	// this benchmark will be compared with the previous benchmark on branch with the given source, and with the latest release
-	newExecutionElement := s.createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion, false, 0)
+	newExecutionElement := s.createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion, false, 0, version)
 	elements = append(elements, newExecutionElement)
 
 	if previousGitRef != "" {
 		// creating an execution queue element for the latest benchmark with SourceCron as source
 		// this will not be executed since the benchmark already exist, we still create the element in order to compare
-		previousElement := s.createSimpleExecutionQueueElement(source, configFile, previousGitRef, configType, plannerVersion, false, 0)
+		previousElement := s.createSimpleExecutionQueueElement(source, configFile, previousGitRef, configType, plannerVersion, false, 0, version)
 		previousElement.compareWith = append(previousElement.compareWith, newExecutionElement.identifier)
 		newExecutionElement.compareWith = append(newExecutionElement.compareWith, previousElement.identifier)
 		elements = append(elements, previousElement)
@@ -166,7 +170,7 @@ func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(configFil
 	if lastRelease != nil {
 		// creating an execution queue element for the latest release (comparing branch with the latest release)
 		// this will probably not be executed the benchmark should already exist, we still create it to compare main once its benchmark is over
-		lastReleaseElement := s.createSimpleExecutionQueueElement(exec.SourceTag+lastRelease.Name, configFile, lastRelease.CommitHash, configType, plannerVersion, false, 0)
+		lastReleaseElement := s.createSimpleExecutionQueueElement(exec.SourceTag+lastRelease.Name, configFile, lastRelease.CommitHash, configType, plannerVersion, false, 0, lastRelease.Version)
 		lastReleaseElement.compareWith = append(lastReleaseElement.compareWith, newExecutionElement.identifier)
 		newExecutionElement.compareWith = append(newExecutionElement.compareWith, lastReleaseElement.identifier)
 		elements = append(elements, lastReleaseElement)
@@ -175,6 +179,7 @@ func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(configFil
 }
 
 func (s *Server) pullRequestsCronHandler() {
+	vitesLocalPath := s.getVitessPath()
 	configs := s.getConfigFiles()
 	prLabelsInfo := []struct {
 		label   string
@@ -200,19 +205,24 @@ func (s *Server) pullRequestsCronHandler() {
 			if ref == "" || pullNb == 0 {
 				continue
 			}
+			currVersion, err := git.GetVersionForCommitSHA(vitesLocalPath, previousGitRef)
+			if err != nil {
+				slog.Warn(err)
+				continue
+			}
 			for configType, configFile := range configs {
 				if configFile == "" {
 					continue
 				}
 				if configType == "micro" {
-					elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, "", pullNb)...)
+					elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, "", pullNb, currVersion)...)
 				} else {
 					versions := []macrobench.PlannerVersion{macrobench.V3Planner}
 					if labelInfo.useGen4 {
 						versions = []macrobench.PlannerVersion{macrobench.Gen4Planner}
 					}
 					for _, version := range versions {
-						elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, version, pullNb)...)
+						elements = append(elements, s.createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef, version, pullNb, currVersion)...)
 					}
 				}
 			}
@@ -223,15 +233,15 @@ func (s *Server) pullRequestsCronHandler() {
 	}
 }
 
-func (s *Server) createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef string, version macrobench.PlannerVersion, pullNb int) []*executionQueueElement {
+func (s *Server) createPullRequestElementWithBaseComparison(configFile, ref, configType, previousGitRef string, plannerVersion macrobench.PlannerVersion, pullNb int, gitVersion git.Version) []*executionQueueElement {
 	var elements []*executionQueueElement
 
-	newExecutionElement := s.createSimpleExecutionQueueElement(exec.SourcePullRequest, configFile, ref, configType, string(version), true, pullNb)
+	newExecutionElement := s.createSimpleExecutionQueueElement(exec.SourcePullRequest, configFile, ref, configType, string(plannerVersion), true, pullNb, gitVersion)
 	newExecutionElement.identifier.PullBaseRef = previousGitRef
 	elements = append(elements, newExecutionElement)
 
 	if previousGitRef != "" {
-		previousElement := s.createSimpleExecutionQueueElement(exec.SourcePullRequestBase, configFile, previousGitRef, configType, string(version), false, pullNb)
+		previousElement := s.createSimpleExecutionQueueElement(exec.SourcePullRequestBase, configFile, previousGitRef, configType, string(plannerVersion), false, pullNb, gitVersion)
 		previousElement.compareWith = append(previousElement.compareWith, newExecutionElement.identifier)
 		newExecutionElement.compareWith = append(newExecutionElement.compareWith, previousElement.identifier)
 		elements = append(elements, previousElement)
@@ -267,11 +277,11 @@ func (s *Server) tagsCronHandler() {
 				continue
 			}
 			if configType == "micro" {
-				elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, "", true, 0))
+				elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, "", true, 0, release.Version))
 			} else {
 				versions := git.GetPlannerVersions()
 				for _, version := range versions {
-					elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, string(version), true, 0))
+					elements = append(elements, s.createSimpleExecutionQueueElement(source, configFile, release.CommitHash, configType, string(version), true, 0, release.Version))
 				}
 			}
 		}
@@ -281,7 +291,7 @@ func (s *Server) tagsCronHandler() {
 	}
 }
 
-func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion string, notify bool, pullNb int) *executionQueueElement {
+func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, configType, plannerVersion string, notify bool, pullNb int, version git.Version) *executionQueueElement {
 	return &executionQueueElement{
 		config:       configFile,
 		retry:        s.cronNbRetry,
@@ -292,6 +302,7 @@ func (s *Server) createSimpleExecutionQueueElement(source, configFile, ref, conf
 			BenchmarkType:  configType,
 			PlannerVersion: plannerVersion,
 			PullNb:         pullNb,
+			Version:        version,
 		},
 	}
 }

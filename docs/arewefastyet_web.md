@@ -42,6 +42,7 @@ arewefastyet web --db-database benchmark --db-host localhost --db-password <db-p
       --web-port string                          Port used for the HTTP server (default "8080")
       --web-pr-label-trigger string              GitHub Pull Request label that will trigger the execution of new execution. (default "Benchmark me")
       --web-pr-label-trigger-planner-v3 string   GitHub Pull Request label that will trigger the execution of new execution using the V3 planner. (default "Benchmark me (V3)")
+      --web-source-filter strings                List of execution source that should be run. By default, all sources are ran.
       --web-static-path string                   Path to the static directory
       --web-template-path string                 Path to the template directory
       --web-vitess-path string                   Absolute path where the vitess directory is located or where it should be cloned (default "/")

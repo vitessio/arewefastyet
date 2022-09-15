@@ -23,6 +23,8 @@ import (
 	"time"
 
 	"github.com/robfig/cron/v3"
+	"github.com/vitessio/arewefastyet/go/tools/git"
+	"golang.org/x/exp/slices"
 )
 
 type (
@@ -38,6 +40,7 @@ type (
 		GitRef, Source, BenchmarkType, PlannerVersion string
 		PullNb                                        int
 		PullBaseRef                                   string
+		Version                                       git.Version
 	}
 
 	executionQueue map[executionIdentifier]*executionQueueElement
@@ -103,6 +106,10 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	defer func() {
 		mtx.Unlock()
 	}()
+
+	if len(s.sourceFilter) > 0 && !slices.Contains(s.sourceFilter, element.identifier.Source) {
+		return
+	}
 
 	_, found := queue[element.identifier]
 

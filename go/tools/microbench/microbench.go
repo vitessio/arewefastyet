@@ -20,16 +20,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage"
-	"github.com/vitessio/arewefastyet/go/storage/psdb"
-	"github.com/vitessio/arewefastyet/go/tools/git"
-	"go.uber.org/multierr"
 	"go/types"
-	"golang.org/x/tools/go/packages"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/vitessio/arewefastyet/go/storage"
+	"github.com/vitessio/arewefastyet/go/storage/psdb"
+	"github.com/vitessio/arewefastyet/go/tools/git"
+	"go.uber.org/multierr"
+	"golang.org/x/tools/go/packages"
 )
 
 const (

@@ -26,7 +26,7 @@ import (
 
 // CompareMacroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the macrobenchmark
 // results for the 2 SHAs and compares them. The result is a map with the key being the macrobenchmark name.
-func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string, planner PlannerVersion, types []string) (map[string]interface{}, error) {
+func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string, planner PlannerVersion, types []string) (map[string]ComparisonArray, error) {
 	// Get macro benchmarks from all the different types
 	SHAs := []string{reference, compare}
 	var err error
@@ -40,7 +40,7 @@ func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string,
 			macros[sha][mtype] = macros[sha][mtype].ReduceSimpleMedian()
 		}
 	}
-	macrosMatrixes := map[string]interface{}{}
+	macrosMatrixes := map[string]ComparisonArray{}
 	for _, mtype := range types {
 		macrosMatrixes[mtype] = CompareDetailsArrays(macros[reference][mtype], macros[compare][mtype])
 	}

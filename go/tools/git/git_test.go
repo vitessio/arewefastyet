@@ -58,12 +58,12 @@ func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
 	// ordered releases from v10.0.1 to v9.0.0-rc1
 	// these should come one after the other but there can be intermediate values in between owing to new releases
 	tc := []*Release{
-		{Name: "10.0.1", CommitHash: "f7304cd1893accfefee0525910098a8e0e68deec", Number: []int{10, 0, 1}},
-		{Name: "10.0.0", CommitHash: "48dccf56282dc79903c0ab0b1d0177617f927403", Number: []int{10, 0, 0}},
-		{Name: "10.0.0-rc1", CommitHash: "29a494f7b45faf26eaaa3e6727b452a2ef254101", Number: []int{10, 0, 0}, RCnumber: 1},
-		{Name: "9.0.1", CommitHash: "42c38e56e4ae29012a5d603d8bc8c22c35b78b52", Number: []int{9, 0, 1}},
-		{Name: "9.0.0", CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8", Number: []int{9, 0, 0}},
-		{Name: "9.0.0-rc1", CommitHash: "0472d4728ff4b5a0b91834331ff16ab9b0057da8", Number: []int{9, 0, 0}, RCnumber: 1},
+		{Name: "10.0.1", CommitHash: "f7304cd1893accfefee0525910098a8e0e68deec", Version: Version{10, 0, 1}},
+		{Name: "10.0.0", CommitHash: "48dccf56282dc79903c0ab0b1d0177617f927403", Version: Version{10, 0, 0}},
+		{Name: "10.0.0-rc1", CommitHash: "29a494f7b45faf26eaaa3e6727b452a2ef254101", Version: Version{10, 0, 0}, RCnumber: 1},
+		{Name: "9.0.1", CommitHash: "42c38e56e4ae29012a5d603d8bc8c22c35b78b52", Version: Version{9, 0, 1}},
+		{Name: "9.0.0", CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8", Version: Version{9, 0, 0}},
+		{Name: "9.0.0-rc1", CommitHash: "0472d4728ff4b5a0b91834331ff16ab9b0057da8", Version: Version{9, 0, 0}, RCnumber: 1},
 	}
 
 	idx := 0
@@ -91,112 +91,112 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "5.0.1",
 		CommitHash: "5165f851ecce1e58d12461ce17e401c2b7788139",
-		Number:     []int{5, 0, 1},
+		Version:    Version{5, 0, 1},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "7.0.3",
 		CommitHash: "5f293938aa637e073231e24fe97448f3b6f2579a",
-		Number:     []int{7, 0, 3},
+		Version:    Version{7, 0, 3},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "9.0.0",
 		CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8",
-		Number:     []int{9, 0, 0},
+		Version:    Version{9, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "9.0.1",
 		CommitHash: "42c38e56e4ae29012a5d603d8bc8c22c35b78b52",
-		Number:     []int{9, 0, 1},
+		Version:    Version{9, 0, 1},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "7.0.2",
 		CommitHash: "aea21dcbfab3d01fedf2ad4b42f9c7727bc47128",
-		Number:     []int{7, 0, 2},
+		Version:    Version{7, 0, 2},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "5.0.0",
 		CommitHash: "1b384b8a7c96b1c0ca4fdec62af7295004df9eab",
-		Number:     []int{5, 0, 0},
+		Version:    Version{5, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "4.0.0",
 		CommitHash: "cc07de2a374699e645fd1273c48b0948bdd38fca",
-		Number:     []int{4, 0, 0},
+		Version:    Version{4, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "7.0.0",
 		CommitHash: "a3a52322d4d24bac4f020ec6fd95418f88276662",
-		Number:     []int{7, 0, 0},
+		Version:    Version{7, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "0.7.0",
 		CommitHash: "a3a52322d4d24bac4f020ec6fd95418f88276662",
-		Number:     []int{0, 7, 0},
+		Version:    Version{0, 7, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "2.1.0",
 		CommitHash: "6c06e70a5d7828ad9f79488a704359661bdb996b",
-		Number:     []int{2, 1, 0},
+		Version:    Version{2, 1, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "10.0.0",
 		CommitHash: "48dccf56282dc79903c0ab0b1d0177617f927403",
-		Number:     []int{10, 0, 0},
+		Version:    Version{10, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "2.1.1",
 		CommitHash: "89cc312b4da3004d3b5382cf2b37d70e901b1c36",
-		Number:     []int{2, 1, 1},
+		Version:    Version{2, 1, 1},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "10.0.1",
 		CommitHash: "f7304cd1893accfefee0525910098a8e0e68deec",
-		Number:     []int{10, 0, 1},
+		Version:    Version{10, 0, 1},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "0.8.0",
 		CommitHash: "7e09d0c20ca1e535b9b3f2d96ff2b1ab907d96e8",
-		Number:     []int{0, 8, 0},
+		Version:    Version{0, 8, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "8.0.0",
 		CommitHash: "7e09d0c20ca1e535b9b3f2d96ff2b1ab907d96e8",
-		Number:     []int{8, 0, 0},
+		Version:    Version{8, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "4.0.1",
 		CommitHash: "0629f0da20ab3a78459951137a8482ed804da8b9",
-		Number:     []int{4, 0, 1},
+		Version:    Version{4, 0, 1},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "2.0.0",
 		CommitHash: "d429f4015ace1f1366acb28e996172dc6693515c",
-		Number:     []int{2, 0, 0},
+		Version:    Version{2, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "7.0.1",
 		CommitHash: "19c92a5eabefe4556ae23154e1fee12f977ed1ec",
-		Number:     []int{7, 0, 1},
+		Version:    Version{7, 0, 1},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "0.9.0",
 		CommitHash: "daa60859822ff85ce18e2d10c61a27b7797ec6b8",
-		Number:     []int{0, 9, 0},
+		Version:    Version{0, 9, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "3.0",
 		CommitHash: "4f192d1003d128e6d399f0a3b37747d9b970d70c",
-		Number:     []int{3, 0},
+		Version:    Version{3, 0, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "2.2",
 		CommitHash: "66e84fadcc1a7e956e7ffcebcaaba0b04132ca1f",
-		Number:     []int{2, 2},
+		Version:    Version{2, 2, 0},
 	})
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "9.0.0-rc1",
 		CommitHash: "0472d4728ff4b5a0b91834331ff16ab9b0057da8",
-		Number:     []int{9, 0, 0},
+		Version:    Version{9, 0, 0},
 		RCnumber:   1,
 	})
 }
@@ -208,57 +208,57 @@ func TestCompareReleaseNumbers(t *testing.T) {
 		expectedComparison int
 	}{{
 		release1: &Release{
-			Number: []int{10, 0, 1},
+			Version: Version{10, 0, 1},
 		},
 		release2: &Release{
-			Number: []int{9, 0, 1},
+			Version: Version{9, 0, 1},
 		},
 		expectedComparison: 1,
 	}, {
 		release1: &Release{
-			Number: []int{10, 0, 1},
+			Version: Version{10, 0, 1},
 		},
 		release2: &Release{
-			Number: []int{10, 0, 1},
+			Version: Version{10, 0, 1},
 		},
 		expectedComparison: 0,
 	}, {
 		release1: &Release{
-			Number: []int{8, 10},
+			Version: Version{8, 10, 0},
 		},
 		release2: &Release{
-			Number: []int{9, 0, 1},
+			Version: Version{9, 0, 1},
 		},
 		expectedComparison: -1,
 	}, {
 		release1: &Release{
-			Number: []int{9, 0, 4},
+			Version: Version{9, 0, 4},
 		},
 		release2: &Release{
-			Number: []int{9, 0, 1},
+			Version: Version{9, 0, 1},
 		},
 		expectedComparison: 1,
 	}, {
 		release1: &Release{
-			Number: []int{9, 1, 1},
+			Version: Version{9, 1, 1},
 		},
 		release2: &Release{
-			Number: []int{9, 4, 1},
+			Version: Version{9, 4, 1},
 		},
 		expectedComparison: -1,
 	}, {
 		release1: &Release{
-			Number:   []int{9, 0, 0},
+			Version:  Version{9, 0, 0},
 			RCnumber: 1,
 		},
 		release2: &Release{
-			Number: []int{9, 0, 0},
+			Version: Version{9, 0, 0},
 		},
 		expectedComparison: -1,
 	}}
 
 	for _, s := range testcase {
-		t.Run(fmt.Sprintf("%v", s.release1.Number)+"-"+fmt.Sprintf("%v", s.release2.Number), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%v", s.release1.Version)+"-"+fmt.Sprintf("%v", s.release2.Version), func(t *testing.T) {
 			out := compareReleaseNumbers(s.release1, s.release2)
 			qt.Assert(t, s.expectedComparison, qt.Equals, out)
 		})
@@ -307,7 +307,7 @@ func TestGetLatestVitessReleaseBranchCommitHash(t *testing.T) {
 	for _, release := range out {
 		qt.Assert(t, len(release.CommitHash), qt.Equals, 40)
 		qt.Assert(t, release.Name, qt.Contains, "release-")
-		qt.Assert(t, release.Number[0] >= 7, qt.IsTrue)
+		qt.Assert(t, release.Version.Major >= 7, qt.IsTrue)
 	}
 }
 
@@ -319,6 +319,6 @@ func TestGetLatestVitessReleaseCommitHash(t *testing.T) {
 	qt.Assert(t, err, qt.IsNil)
 	for _, release := range out {
 		qt.Assert(t, len(release.CommitHash), qt.Equals, 40)
-		qt.Assert(t, release.Number[0] >= 7, qt.IsTrue)
+		qt.Assert(t, release.Version.Major >= 7, qt.IsTrue)
 	}
 }
