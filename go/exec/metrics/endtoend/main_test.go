@@ -61,6 +61,15 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	_, err = os.OpenFile(secretsFile, os.O_RDWR, 0755)
+	if err != nil {
+		if os.IsNotExist(err) {
+			skip = "no secrets file found."
+			os.Exit(m.Run())
+		}
+		log.Fatal(err)
+	}
+
 	v.SetConfigFile(configFile)
 	if err = v.ReadInConfig(); err != nil {
 		log.Fatal(err)
