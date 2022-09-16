@@ -20,7 +20,6 @@ package git
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
@@ -277,7 +276,7 @@ func TestGetCommitHash(t *testing.T) {
 // createTemporaryVitessClone creates a temporary vitess clone
 func createTemporaryVitessClone() (string, string, error) {
 	// Create a temporary folder and clone vitess repo
-	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	tmpDir, err := os.MkdirTemp("", "setup_vitess_*")
 	if err != nil {
 		return "", "", err
 	}

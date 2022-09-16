@@ -19,20 +19,16 @@
 package exec
 
 import (
-	qt "github.com/frankban/quicktest"
-	"github.com/google/uuid"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"testing"
+
+	qt "github.com/frankban/quicktest"
+	"github.com/google/uuid"
 )
 
 func Test_createDirFromUUID(t *testing.T) {
-	newTmpDir := func() string {
-		path, _ := ioutil.TempDir("", "")
-		return path
-	}
 	type args struct {
 		uuid uuid.UUID
 		root string
@@ -42,9 +38,9 @@ func Test_createDirFromUUID(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{name: "Valid absolute root and UUID", args: args{uuid: uuid.New(), root: newTmpDir()}},
-		{name: "Valid non existing absolute root and UUID", args: args{uuid: uuid.New(), root: path.Join(newTmpDir(), "subdir")}},
-		{name: "Valid relative root and UUID", args: args{uuid: uuid.New(), root: newTmpDir()}},
+		{name: "Valid absolute root and UUID", args: args{uuid: uuid.New(), root: os.TempDir()}},
+		{name: "Valid non existing absolute root and UUID", args: args{uuid: uuid.New(), root: path.Join(os.TempDir(), "subdir")}},
+		{name: "Valid relative root and UUID", args: args{uuid: uuid.New(), root: os.TempDir()}},
 		{name: "Valid with unknown relative root", args: args{uuid: uuid.New(), root: "unknown"}},
 	}
 	for _, tt := range tests {
