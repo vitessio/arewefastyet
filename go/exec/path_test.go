@@ -19,13 +19,14 @@
 package exec
 
 import (
-	qt "github.com/frankban/quicktest"
-	"github.com/google/uuid"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"testing"
+
+	qt "github.com/frankban/quicktest"
+	"github.com/google/uuid"
 )
 
 func Test_createDirFromUUID(t *testing.T) {

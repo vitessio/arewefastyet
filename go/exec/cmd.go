@@ -32,6 +32,7 @@ const (
 	flagExecPullNB           = "exec-pull-nb"
 	flagGolangVersion        = "exec-go-version"
 	flagServerAddress        = "exec-server-address"
+	flagVitessConfig         = "exec-vitess-config"
 )
 
 func (e *Exec) AddToViper(v *viper.Viper) (err error) {
@@ -43,6 +44,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	_ = v.UnmarshalKey(flagExecPullNB, &e.PullNB)
 	_ = v.UnmarshalKey(flagGolangVersion, &e.GolangVersion)
 	_ = v.UnmarshalKey(flagServerAddress, &e.ServerAddress)
+	_ = v.UnmarshalKey(flagVitessConfig, &e.rawVitessConfig)
 
 	e.AnsibleConfig.AddToViper(v)
 	e.configDB.AddToViper(v)

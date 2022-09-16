@@ -19,7 +19,6 @@
 package server
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -28,7 +27,7 @@ import (
 
 func TestSetupLocalVitess(t *testing.T) {
 	// Create a temporary folder and try setup vitess
-	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	tmpDir, err := os.MkdirTemp("", "setup_vitess_*")
 	qt.Assert(t, err, qt.IsNil)
 	defer os.RemoveAll(tmpDir)
 	s := Server{
@@ -37,7 +36,7 @@ func TestSetupLocalVitess(t *testing.T) {
 	err = s.setupLocalVitess()
 	qt.Assert(t, err, qt.IsNil)
 	// read the directory and indeed verify that the .git folder exists
-	files, err := ioutil.ReadDir(s.getVitessPath())
+	files, err := os.ReadDir(s.getVitessPath())
 	qt.Assert(t, err, qt.IsNil)
 	foundGit := false
 	for _, file := range files {
@@ -48,7 +47,7 @@ func TestSetupLocalVitess(t *testing.T) {
 	qt.Assert(t, foundGit, qt.IsTrue)
 
 	// Create a temporary directory and create a vitess folder manually
-	tmpDir, err = ioutil.TempDir("", "setup_vitess_*")
+	tmpDir, err = os.MkdirTemp("", "setup_vitess_*")
 	qt.Assert(t, err, qt.IsNil)
 	defer os.RemoveAll(tmpDir)
 	s = Server{
@@ -59,7 +58,7 @@ func TestSetupLocalVitess(t *testing.T) {
 	err = s.setupLocalVitess()
 	qt.Assert(t, err, qt.IsNil)
 	// assert that if the vitess folder already exists, then it is not cloned again
-	files, err = ioutil.ReadDir(s.getVitessPath())
+	files, err = os.ReadDir(s.getVitessPath())
 	qt.Assert(t, err, qt.IsNil)
 	qt.Assert(t, len(files), qt.Equals, 0)
 }
@@ -91,7 +90,7 @@ func TestGetVitessPath(t *testing.T) {
 
 func TestPullLocalVitess(t *testing.T) {
 	// Create a temporary folder and try setup vitess
-	tmpDir, err := ioutil.TempDir("", "setup_vitess_*")
+	tmpDir, err := os.MkdirTemp("", "setup_vitess_*")
 	qt.Assert(t, err, qt.IsNil)
 	defer os.RemoveAll(tmpDir)
 	s := Server{

@@ -20,7 +20,7 @@ package ansible
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 )
@@ -33,7 +33,7 @@ func insertMetaSliceToFile(values []string, file, root, token string) error {
 	if !path.IsAbs(file) {
 		file = path.Join(root, file)
 	}
-	content, err := ioutil.ReadFile(file)
+	content, err := os.ReadFile(file)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func insertMetaSliceToFile(values []string, file, root, token string) error {
 	for i, val := range values {
 		newContent = strings.Replace(string(content), fmt.Sprintf("%s_%d", token, i), val, -1)
 	}
-	err = ioutil.WriteFile(file, []byte(newContent), 0)
+	err = os.WriteFile(file, []byte(newContent), 0)
 	if err != nil {
 		return err
 	}

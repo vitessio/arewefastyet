@@ -43,9 +43,10 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	configFile := os.Getenv("CONFIG_FILE_PATH_ENDTOEND")
+	configFile, secretsFile := os.Getenv("CONFIG_FILE_PATH_ENDTOEND"), os.Getenv("SECRETS_FILE_PATH_ENDTOEND")
 	if configFile == "" {
-		configFile = "../../../../config/config.yaml"
+		configFile = "../../../../config/dev/config.yaml"
+		secretsFile = "../../../../config/dev/secrets.yaml"
 	}
 
 	// Checking if the configuration file exists or not.
@@ -62,8 +63,23 @@ func TestMain(m *testing.M) {
 		log.Fatal(err)
 	}
 
+	_, err = os.OpenFile(secretsFile, os.O_RDWR, 0755)
+	if err != nil {
+		if os.IsNotExist(err) {
+			skip = "no secrets file found."
+			os.Exit(m.Run())
+		}
+		log.Fatal(err)
+	}
+
 	v.SetConfigFile(configFile)
 	if err = v.ReadInConfig(); err != nil {
+		log.Fatal(err)
+	}
+
+	v.SetConfigFile(secretsFile)
+	err = v.MergeInConfig()
+	if err != nil {
 		log.Fatal(err)
 	}
 

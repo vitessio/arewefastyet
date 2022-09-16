@@ -19,16 +19,16 @@
 package ansible
 
 import (
-	qt "github.com/frankban/quicktest"
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
+
+	qt "github.com/frankban/quicktest"
 )
 
 func TestConfig_MoveRootFolder(t *testing.T) {
 	newTmpDir := func() string {
-		path, _ := ioutil.TempDir("", "")
+		path, _ := os.MkdirTemp("", "")
 		return path
 	}
 	tests := []struct {

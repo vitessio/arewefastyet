@@ -110,9 +110,8 @@ func GenerateCompareReport(client storage.SQLClient, metricsClient *influxdb.Cli
 			},
 		}
 		// range over all the macrobenchmarks
-		for key, value := range macrosMatrices {
+		for key, macroCompArr := range macrosMatrices {
 			// the map stores the comparisonArrays
-			macroCompArr := value.(macrobench.ComparisonArray)
 			if len(macroCompArr) > 0 {
 				macroComp := macroCompArr[0]
 				macroTable = append(macroTable, []tableCell{{value: strings.ToUpper(key), styleIndex: 2}})

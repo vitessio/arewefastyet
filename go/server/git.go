@@ -19,7 +19,7 @@
 package server
 
 import (
-	"io/ioutil"
+	"os"
 	"path"
 
 	"github.com/vitessio/arewefastyet/go/tools/git"
@@ -27,7 +27,7 @@ import (
 
 // setupLocalVitess is used to setup the local clone of vitess
 func (s *Server) setupLocalVitess() error {
-	files, err := ioutil.ReadDir(s.localVitessPath)
+	files, err := os.ReadDir(s.localVitessPath)
 	if err != nil {
 		return err
 	}

@@ -20,20 +20,27 @@ package git
 
 import (
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"os/exec"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
 
-type Release struct {
-	Name       string
-	CommitHash string
-	Number     []int
-	RCnumber   int
-}
+type (
+	Release struct {
+		Name       string
+		CommitHash string
+		Version    Version
+		RCnumber   int
+	}
+
+	Version struct {
+		Major, Minor, Patch int
+	}
+)
 
 var (
 	// regex pattern accepts v[Num].[Num].[Num] and v[Num].[Num]
@@ -92,18 +99,18 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 			if err != nil {
 				return nil, err
 			}
-			newRelease.Number = append(newRelease.Number, num)
+			newRelease.Version.Major = num
 			num, err = strconv.Atoi(isMatched[2])
 			if err != nil {
 				return nil, err
 			}
-			newRelease.Number = append(newRelease.Number, num)
+			newRelease.Version.Minor = num
 			if isMatched[4] != "" {
 				num, err := strconv.Atoi(isMatched[4])
 				if err != nil {
 					return nil, err
 				}
-				newRelease.Number = append(newRelease.Number, num)
+				newRelease.Version.Patch = num
 			}
 			if isMatched[6] != "" {
 				num, err := strconv.Atoi(isMatched[6])
@@ -131,7 +138,7 @@ func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	}
 	var latestReleases []*Release
 	for _, release := range allReleases {
-		if release.Number[0] >= 12 {
+		if release.Version.Major >= 12 {
 			latestReleases = append(latestReleases, release)
 		}
 	}
@@ -170,12 +177,12 @@ func GetAllVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) {
 			if err != nil {
 				return nil, err
 			}
-			newRelease.Number = append(newRelease.Number, num)
+			newRelease.Version.Major = num
 			num, err = strconv.Atoi(isMatched[2])
 			if err != nil {
 				return nil, err
 			}
-			newRelease.Number = append(newRelease.Number, num)
+			newRelease.Version.Minor = num
 			res = append(res, newRelease)
 		}
 	}
@@ -194,7 +201,7 @@ func GetLatestVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) 
 	}
 	var latestReleaseBranches []*Release
 	for _, release := range res {
-		if release.Number[0] >= 12 {
+		if release.Version.Major >= 12 {
 			latestReleaseBranches = append(latestReleaseBranches, release)
 		}
 	}
@@ -211,19 +218,17 @@ func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
 }
 
 // GetLastPatchReleaseAndCommitHash gets the last release number given the major and minor release number along with the commit hash given the directory of the clone of vitess
-func GetLastPatchReleaseAndCommitHash(repoDir string, releaseNumber []int) (*Release, error) {
-	major := releaseNumber[0]
-	minor := releaseNumber[1]
+func GetLastPatchReleaseAndCommitHash(repoDir string, version Version) (*Release, error) {
 	res, err := GetAllVitessReleaseCommitHash(repoDir)
 	if err != nil {
 		return nil, err
 	}
 	for _, release := range res {
-		if release.Number[0] == major && release.Number[1] == minor {
+		if release.Version.Major == version.Major && release.Version.Minor == version.Minor {
 			return release, nil
 		}
 	}
-	return nil, fmt.Errorf("could not find the latest patch release for %d.%d", major, minor)
+	return nil, fmt.Errorf("could not find the latest patch release for %d.%d", version.Major, version.Minor)
 }
 
 // compareReleaseNumbers compares the two release numbers provided as input
@@ -232,21 +237,9 @@ func GetLastPatchReleaseAndCommitHash(repoDir string, releaseNumber []int) (*Rel
 // 1, if release1 > release2
 // -1, if release1 < release2
 func compareReleaseNumbers(release1, release2 *Release) int {
-	index := 0
-	for index < len(release1.Number) && index < len(release2.Number) {
-		if release1.Number[index] > release2.Number[index] {
-			return 1
-		}
-		if release1.Number[index] < release2.Number[index] {
-			return -1
-		}
-		index++
-	}
-	if len(release1.Number) > len(release2.Number) {
-		return -1
-	}
-	if len(release1.Number) < len(release2.Number) {
-		return 1
+	r := CompareVersionNumbers(release1.Version, release2.Version)
+	if r != 0 {
+		return r
 	}
 	if release1.RCnumber == 0 && release2.RCnumber == 0 {
 		return 0
@@ -261,6 +254,33 @@ func compareReleaseNumbers(release1, release2 *Release) int {
 		return 1
 	}
 	if release1.RCnumber < release2.RCnumber {
+		return -1
+	}
+	return 0
+}
+
+// CompareVersionNumbers compares the two version numbers provided as input
+// the result is as follows -
+// 0, if version1 == version2
+// 1, if version1 > version2
+// -1, if version1 < version2
+func CompareVersionNumbers(version1, version2 Version) int {
+	if version1.Major > version2.Major {
+		return 1
+	}
+	if version1.Major < version2.Major {
+		return -1
+	}
+	if version1.Minor > version2.Minor {
+		return 1
+	}
+	if version1.Minor < version2.Minor {
+		return -1
+	}
+	if version1.Patch > version2.Patch {
+		return 1
+	}
+	if version1.Patch < version2.Patch {
 		return -1
 	}
 	return 0
@@ -305,4 +325,39 @@ func ExecCmd(dir string, name string, arg ...string) ([]byte, error) {
 		return nil, err
 	}
 	return out, nil
+}
+
+func GetVersionForCommitSHA(repoDir, sha string) (Version, error) {
+	branches, err := GetBranchesForCommit(repoDir, sha)
+	if err != nil {
+		return Version{}, err
+	}
+	matchRelease := regexp.MustCompile(`\D*([0-9]+)\D`)
+	for _, branch := range branches {
+		if strings.Contains(branch, "origin/main") {
+			lastRelease, err := GetLastReleaseAndCommitHash(repoDir)
+			if err != nil {
+				return Version{}, err
+			}
+			version := Version{
+				Major: lastRelease.Version.Major + 1,
+			}
+			return version, nil
+		}
+		matches := matchRelease.FindStringSubmatch(branch)
+		if len(matches) == 2 {
+			majorV, err := strconv.Atoi(matches[0])
+			if err != nil {
+				return Version{}, err
+			}
+			lastPatch, err := GetLastPatchReleaseAndCommitHash(repoDir, Version{Major: majorV})
+			if err != nil {
+				return Version{}, err
+			}
+			version := lastPatch.Version
+			version.Patch += 1
+			return version, nil
+		}
+	}
+	return Version{}, fmt.Errorf("release not found for %s", sha)
 }

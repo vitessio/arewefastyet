@@ -26,9 +26,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/vitessio/arewefastyet/go/storage"
@@ -54,6 +52,7 @@ type Exec struct {
 	AnsibleConfig     ansible.Config
 	Source            string
 	GitRef            string
+	VitessVersion     git.Version
 	VitessVersionName string
 
 	// Status defines the status of the execution (canceled, finished, failed, etc)
@@ -106,6 +105,40 @@ type Exec struct {
 	ServerAddress string
 
 	RepoDir string
+
+	// The configuration of the Vitess components (only vttablet and vtgate for now) can be
+	// customized through the configuration file. Some additional flags can be passed down
+	// to those two binaries.
+	//
+	// This is achieved by the 'exec-vitess-config' flag. This flag is a map that contains a map:
+	// 		map[string]map[string]string
+	// The outer map represents the different releases of Vitess and the inner map the different
+	// binaries. Finally, the key of the inner map corresponds to the flags to add.
+	// The key for the inner map being the Vitess version it has to be formatted using '-' to
+	// separate the major/minor/patch numbers. Like so: 'v15.0.0' becomes: '15-0-0'.
+	//
+	// We can have as many releases as we want in the outer map. Only the one that is the closest
+	// to this execution's version will be used. For instance, if we define two versions, v14.0.0
+	// and v15.0.0, but the execution runs on Vitess v14.0.3, then the configuration for v14.0.0
+	// will be used.
+	//
+	// Here is an example of how the flag should be formatted in YAML:
+	//
+	// 			exec-vitess-config:
+	//  		  14: # will match >= v14.0.0
+	//    		    vtgate: --my_flag=0
+	//  		  15: # will match >= v15.0.0 and override the flags defined in < 15.0.0
+	//    		    vtgate: --my_flag=1
+	// 				vttablet: --my_flag=1
+	//  		  15-0-1: # will match >= v15.0.1 and override the flags defined in < 15.0.1
+	//    		    vtgate: --my_flag=3
+	// 				vttablet: --my_flag=3 --custom-flag=on
+	//
+	// Finally, rawVitessConfig stores the raw data from viper.Viper which is then computed during
+	// the execution's Prepare step to become the final version stored in vitessConfig. The value
+	// in vitessConfig is then used when adding extra vars to Ansible.
+	rawVitessConfig rawSingleVitessVersionConfig
+	vitessConfig    vitessConfig
 }
 
 const (
@@ -248,7 +281,9 @@ func (e *Exec) Prepare() error {
 		return err
 	}
 
-	err = e.defineVersionNameOfVitess()
+	e.defineVersionNameOfVitess()
+
+	err = prepareVitessConfiguration(e.rawVitessConfig, e.VitessVersion, &e.vitessConfig)
 	if err != nil {
 		return err
 	}
@@ -329,6 +364,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVtgatePlanner, e.VtgatePlannerVersion)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessVersionName, e.VitessVersionName)
+	e.vitessConfig.addToAnsible(&e.AnsibleConfig)
 
 	// runtime related values
 	e.AnsibleConfig.AddExtraVar(ansible.KeyGoVersion, e.GolangVersion)
@@ -358,55 +394,14 @@ func (e *Exec) handleStepEnd(err error) {
 	}
 }
 
-func (e *Exec) defineVersionNameOfVitess() error {
+func (e *Exec) defineVersionNameOfVitess() {
 	// Main branch
 	if e.Source == SourceCron {
 		e.VitessVersionName = VitessLatestVersion
-		return nil
+		return
 	}
 
-	matchRelease := regexp.MustCompile(`\D*([0-9]+)\D`)
-
-	// Pull Requests
-	var ref string
-	if e.Source == SourcePullRequest {
-		ref = e.PullBaseBranchRef
-	} else if e.Source == SourcePullRequestBase {
-		ref = e.GitRef
-	}
-	branches := []string{}
-	if ref != "" {
-		var err error
-		branches, err = git.GetBranchesForCommit(e.RepoDir, ref)
-		if err != nil {
-			return err
-		}
-	}
-	for _, branch := range branches {
-		if strings.Contains(branch, "origin/main") {
-			e.VitessVersionName = VitessLatestVersion
-			return nil
-		}
-		matches := matchRelease.FindStringSubmatch(branch)
-		if len(matches) == 2 {
-			e.VitessVersionName = fmt.Sprintf("%s%s", VitessPreviousVersion, matches[1])
-			return nil
-		}
-	}
-	if ref != "" {
-		return nil
-	}
-
-	// Release branches / Tags
-	if strings.HasPrefix(e.Source, SourceReleaseBranch) || strings.HasPrefix(e.Source, SourceTag) {
-		matches := matchRelease.FindStringSubmatch(e.Source)
-		if len(matches) < 2 {
-			return fmt.Errorf("unkown format to find the version of vitess: %v", matches)
-		}
-		e.VitessVersionName = VitessPreviousVersion + matches[1]
-		return nil
-	}
-	return nil
+	e.VitessVersionName = fmt.Sprintf("%s%d", VitessPreviousVersion, e.VitessVersion.Major)
 }
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {

@@ -41,6 +41,7 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 	}()
 
 	e, err = exec.NewExecWithConfig(config)
+
 	if err != nil {
 		nErr := fmt.Errorf(fmt.Sprintf("new exec error: %v", err))
 		slog.Error(nErr.Error())
@@ -51,6 +52,7 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 	e.VtgatePlannerVersion = identifier.PlannerVersion
 	e.PullNB = identifier.PullNb
 	e.PullBaseBranchRef = identifier.PullBaseRef
+	e.VitessVersion = identifier.Version
 	e.RepoDir = s.getVitessPath()
 
 	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
