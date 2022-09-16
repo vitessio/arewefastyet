@@ -137,7 +137,7 @@ type Exec struct {
 	// Finally, rawVitessConfig stores the raw data from viper.Viper which is then computed during
 	// the execution's Prepare step to become the final version stored in vitessConfig. The value
 	// in vitessConfig is then used when adding extra vars to Ansible.
-	rawVitessConfig map[string]interface{}
+	rawVitessConfig rawSingleVitessVersionConfig
 	vitessConfig    vitessConfig
 }
 
@@ -283,7 +283,7 @@ func (e *Exec) Prepare() error {
 
 	e.defineVersionNameOfVitess()
 
-	err = e.prepareVitessConfiguration()
+	err = prepareVitessConfiguration(e.rawVitessConfig, e.VitessVersion, &e.vitessConfig)
 	if err != nil {
 		return err
 	}

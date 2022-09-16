@@ -35,18 +35,20 @@ type (
 
 	rawVitessVersionConfig struct {
 		version git.Version
-		value   map[string]interface{}
+		value   rawSingleVitessVersionConfig
 	}
+
+	rawSingleVitessVersionConfig = map[string]interface{}
 )
 
-func (e *Exec) prepareVitessConfiguration() error {
-	if len(e.rawVitessConfig) == 0 {
+func prepareVitessConfiguration(rawVitessConfig rawSingleVitessVersionConfig, vitessVersion git.Version, vitessConfig *vitessConfig) error {
+	if len(rawVitessConfig) == 0 {
 		return nil
 	}
 
 	var data []rawVitessVersionConfig
 
-	for rawVersion, value := range e.rawVitessConfig {
+	for rawVersion, value := range rawVitessConfig {
 		parsedVersion := strings.Split(rawVersion, "-")
 		if len(parsedVersion) == 0 {
 			continue
@@ -81,21 +83,21 @@ func (e *Exec) prepareVitessConfiguration() error {
 		return git.CompareVersionNumbers(data[i].version, data[j].version) == 1
 	})
 
-	lastElem := data[0]
-	for i := 1; i < len(data); i++ {
-		elem := data[i]
-		if git.CompareVersionNumbers(e.VitessVersion, elem.version) == 1 {
+	lastElem := rawVitessVersionConfig{}
+	for i := 0; i < len(data); i++ {
+		cmp := git.CompareVersionNumbers(vitessVersion, data[i].version)
+		if cmp == 1 || cmp == 0 {
+			lastElem = data[i]
 			break
 		}
-		lastElem = elem
 	}
 
-	err := getVitessConfigFromMap(lastElem.value, "vtgate", &e.vitessConfig.vtgate)
+	err := getVitessConfigFromMap(lastElem.value, "vtgate", &vitessConfig.vtgate)
 	if err != nil {
 		return err
 	}
 
-	err = getVitessConfigFromMap(lastElem.value, "vttablet", &e.vitessConfig.vttablet)
+	err = getVitessConfigFromMap(lastElem.value, "vttablet", &vitessConfig.vttablet)
 	if err != nil {
 		return err
 	}
