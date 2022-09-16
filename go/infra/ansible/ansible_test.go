@@ -27,14 +27,18 @@ import (
 )
 
 func TestConfig_MoveRootFolder(t *testing.T) {
+	newTmpDir := func() string {
+		path, _ := os.MkdirTemp("", "")
+		return path
+	}
 	tests := []struct {
 		name    string
 		cfg     Config
 		dir     string
 		wantErr bool
 	}{
-		{name: "Valid directory", cfg: Config{RootDir: os.TempDir()}, dir: os.TempDir()},
-		{name: "Invalid directory", cfg: Config{RootDir: os.TempDir()}, dir: "invalid", wantErr: true},
+		{name: "Valid directory", cfg: Config{RootDir: newTmpDir()}, dir: newTmpDir()},
+		{name: "Invalid directory", cfg: Config{RootDir: newTmpDir()}, dir: "invalid", wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

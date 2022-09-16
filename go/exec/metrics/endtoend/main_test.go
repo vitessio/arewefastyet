@@ -19,13 +19,16 @@
 package endtoend
 
 import (
+	"log"
+	"os"
+	"testing"
+
+	_ "github.com/go-sql-driver/mysql"
+
 	qt "github.com/frankban/quicktest"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
-	"log"
-	"os"
-	"testing"
 )
 
 var (
@@ -38,9 +41,10 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	configFile := os.Getenv("CONFIG_FILE_PATH_ENDTOEND")
+	configFile, secretsFile := os.Getenv("CONFIG_FILE_PATH_ENDTOEND"), os.Getenv("SECRETS_FILE_PATH_ENDTOEND")
 	if configFile == "" {
-		configFile = "../../../../config/config.yaml"
+		configFile = "../../../../config/dev/config.yaml"
+		secretsFile = "../../../../config/dev/secrets.yaml"
 	}
 
 	// Checking if the configuration file exists or not.
@@ -59,6 +63,12 @@ func TestMain(m *testing.M) {
 
 	v.SetConfigFile(configFile)
 	if err = v.ReadInConfig(); err != nil {
+		log.Fatal(err)
+	}
+
+	v.SetConfigFile(secretsFile)
+	err = v.MergeInConfig()
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -94,8 +104,8 @@ func TestInsertExecutionMetrics(t *testing.T) {
 		"vttablet": 789.12,
 	}
 	mem := map[string]float64{
-		"vtgate":   789.15,
-		"vttablet": 456789.3,
+		"vtgate":   789,
+		"vttablet": 456789,
 	}
 
 	execMetrics := metrics.ExecutionMetrics{

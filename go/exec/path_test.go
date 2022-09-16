@@ -19,6 +19,7 @@
 package exec
 
 import (
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -29,6 +30,10 @@ import (
 )
 
 func Test_createDirFromUUID(t *testing.T) {
+	newTmpDir := func() string {
+		path, _ := ioutil.TempDir("", "")
+		return path
+	}
 	type args struct {
 		uuid uuid.UUID
 		root string
@@ -38,9 +43,9 @@ func Test_createDirFromUUID(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{name: "Valid absolute root and UUID", args: args{uuid: uuid.New(), root: os.TempDir()}},
-		{name: "Valid non existing absolute root and UUID", args: args{uuid: uuid.New(), root: path.Join(os.TempDir(), "subdir")}},
-		{name: "Valid relative root and UUID", args: args{uuid: uuid.New(), root: os.TempDir()}},
+		{name: "Valid absolute root and UUID", args: args{uuid: uuid.New(), root: newTmpDir()}},
+		{name: "Valid non existing absolute root and UUID", args: args{uuid: uuid.New(), root: path.Join(newTmpDir(), "subdir")}},
+		{name: "Valid relative root and UUID", args: args{uuid: uuid.New(), root: newTmpDir()}},
 		{name: "Valid with unknown relative root", args: args{uuid: uuid.New(), root: "unknown"}},
 	}
 	for _, tt := range tests {
