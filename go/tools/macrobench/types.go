@@ -29,15 +29,11 @@ type (
 )
 
 const (
-	OLTP    = Type("oltp")
-	OLTPSet = Type("oltp-set")
-	TPCC    = Type("tpcc")
+	OLTP = Type("oltp")
+	TPCC = Type("tpcc")
 
 	IncorrectMacroBenchmarkType = "incorrect macrobenchmark type"
 )
-
-// Types lists all the macro benchmark types.
-var Types = []Type{OLTP, OLTPSet, TPCC}
 
 // Type implements Cobra flag.Value interface.
 func (mbtype *Type) Type() string {

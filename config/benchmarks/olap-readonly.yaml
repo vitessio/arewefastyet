@@ -40,5 +40,5 @@ macrobench_run_verbosity: 0
 
 # Vitess Extra Flags
 exec-vitess-config:
-  12: # will match >= v12.0.0 
+  12: # will match >= v12.0.0
     vtgate: --workload=olap

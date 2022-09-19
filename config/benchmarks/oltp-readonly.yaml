@@ -1,5 +1,5 @@
 ## Exec Config
-exec-type: oltp-set
+exec-type: oltp-readonly
 
 ## Ansible
 ansible-inventory-files: macrobench_sharded_inventory.yml
@@ -9,7 +9,7 @@ ansible-playbook-files: macrobench.yml
 macrobench-sysbench-executable: /usr/local/bin/sysbench
 macrobench-workload-path: oltp_read_write_with_settings
 macrobench-skip-steps:
-macrobench-type: oltp-set
+macrobench-type: oltp-readonly
 
 ## Sysbench all steps
 macrobench_all_mysql-db: main
