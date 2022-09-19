@@ -37,3 +37,8 @@ macrobench_warmup_report-interval: 10
 macrobench_run_time: 600
 macrobench_run_report_json: true
 macrobench_run_verbosity: 0
+
+# Vitess Extra Flags
+exec-vitess-config:
+  15: # will match >= v15.0.0 and override the flags defined in < 15.0.0
+    vttablet: --queryserver-enable-settings-pool=true
