@@ -157,10 +157,12 @@ func (s *Server) Init() error {
 	}
 
 	s.benchmarkConfig = map[string]string{
-		"micro":    path.Join(s.benchmarkConfigPath, "micro.yaml"),
-		"oltp":     path.Join(s.benchmarkConfigPath, "oltp.yaml"),
-		"oltp-set": path.Join(s.benchmarkConfigPath, "oltp-set.yaml"),
-		"tpcc":     path.Join(s.benchmarkConfigPath, "tpcc.yaml"),
+		"micro":         path.Join(s.benchmarkConfigPath, "micro.yaml"),
+		"oltp":          path.Join(s.benchmarkConfigPath, "oltp.yaml"),
+		"oltp-set":      path.Join(s.benchmarkConfigPath, "oltp-set.yaml"),
+		"readonly-oltp": path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"),
+		"readonly-olap": path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"),
+		"tpcc":          path.Join(s.benchmarkConfigPath, "tpcc.yaml"),
 	}
 	for configName := range s.benchmarkConfig {
 		if configName == "micro" {
