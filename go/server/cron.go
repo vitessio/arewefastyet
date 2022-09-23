@@ -110,6 +110,9 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	if len(s.sourceFilter) > 0 && !slices.Contains(s.sourceFilter, element.identifier.Source) {
 		return
 	}
+	if len(s.excludeSourceFilter) > 0 && slices.Contains(s.excludeSourceFilter, element.identifier.Source) {
+		return
+	}
 
 	_, found := queue[element.identifier]
 
