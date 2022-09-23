@@ -52,6 +52,7 @@ const (
 	flagCronNbRetry                          = "web-cron-nb-retry"
 	flagBenchmarkConfigPath                  = "web-benchmark-config-path"
 	flagFilterBySource                       = "web-source-filter"
+	flagExcludeFilterBySource                = "web-source-exclude-filter"
 )
 
 type Server struct {
@@ -82,7 +83,8 @@ type Server struct {
 	benchmarkConfig map[string]string
 	benchmarkTypes  []string
 
-	sourceFilter []string
+	sourceFilter        []string
+	excludeSourceFilter []string
 
 	// Mode used to run the server.
 	Mode
@@ -104,6 +106,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.prLabelTrigger, flagPullRequestLabelTrigger, "Benchmark me", "GitHub Pull Request label that will trigger the execution of new execution.")
 	cmd.Flags().StringVar(&s.prLabelTriggerV3, flagPullRequestLabelTriggerWithPlannerV3, "Benchmark me (V3)", "GitHub Pull Request label that will trigger the execution of new execution using the V3 planner.")
 	cmd.Flags().StringSliceVar(&s.sourceFilter, flagFilterBySource, nil, "List of execution source that should be run. By default, all sources are ran.")
+	cmd.Flags().StringSliceVar(&s.excludeSourceFilter, flagExcludeFilterBySource, nil, "List of execution source to not execute. By default, all sources are ran.")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagTemplatePath, cmd.Flags().Lookup(flagTemplatePath))
@@ -117,6 +120,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagPullRequestLabelTrigger, cmd.Flags().Lookup(flagPullRequestLabelTrigger))
 	_ = viper.BindPFlag(flagPullRequestLabelTriggerWithPlannerV3, cmd.Flags().Lookup(flagPullRequestLabelTriggerWithPlannerV3))
 	_ = viper.BindPFlag(flagFilterBySource, cmd.Flags().Lookup(flagFilterBySource))
+	_ = viper.BindPFlag(flagExcludeFilterBySource, cmd.Flags().Lookup(flagExcludeFilterBySource))
 
 	s.slackConfig.AddToCommand(cmd)
 	if s.dbCfg == nil {
