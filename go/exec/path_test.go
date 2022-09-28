@@ -19,7 +19,6 @@
 package exec
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -31,7 +30,7 @@ import (
 
 func Test_createDirFromUUID(t *testing.T) {
 	newTmpDir := func() string {
-		path, _ := ioutil.TempDir("", "")
+		path, _ := os.MkdirTemp("", "")
 		return path
 	}
 	type args struct {
