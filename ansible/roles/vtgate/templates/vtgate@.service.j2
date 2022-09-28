@@ -14,7 +14,7 @@ Environment="VTGATE_BUFFER_SIZE=300"
 
 EnvironmentFile=/etc/vitess/conf/vtgate-%i.conf
 Type=simple
-Restart=on-failure
+Restart=always
 WorkingDirectory={{vitess_root}}
 User={{vitess_user}}
 LimitAS=infinity

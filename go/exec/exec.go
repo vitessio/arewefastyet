@@ -281,7 +281,10 @@ func (e *Exec) Prepare() error {
 		return err
 	}
 
-	e.defineVersionNameOfVitess()
+	err = e.defineVersionNameOfVitess()
+	if err != nil {
+		return err
+	}
 
 	err = prepareVitessConfiguration(e.rawVitessConfig, e.VitessVersion, &e.vitessConfig)
 	if err != nil {
@@ -394,14 +397,20 @@ func (e *Exec) handleStepEnd(err error) {
 	}
 }
 
-func (e *Exec) defineVersionNameOfVitess() {
+func (e *Exec) defineVersionNameOfVitess() error {
+	release, err := git.GetLastReleaseAndCommitHash(e.RepoDir)
+	if err != nil {
+		return err
+	}
+
 	// Main branch
-	if e.Source == SourceCron {
+	if e.Source == SourceCron || release.Version.Major <= e.VitessVersion.Major {
 		e.VitessVersionName = VitessLatestVersion
-		return
+		return nil
 	}
 
 	e.VitessVersionName = fmt.Sprintf("%s%d", VitessPreviousVersion, e.VitessVersion.Major)
+	return nil
 }
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {

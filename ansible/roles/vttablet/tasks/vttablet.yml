@@ -22,7 +22,7 @@
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
 
-- name: template out configs
+- name: install configs
   become: yes
   become_user: root
   with_items:

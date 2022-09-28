@@ -27,23 +27,13 @@
   with_items:
     - '{{ vitess_root }}'
     - '{{ vitess_root }}/socket'
+    - '/etc/vitess/conf'
   file:
     state: directory
     path:   '{{ item }}'
     owner:  '{{ vitess_user }}'
     group:  '{{ vitess_group }}'
     mode: 0755
-
-- name: ensure config directories
-  become: yes
-  become_user: root
-  with_items:
-    - /etc/vitess/conf
-  file:
-    state: directory
-    path: '{{ item }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
 
 - name: install systemd units
   include_tasks: systemd.yml
