@@ -25,7 +25,6 @@
 - name: install config
   become: yes
   become_user: root
-  register: vtgate_service_modified
   with_items:
     - s: vtgate.conf
       d: '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
@@ -35,8 +34,6 @@
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
     mode: '0644'
-  notify:
-    - restart vtgate
 
 - name: start vtgate
   become: yes
