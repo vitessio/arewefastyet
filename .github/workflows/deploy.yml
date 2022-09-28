@@ -24,6 +24,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
+            export PATH=/usr/local/go/bin:$PATH
             cd $HOME/arewefastyet
             git reset --hard FETCH_HEAD
             git clean -fd
