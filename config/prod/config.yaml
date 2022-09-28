@@ -1,4 +1,4 @@
-exec-go-version: "1.18.5"
+exec-go-version: "1.19.1"
 
 web-cron-schedule: "@midnight"
 web-cron-schedule-pull-requests: "*/5 * * * *"
