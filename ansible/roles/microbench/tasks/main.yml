@@ -19,6 +19,11 @@
   become: yes
   become_user: root
   block:
+    - name: Remove old arewefastyet
+      shell: |
+        rm -Rf /go/src/github.com/vitessio/arewefastyet
+      changed_when: false
+
     - name: git clone arewefastyet
       git:
         repo: "{{ arewefastyet_git_repo }}"

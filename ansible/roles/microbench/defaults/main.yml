@@ -10,5 +10,5 @@
 # limitations under the License.
 
 arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
-arewefastyet_git_version: "master"
+arewefastyet_git_version: "main"
 arewefastyet_exec_uuid: ""
