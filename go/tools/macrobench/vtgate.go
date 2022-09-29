@@ -23,10 +23,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	"net/http"
 	"strings"
+
+	"github.com/vitessio/arewefastyet/go/storage"
+	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
 type VTGateQueryPlanValue struct {
@@ -110,6 +111,9 @@ func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanCom
 }
 
 func normalizeVTGateQueryPlan(plan *VTGateQueryPlanValue) {
+	if plan.ExecCount == 0 {
+		return
+	}
 	plan.ExecTime = plan.ExecTime / plan.ExecCount
 }
 
