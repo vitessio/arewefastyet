@@ -29,6 +29,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/spf13/jwalterweatherman"
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/git"
@@ -179,6 +180,10 @@ func NewExecWithConfig(config *viper.Viper, path string) (*Exec, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// config.MergeConfigMap calls `jwalterweatherman` and logs whenever there are mismatches
+	// between the two configuration, we want to discard those logs.
+	jwalterweatherman.SetLogOutput(io.Discard)
 
 	err = config.MergeConfigMap(viper.AllSettings())
 	if err != nil {
