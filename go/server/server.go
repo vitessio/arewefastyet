@@ -53,7 +53,17 @@ const (
 	flagBenchmarkConfigPath                  = "web-benchmark-config-path"
 	flagFilterBySource                       = "web-source-filter"
 	flagExcludeFilterBySource                = "web-source-exclude-filter"
+
+	// keyMinimumVitessVersion is used to define on which minimum Vitess version a given
+	// benchmark should be run. Only the major version is counted. This key/value is located
+	// in the benchmarks' configuration files.
+	keyMinimumVitessVersion = "minimum-version"
 )
+
+type benchmarkConfig struct {
+	file string
+	v    *viper.Viper
+}
 
 type Server struct {
 	port         string
@@ -80,7 +90,7 @@ type Server struct {
 	prLabelTrigger   string
 	prLabelTriggerV3 string
 
-	benchmarkConfig map[string]string
+	benchmarkConfig map[string]benchmarkConfig
 	benchmarkTypes  []string
 
 	sourceFilter        []string
@@ -160,15 +170,19 @@ func (s *Server) Init() error {
 		return err
 	}
 
-	s.benchmarkConfig = map[string]string{
-		"micro":         path.Join(s.benchmarkConfigPath, "micro.yaml"),
-		"oltp":          path.Join(s.benchmarkConfigPath, "oltp.yaml"),
-		"oltp-set":      path.Join(s.benchmarkConfigPath, "oltp-set.yaml"),
-		"readonly-oltp": path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"),
-		"readonly-olap": path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"),
-		"tpcc":          path.Join(s.benchmarkConfigPath, "tpcc.yaml"),
+	s.benchmarkConfig = map[string]benchmarkConfig{
+		"micro":         {file: path.Join(s.benchmarkConfigPath, "micro.yaml"), v: viper.New()},
+		"oltp":          {file: path.Join(s.benchmarkConfigPath, "oltp.yaml"), v: viper.New()},
+		"oltp-set":      {file: path.Join(s.benchmarkConfigPath, "oltp-set.yaml"), v: viper.New()},
+		"readonly-oltp": {file: path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"), v: viper.New()},
+		"readonly-olap": {file: path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"), v: viper.New()},
+		"tpcc":          {file: path.Join(s.benchmarkConfigPath, "tpcc.yaml"), v: viper.New()},
 	}
-	for configName := range s.benchmarkConfig {
+	for configName, config := range s.benchmarkConfig {
+		config.v.SetConfigFile(config.file)
+		if err := config.v.ReadInConfig(); err != nil {
+			slog.Error(err)
+		}
 		if configName == "micro" {
 			continue
 		}

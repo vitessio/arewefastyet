@@ -25,7 +25,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/exec"
 )
 
-func (s *Server) executeSingle(config string, identifier executionIdentifier) (err error) {
+func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier) (err error) {
 	var e *exec.Exec
 	defer func() {
 		if e != nil {
@@ -40,7 +40,7 @@ func (s *Server) executeSingle(config string, identifier executionIdentifier) (e
 		}
 	}()
 
-	e, err = exec.NewExecWithConfig(config)
+	e, err = exec.NewExecWithConfig(config.v, config.file)
 
 	if err != nil {
 		nErr := fmt.Errorf(fmt.Sprintf("new exec error: %v", err))
