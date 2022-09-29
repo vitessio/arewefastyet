@@ -23,5 +23,5 @@ all:
         DEVICE_IP_0:
   vars:
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
-    arewefastyet_git_version: "HEAD"
+    arewefastyet_git_version: "main"
     microbenchmarks_vitess_package: "./go/..."
