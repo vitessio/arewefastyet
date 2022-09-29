@@ -72,7 +72,7 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 
 	// We compare main with the previous hash of main and with the latest release
 	for configType, config := range configs {
-		if minVersion := config.v.GetInt("minimum-version"); minVersion > currVersion.Major {
+		if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 			continue
 		}
 		if configType == "micro" {
@@ -121,7 +121,7 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 		currVersion.Patch += 1
 
 		for configType, config := range configs {
-			if minVersion := config.v.GetInt("minimum-version"); minVersion > currVersion.Major {
+			if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 				continue
 			}
 
@@ -168,7 +168,7 @@ func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(config be
 		elements = append(elements, previousElement)
 	}
 
-	if lastRelease != nil && config.v.GetInt("minimum-version") <= lastRelease.Version.Major {
+	if lastRelease != nil && config.v.GetInt(keyMinimumVitessVersion) <= lastRelease.Version.Major {
 		// creating an execution queue element for the latest release (comparing branch with the latest release)
 		// this will probably not be executed the benchmark should already exist, we still create it to compare main once its benchmark is over
 		lastReleaseElement := s.createSimpleExecutionQueueElement(config, exec.SourceTag+lastRelease.Name, lastRelease.CommitHash, configType, plannerVersion, false, 0, lastRelease.Version)
@@ -212,7 +212,7 @@ func (s *Server) pullRequestsCronHandler() {
 				continue
 			}
 			for configType, config := range configs {
-				if minVersion := config.v.GetInt("minimum-version"); minVersion > currVersion.Major {
+				if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 					continue
 				}
 
@@ -275,7 +275,7 @@ func (s *Server) tagsCronHandler() {
 	for _, release := range releases {
 		source := exec.SourceTag + release.Name
 		for configType, config := range configs {
-			if minVersion := config.v.GetInt("minimum-version"); minVersion > release.Version.Major {
+			if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > release.Version.Major {
 				continue
 			}
 			if configType == "micro" {
