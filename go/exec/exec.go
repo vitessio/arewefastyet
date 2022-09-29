@@ -29,7 +29,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/spf13/jwalterweatherman"
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/git"
@@ -175,22 +174,19 @@ func NewExec() (*Exec, error) {
 
 // NewExecWithConfig will create a new Exec using the NewExec method, and will
 // use viper.Viper to apply the configuration located at pathConfig.
-func NewExecWithConfig(config *viper.Viper, path string) (*Exec, error) {
+func NewExecWithConfig(path string) (*Exec, error) {
 	e, err := NewExec()
 	if err != nil {
 		return nil, err
 	}
 
-	// config.MergeConfigMap calls `jwalterweatherman` and logs whenever there are mismatches
-	// between the two configuration, we want to discard those logs.
-	jwalterweatherman.SetLogOutput(io.Discard)
-
-	err = config.MergeConfigMap(viper.AllSettings())
+	viper.SetConfigFile(path)
+	err = viper.MergeInConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	err = e.AddToViper(config)
+	err = e.AddToViper(viper.GetViper())
 	if err != nil {
 		return nil, err
 	}

@@ -40,7 +40,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 		}
 	}()
 
-	e, err = exec.NewExecWithConfig(config.v, config.file)
+	e, err = exec.NewExecWithConfig(config.file)
 
 	if err != nil {
 		nErr := fmt.Errorf(fmt.Sprintf("new exec error: %v", err))
