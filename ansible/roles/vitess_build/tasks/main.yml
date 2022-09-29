@@ -37,6 +37,10 @@
         cd /go/src/vitess.io/vitess
         make build
 
+    - name: Remove Vitess binaries
+      shell: |
+        rm -f /usr/local/bin/vt*
+
     - name: Install Vitess Binaries
       shell: |
         export TMPDIR=/root/tmp

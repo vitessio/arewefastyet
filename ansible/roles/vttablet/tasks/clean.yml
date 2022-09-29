@@ -37,4 +37,4 @@
     daemon_reload: yes
 
 - name: remove binary
-  shell: rm -f $(which vttablet) $(which mysqlctld)
+  shell: rm -f $(which vttablet mysqlctld mysqlctl)

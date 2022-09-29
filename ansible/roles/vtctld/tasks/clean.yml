@@ -77,4 +77,4 @@
   failed_when: false
 
 - name: remove binary
-  shell: rm -f $(which vtctld)
+  shell: rm -f $(which vtctld vtctl vtctlclient vtctldclient)
