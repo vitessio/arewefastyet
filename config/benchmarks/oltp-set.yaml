@@ -1,6 +1,9 @@
 ## Exec Config
 exec-type: oltp-set
 
+## Minimum Vitess version on which the benchmark should be executed
+minimum-version: 14
+
 ## Ansible
 ansible-inventory-files: macrobench_sharded_inventory.yml
 ansible-playbook-files: macrobench.yml

@@ -174,23 +174,22 @@ func NewExec() (*Exec, error) {
 
 // NewExecWithConfig will create a new Exec using the NewExec method, and will
 // use viper.Viper to apply the configuration located at pathConfig.
-func NewExecWithConfig(pathConfig string) (*Exec, error) {
+func NewExecWithConfig(config *viper.Viper, path string) (*Exec, error) {
 	e, err := NewExec()
 	if err != nil {
 		return nil, err
 	}
 
-	viper.SetConfigFile(pathConfig)
-	err = viper.MergeInConfig()
+	err = config.MergeConfigMap(viper.AllSettings())
 	if err != nil {
 		return nil, err
 	}
 
-	err = e.AddToViper(viper.GetViper())
+	err = e.AddToViper(config)
 	if err != nil {
 		return nil, err
 	}
-	e.configPath = pathConfig
+	e.configPath = path
 	return e, nil
 }
 

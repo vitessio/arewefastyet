@@ -29,7 +29,7 @@ import (
 
 type (
 	executionQueueElement struct {
-		config                  string
+		config                  benchmarkConfig
 		retry                   int
 		identifier              executionIdentifier
 		compareWith             []executionIdentifier
@@ -97,7 +97,7 @@ func (s *Server) createCrons() error {
 	return nil
 }
 
-func (s *Server) getConfigFiles() map[string]string {
+func (s *Server) getConfigFiles() map[string]benchmarkConfig {
 	return s.benchmarkConfig
 }
 
