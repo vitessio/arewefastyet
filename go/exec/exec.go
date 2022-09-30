@@ -180,13 +180,18 @@ func NewExecWithConfig(path string) (*Exec, error) {
 		return nil, err
 	}
 
-	viper.SetConfigFile(path)
-	err = viper.MergeInConfig()
+	nv := viper.New()
+	err = nv.MergeConfigMap(viper.AllSettings())
+	if err != nil {
+		return nil, err
+	}
+	nv.SetConfigFile(path)
+	err = nv.MergeInConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	err = e.AddToViper(viper.GetViper())
+	err = e.AddToViper(nv)
 	if err != nil {
 		return nil, err
 	}
