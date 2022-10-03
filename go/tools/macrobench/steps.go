@@ -18,6 +18,8 @@
 
 package macrobench
 
+import "strings"
+
 type step struct {
 	Name         string
 	SysbenchName string
@@ -37,11 +39,12 @@ var (
 	}
 )
 
-func skipSteps(steps []step, skip []string) (newSteps []step) {
+func skipSteps(steps []step, skip string) (newSteps []step) {
+	skips := strings.Split(skip, ",")
 	newSteps = []step{}
 	for _, step := range steps {
 		add := true
-		for _, skipStep := range skip {
+		for _, skipStep := range skips {
 			if step.Name == skipStep {
 				add = false
 				break

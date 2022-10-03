@@ -36,15 +36,15 @@ import (
 const (
 	ErrorPathUnknown = "path does not exist"
 
-	flagAnsibleRoot    = "ansible-root-directory"
-	flagInventoryFiles = "ansible-inventory-files"
-	flagPlaybookFiles  = "ansible-playbook-files"
+	flagAnsibleRoot   = "ansible-root-directory"
+	flagInventoryFile = "ansible-inventory-file"
+	flagPlaybookFile  = "ansible-playbook-file"
 )
 
 type Config struct {
-	RootDir        string
-	InventoryFiles []string
-	PlaybookFiles  []string
+	RootDir       string
+	InventoryFile string
+	PlaybookFile  string
 
 	stdout io.Writer
 	stderr io.Writer
@@ -69,42 +69,29 @@ func (c *Config) AddExtraVar(key string, value interface{}) {
 
 func (c *Config) AddToViper(v *viper.Viper) {
 	_ = v.UnmarshalKey(flagAnsibleRoot, &c.RootDir)
-	_ = v.UnmarshalKey(flagInventoryFiles, &c.InventoryFiles)
-	_ = v.UnmarshalKey(flagPlaybookFiles, &c.PlaybookFiles)
+	_ = v.UnmarshalKey(flagInventoryFile, &c.InventoryFile)
+	_ = v.UnmarshalKey(flagPlaybookFile, &c.PlaybookFile)
 }
 
 func (c *Config) AddToPersistentCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&c.RootDir, flagAnsibleRoot, "", "Root directory of Ansible")
-	cmd.Flags().StringSliceVar(&c.InventoryFiles, flagInventoryFiles, []string{}, "List of inventory files used by Ansible")
-	cmd.Flags().StringSliceVar(&c.PlaybookFiles, flagPlaybookFiles, []string{}, "List of playbook files used by Ansible")
+	cmd.Flags().StringVar(&c.InventoryFile, flagInventoryFile, "", "Inventory file used by Ansible")
+	cmd.Flags().StringVar(&c.PlaybookFile, flagPlaybookFile, "", "Playbook file used by Ansible")
 
 	_ = viper.BindPFlag(flagAnsibleRoot, cmd.Flags().Lookup(flagAnsibleRoot))
-	_ = viper.BindPFlag(flagInventoryFiles, cmd.Flags().Lookup(flagInventoryFiles))
-	_ = viper.BindPFlag(flagPlaybookFiles, cmd.Flags().Lookup(flagPlaybookFiles))
+	_ = viper.BindPFlag(flagInventoryFile, cmd.Flags().Lookup(flagInventoryFile))
+	_ = viper.BindPFlag(flagPlaybookFile, cmd.Flags().Lookup(flagPlaybookFile))
 }
 
-func applyRootToFiles(root string, files *[]string) {
-	for i, file := range *files {
-		if !path.IsAbs(file) {
-			(*files)[i] = path.Join(root, file)
-		}
+func applyRootToFiles(root string, file *string) {
+	if !path.IsAbs(*file) {
+		*file = path.Join(root, *file)
 	}
-}
-
-func inventoryFilesToString(invFiles []string) string {
-	var res string
-	for i, inv := range invFiles {
-		if i > 0 {
-			res = res + ", "
-		}
-		res = res + inv
-	}
-	return res
 }
 
 func Run(c *Config) error {
-	applyRootToFiles(c.RootDir, &c.PlaybookFiles)
-	applyRootToFiles(c.RootDir, &c.InventoryFiles)
+	applyRootToFiles(c.RootDir, &c.PlaybookFile)
+	applyRootToFiles(c.RootDir, &c.InventoryFile)
 
 	ansiblePlaybookConnectionOptions := &options.AnsibleConnectionOptions{
 		User:          "root",
@@ -112,7 +99,7 @@ func Run(c *Config) error {
 	}
 
 	ansiblePlaybookOptions := &playbook.AnsiblePlaybookOptions{
-		Inventory: inventoryFilesToString(c.InventoryFiles),
+		Inventory: c.InventoryFile,
 		ExtraVars: c.ExtraVars,
 	}
 
@@ -121,7 +108,7 @@ func Run(c *Config) error {
 	}
 
 	plb := &playbook.AnsiblePlaybookCmd{
-		Playbooks:                  c.PlaybookFiles,
+		Playbooks:                  []string{c.PlaybookFile},
 		ConnectionOptions:          ansiblePlaybookConnectionOptions,
 		PrivilegeEscalationOptions: ansiblePlaybookPrivilegeEscalationOptions,
 		Options:                    ansiblePlaybookOptions,

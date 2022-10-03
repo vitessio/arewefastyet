@@ -2,5 +2,5 @@
 exec-type: micro
 
 ## Ansible
-ansible-inventory-files: microbench_inventory.yml
-ansible-playbook-files: microbench.yml
+ansible-inventory-file: microbench_inventory.yml
+ansible-playbook-file: microbench.yml
