@@ -19,8 +19,10 @@
 package macrobench
 
 import (
-	qt "github.com/frankban/quicktest"
+	"fmt"
 	"testing"
+
+	qt "github.com/frankban/quicktest"
 )
 
 func Test_skipSteps(t *testing.T) {
@@ -30,19 +32,19 @@ func Test_skipSteps(t *testing.T) {
 
 	type args struct {
 		steps []step
-		skip  []string
+		skip  string
 	}
 	tests := []struct {
 		name         string
 		args         args
 		wantNewSteps []step
 	}{
-		{name: "No skip step", args: args{steps: []step{prepare, warmup, run}, skip: []string{}}, wantNewSteps: []step{prepare, warmup, run}},
-		{name: "Skip prepare", args: args{steps: []step{prepare, warmup, run}, skip: []string{stepPrepare}}, wantNewSteps: []step{warmup, run}},
-		{name: "Skip warm up", args: args{steps: []step{prepare, warmup, run}, skip: []string{stepWarmUp}}, wantNewSteps: []step{prepare, run}},
-		{name: "Skip run", args: args{steps: []step{prepare, warmup, run}, skip: []string{stepRun}}, wantNewSteps: []step{prepare, warmup}},
-		{name: "Skip prepare and run", args: args{steps: []step{prepare, warmup, run}, skip: []string{stepPrepare, stepRun}}, wantNewSteps: []step{warmup}},
-		{name: "Skip all", args: args{steps: []step{prepare, warmup, run}, skip: []string{stepPrepare, stepWarmUp, stepRun}}, wantNewSteps: []step{}},
+		{name: "No skip step", args: args{steps: []step{prepare, warmup, run}}, wantNewSteps: []step{prepare, warmup, run}},
+		{name: "Skip prepare", args: args{steps: []step{prepare, warmup, run}, skip: stepPrepare}, wantNewSteps: []step{warmup, run}},
+		{name: "Skip warm up", args: args{steps: []step{prepare, warmup, run}, skip: stepWarmUp}, wantNewSteps: []step{prepare, run}},
+		{name: "Skip run", args: args{steps: []step{prepare, warmup, run}, skip: stepRun}, wantNewSteps: []step{prepare, warmup}},
+		{name: "Skip prepare and run", args: args{steps: []step{prepare, warmup, run}, skip: fmt.Sprintf("%s,%s", stepPrepare, stepRun)}, wantNewSteps: []step{warmup}},
+		{name: "Skip all", args: args{steps: []step{prepare, warmup, run}, skip: fmt.Sprintf("%s,%s,%s", stepPrepare, stepWarmUp, stepRun)}, wantNewSteps: []step{}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
