@@ -15,7 +15,7 @@ arewefastyet exec [flags]
 
 ```
 arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --planetscale-db-database benchmark --planetscale-db-branch main --planetscale-db-org my-org --planetscale-db-service-token <token> --planetscale-db-service-token-name <token name>
---exec-source config_micro_remote --ansible-inventory-files microbench_inventory.yml --ansible-playbook-files microbench.yml --ansible-root-directory ./ansible/
+--exec-source config_micro_remote --ansible-inventory-file microbench_inventory.yml --ansible-playbook-file microbench.yml --ansible-root-directory ./ansible/
 --equinix-instance-type m2.xlarge.x86 --equinix-token tok --equinix-project-id id
 
 ```
@@ -23,8 +23,8 @@ arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --pla
 ### Options
 
 ```
-      --ansible-inventory-files strings      List of inventory files used by Ansible
-      --ansible-playbook-files strings       List of playbook files used by Ansible
+      --ansible-inventory-file string        Inventory file used by Ansible
+      --ansible-playbook-file string         Playbook file used by Ansible
       --ansible-root-directory string        Root directory of Ansible
       --exec-git-ref string                  Git reference on which the benchmarks will run.
       --exec-go-version string               Defines the golang version that will be used by this execution. (default "1.17")

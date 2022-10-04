@@ -5,8 +5,8 @@ exec-type: oltp-set
 minimum-version: 14
 
 ## Ansible
-ansible-inventory-files: macrobench_sharded_inventory.yml
-ansible-playbook-files: macrobench.yml
+ansible-inventory-file: macrobench_sharded_inventory.yml
+ansible-playbook-file: macrobench.yml
 
 ## Macrobench cmd
 macrobench-sysbench-executable: /usr/local/bin/sysbench

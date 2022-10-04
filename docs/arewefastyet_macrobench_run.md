@@ -27,7 +27,7 @@ arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-
       --influx-username string                     Username used to connect to InfluxDB.
       --macrobench-exec-uuid string                UUID of the parent execution, an empty string will set to NULL.
       --macrobench-git-ref string                  Git SHA referring to the macro benchmark.
-      --macrobench-skip-steps strings              Slice of sysbench steps to skip.
+      --macrobench-skip-steps string               Slice of sysbench steps to skip.
       --macrobench-sysbench-executable string      Path to the sysbench binary.
       --macrobench-type Type                       Type of macro benchmark.
       --macrobench-vtgate-planner-version string   Vtgate planner version running on Vitess
