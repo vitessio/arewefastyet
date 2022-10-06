@@ -54,9 +54,9 @@ type Config struct {
 	// This key value map stores the value of each CLI parameters.
 	M map[string]string
 
-	// SkipSteps is a slice of string that is used to skip some of
+	// SkipSteps is a list of strings (separated by a comma) that is used to skip some of
 	// sysbench steps.
-	SkipSteps []string
+	SkipSteps string
 
 	// Type will be used to differentiate macro benchmarks.
 	Type Type
@@ -107,7 +107,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "Path to the workload used by sysbench.")
 	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "Path to the sysbench binary.")
-	cmd.Flags().StringSliceVar(&mabcfg.SkipSteps, flagSkipSteps, []string{}, "Slice of sysbench steps to skip.")
+	cmd.Flags().StringVar(&mabcfg.SkipSteps, flagSkipSteps, "", "Slice of sysbench steps to skip.")
 	cmd.Flags().Var(&mabcfg.Type, flagType, "Type of macro benchmark.")
 	cmd.Flags().StringVar(&mabcfg.VtgatePlannerVersion, flagVtgatePlannerVersion, "", "Vtgate planner version running on Vitess")
 	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "Git SHA referring to the macro benchmark.")

@@ -48,23 +48,21 @@ func insertMetaSliceToFile(values []string, file, root, token string) error {
 	return nil
 }
 
-func insetMetaSliceToFiles(values, files []string, root, token string) error {
-	for _, file := range files {
-		err := insertMetaSliceToFile(values, file, root, token)
-		if err != nil {
-			return err
-		}
+func insetMetaSliceToFiles(values []string, file string, root, token string) error {
+	err := insertMetaSliceToFile(values, file, root, token)
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
 func AddIPsToFiles(IPs []string, c Config) error {
-	err := insetMetaSliceToFiles(IPs, c.PlaybookFiles, c.RootDir, tokenDeviceIP)
+	err := insetMetaSliceToFiles(IPs, c.PlaybookFile, c.RootDir, tokenDeviceIP)
 	if err != nil {
 		return err
 	}
 
-	err = insetMetaSliceToFiles(IPs, c.InventoryFiles, c.RootDir, tokenDeviceIP)
+	err = insetMetaSliceToFiles(IPs, c.InventoryFile, c.RootDir, tokenDeviceIP)
 	if err != nil {
 		return err
 	}
