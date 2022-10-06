@@ -22,17 +22,10 @@ LimitMEMLOCK=infinity
 WorkingDirectory={{vitess_root}}
 User={{vitess_user}}
 ExecStart=/bin/bash -c 'vttablet \
-	{% if vitess_version_name == "latest" or vitess_version_name == "v_15" %}
-		--db_app_user=vt_app \
-		--db_dba_user=vt_dba \
-		--db_filtered_user=vt_filtered \
-		--db_repl_user=vt_repl \
-	{% else %}
-		--db-config-app-uname=vt_app \
-		--db-config-dba-uname=vt_dba \
-		--db-config-filtered-uname=vt_filtered \
-		--db-config-repl-uname=vt_repl \
-	{% endif %}
+	--db_app_user=vt_app \
+	--db_dba_user=vt_dba \
+	--db_filtered_user=vt_filtered \
+	--db_repl_user=vt_repl \
     --tablet_hostname "$(hostname -I | cut -d \" \" -f 1)" \
     --service_map "grpc-queryservice,grpc-tabletmanager,grpc-updatestream" \
     --queryserver-config-passthrough-dmls \
