@@ -68,21 +68,12 @@
         name: vtctld
         tasks_from: ensure
 
-    - name: Get VSchema for OLTP
+    - name: Get VSchema
       copy:
-        src: "{{ macrobenchmark_vschema_oltp }}"
+        src: "{{ vitess_vschema_path }}"
         dest: /tmp/vschema_sysbench.json
         mode: '0644'
         force: true
-      when: arewefastyet_execution_type == 'oltp'
-
-    - name: Get VSchema for TPCC
-      copy:
-        src: "{{ macrobenchmark_vschema_tpcc }}"
-        dest: /tmp/vschema_sysbench.json
-        mode: '0644'
-        force: true
-      when: arewefastyet_execution_type == 'tpcc'
 
     - name: Apply VSchema
       when: vitess_version_name == 'latest'

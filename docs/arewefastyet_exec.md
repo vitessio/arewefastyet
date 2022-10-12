@@ -30,6 +30,7 @@ arewefastyet exec --exec-git-ref 4a70d3d226113282554b393a97f893d133486b94  --pla
       --exec-go-version string               Defines the golang version that will be used by this execution. (default "1.17")
       --exec-pull-nb int                     Defines the number of the pull request against which to execute.
       --exec-root-dir string                 Path to the root directory of exec.
+      --exec-schema string                   Path to the VSchema for this benchmark.
       --exec-server-address string           The IP address of the server on which the benchmark will be executed.
       --exec-source string                   Name of the source that triggered the execution.
       --exec-type string                     Defines the execution type (oltp, tpcc, micro).

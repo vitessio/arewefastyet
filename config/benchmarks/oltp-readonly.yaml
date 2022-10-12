@@ -1,5 +1,6 @@
 ## Exec Config
 exec-type: oltp-readonly
+exec-schema: "./vitess-benchmark/sysbench.json"
 
 ## Minimum Vitess version on which the benchmark should be executed
 minimum-version: 14
