@@ -33,6 +33,7 @@ const (
 	flagGolangVersion        = "exec-go-version"
 	flagServerAddress        = "exec-server-address"
 	flagVitessConfig         = "exec-vitess-config"
+	flagVitessSchema         = "exec-schema"
 )
 
 func (e *Exec) AddToViper(v *viper.Viper) (err error) {
@@ -45,6 +46,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	_ = v.UnmarshalKey(flagGolangVersion, &e.GolangVersion)
 	_ = v.UnmarshalKey(flagServerAddress, &e.ServerAddress)
 	_ = v.UnmarshalKey(flagVitessConfig, &e.rawVitessConfig)
+	_ = v.UnmarshalKey(flagVitessSchema, &e.vitessSchemaPath)
 
 	e.AnsibleConfig.AddToViper(v)
 	e.configDB.AddToViper(v)
@@ -61,6 +63,7 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().IntVar(&e.PullNB, flagExecPullNB, 0, "Defines the number of the pull request against which to execute.")
 	cmd.Flags().StringVar(&e.GolangVersion, flagGolangVersion, "1.17", "Defines the golang version that will be used by this execution.")
 	cmd.Flags().StringVar(&e.ServerAddress, flagServerAddress, "", "The IP address of the server on which the benchmark will be executed.")
+	cmd.Flags().StringVar(&e.vitessSchemaPath, flagVitessSchema, "", "Path to the VSchema for this benchmark.")
 
 	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
 	_ = viper.BindPFlag(flagGitRefExec, cmd.Flags().Lookup(flagGitRefExec))
@@ -69,6 +72,7 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagExecPullNB, cmd.Flags().Lookup(flagExecPullNB))
 	_ = viper.BindPFlag(flagGolangVersion, cmd.Flags().Lookup(flagGolangVersion))
 	_ = viper.BindPFlag(flagServerAddress, cmd.Flags().Lookup(flagServerAddress))
+	_ = viper.BindPFlag(flagVitessSchema, cmd.Flags().Lookup(flagVitessSchema))
 
 	e.AnsibleConfig.AddToPersistentCommand(cmd)
 	e.statsRemoteDBConfig.AddToCommand(cmd)

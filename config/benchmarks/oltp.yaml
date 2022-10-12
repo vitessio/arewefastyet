@@ -5,6 +5,8 @@ exec-type: oltp
 ansible-inventory-file: macrobench_sharded_inventory.yml
 ansible-playbook-file: macrobench.yml
 
+exec-schema: "./vitess-benchmark/sysbench.json"
+
 ## Macrobench cmd
 macrobench-sysbench-executable: /usr/local/bin/sysbench
 macrobench-workload-path: oltp_read_write

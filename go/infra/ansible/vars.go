@@ -49,6 +49,9 @@ const (
 
 	// Vitess related keys
 
+	// KeyVitessSchema is the path to the Vitess VSchema that will be used for this benchmark.
+	KeyVitessSchema = "vitess_vschema_path"
+
 	// KeyVitessVersion corresponding value in the map is the git reference of SHA
 	// which benchmarks will be executed.
 	KeyVitessVersion = "vitess_git_version"

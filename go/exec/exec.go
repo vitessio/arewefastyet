@@ -139,6 +139,8 @@ type Exec struct {
 	// in vitessConfig is then used when adding extra vars to Ansible.
 	rawVitessConfig rawSingleVitessVersionConfig
 	vitessConfig    vitessConfig
+
+	vitessSchemaPath string
 }
 
 const (
@@ -372,6 +374,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVtgatePlanner, e.VtgatePlannerVersion)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessVersionName, e.VitessVersionName)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessSchema, e.vitessSchemaPath)
 	e.vitessConfig.addToAnsible(&e.AnsibleConfig)
 
 	// runtime related values
