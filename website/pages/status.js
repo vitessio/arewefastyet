@@ -4,21 +4,75 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
-import useSWR from 'swr'
 import moment from "moment";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json())
+import { useState, useEffect } from 'react'
+import Waiter from "./waiter";
 
 export default function Status() {
-    const { data, error } = useSWR('http://localhost:9090/api/recent', fetcher)
+    const [recent, setRecent] = useState(null);
+    const [isRecentLoading, setRecentLoading] = useState(true)
+    const [queue, setQueue] = useState(null);
+    const [isQueueLoading, setQueueLoading] = useState(true)
 
-    if (error) return <div>Failed to load</div>
-    if (!data) return <div>Loading...</div>
+
+    useEffect(() => {
+        fetch('http://localhost:9090/api/recent')
+            .then((res) => res.json())
+            .then((data) => {
+                setRecent(data)
+                setRecentLoading(false)
+            })
+
+        fetch('http://localhost:9090/api/queue')
+            .then((res) => res.json())
+            .then((data) => {
+                setQueue(data)
+                setQueueLoading(false)
+            })
+    }, [])
+
+    if (isRecentLoading || isQueueLoading || !recent || !queue) {
+        return <Waiter />
+    }
+
     return (
         <div>
             <Header />
             <div className={styles.container}>
                 <div>
+                    <div className={stylesStatus.card}>
+                        <h4 className={stylesStatus.h4}>Executions Queue</h4>
+                        <Table className={stylesStatus.table} striped bordered hover>
+                            <thead>
+                            <tr>
+                                <th>SHA</th>
+                                <th>Source</th>
+                                <th>Type</th>
+                                <th>PR #</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {queue.map((item,index)=>{
+                                let short_git_ref = item.git_ref.slice(0, 8)
+                                let commit_github_link = "https://github.com/vitessio/vitess/commit/"+item.git_ref
+
+                                let pr_item = <></>
+                                if (item.pull_nb > 0) {
+                                    let pr_link = "https://github.com/vitessio/vitess/pull/" + item.pull_nb
+                                    pr_item = <a href={pr_link} target="_blank">{item.pull_nb}</a>
+                                }
+
+                                return <tr>
+                                    <td><a href={commit_github_link} target="_blank">{short_git_ref}</a></td>
+                                    <td>{item.source}</td>
+                                    <td>{item.type_of}</td>
+                                    <td>{pr_item}</td>
+                                </tr>
+                            })}
+                            </tbody>
+                        </Table>
+                    </div>
+
                     <div className={stylesStatus.card}>
                         <h4 className={stylesStatus.h4}>Recent Executions</h4>
                         <Table className={stylesStatus.table} striped bordered hover>
@@ -36,7 +90,7 @@ export default function Status() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item,index)=>{
+                                {recent.map((item,index)=>{
                                     let uuid = item.uuid.slice(0, 6)
                                     let short_git_ref = item.git_ref.slice(0, 8)
                                     let commit_github_link = "https://github.com/vitessio/vitess/commit/"+item.git_ref

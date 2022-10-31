@@ -20,6 +20,7 @@ package server
 
 import (
 	"net/http"
+	"sort"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -63,5 +64,24 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 			FinishedAt:    e.FinishedAt,
 		})
 	}
+	c.JSON(http.StatusOK, recentExecs)
+}
+
+func (s *Server) getExecutionsQueue(c *gin.Context) {
+	recentExecs := make([]RecentExecutions, 0, len(queue))
+	for _, e := range queue {
+		if e.Executing {
+			continue
+		}
+		recentExecs = append(recentExecs, RecentExecutions{
+			Source: e.identifier.Source,
+			GitRef: e.identifier.GitRef,
+			TypeOf: e.identifier.BenchmarkType,
+			PullNb: e.identifier.PullNb,
+		})
+	}
+	sort.Slice(recentExecs, func(i, j int) bool {
+		return recentExecs[i].GitRef > recentExecs[j].GitRef && recentExecs[i].Source > recentExecs[j].Source
+	})
 	c.JSON(http.StatusOK, recentExecs)
 }
