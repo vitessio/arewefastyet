@@ -1,71 +1,43 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import Header from "../components/header";
+import Footer from "../components/footer";
 
 export default function Home() {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>arewefastyet</title>
-        <meta name="description" content="Vitess' arewefastyet benchmarking tool" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div>
+      <Header />
+      <div className={styles.container}>
+        <Head>
+          <title>arewefastyet</title>
+          <meta name="description" content="Vitess' arewefastyet benchmarking tool" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to arewefastyet!
-        </h1>
+        <main className={styles.main}>
+          <h1 className={styles.title}>
+            Welcome to arewefastyet!
+          </h1>
 
-        <p className={styles.description}>
-          An automated benchmarking system for <a href="https://vitess.io">Vitess</a>.<br/>
+          <p className={styles.description}>
+            An automated benchmarking system for <a href="https://vitess.io">Vitess</a>.<br/>
+            Providing adopters and maintainers a clear vision of how Vitess is performing throughout different releases.
+          </p>
 
-        </p>
+          <div className={styles.grid}>
+            <a href="https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet/" className={styles.card}  target="_blank">
+              <h2>Learn &rarr;</h2>
+              <p>Read our blog post to learn how arewefastyet works.</p>
+            </a>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+            <a href="https://vitess.io" className={styles.card} target="_blank">
+              <h2>Vitess &rarr;</h2>
+              <p>Find out more on the Vitess project.</p>
+            </a>
+          </div>
+        </main>
+      </div>
+      <Footer />
     </div>
   )
 }
