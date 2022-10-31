@@ -26,7 +26,7 @@ export default function Header() {
                             <Nav.Link href="/#compare">Compare</Nav.Link>
                             <Nav.Link href="/#compare">Search</Nav.Link>
                             <Nav.Link href="/#micro">Micro</Nav.Link>
-                            <Nav.Link href="/#macro">Macro</Nav.Link>
+                            <Nav.Link href="/macrobench">Macro</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

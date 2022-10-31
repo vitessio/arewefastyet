@@ -31,14 +31,16 @@ import (
 
 type (
 	Release struct {
-		Name       string
-		CommitHash string
-		Version    Version
-		RCnumber   int
+		Name       string  `json:"name"`
+		CommitHash string  `json:"commit_hash"`
+		Version    Version `json:"version"`
+		RCnumber   int     `json:"rc_number"`
 	}
 
 	Version struct {
-		Major, Minor, Patch int
+		Major int `json:"major"`
+		Minor int `json:"minor"`
+		Patch int `json:"patch"`
 	}
 )
 

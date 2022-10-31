@@ -25,6 +25,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
+	"github.com/vitessio/arewefastyet/go/tools/git"
 )
 
 type ErrorAPI struct {
@@ -84,4 +85,46 @@ func (s *Server) getExecutionsQueue(c *gin.Context) {
 		return recentExecs[i].GitRef > recentExecs[j].GitRef && recentExecs[i].Source > recentExecs[j].Source
 	})
 	c.JSON(http.StatusOK, recentExecs)
+}
+
+type VitessGitRef struct {
+	UUID          string     `json:"uuid"`
+	Source        string     `json:"source"`
+	GitRef        string     `json:"git_ref"`
+	Status        string     `json:"status"`
+	TypeOf        string     `json:"type_of"`
+	PullNb        int        `json:"pull_nb"`
+	GolangVersion string     `json:"golang_version"`
+	StartedAt     *time.Time `json:"started_at"`
+	FinishedAt    *time.Time `json:"finished_at"`
+}
+
+func (s *Server) getLatestVitessGitRef(c *gin.Context) {
+	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	lastrunCronSHA, err := exec.GetLatestCronJobForMacrobenchmarks(s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	mainRelease := []*git.Release{{
+		Name:       "main",
+		CommitHash: lastrunCronSHA,
+	}}
+	allReleases = append(mainRelease, allReleases...)
+	// get all the latest release branches as well
+	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	allReleases = append(allReleases, allReleaseBranches...)
+
+	c.JSON(http.StatusOK, allReleases)
 }
