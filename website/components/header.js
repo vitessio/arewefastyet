@@ -1,10 +1,11 @@
+import styles from '../styles/Header.module.css'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 
 export default function Header() {
     return (
-        <div>
+        <div className={styles.header}>
             <Navbar collapseOnSelect expand="md" bg="dark" variant="dark" fixed="top">
                 <Container>
                     <Navbar.Brand href="/">
@@ -21,7 +22,7 @@ export default function Header() {
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Link href="/#home">Home</Nav.Link>
-                            <Nav.Link href="/#status">Status</Nav.Link>
+                            <Nav.Link href="/status">Status</Nav.Link>
                             <Nav.Link href="/#compare">Compare</Nav.Link>
                             <Nav.Link href="/#compare">Search</Nav.Link>
                             <Nav.Link href="/#micro">Micro</Nav.Link>
