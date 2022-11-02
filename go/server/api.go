@@ -26,6 +26,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/tools/git"
+	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 )
 
 type ErrorAPI struct {
@@ -127,4 +128,39 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 	allReleases = append(allReleases, allReleaseBranches...)
 
 	c.JSON(http.StatusOK, allReleases)
+}
+
+type CompareMacrobench struct {
+	Type string                `json:"type"`
+	Diff macrobench.Comparison `json:"diff"`
+}
+
+func (s *Server) compareMacrobenchmarks(c *gin.Context) {
+	rightSHA := c.Query("rtag")
+	leftSHA := c.Query("ltag")
+
+	// Compare Macrobenchmarks for the two given SHAs.
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, rightSHA, leftSHA, macrobench.Gen4Planner, s.benchmarkTypes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+
+	cmpMacros := make([]CompareMacrobench, 0, len(macrosMatrices))
+	for typeof, cmp := range macrosMatrices {
+		cmpMacro := CompareMacrobench{
+			Type: typeof,
+		}
+		if len(cmp) > 0 {
+			cmpMacro.Diff = cmp[0]
+		}
+		cmpMacros = append(cmpMacros, cmpMacro)
+	}
+
+	sort.Slice(cmpMacros, func(i, j int) bool {
+		return cmpMacros[i].Type < cmpMacros[j].Type
+	})
+
+	c.JSON(http.StatusOK, cmpMacros)
 }

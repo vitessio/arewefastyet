@@ -1,0 +1,48 @@
+.card {
+  margin: 1rem;
+  padding: 1.5rem;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  max-width: 100%;
+}
+
+.card:hover,
+.card:focus,
+.card:active {
+  border-color: #808997;
+}
+
+.h4 {
+  text-align: center;
+}
+
+.table {
+  margin-top: 30px;
+}
+
+.table a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.table a:hover,
+.table a:focus,
+.table a:active {
+  text-decoration: underline;
+}
+
+.table td, .table th {
+  text-align: center;
+}
+
+.thsm {
+  width: 20%;
+}
+
+.thmd {
+  width: 30%;
+}

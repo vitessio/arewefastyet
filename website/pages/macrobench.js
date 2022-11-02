@@ -1,20 +1,17 @@
 import styles from '../styles/Home.module.css'
-import stylesStatus from '../styles/Status.module.css'
+import stylesMacrobench from '../styles/Macrobench.module.css'
 import Header from "../components/header";
 import Footer from "../components/footer";
-import Table from 'react-bootstrap/Table';
-import Badge from 'react-bootstrap/Badge';
-import moment from "moment";
-import { useState, useEffect } from 'react'
 import Waiter from "./waiter";
+import MacrobenchCmp from "../components/macrobench_cmp";
+import { useState, useEffect } from 'react'
 
-import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
-export default function Macrobench() {
+
+export default function Macrobench(props) {
     const [fromRef, setFromRef] = useState(null);
     const [toRef, setToRef] = useState(null);
 
@@ -30,7 +27,7 @@ export default function Macrobench() {
                 setFromRef(data[1])
                 setToRef(data[0])
             })
-    }, [])
+    }, [props])
 
     if (isVitessRefsLoading || !vitessRefs) {
         return <Waiter />
@@ -40,8 +37,8 @@ export default function Macrobench() {
         <div>
             <Header />
             <div className={styles.container}>
-                <div className={stylesStatus.card}>
-                    <h4 className={stylesStatus.h4}>Compare Macrobenchmarks</h4>
+                <div className={stylesMacrobench.card}>
+                    <h4 className={stylesMacrobench.h4}>Compare Macrobenchmarks</h4>
                     <ButtonGroup>
                         <DropdownButton variant="light" as={ButtonGroup} title={fromRef.name} id="bg-nested-dropdown-from">
                             {vitessRefs.map((item,index)=>{
@@ -53,12 +50,9 @@ export default function Macrobench() {
                                 return <Dropdown.Item key={item.name} onClick={(e) => setToRef(item)}>{item.name}</Dropdown.Item>
                             })}
                         </DropdownButton>
-                        <Button>Compare</Button>
                     </ButtonGroup>
                 </div>
-                <div className={stylesStatus.card}>
-                    <p>Comparing {fromRef.name} with {toRef.name}</p>
-                </div>
+                <MacrobenchCmp from={fromRef} to={toRef} />
             </div>
             <Footer />
         </div>
