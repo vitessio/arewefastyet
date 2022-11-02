@@ -1,4 +1,5 @@
-import stylesMacrobench from '../styles/Macrobench.module.css'
+import stylesCard from '../styles/Card.module.css'
+import stylesTable from '../styles/Table.module.css'
 import stylesWaiter from "../styles/Waiter.module.css";
 import Table from 'react-bootstrap/Table';
 import Spinner from "react-bootstrap/Spinner";
@@ -30,15 +31,15 @@ export default function MacrobenchCmp(props) {
     return (
         <div>
             {benchmarks.map((item,index) => {
-                return <div key={index} className={stylesMacrobench.card}>
+                return <div key={index} className={stylesCard.card}>
                     <h5>{item.type}</h5>
-                    <Table className={stylesMacrobench.table} striped bordered hover>
+                    <Table className={stylesTable.table} striped bordered hover>
                         <thead>
                             <tr>
-                                <th scope="col" className={stylesMacrobench.thsm}></th>
-                                <th scope="col" className={stylesMacrobench.thmd}><a target="_blank" href={"https://github.com/vitessio/vitess/commit/"+props.from.commit_hash}>{props.from.name}</a></th>
-                                <th scope="col" className={stylesMacrobench.thmd}><a target="_blank" href={"https://github.com/vitessio/vitess/commit/"+props.to.commit_hash}>{props.to.name}</a></th>
-                                <th scope="col" className={stylesMacrobench.thsm}>Improved by %</th>
+                                <th scope="col" className={stylesTable.thsm}></th>
+                                <th scope="col" className={stylesTable.thmd}><a target="_blank" href={"https://github.com/vitessio/vitess/commit/"+props.from.commit_hash}>{props.from.name}</a></th>
+                                <th scope="col" className={stylesTable.thmd}><a target="_blank" href={"https://github.com/vitessio/vitess/commit/"+props.to.commit_hash}>{props.to.name}</a></th>
+                                <th scope="col" className={stylesTable.thsm}>Improved by %</th>
                             </tr>
                         </thead>
                         <tbody>

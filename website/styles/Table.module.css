@@ -1,0 +1,26 @@
+.table {
+  margin-top: 30px;
+}
+
+.table a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.table a:hover,
+.table a:focus,
+.table a:active {
+  text-decoration: underline;
+}
+
+.table td, .table th {
+  text-align: center;
+}
+
+.thsm {
+  width: 20%;
+}
+
+.thmd {
+  width: 30%;
+}

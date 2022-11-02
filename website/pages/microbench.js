@@ -3,7 +3,7 @@ import stylesCard from '../styles/Card.module.css'
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Waiter from "./waiter";
-import MacrobenchCmp from "../components/macrobench_cmp";
+import MicrobenchCmp from "../components/microbench_cmp";
 import { useState, useEffect } from 'react'
 
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -11,7 +11,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 
 
-export default function Macrobench(props) {
+export default function Microbench(props) {
     const [fromRef, setFromRef] = useState(null);
     const [toRef, setToRef] = useState(null);
 
@@ -38,7 +38,7 @@ export default function Macrobench(props) {
             <Header />
             <div className={styles.container}>
                 <div className={stylesCard.card}>
-                    <h4 className={stylesCard.h4}>Compare Macrobenchmarks</h4>
+                    <h4 className={stylesCard.h4}>Compare Microbenchmarks</h4>
                     <ButtonGroup>
                         <DropdownButton variant="light" as={ButtonGroup} title={fromRef.name} id="bg-nested-dropdown-from">
                             {vitessRefs.map((item,index)=>{
@@ -52,7 +52,7 @@ export default function Macrobench(props) {
                         </DropdownButton>
                     </ButtonGroup>
                 </div>
-                <MacrobenchCmp from={fromRef} to={toRef} />
+                <MicrobenchCmp from={fromRef} to={toRef} />
             </div>
             <Footer />
         </div>

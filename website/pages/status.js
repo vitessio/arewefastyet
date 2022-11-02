@@ -1,5 +1,6 @@
 import styles from '../styles/Home.module.css'
-import stylesStatus from '../styles/Status.module.css'
+import stylesCard from '../styles/Card.module.css'
+import stylesTable from '../styles/Table.module.css'
 import Header from "../components/header";
 import Footer from "../components/footer";
 import Table from 'react-bootstrap/Table';
@@ -40,9 +41,9 @@ export default function Status() {
             <Header />
             <div className={styles.container}>
                 <div>
-                    <div className={stylesStatus.card}>
-                        <h4 className={stylesStatus.h4}>Executions Queue</h4>
-                        <Table className={stylesStatus.table} striped bordered hover>
+                    <div className={stylesCard.card}>
+                        <h4 className={stylesCard.h4}>Executions Queue</h4>
+                        <Table className={stylesTable.table} striped bordered hover>
                             <thead>
                             <tr>
                                 <th>SHA</th>
@@ -73,9 +74,9 @@ export default function Status() {
                         </Table>
                     </div>
 
-                    <div className={stylesStatus.card}>
-                        <h4 className={stylesStatus.h4}>Recent Executions</h4>
-                        <Table className={stylesStatus.table} striped bordered hover>
+                    <div className={stylesCard.card}>
+                        <h4 className={stylesCard.h4}>Recent Executions</h4>
+                        <Table className={stylesTable.table} striped bordered hover>
                             <thead>
                                 <tr>
                                     <th>ID</th>
