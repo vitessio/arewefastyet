@@ -5,14 +5,14 @@ on: [push, pull_request]
 jobs:
   build:
     name: Verify CLI Documentation
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.18
+          go-version: 1.19.3
 
       - name: Run gen doc
         run: |

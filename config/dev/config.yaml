@@ -1,4 +1,4 @@
-exec-go-version: "1.18.7"
+exec-go-version: "1.19.3"
 
 web-port: 9090
 web-template-path: ./go/server/templates

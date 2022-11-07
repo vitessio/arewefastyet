@@ -1,6 +1,6 @@
 module github.com/vitessio/arewefastyet
 
-go 1.18
+go 1.19
 
 require (
 	github.com/apenella/go-ansible v1.0.0
