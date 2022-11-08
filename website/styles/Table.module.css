@@ -24,3 +24,11 @@
 .thmd {
   width: 30%;
 }
+
+.tdGreen {
+  background: green !important;
+}
+
+.tdRed {
+  background: red !important;
+}
