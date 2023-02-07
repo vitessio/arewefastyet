@@ -28,7 +28,7 @@ EXTRA_VTTABLET_FLAGS="--alsologtostderr \
     --queryserver-config-max-result-size=100000 \
     --queryserver-config-pool-size={{ tablet.connection_pool_size | default(vttablet_connection_pool_size) }} \
     --queryserver-config-stream-pool-size={{ tablet.stream_pool_size | default(vttablet_stream_pool_size) }} \
-	{% if vitess_version_name != "latest" %}
+	{% if vitess_version_name != "latest" and vitess_version_name != "v_15" %}
     	--client-found-rows-pool-size={{ tablet.found_rows_pool_size | default(vttablet_found_rows_pool_size) }} \
     	--binlog_use_v3_resharding_mode=true \
 	{% endif %}
