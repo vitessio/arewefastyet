@@ -16,7 +16,7 @@ WorkingDirectory={{vitess_root}}
 User={{vitess_user}}
 ExecStartPre=/bin/bash -c "${TOPO_PREPARE_COMMAND}"
 ExecStart=/bin/bash -c 'vtctld \
-	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" %}
+	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" and vitess_version_name != "v_15" %}
 		-cell %i \
 		-service_map "grpc-vtctl" \
 		-enable_realtime_stats \
@@ -32,9 +32,6 @@ ExecStart=/bin/bash -c 'vtctld \
 	{% else %}
 		--cell %i \
 		--service_map "grpc-vtctl" \
-		--enable_realtime_stats \
-		--workflow_manager_init \
-		--workflow_manager_use_election \
 		--log_dir ${VTROOT}/tmp \
 		--port ${VTCTLD_PORT} \
 		--grpc_port ${GRPC_PORT} \

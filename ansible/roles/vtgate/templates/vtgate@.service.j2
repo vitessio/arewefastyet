@@ -23,7 +23,7 @@ LimitNPROC=infinity
 LimitNOFILE=infinity
 LimitMEMLOCK=infinity
 ExecStart=/bin/bash -c 'vtgate \
-	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" %}
+	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" and vitess_version_name != "v_15" %}
 		-service_map "grpc-vtgateservice" \
 		-alsologtostderr \
 		-enable_buffer \

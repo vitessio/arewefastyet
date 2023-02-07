@@ -18,7 +18,7 @@ GRPC_PORT='{{gateway.grpc_port | default(vtgate_grpc_port)}}'
 CELL={{ cell }}
 ADDITIONAL_CELLS=""
 EXTRA_VTGATE_FLAGS="\
-	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" %}
+	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" and vitess_version_name != "v_15" %}
     	-planner_version {{ vitess_planner_version }} \
 		-vschema_ddl_authorized_users \"%\" \
 		-vtgate-config-terse-errors \
