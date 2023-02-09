@@ -6,7 +6,7 @@ require (
 	github.com/apenella/go-ansible v1.0.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/frankban/quicktest v1.13.0
-	github.com/gin-gonic/gin v1.7.0
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/google/uuid v1.2.0
 	github.com/influxdata/influxdb-client-go/v2 v2.3.0
