@@ -8,7 +8,7 @@ web-port: 8080
 web-template-path: /root/arewefastyet/go/server/templates
 web-static-path: /root/arewefastyet/go/server/static
 web-benchmark-config-path: /root/arewefastyet/config/benchmarks/
-web-source-exclude-filter: "cron_tags_14.0.0-rc1"
+web-source-exclude-filter: "cron_tags_14.0.0-rc1,cron_tags_14.0.4"
 web-mode: "production"
 
 web-pr-label-trigger: '"Benchmark me"'
