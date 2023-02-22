@@ -332,7 +332,7 @@ func GetVersionForCommitSHA(repoDir, sha string) (Version, error) {
 	if err != nil {
 		return Version{}, err
 	}
-	matchRelease := regexp.MustCompile(`\D*([0-9]+)\D`)
+	matchRelease := regexp.MustCompile(`release-([0-9]+).0`)
 	for _, branch := range branches {
 		if strings.Contains(branch, "origin/main") {
 			lastRelease, err := GetLastReleaseAndCommitHash(repoDir)
@@ -346,7 +346,7 @@ func GetVersionForCommitSHA(repoDir, sha string) (Version, error) {
 		}
 		matches := matchRelease.FindStringSubmatch(branch)
 		if len(matches) == 2 {
-			majorV, err := strconv.Atoi(matches[0])
+			majorV, err := strconv.Atoi(matches[1])
 			if err != nil {
 				return Version{}, err
 			}
