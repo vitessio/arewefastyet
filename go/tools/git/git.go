@@ -140,7 +140,7 @@ func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 
 	// We take the 2 latest major release
 	// TODO: @Florent: use the three latest major releases once v17 is out
-	minimumRelease := allReleases[len(allReleases)-1].Version.Major - 2
+	minimumRelease := allReleases[0].Version.Major - 1
 	for _, release := range allReleases {
 		if release.Version.Major >= minimumRelease {
 			latestReleases = append(latestReleases, release)
@@ -204,8 +204,11 @@ func GetLatestVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) 
 		return nil, err
 	}
 	var latestReleaseBranches []*Release
+	// We take the 2 latest major release
+	// TODO: @Florent: use the three latest major releases once v17 is out
+	minimumRelease := res[0].Version.Major - 1
 	for _, release := range res {
-		if release.Version.Major >= 12 {
+		if release.Version.Major >= minimumRelease {
 			latestReleaseBranches = append(latestReleaseBranches, release)
 		}
 	}
