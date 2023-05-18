@@ -1,0 +1,41 @@
+name: Benchmarking
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      - name: Set up MySQL
+        uses: vitessio/vitess/dev/env@main
+        with:
+          topology: master
+
+      - name: Build and install arewefastyet
+        run: go install github.com/vitessio/arewefastyet@latest
+
+      - name: Run benchmark
+        run: |
+          arewefastyet setup
+          arewefastyet benchmark
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v2
+        with:
+          name: benchmark-results
+          path: /path/to/benchmark/results
