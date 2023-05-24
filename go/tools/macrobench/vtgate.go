@@ -186,10 +186,7 @@ func getVTGatesQueryPlans(ports []string) (VTGateQueryPlanMap, error) {
 }
 
 func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner PlannerVersion, client storage.SQLClient) ([]VTGateQueryPlan, error) {
-	if macroType != OLTP && macroType != TPCC {
-		return nil, errors.New(IncorrectMacroBenchmarkType)
-	}
-	query := "select qp.`key` as `key`, qp.plan as plan, convert(avg(qp.exec_time), signed) as time, convert(avg(qp.exec_count), signed) as count, convert(avg(qp.rows), signed) as rows, convert(avg(qp.errors), signed) as errors " +
+	query := "select qp.`key` as `key`, qp.plan as plan, convert(avg(qp.exec_time), signed) as time, convert(avg(qp.exec_count), signed) as count, convert(avg(qp.rows), signed) as r, convert(avg(qp.errors), signed) as errors " +
 		"from query_plans qp, macrobenchmark ma, execution ex " +
 		"where qp.macrobenchmark_id = ma.macrobenchmark_id " +
 		"and ex.uuid = qp.exec_uuid " +
