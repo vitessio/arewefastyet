@@ -27,7 +27,6 @@ services:
     container_name: "backend-frontend"
     volumes:
       - "./exec/:/exec"
-      - "/tmp/vitess:/tmp/vitess"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend-frontend.rule=Host(`benchmark.vitess.io`)"
