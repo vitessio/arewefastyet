@@ -26,6 +26,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/google/uuid"
 	"github.com/vitessio/arewefastyet/go/slack"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
@@ -230,6 +231,15 @@ func (s *Server) Run() error {
 		},
 	})
 
+	s.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	s.router.Static("/static", s.staticPath)
 
 	s.router.LoadHTMLGlob(s.templatePath + "/*")
@@ -269,6 +279,10 @@ func (s *Server) Run() error {
 
 	// status page
 	s.router.GET("/status", s.statusHandler)
+
+	// API
+	s.router.GET("/api/recent", s.getRecentExecutions)
+	s.router.GET("/api/queue", s.getExecutionsQueue)
 
 	return s.router.Run(":" + s.port)
 }
