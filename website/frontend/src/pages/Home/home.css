@@ -1,15 +1,58 @@
 .home{
     background-color: #1F1D1D;
     height: 100vh;
+    padding: 0px 50px;
+}
+
+.line{
+    border: 1px solid #B5ADAD;
+    margin-top: 100px;
+}
+
+/* HOME__TOP */
+
+
+.home__top{
+    margin-top: 80px;
+    height: 500px;
+    
 }
 .home__top__text{
     width: 50%;
+    
 }
 .home__top__text h1{
     color: white;
-    font-size: 3rem;
+    font-size: 6rem;
     font-weight:100;
-}
+    margin-bottom: 50px;
+    margin-top: 20px;
+    
+    width: 100%}
 .home__top__text span{
     color: #B5ADAD;
+    width: 60%;
+    line-height: 40px;
 }
+.home__top__logo{
+    width: 600px;
+    margin-left: 30px;
+    object-fit:contain;
+   
+  
+}
+
+
+/* HOME BOTTOM*/
+
+
+.home__bottom{
+    margin-top: 150px;
+    color: white;
+    
+}
+.home__bottom span{
+    line-height: 40px;
+}
+
+
