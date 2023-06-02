@@ -10,7 +10,7 @@ const Home = () => {
         <div className='home'>
             <article className='home__top justify--content'>
                 <div className='home__top__text'>
-                    <h1>Are We Fast Yet</h1>
+                    <h1>AreWeFastYet</h1>
                     <span>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a augue mi.
                         Etiam sed imperdiet ligula, vel elementum velit.

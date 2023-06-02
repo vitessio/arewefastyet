@@ -1,7 +1,7 @@
 .home{
     background-color: #1F1D1D;
-    height: 100vh;
-    padding: 0px 50px;
+    
+    padding: 0px 50px 50px 50px;
 }
 
 .line{
@@ -14,7 +14,7 @@
 
 .home__top{
     margin-top: 80px;
-    height: 500px;
+    
     
 }
 .home__top__text{
