@@ -24,11 +24,6 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            export PATH=/usr/local/go/bin:$PATH
             cd $HOME/arewefastyet
-            git reset --hard FETCH_HEAD
-            git clean -fd
-            git fetch origin main
-            git checkout FETCH_HEAD
-            go build ./go/main.go
-            ./supervisor/update.sh
+            docker compose -f docker-compose.prod.yml build
+            docker compose -f docker-compose.prod.yml up

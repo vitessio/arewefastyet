@@ -1,7 +1,6 @@
 version: "3.3"
 
 services:
-
   traefik:
     image: "traefik:v2.10"
     container_name: "traefik"
@@ -28,6 +27,7 @@ services:
     container_name: "backend-frontend"
     volumes:
       - "./exec/:/exec"
+      - "/tmp/vitess:/tmp/vitess"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend-frontend.rule=Host(`benchmark.vitess.io`)"
