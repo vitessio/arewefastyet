@@ -1,0 +1,15 @@
+.home{
+    background-color: #1F1D1D;
+    height: 100vh;
+}
+.home__top__text{
+    width: 50%;
+}
+.home__top__text h1{
+    color: white;
+    font-size: 3rem;
+    font-weight:100;
+}
+.home__top__text span{
+    color: #B5ADAD;
+}
