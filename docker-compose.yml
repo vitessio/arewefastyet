@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: bridge
+
+  backend-frontend:
+    restart: always
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend-frontend
+      args:
+        env: dev
+    image: "arewefastyet-backend-frontend-dev"
+    container_name: "backend-frontend"
+    volumes:
+      - "./exec/:/exec"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.backend-frontend.entrypoints=http"
+      - "traefik.http.services.backend-frontend.loadbalancer.server.port=8080"
+    network_mode: bridge

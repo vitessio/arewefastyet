@@ -1,0 +1,35 @@
+version: "3.3"
+
+services:
+
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=cncf-vitess-project@cncf.io"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  backend-frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend-frontend
+      args:
+        env: prod
+    image: "arewefastyet-backend-frontend"
+    container_name: "backend-frontend"
+    volumes:
+      - "./exec/:/exec"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-frontend.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.backend-frontend.entrypoints=websecure"
+      - "traefik.http.routers.backend-frontend.tls.certresolver=myresolver"
