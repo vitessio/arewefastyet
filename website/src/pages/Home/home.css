@@ -17,29 +17,31 @@
     
     
 }
+
 .home__top__text{
     width: 50%;
     
 }
+
 .home__top__text h1{
     color: white;
     font-size: 6rem;
     font-weight:100;
     margin-bottom: 50px;
     margin-top: 20px;
-    
-    width: 100%}
+    width: 100%
+}
+
 .home__top__text span{
     color: #B5ADAD;
     width: 60%;
     line-height: 40px;
 }
+ 
 .home__top__logo{
     width: 600px;
     margin-left: 30px;
     object-fit:contain;
-   
-  
 }
 
 
@@ -51,6 +53,7 @@
     color: white;
     
 }
+
 .home__bottom span{
     line-height: 40px;
 }

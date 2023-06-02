@@ -2,7 +2,7 @@
 import { BrowserRouter,Route,Routes } from 'react-router-dom'
 
 import PublicRoute from './pages/PublicRoute';
-import './App.css'
+
 
 function App() {
   

@@ -4,6 +4,7 @@
     justify-content: space-between;
     
 }
+
 .logo__container{
     width: 200px;
     height: 100%;
@@ -12,17 +13,20 @@
     
     
 }
+
 .logo__container img{
     width: 20%;
     height: 100%;
     background: none;
     object-fit: contain;
 }
+
 .logo__container span{
     background: none;
     font-size: 1.4rem;
     color: white;
 }
+
 .header__nav,
 .header nav,
 .header__nav ul,
@@ -30,24 +34,29 @@
 .header__nav a {
     background: none;
 }
+
 .header__nav li{
     list-style: none;
     
 
 }
+
 .header__nav{
     justify-content: space-around;
     width: 100%;
     
 }
+
 .header__nav a{
     text-decoration: none;
     color:#B5ADAD;
     
 }
+
 .header__nav a:hover {
     color: white;
 }
+
 .header nav{
     
     width: 40%;
