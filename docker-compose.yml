@@ -9,8 +9,10 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.http.address=:80"
+      - "--entrypoints.http2.address=:81"
     ports:
       - "80:80"
+      - "81:81"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -32,4 +34,17 @@ services:
       - "traefik.http.routers.backend-frontend.rule=Host(`localhost`)"
       - "traefik.http.routers.backend-frontend.entrypoints=http"
       - "traefik.http.services.backend-frontend.loadbalancer.server.port=8080"
+    network_mode: bridge
+
+  vite_docker:
+    build:
+      context: ./website/frontend
+      dockerfile: ../../docker/Dockerfile.frontend
+    restart: always
+    container_name: "frontend"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vite_docker.rule=Host(`localhost`)"
+      - "traefik.http.routers.vite_docker.entrypoints=http2"
+      - "traefik.http.services.vite_docker.loadbalancer.server.port=5173"
     network_mode: bridge
