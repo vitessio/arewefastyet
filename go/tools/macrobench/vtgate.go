@@ -112,7 +112,7 @@ func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanCom
 		}
 	}
 	sort.Slice(res, func(i, j int) bool {
-		return res[i].Left.Value.ExecTime < res[j].Right.Value.ExecTime
+		return res[i].ExecTimeDiff > res[j].ExecTimeDiff
 	})
 	return res
 }
@@ -194,23 +194,23 @@ func getVTGatesQueryPlans(ports []string) (VTGateQueryPlanMap, error) {
 
 func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner PlannerVersion, client storage.SQLClient) ([]VTGateQueryPlan, error) {
 	query := "select " +
-			"qp.`key` as `key`, " +
-			"qp.plan as plan, " +
-			"convert(avg(qp.exec_time), signed) as time, " +
-			"convert(avg(qp.exec_count), signed) as count, " +
-			"convert(avg(qp.rows), signed) as r, " +
-			"convert(avg(qp.errors), signed) as errors " +
+		"qp.`key` as `key`, " +
+		"qp.plan as plan, " +
+		"convert(avg(qp.exec_time), signed) as time, " +
+		"convert(avg(qp.exec_count), signed) as count, " +
+		"convert(avg(qp.rows), signed) as r, " +
+		"convert(avg(qp.errors), signed) as errors " +
 		"from " +
-			"query_plans qp, macrobenchmark ma, execution ex " +
+		"query_plans qp, macrobenchmark ma, execution ex " +
 		"where " +
-			"qp.macrobenchmark_id = ma.macrobenchmark_id " +
-			"and ex.uuid = qp.exec_uuid " +
-			"and ex.uuid = ma.exec_uuid " +
-			"and ex.type = ? " +
-			"and ma.commit = ? " +
-			"and ma.vtgate_planner_version = ? " +
+		"qp.macrobenchmark_id = ma.macrobenchmark_id " +
+		"and ex.uuid = qp.exec_uuid " +
+		"and ex.uuid = ma.exec_uuid " +
+		"and ex.type = ? " +
+		"and ma.commit = ? " +
+		"and ma.vtgate_planner_version = ? " +
 		"group by " +
-			"qp.`key`, qp.plan " +
+		"qp.`key`, qp.plan " +
 		"order by qp.`key` " +
 		"limit 1500;"
 
