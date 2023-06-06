@@ -15,11 +15,87 @@ limitations under the License.
 */
 
 import React from 'react';
+import { useState, useEffect } from 'react';
+import './status.css'
+import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 
 const Status = () => {
+
+  const [dataQueue, setDataQueue] = useState([]);
+  const [dataPreviousExe, setDataPreviousExe] = useState([]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseQueue = await fetch('http://localhost:9090/api/queue');
+        const responsePreviousExe = await fetch('http://localhost:9090/api/recent');
+  
+        const jsonDataQueue = await responseQueue.json();
+        const jsonDataPreviousExe = await responsePreviousExe.json();
+        
+        setDataQueue(jsonDataQueue);
+        setDataPreviousExe(jsonDataPreviousExe);
+      } catch (error) {
+        console.log('Erreur lors de la récupération des données de l\'API', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+
+
+
     return (
-        <div>
-            
+        <div className='status'>
+            <article className='status__top justify--content'>
+                <div className='status__top__text'>
+                    <h2>Status</h2>
+                    <span>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a augue mi.
+                        Etiam sed imperdiet ligula, vel elementum velit.
+                        Phasellus sodales felis eu condimentum convallis.
+                        Suspendisse sodales malesuada iaculis. Mauris molestie placerat ex non malesuada.
+                        Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt volutpat. 
+                    </span>
+                </div>
+
+                <figure className='statusStats'></figure>
+            </article>
+            <figure className='line'></figure>
+            <article className='previousExe'>
+                <h3>Previous Executions</h3>
+                <table>
+                    <thead className='previousExe__thead'>
+                        <tr className='previousExe__thead__tr '>
+                            <th>UUID</th>
+                            <th>SHA</th>
+                            <th>Source</th>
+                            <th>Started</th>
+                            <th>Finished</th>
+                            <th>Type</th>
+                            <th>PR</th>
+                            <th>Go Version</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    
+        
+                        {dataPreviousExe.map((previousExe,index) => {
+                            return (
+                                <PreviousExe data={previousExe} key={index}/>
+                            )
+                        })}
+                        
+                    </tbody>
+                </table>
+                
+                
+                
+                    
+               
+            </article>
         </div>
     );
 };
