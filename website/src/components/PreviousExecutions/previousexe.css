@@ -1,0 +1,23 @@
+td{
+    padding: 20px 0px;
+    text-align: center;
+}
+
+.tdPR{
+    min-width: 5em;
+}
+
+tr{
+    border-bottom: 1px #B5ADAD solid;
+}
+
+a{
+    text-decoration: none;
+    color:#E77002
+}
+
+tr:nth-child(even) {
+    background-color: #343A40; /* Couleur de fond pour les lignes paires */
+  }
+
+
