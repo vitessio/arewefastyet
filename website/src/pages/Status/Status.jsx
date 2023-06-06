@@ -29,6 +29,7 @@ const Status = () => {
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
   
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,33 +77,39 @@ const Status = () => {
                 <RingLoader loading={isLoading} color='#E77002' size={300}/>
                 </div>
             ): (
+                <>
+
+
+                      {/* EXECUTION QUEUE */}
+
+              
+                  {dataQueue.length > 0 ?(
+                    <>
+                      <article className='queue'>
+                        <h3>Executions Queue</h3>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>SHA</th>
+                              <th>Source</th>
+                              <th>Type</th>
+                              <th>Pull Request</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                              {dataQueue.map((queue,index) => {
+                                return (
+                                  <ExeQueue data={queue} key={index}/>
+                                )
+                              })}
+                          </tbody>
+                        </table>
+                      </article>
+                      <figure className='line'></figure>
+                  </>
+                    ) : null}
                 
-            
-            <>
-                  {/* EXECUTION QUEUE */}
-
-                <article className='queue'>
-                    <h3>Executions Queue</h3>
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>SHA</th>
-                          <th>Source</th>
-                          <th>Type</th>
-                          <th>Pull Request</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                          {dataQueue.map((queue,index) => {
-                            return (
-                              <ExeQueue data={queue} key={index}/>
-                            )
-                          })}
-                      </tbody>
-                    </table>
-                </article>
-                <figure className='line'></figure>
-
+              
                   {/*PREVIOUS EXECUTIONS*/}
 
                 <article className='previousExe'>
