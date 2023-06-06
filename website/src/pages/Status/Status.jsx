@@ -16,11 +16,16 @@ limitations under the License.
 
 import React from 'react';
 import { useState, useEffect } from 'react';
+
 import './status.css'
+
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
+import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
+import RingLoader from "react-spinners/RingLoader";
 
 const Status = () => {
 
+  const [isLoading, setIsLoading] = useState(true)
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
   
@@ -35,6 +40,7 @@ const Status = () => {
         
         setDataQueue(jsonDataQueue);
         setDataPreviousExe(jsonDataPreviousExe);
+        setIsLoading(false)
       } catch (error) {
         console.log('Erreur lors de la récupération des données de l\'API', error);
       }
@@ -48,6 +54,7 @@ const Status = () => {
 
     return (
         <div className='status'>
+
             <article className='status__top justify--content'>
                 <div className='status__top__text'>
                     <h2>Status</h2>
@@ -63,40 +70,71 @@ const Status = () => {
                 <figure className='statusStats'></figure>
             </article>
             <figure className='line'></figure>
-            <article className='previousExe'>
-                <h3>Previous Executions</h3>
-                <table>
-                    <thead className='previousExe__thead'>
-                        <tr className='previousExe__thead__tr '>
-                            <th>UUID</th>
-                            <th>SHA</th>
-                            <th>Source</th>
-                            <th>Started</th>
-                            <th>Finished</th>
-                            <th>Type</th>
-                            <th>PR</th>
-                            <th>Go Version</th>
-                            <th>Status</th>
+
+            {isLoading ? (
+              <div className='loadingSpinner'>
+                <RingLoader loading={isLoading} color='#E77002' size={300}/>
+                </div>
+            ): (
+                
+            
+            <>
+                  {/* EXECUTION QUEUE */}
+
+                <article className='queue'>
+                    <h3>Executions Queue</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>SHA</th>
+                          <th>Source</th>
+                          <th>Type</th>
+                          <th>Pull Request</th>
                         </tr>
-                    </thead>
-                    <tbody>
-                    
-        
-                        {dataPreviousExe.map((previousExe,index) => {
+                      </thead>
+                      <tbody>
+                          {dataQueue.map((queue,index) => {
                             return (
-                                <PreviousExe data={previousExe} key={index}/>
+                              <ExeQueue data={queue} key={index}/>
                             )
-                        })}
-                        
-                    </tbody>
-                </table>
-                
-                
-                
-                    
-               
-            </article>
+                          })}
+                      </tbody>
+                    </table>
+                </article>
+                <figure className='line'></figure>
+
+                  {/*PREVIOUS EXECUTIONS*/}
+
+                <article className='previousExe'>
+                    <h3>Previous Execution</h3>
+                    <table>
+                        <thead className='previousExe__thead'>
+                            <tr className='previousExe__thead__tr '>
+                                <th>UUID</th>
+                                <th>SHA</th>
+                                <th>Source</th>
+                                <th>Started</th>
+                                <th>Finished</th>
+                                <th>Type</th>
+                                <th>PR</th>
+                                <th>Go Version</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dataPreviousExe.map((previousExe,index) => {
+                              return (
+                                <PreviousExe data={previousExe} key={index}/>
+                              )
+                            })}
+                        </tbody>
+                    </table>
+                </article>
+             </>
+
+             )}
         </div>
+        
     );
 };
 
