@@ -17,7 +17,27 @@ a{
 }
 
 tr:nth-child(even) {
-    background-color: #343A40; /* Couleur de fond pour les lignes paires */
+    background-color: #343A40; /* Background color for even rows. */
   }
 
+.tdStatus{
+    padding: 3px 20px;
+    border-radius: 20px;
+    
+}
+
+
+.finished {
+    background-color: green;
+}
+  
+.failed {
+    background-color: red;
+}
+.started{
+    background-color: rgb(0, 92, 241);
+}
+.default{
+    background-color: grey;
+}
 

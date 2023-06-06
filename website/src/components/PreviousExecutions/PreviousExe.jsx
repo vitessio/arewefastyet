@@ -3,6 +3,18 @@ import React from 'react';
 import '../PreviousExecutions/previousexe.css'
 
 const PreviousExe = ({data}) => {
+
+    const getStatusClass = (status) => {
+        if (status === 'finished') {
+          return 'finished';
+        } else if (status === 'failed') {
+          return 'failed';
+        } else if (status ==='started') {
+            return 'started';
+        } else {
+            return 'default';
+        }
+    }
     return (
     <>
         <tr>
@@ -14,7 +26,7 @@ const PreviousExe = ({data}) => {
             <td>{data.type_of.slice(0,4)}</td>
             <td className='tdPR'>{data.pull_nb}</td>
             <td>{data.golang_version}</td>
-            <td className='tdStatus'>{data.status}</td>
+            <td ><span className={`data ${getStatusClass(data.status)} tdStatus`}>{data.status}</span></td>
         </tr>
         
         
