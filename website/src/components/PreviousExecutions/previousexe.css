@@ -7,18 +7,12 @@ td{
     min-width: 5em;
 }
 
-tr{
-    border-bottom: 1px #B5ADAD solid;
-}
-
 a{
     text-decoration: none;
     color:#E77002
 }
 
-tr:nth-child(even) {
-    background-color: #343A40; /* Background color for even rows. */
-  }
+
 
 .tdStatus{
     padding: 3px 20px;

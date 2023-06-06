@@ -28,7 +28,7 @@ const PreviousExe = ({data}) => {
         const formattedStartedDate = startedDate.format('MM/DD/YYYY HH:mm')
         const formattedFinishedDate = finishedDate.format('MM/DD/YYYY HH:mm')
     return (
-    <>
+
         <tr>
             <td>{data.uuid.slice(0, 8)}</td>
             <td><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></td>
@@ -41,8 +41,6 @@ const PreviousExe = ({data}) => {
             <td ><span className={`data ${getStatusClass(data.status)} tdStatus`}>{data.status}</span></td>
         </tr>
         
-        
-    </>
     );
 };
 
