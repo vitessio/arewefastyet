@@ -1,3 +1,19 @@
+/*
+Copyright 2023 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 import React from 'react';
 import moment from 'moment';
 
@@ -7,26 +23,27 @@ const PreviousExe = ({data}) => {
         /*BACKGROUND STATUS*/ 
 
     const getStatusClass = (status) => {
-        if (status === 'finished') {
-          return 'finished';
-        } else if (status === 'failed') {
-          return 'failed';
-        } else if (status ==='started') {
-            return 'started';
-        } else {
-            return 'default';
-        }
+        switch (status) {
+            case 'finished':
+              return 'finished';
+            case 'failed':
+              return 'failed';
+            case 'started':
+              return 'started';
+            default:
+              return 'default';
+          }
     }
 
-        //Create a Moment object from the given date string
-        
-        const startedDate = moment(data.started_at)
-        const finishedDate = moment(data.finished_at)
-        // Format the date using the format method of Moment.js
-        // Here, we use 'DD/MM/YYYY HH:mm:ss' as the desired format
+          // Create a Moment object from the given date string
+          const startedDate = moment(data.started_at)
+          const finishedDate = moment(data.finished_at)
+          
+          // Format the date using the format method of Moment.js
+          // Here, we use 'DD/MM/YYYY HH:mm:ss' as the desired format
+          const formattedStartedDate = startedDate.format('MM/DD/YYYY HH:mm')
+          const formattedFinishedDate = finishedDate.format('MM/DD/YYYY HH:mm')
 
-        const formattedStartedDate = startedDate.format('MM/DD/YYYY HH:mm')
-        const formattedFinishedDate = finishedDate.format('MM/DD/YYYY HH:mm')
     return (
 
         <tr>
@@ -35,7 +52,7 @@ const PreviousExe = ({data}) => {
             <td>{data.source}</td>
             <td>{formattedStartedDate}</td>
             <td>{formattedFinishedDate}</td>
-            <td>{data.type_of.slice(0,4)}</td>
+            <td>{data.type_of}</td>
             <td className='tdPR'>{data.pull_nb}</td>
             <td>{data.golang_version}</td>
             <td ><span className={`data ${getStatusClass(data.status)} tdStatus`}>{data.status}</span></td>

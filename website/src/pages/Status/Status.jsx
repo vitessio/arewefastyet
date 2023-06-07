@@ -16,25 +16,30 @@ limitations under the License.
 
 import React from 'react';
 import { useState, useEffect } from 'react';
+import RingLoader from "react-spinners/RingLoader";
+
 
 import './status.css'
 
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
-import RingLoader from "react-spinners/RingLoader";
+
+
+
 
 const Status = () => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
+  const [error, setError] = useState(null);
   
   
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseQueue = await fetch('http://localhost:9090/api/queue');
-        const responsePreviousExe = await fetch('http://localhost:9090/api/recent');
+        const responseQueue = await fetch(import.meta.env.VITE_API_QUEUE_URL);
+        const responsePreviousExe = await fetch(import.meta.env.VITE_API_RECENT_URL);
   
         const jsonDataQueue = await responseQueue.json();
         const jsonDataPreviousExe = await responsePreviousExe.json();
@@ -43,14 +48,16 @@ const Status = () => {
         setDataPreviousExe(jsonDataPreviousExe);
         setIsLoading(false)
       } catch (error) {
-        console.log('Erreur lors de la récupération des données de l\'API', error);
+        console.log('Error while retrieving data from the API', error);
+        setError('An error occurred while retrieving data from the API. Please try again.');
+        setIsLoading(false);
       }
     };
   
     fetchData();
   }, []);
   
-
+  
 
 
     return (
@@ -71,7 +78,7 @@ const Status = () => {
                 <figure className='statusStats'></figure>
             </article>
             <figure className='line'></figure>
-
+            
             {isLoading ? (
               <div className='loadingSpinner'>
                 <RingLoader loading={isLoading} color='#E77002' size={300}/>
@@ -111,35 +118,41 @@ const Status = () => {
                 
               
                   {/*PREVIOUS EXECUTIONS*/}
+                
+                {dataPreviousExe.length > 0 ? (
+                  <article className='previousExe'>
+                  <h3>Previous Execution</h3>
+                  <table>
+                      <thead className='previousExe__thead'>
+                          <tr className='previousExe__thead__tr '>
+                              <th>UUID</th>
+                              <th>SHA</th>
+                              <th>Source</th>
+                              <th>Started</th>
+                              <th>Finished</th>
+                              <th>Type</th>
+                              <th>PR</th>
+                              <th>Go Version</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {dataPreviousExe.map((previousExe,index) => {
+                            return (
+                              <PreviousExe data={previousExe} key={index}/>
+                            )
+                          })}
+                      </tbody>
+                  </table>
+              </article>
 
-                <article className='previousExe'>
-                    <h3>Previous Execution</h3>
-                    <table>
-                        <thead className='previousExe__thead'>
-                            <tr className='previousExe__thead__tr '>
-                                <th>UUID</th>
-                                <th>SHA</th>
-                                <th>Source</th>
-                                <th>Started</th>
-                                <th>Finished</th>
-                                <th>Type</th>
-                                <th>PR</th>
-                                <th>Go Version</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {dataPreviousExe.map((previousExe,index) => {
-                              return (
-                                <PreviousExe data={previousExe} key={index}/>
-                              )
-                            })}
-                        </tbody>
-                    </table>
-                </article>
+                ): null}
+                
              </>
 
              )}
+            {error ? <div className='apiError'>{error}</div> : null}
+              
         </div>
         
     );

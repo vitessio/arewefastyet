@@ -17,6 +17,7 @@ limitations under the License.
 .status{
     padding : 0px 50px 50px 50px;
     background-color: #1F1D1D;  
+    
 }
 
     /*STATUS TOP*/
@@ -101,4 +102,12 @@ tr{
     display:flex;
     justify-content: center;
     align-items: center;
+}
+
+.apiError{
+    height: 50vh;
+    color: #E77002;
+    margin-top: 200px;
+    text-align: center;
+    font-size: 3rem;
 }

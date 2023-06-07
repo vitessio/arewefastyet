@@ -32,13 +32,21 @@ const Header = () => {
             
             <nav>
                 <ul className='header__nav flex'>
-                    <li><NavLink className="header__link" activeclassname="active" to='/home'>Home</NavLink></li>
-                    <li><NavLink className="header__link" activeclassname="active" to='/status'>Status</NavLink></li>
-                    <li><NavLink className="header__link" activeclassname="active" to='/status'>CRON</NavLink></li>
-                    <li><NavLink className="header__link" activeclassname="active" to='/status'>Compare</NavLink></li>
-                    <li><NavLink className="header__link" activeclassname="active" to='/status'>Search</NavLink></li>
-                    <li><NavLink className="header__link" activeclassname="active" to='/status'>Micro</NavLink></li>
-                    <li><NavLink className="header__link" activeclassname="active" to='/status'>Macro</NavLink></li>
+                    {[
+                        { to: '/home', label: 'Home' },
+                        { to: '/status', label: 'Status' },
+                        { to: '/status', label: 'CRON' },
+                        { to: '/status', label: 'Compare' },
+                        { to: '/status', label: 'Search' },
+                        { to: '/status', label: 'Micro' },
+                        { to: '/status', label: 'Macro' }
+                        ].map((link, index) => (
+                        <li key={index}>
+                            <NavLink className='header__link' activeclassname='active' to={link.to}>
+                            {link.label}
+                            </NavLink>
+                        </li>
+                        ))}
                 </ul>
             </nav>
             
