@@ -69,6 +69,7 @@ limitations under the License.
     text-decoration: none;
     color:#B5ADAD;
     
+    
 }
 
 .header__nav a:hover {
@@ -112,6 +113,10 @@ limitations under the License.
     margin-top: 10px;
     
 }
+.lineMenu{
+    border: 1px solid #B5ADAD;
+    
+}
 
 
 
@@ -120,6 +125,9 @@ limitations under the License.
 @media only screen and (max-width: 1225px) {
     .header nav{
         width: 60%;
+    }
+    .logo__container{
+        justify-content: start;
     }
   }
 
@@ -140,13 +148,18 @@ limitations under the License.
         flex-direction: column;
         padding: 10px 20px 20px 10px;
         background-color: #343A40; 
-        animation: scale-in-ver-top 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;  
+        animation: scale-in-ver-top 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;  
     }
 
     .header__nav li{
-        margin-bottom: 10px;
-        animation: scale-in-ver-top 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+        padding: 20px 0px;
     }
+
+    .header__link{
+        display: block;
+        width: 100%;
+    }
+    
 
     .logo__container{
         justify-content: start;
@@ -154,6 +167,7 @@ limitations under the License.
     }
     .logo__container img{
         width: 50px;
+        
     }
     .hamburgerMenu{
         display: block;
@@ -174,4 +188,6 @@ limitations under the License.
       opacity: 1;
     }
   }
+
+
 

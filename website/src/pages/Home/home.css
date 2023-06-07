@@ -64,7 +64,7 @@ limitations under the License.
 .home__bottom{
     margin-top: 150px;
     color: white;
-    
+      
 }
 
 .home__bottom span{
@@ -114,6 +114,9 @@ limitations under the License.
         padding: 20px;
         border: #E77002 2px solid;
         border-radius: 20px;
+    }
+    .home__bottom{
+        text-align: center;
     }
     
 }
