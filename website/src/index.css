@@ -45,6 +45,12 @@ body{
 .space--between{
   justify-content: space-between;
 }
+.visible{
+  visibility: visible;
+}
+.hidden{
+  visibility: hidden;
+}
 
 /*Section separation line*/
 .line{

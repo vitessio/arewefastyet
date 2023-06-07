@@ -21,6 +21,7 @@ limitations under the License.
     justify-content: space-between;
     top: 0;
     
+    
 }
 
 .logo__container{
@@ -28,7 +29,8 @@ limitations under the License.
     height: 100%;
     background: none;
     padding: 10px;
-    
+    display: flex;
+    justify-content: center;
     
 }
 
@@ -55,8 +57,6 @@ limitations under the License.
 
 .header__nav li{
     list-style: none;
-    
-
 }
 
 .header__nav{
@@ -88,3 +88,90 @@ limitations under the License.
     text-decoration: underline;
     
 }
+.hamburgerMenu{
+    width: 50px;
+    border: #7D7676 2px solid;
+    height: 40px;
+    margin:auto;
+    margin-right: 10px;
+    border-radius: 5px;
+    display: none;
+    
+}
+.lineMenuTop{
+    border: #7D7676 1px solid;
+    width: 30px;
+    margin: auto;
+    margin-top: 10px; 
+}
+
+.lineMenuBottom{
+    border: #7D7676 1px solid;
+    width: 30px;
+    margin: auto;
+    margin-top: 10px;
+    
+}
+
+
+
+
+  /* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .header nav{
+        width: 60%;
+    }
+  }
+
+  /* MEDIA QUERIES FOR MOBILE */
+
+@media only screen and (max-width: 767px){
+    .header{
+        height: 60px;
+        
+    }
+    .header nav{
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+    }
+    .header__nav{
+        flex-direction: column;
+        padding: 10px 20px 20px 10px;
+        background-color: #343A40; 
+        animation: scale-in-ver-top 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;  
+    }
+
+    .header__nav li{
+        margin-bottom: 10px;
+        animation: scale-in-ver-top 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+
+    .logo__container{
+        justify-content: start;
+        width: 50%;
+    }
+    .logo__container img{
+        width: 50px;
+    }
+    .hamburgerMenu{
+        display: block;
+    }
+}
+
+
+
+@keyframes scale-in-ver-top {
+    0% {
+              transform: scaleY(0);
+              transform-origin: 100% 0%;
+      opacity: 1;
+    }
+    100% {
+              transform: scaleY(1);
+              transform-origin: 100% 0%;
+      opacity: 1;
+    }
+  }
+
