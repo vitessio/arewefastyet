@@ -14,17 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.footer{
-    position: relative;
-    bottom: 0;
-    width: 100%;
-    height: 160px;
-    background-color: #343A40;
-    margin-top: 100px;
-    align-items: center;   
-}
+import React from 'react';
 
-.footer span{
-    background: none;
-    color: white;
-}
+
+const ExeQueue = ({data}) => {
+    return (
+        <tr>
+            <td><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0, 6)}</a></td>
+            <td>{data.source}</td>
+            <td>{data.type_of}</td>
+            <td>{data.pull_nb}</td>
+        </tr>
+    );
+};
+
+export default ExeQueue;

@@ -26,19 +26,27 @@ const Header = () => {
     return (
         <div className='header flex'>
             <div className='logo__container justify--content'>
-                <img src={logo}/>
+                <img src={logo} alt='logo'/>
                 <span>Benchmark</span>
             </div>
             
             <nav>
                 <ul className='header__nav flex'>
-                    <li><NavLink activeclassname='active' to='/home'>Home</NavLink></li>
-                    <li><NavLink to='/status'>Status</NavLink></li>
-                    <li><NavLink to='/status'>CRON</NavLink></li>
-                    <li><NavLink to='/status'>Compare</NavLink></li>
-                    <li><NavLink to='/status'>Search</NavLink></li>
-                    <li><NavLink to='/status'>Micro</NavLink></li>
-                    <li><NavLink to='/status'>Macro</NavLink></li>
+                    {[
+                        { to: '/home', label: 'Home' },
+                        { to: '/status', label: 'Status' },
+                        { to: '/status', label: 'CRON' },
+                        { to: '/status', label: 'Compare' },
+                        { to: '/status', label: 'Search' },
+                        { to: '/status', label: 'Micro' },
+                        { to: '/status', label: 'Macro' }
+                        ].map((link, index) => (
+                        <li key={index}>
+                            <NavLink className='header__link' activeclassname='active' to={link.to}>
+                            {link.label}
+                            </NavLink>
+                        </li>
+                        ))}
                 </ul>
             </nav>
             

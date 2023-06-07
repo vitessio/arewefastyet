@@ -21,9 +21,12 @@ limitations under the License.
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background-color: #1F1D1D;
+  
   font-family: 'Rubik', sans-serif;
   
+}
+body{
+  background-color: #1F1D1D;
 }
 
 
@@ -31,10 +34,21 @@ limitations under the License.
 /*Basic class*/
 
 .flex,
-.justify--content{
+.justify--content,
+.space--between{
   display: flex;
 }
 
 .justify--content{
   justify-content: center;
+}
+.space--between{
+  justify-content: space-between;
+}
+
+/*Section separation line*/
+.line{
+  border: 1px solid #B5ADAD;
+  margin-top: 100px;
+  margin-bottom: 100px;
 }

@@ -13,3 +13,101 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+.status{
+    padding : 0px 50px 50px 50px;
+    background-color: #1F1D1D;  
+    
+}
+
+    /*STATUS TOP*/
+
+.status__top{
+    margin-top: 100px;
+    
+    
+    
+}
+
+.status__top__text{
+    width: 50%;
+    margin-right: 200px;
+    
+}
+
+.status__top__text h2{
+    color: white;
+    font-size: 6rem;
+    font-weight:100;
+    margin-bottom: 50px;
+    margin-top: 20px;
+    width: 100%
+}
+
+.status__top__text span{
+    color: #B5ADAD;
+    width: 60%;
+    line-height: 40px;
+}
+.statusStats{
+    border: solid 2px white;
+    width: 400px;
+    height: 400px;
+}
+
+.status h3{
+    font-size: 3rem;
+    font-weight: 200;
+    margin-bottom: 100px;
+    text-align: center;
+}
+
+    /*STATUS TABLE*/
+
+.status th{
+    font-weight: 200;
+    padding-bottom: 10px;
+}
+
+.status table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+tr:nth-child(even) {
+    background-color: #343A40; /* Background color for even rows. */
+}
+
+tr{
+    border-bottom: 1px #B5ADAD solid;
+}
+
+
+    /*PREVIOUS EXECUTIONS*/
+
+.previousExe{
+    color: white;
+}
+
+     /* EXECUTION QUEUE */
+
+.queue{
+    color: white;
+    margin-bottom: 200px;
+}
+
+    /* SPINNER */
+
+.loadingSpinner{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.apiError{
+    height: 50vh;
+    color: #E77002;
+    margin-top: 200px;
+    text-align: center;
+    font-size: 3rem;
+}
