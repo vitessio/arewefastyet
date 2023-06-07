@@ -72,3 +72,18 @@ limitations under the License.
 }
 
 
+    /* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .home{
+        padding: 0px 20px 50px 20px;
+    }
+    .home__top__logo{
+        width: 300px;
+        margin-left: 70px;
+        
+    }
+    .home__top__text h1{
+        font-size: 4rem;
+    }
+    
+  }
