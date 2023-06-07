@@ -46,6 +46,7 @@ body{
   justify-content: space-between;
 }
 
+/*Section separation line*/
 .line{
   border: 1px solid #B5ADAD;
   margin-top: 100px;

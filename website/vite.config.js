@@ -19,13 +19,12 @@
 import { defineConfig } from 'vite';
 import dotenv from 'dotenv';
 
-
 export default defineConfig(({ mode }) => {
-  // Charge les variables d'environnement à partir du fichier .env correspondant au mode (dev ou prod)
+  // Load environment variables from the corresponding .env file based on the mode (dev or prod)
   dotenv.config({ path: `./.env.${mode}` });
 
   return {
-    // Configuration de votre application Vite
+    // Configuration of your Vite application
     // ...
   };
 });

@@ -33,13 +33,13 @@ const Status = () => {
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
   const [error, setError] = useState(null);
-  
+
   
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseQueue = await fetch(import.meta.env.VITE_API_QUEUE_URL);
-        const responsePreviousExe = await fetch(import.meta.env.VITE_API_RECENT_URL);
+        const responseQueue = await fetch(`${import.meta.env.VITE_API_URL}queue`);
+        const responsePreviousExe = await fetch(`${import.meta.env.VITE_API_URL}recent`);
   
         const jsonDataQueue = await responseQueue.json();
         const jsonDataPreviousExe = await responsePreviousExe.json();
