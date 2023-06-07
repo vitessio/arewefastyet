@@ -27,7 +27,11 @@ const Header = () => {
     const [openMenu, setOpenMenu] = useState(false)
     const handleMenuClick = () => {
         window.scrollTo(0, 0);
-        setOpenMenu(false)
+        if (window.innerWidth <= 768) {
+            setOpenMenu(false);
+          } else {
+            setOpenMenu(true);
+          }
       };
     
       const [visible, setVisible] = useState(true);

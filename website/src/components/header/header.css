@@ -96,7 +96,7 @@ limitations under the License.
     margin-right: 10px;
     border-radius: 5px;
     display: none;
-    
+    cursor: pointer;
 }
 .lineMenuTop{
     border: #7D7676 1px solid;
