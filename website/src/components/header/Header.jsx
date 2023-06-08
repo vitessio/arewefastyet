@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {NavLink} from 'react-router-dom';
+// import Hamburger from 'hamburger-react'
 import './header.css'
 
 //import image
@@ -23,32 +24,107 @@ import './header.css'
 import logo from '../../assets/logo.png'
 
 const Header = () => {
-    return (
-        <div className='header flex'>
-            <div className='logo__container justify--content'>
-                <img src={logo} alt='logo'/>
-                <span>Benchmark</span>
-            </div>
+
+    const [openMenu, setOpenMenu] = useState(false)
+    const handleMenuClick = () => {
+        window.scrollTo(0, 0);
+        if (window.innerWidth <= 768) {
+            setOpenMenu(false);
+          } else {
+            setOpenMenu(true);
+          }
+      };
+    
+      const [visible, setVisible] = useState(true);
+      const [lastScrollTop, setLastScrollTop] = useState(0);
+
+      useEffect(() => {
+        const handleScroll = () => {
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          if (scrollTop > lastScrollTop && scrollTop > 55) {
+            // If we scroll down more than 50px, we hide the div.
+            setVisible(false);
+            setOpenMenu(false);
+          } else {
+            // Otherwise, we display the div again.
+            setVisible(true);
             
-            <nav>
-                <ul className='header__nav flex'>
-                    {[
-                        { to: '/home', label: 'Home' },
-                        { to: '/status', label: 'Status' },
-                        { to: '/status', label: 'CRON' },
-                        { to: '/status', label: 'Compare' },
-                        { to: '/status', label: 'Search' },
-                        { to: '/status', label: 'Micro' },
-                        { to: '/status', label: 'Macro' }
-                        ].map((link, index) => (
-                        <li key={index}>
-                            <NavLink className='header__link' activeclassname='active' to={link.to}>
-                            {link.label}
-                            </NavLink>
-                        </li>
-                        ))}
-                </ul>
-            </nav>
+          }
+          setLastScrollTop(scrollTop);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+        };
+      }, [lastScrollTop]);
+
+      useEffect(() => {
+        const handleResize = () => {
+          if (window.innerWidth <= 768) {
+            setOpenMenu(false);
+          } else {
+            setOpenMenu(true);
+          }
+        };
+    
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Check initial window size
+    
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+      }, []);
+
+    return (
+        <div className={`header flex ${visible ? 'visible' : 'hidden'}`}>
+        
+            <div className='logo__container'>
+                <img src={logo} alt='logo'/>
+                <span className='hiddenResponsiveMobile' >Benchmark</span>
+            </div>
+            {openMenu ? (
+                <>
+                    <nav>
+                    <ul className='header__nav flex'>
+                        {[
+                            { to: '/home', label: 'Home' },
+                            { to: '/status', label: 'Status' },
+                            { to: '/status', label: 'CRON' },
+                            { to: '/status', label: 'Compare' },
+                            { to: '/status', label: 'Search' },
+                            { to: '/status', label: 'Micro' },
+                            { to: '/status', label: 'Macro' }
+                            ].map((link, index) => (
+                              <div key={index}>
+                                  <li>
+                                  <NavLink className='header__link' activeclassname='active' onClick={handleMenuClick} to={link.to}>
+                                  {link.label}
+                                  </NavLink>
+                              </li>
+                              <figure  className='lineMenu'></figure>
+                            </div>
+                            ))}
+                    </ul>
+                </nav>
+                
+                <figure className='hamburgerMenu' onClick={() => setOpenMenu(false)}>
+                    <figure className='lineMenuTop'></figure>
+                    <figure className='lineMenuBottom'></figure>
+                </figure> 
+                
+                
+
+            </>
+            ) :
+            <figure className='hamburgerMenu' onClick={() => setOpenMenu(true)}>
+                <figure className='lineMenuTop'></figure>
+                <figure className='lineMenuBottom'></figure>
+            </figure> 
+            
+            
+            }
+             
+            
             
         </div>
     );

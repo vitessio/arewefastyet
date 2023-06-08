@@ -64,7 +64,7 @@ limitations under the License.
 .home__bottom{
     margin-top: 150px;
     color: white;
-    
+      
 }
 
 .home__bottom span{
@@ -72,3 +72,51 @@ limitations under the License.
 }
 
 
+    /* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .home{
+        padding: 0px 20px 50px 20px;
+    }
+
+    .home__top__logo{
+        width: 300px;
+        margin-left: 70px;
+        
+    }
+
+    .home__top__text h1{
+        font-size: 4rem;
+    }
+    
+  }
+
+
+        /* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .home__top{
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .home__top__text{
+        width: 100%;
+        text-align: center;
+    }
+    .home__top__text h1{
+        width: 100%;
+        font-size: 3rem;
+    }
+
+    .home__top__logo{
+        width: 200px;
+        margin: auto;
+        margin-top: 60px;
+        padding: 20px;
+        border: #E77002 2px solid;
+        border-radius: 20px;
+    }
+    .home__bottom{
+        text-align: center;
+    }
+    
+}
