@@ -24,7 +24,7 @@ limitations under the License.
 
 .status__top{
     margin-top: 100px;
-    
+    align-items: center;
     
     
 }
@@ -82,11 +82,19 @@ tr{
     border-bottom: 1px #B5ADAD solid;
 }
 
+.bodyCotainer{
+    display: block;
+    width: 100%;
+}
+
 
     /*PREVIOUS EXECUTIONS*/
 
 .previousExe{
     color: white;
+}
+.hiddenResponsiveDesktop{
+    display: none;
 }
 
      /* EXECUTION QUEUE */
@@ -110,4 +118,46 @@ tr{
     margin-top: 200px;
     text-align: center;
     font-size: 3rem;
+}
+
+
+ /* MEDIA QUERIES FOR TABLETS */
+ @media only screen and (max-width: 1225px) {
+    .status{
+        padding: 0px 20px 50px 20px;
+    }
+    .status__top__text h2{
+        font-size: 4rem;
+    }
+    .statusStats{
+        width: 300px;
+
+    }
+    .hiddenResponsiveMobile{
+        display: none;
+    }
+    .hiddenResponsiveDesktop{
+        display: block;
+    }
+
+ }
+
+
+  /* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .status__top{
+        flex-direction: column;
+        justify-content: center;
+    }
+    .status__top__text{
+        width: 100%;
+        margin-right: 0px;
+        text-align: center;
+    }
+    .statusStats{
+        width: 300px;
+        height: 300px;
+        margin-top: 50px;
+
+    }
 }

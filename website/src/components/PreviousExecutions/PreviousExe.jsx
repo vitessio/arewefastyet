@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
+import React, {useState} from 'react';
 import moment from 'moment';
 
 import '../PreviousExecutions/previousexe.css'
 
-const PreviousExe = ({data}) => {
+const PreviousExe = ({data, handleClick}) => {
         /*BACKGROUND STATUS*/ 
 
     const getStatusClass = (status) => {
@@ -43,19 +43,23 @@ const PreviousExe = ({data}) => {
           // Here, we use 'DD/MM/YYYY HH:mm:ss' as the desired format
           const formattedStartedDate = startedDate.format('MM/DD/YYYY HH:mm')
           const formattedFinishedDate = finishedDate.format('MM/DD/YYYY HH:mm')
+          
 
+          
+          
     return (
 
-        <tr>
-            <td>{data.uuid.slice(0, 8)}</td>
-            <td><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></td>
-            <td>{data.source}</td>
-            <td>{formattedStartedDate}</td>
-            <td>{formattedFinishedDate}</td>
-            <td>{data.type_of}</td>
-            <td className='tdPR'>{data.pull_nb}</td>
-            <td>{data.golang_version}</td>
+        <tr className='previousExetd'>
+            <td className='hiddenResponsiveMobile'>{data.uuid.slice(0, 8)}</td>
+            <td className='hiddenResponsiveMobile'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></td>
+            <td className='tdSource'>{data.source}</td>
+            <td className='hiddenResponsiveMobile'>{formattedStartedDate}</td>
+            <td className='hiddenResponsiveMobile'>{formattedFinishedDate}</td>
+            <td className='hiddenResponsiveMobile'>{data.type_of}</td>
+            <td className='tdPR hiddenResponsiveMobile'>{data.pull_nb}</td>
+            <td className='hiddenResponsiveMobile'>{data.golang_version}</td>
             <td ><span className={`data ${getStatusClass(data.status)} tdStatus`}>{data.status}</span></td>
+            <td  className='tdInfos hiddenResponsiveDesktop '><i id={data.uuid} onClick={handleClick} className='fa-sharp fa-solid fa-circle-info'></i></td>
         </tr>
         
     );

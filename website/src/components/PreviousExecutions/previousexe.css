@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-td{
+.previousExetd td{
     padding: 20px 0px;
     text-align: center;
 }
@@ -36,6 +36,10 @@ a{
     
 }
 
+.tdInfos{
+    font-size: 1.5rem;
+}
+
 
 .finished {
     background-color: green;
@@ -51,3 +55,12 @@ a{
     background-color: grey;
 }
 
+
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .tdSource{
+        max-width: 5em;
+        word-wrap:break-word ;
+    }
+}

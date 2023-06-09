@@ -17,12 +17,13 @@ limitations under the License.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import RingLoader from "react-spinners/RingLoader";
-
+import { v4 as uuidv4 } from 'uuid';
 
 import './status.css'
 
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
+import PreviousExeRes from '../../components/PreviousExeResponsive/PreviousExeRes';
 
 
 
@@ -33,6 +34,7 @@ const Status = () => {
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
 
   
   useEffect(() => {
@@ -57,8 +59,11 @@ const Status = () => {
     fetchData();
   }, []);
   
-  
 
+  const handleClick = (index) => {
+    setSelectedButtonIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+  
 
     return (
         <div className='status'>
@@ -125,23 +130,27 @@ const Status = () => {
                   <table>
                       <thead className='previousExe__thead'>
                           <tr className='previousExe__thead__tr '>
-                              <th>UUID</th>
-                              <th>SHA</th>
+                              <th className='hiddenResponsiveMobile'>UUID</th>
+                              <th className='hiddenResponsiveMobile'>SHA</th>
                               <th>Source</th>
-                              <th>Started</th>
-                              <th>Finished</th>
-                              <th>Type</th>
-                              <th>PR</th>
-                              <th>Go Version</th>
+                              <th className='hiddenResponsiveMobile'>Started</th>
+                              <th className='hiddenResponsiveMobile'>Finished</th>
+                              <th className='hiddenResponsiveMobile'>Type</th>
+                              <th className='hiddenResponsiveMobile'>PR</th>
+                              <th className='hiddenResponsiveMobile'>Go Version</th>
                               <th>Status</th>
+                              <th className='hiddenResponsiveDesktop'>More</th>
                           </tr>
                       </thead>
                       <tbody>
-                          {dataPreviousExe.map((previousExe,index) => {
-                            return (
-                              <PreviousExe data={previousExe} key={index}/>
-                            )
-                          })}
+                      {dataPreviousExe.map((previousExe, index) => {
+                          return (
+                            <React.Fragment key={uuidv4()}>
+                              <PreviousExe data={previousExe} key={index} handleClick={() => handleClick(index)}/>
+                              {selectedButtonIndex === index && <PreviousExeRes data={previousExe} key={uuidv4()} />}
+                            </React.Fragment>
+                          );
+                        })}
                       </tbody>
                   </table>
               </article>
