@@ -115,7 +115,8 @@ limitations under the License.
 }
 .lineMenu{
     border: 1px solid #B5ADAD;
-    
+    display: none;
+    width: 100vw;
 }
 
 
@@ -171,6 +172,10 @@ limitations under the License.
     }
     .hamburgerMenu{
         display: block;
+    }
+    .lineMenu{
+        display:block;
+        
     }
 }
 
