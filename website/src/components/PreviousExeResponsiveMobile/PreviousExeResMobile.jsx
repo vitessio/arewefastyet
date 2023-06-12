@@ -22,9 +22,6 @@ import { getStatusClass, formatDate} from '../../utils/utils';
 
 const PreviousExeRes = ({data, className}) => {
 
-    
-
-
     const [maxHeight, setMaxHeight] = useState(70);
 
     const handleClick = () => {
