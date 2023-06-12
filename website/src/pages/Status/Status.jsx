@@ -23,6 +23,7 @@ import './status.css';
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
 import PreviousExeResMobile from '../../components/PreviousExeResponsiveMobile/PreviousExeResMobile';
+import PreviousExeResTablet from '../../components/PreviousExecutionResponsiveTablet/PreviousExeResTablet';
 
 
 
@@ -119,14 +120,14 @@ const Status = () => {
                       <article className='previousExe'>
                       <h3> Previous Executions</h3>
                       <div className='previousExe__top flex'>
-                        <span className='width--6em hiddenMobile'>UUID</span>
+                        <span className='width--6em hiddenMobile hiddenTablet'>UUID</span>
                         <span className='width--6em hiddenMobile'>SHA</span>
                         <span className='width--11em'>Source</span>
                         <span className='width--11em hiddenMobile'>Started</span>
                         <span className='width--11em hiddenMobile'>Finished</span>
-                        <span className='width--11em hiddenMobile'>Type</span>
-                        <span className='width--5em hiddenMobile'>PR</span>
-                        <span className='width--6em hiddenMobile'>Go version</span>
+                        <span className='width--11em hiddenMobile hiddenTablet'>Type</span>
+                        <span className='width--5em hiddenMobile hiddenTablet'>PR</span>
+                        <span className='width--6em hiddenMobile hiddenTablet'>Go version</span>
                         <span className='width--6em'>Status</span>
                         <span className='hiddenDesktop width--3em'>More</span>
                       </div>
@@ -140,6 +141,7 @@ const Status = () => {
                                     <React.Fragment key={previousExe.uuid}>
                                       <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
                                       <PreviousExeResMobile data={previousExe} key={uuidv4()} className={backgroundGrey} />
+                                      <PreviousExeResTablet data={previousExe} key={uuidv4()} className={backgroundGrey}/> 
                                     </React.Fragment>
                                   )})}
   
