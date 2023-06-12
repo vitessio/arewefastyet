@@ -283,6 +283,8 @@ func (s *Server) Run() error {
 	// API
 	s.router.GET("/api/recent", s.getRecentExecutions)
 	s.router.GET("/api/queue", s.getExecutionsQueue)
+	s.router.GET("/api/vitess/refs", s.getLatestVitessGitRef)
+	s.router.GET("/api/macrobench/compare", s.compareMacrobenchmarks)
 
 	return s.router.Run(":" + s.port)
 }

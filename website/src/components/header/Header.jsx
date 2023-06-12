@@ -16,6 +16,7 @@ limitations under the License.
 
 import React, {useState, useEffect} from 'react';
 import {NavLink} from 'react-router-dom';
+// import Hamburger from 'hamburger-react'
 import './header.css'
 
 //import image
@@ -40,12 +41,14 @@ const Header = () => {
       useEffect(() => {
         const handleScroll = () => {
           const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-          if (scrollTop > lastScrollTop && scrollTop > 45) {
-            // Si on scroll vers le bas de plus de 50px, on cache la div
+          if (scrollTop > lastScrollTop && scrollTop > 55) {
+            // If we scroll down more than 50px, we hide the div.
             setVisible(false);
+            setOpenMenu(false);
           } else {
-            // Sinon, on réaffiche la div
+            // Otherwise, we display the div again.
             setVisible(true);
+            
           }
           setLastScrollTop(scrollTop);
         };
@@ -77,7 +80,7 @@ const Header = () => {
         
             <div className='logo__container'>
                 <img src={logo} alt='logo'/>
-                <span>Benchmark</span>
+                <span className='hiddenResponsiveMobile' >Benchmark</span>
             </div>
             {openMenu ? (
                 <>
@@ -92,18 +95,25 @@ const Header = () => {
                             { to: '/status', label: 'Micro' },
                             { to: '/status', label: 'Macro' }
                             ].map((link, index) => (
-                            <li key={index}>
-                                <NavLink className='header__link' activeclassname='active' onClick={handleMenuClick} to={link.to}>
-                                {link.label}
-                                </NavLink>
-                            </li>
+                              <div key={index}>
+                                  <li>
+                                  <NavLink className='header__link' activeclassname='active' onClick={handleMenuClick} to={link.to}>
+                                  {link.label}
+                                  </NavLink>
+                              </li>
+                              <figure  className='lineMenu'></figure>
+                            </div>
                             ))}
                     </ul>
                 </nav>
+                
                 <figure className='hamburgerMenu' onClick={() => setOpenMenu(false)}>
                     <figure className='lineMenuTop'></figure>
                     <figure className='lineMenuBottom'></figure>
                 </figure> 
+                
+                
+
             </>
             ) :
             <figure className='hamburgerMenu' onClick={() => setOpenMenu(true)}>
@@ -111,8 +121,9 @@ const Header = () => {
                 <figure className='lineMenuBottom'></figure>
             </figure> 
             
-            }
             
+            }
+             
             
             
         </div>
