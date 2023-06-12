@@ -18,12 +18,12 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import RingLoader from "react-spinners/RingLoader";
 import { v4 as uuidv4 } from 'uuid';
-import './status.css';
+
 
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
 import PreviousExeRes from '../../components/PreviousExeResponsive/PreviousExeRes';
-
+import './status.css';
 
 
 
