@@ -13,3 +13,69 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+.error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url('../assets/homeLogoLarge.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0);
+    background-size: 700px;
+    margin-bottom: 100px;
+  }
+
+ 
+
+
+.error h2 {
+    font-size: 5em;
+    color: white;
+    margin-top: 200px;
+   
+}
+
+.error a{
+    font-size: 2em;
+    margin-bottom: -200px;
+    margin-top: 150px;
+    text-decoration: underline;
+}
+
+
+
+@media only screen and (max-width: 1224px) {
+    .error h2 {
+      font-size: 4em; 
+      margin-top: 200px;
+    }
+    .error {
+        background-size: 700px;
+        
+      }
+    .error a{
+        font-size: 2em;
+        
+    }
+  }
+  
+  
+  @media only screen and (max-width: 768px) {
+    .error h2 {
+      font-size: 2em; 
+      margin-top: 0px;
+
+    }
+    .error {
+        background-size: 400px;
+        
+        
+      }
+    .error a{
+        font-size: 1.5em;
+        
+    }
+  }
