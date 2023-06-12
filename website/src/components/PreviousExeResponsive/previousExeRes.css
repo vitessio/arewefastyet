@@ -14,51 +14,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.previousExe__data{
-    justify-content: space-between;
-    text-align: center;
-    border-bottom: #B5ADAD 1px solid;
-    padding: 20px 3px;
-}
-
-
-
-
-a{
-    text-decoration: none;
-    color:#E77002
-}
-
-
-
-.spanStatus{
-    padding: 3px 20px;
-    border-radius: 20px;
+.previousExeRes{
+    text-align: start;
+    height: 200px;
+    width: 100%;
+    background: none;
     
 }
-
-
-
-.finished {
-    background-color: green;
+.previousExeRes td{
+    padding-top: 20px;
 }
-  
-.failed {
-    background-color: red;
+
+.previousExeRes__span{
+    padding-left: 20px;
 }
-.started{
-    background-color: rgb(0, 92, 241);
-}
-.default{
-    background-color: grey;
+.previousExeRes__containter{
+    width: 100%;
+    padding-top: 20px;
 }
 
 
+.previousExeRes__td{
+    display: grid;
+    grid-column: span;
+}
 
-/* MEDIA QUERIES FOR TABLETS */
-@media only screen and (max-width: 1225px) {
-    .tdSource{
-        max-width: 5em;
-        word-wrap:break-word ;
+.fa-arrow-right{
+    color: rgb(248, 107, 37);
+}
+
+@media only screen and (min-width: 1225px) {
+    .previousExeRes{
+        display: none;
     }
 }

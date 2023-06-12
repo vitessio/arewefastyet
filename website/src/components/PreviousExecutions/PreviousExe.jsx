@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
+import React, {useState} from 'react';
 import moment from 'moment';
 
 import '../PreviousExecutions/previousexe.css'
 
-const PreviousExe = ({data}) => {
+const PreviousExe = ({data, className}) => {
         /*BACKGROUND STATUS*/ 
 
     const getStatusClass = (status) => {
@@ -43,20 +43,23 @@ const PreviousExe = ({data}) => {
           // Here, we use 'DD/MM/YYYY HH:mm:ss' as the desired format
           const formattedStartedDate = startedDate.format('MM/DD/YYYY HH:mm')
           const formattedFinishedDate = finishedDate.format('MM/DD/YYYY HH:mm')
+          
 
+          
+          
     return (
 
-        <tr>
-            <td>{data.uuid.slice(0, 8)}</td>
-            <td><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></td>
-            <td>{data.source}</td>
-            <td>{formattedStartedDate}</td>
-            <td>{formattedFinishedDate}</td>
-            <td>{data.type_of}</td>
-            <td className='tdPR'>{data.pull_nb}</td>
-            <td>{data.golang_version}</td>
-            <td ><span className={`data ${getStatusClass(data.status)} tdStatus`}>{data.status}</span></td>
-        </tr>
+        <div className={`previousExe__data flex ${className}`}>
+          <span className='width--6em '>{data.uuid.slice(0, 8)}</span>
+          <span className='width--6em'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
+          <span className='tdSource width--11em'>{data.source}</span>
+          <span className='tdSource width--11em'>{formattedStartedDate}</span>
+          <span className='tdSource width--11em'>{formattedFinishedDate}</span>
+          <span className='width--11em'>{data.type_of}</span>
+          <span className='width--5em'>{data.pull_nb}</span>
+          <span className='width--6em'>{data.golang_version}</span>
+          <span  className={`data ${getStatusClass(data.status)} spanStatus width--6em`}>{data.status}</span>
+        </div>
         
     );
 };

@@ -24,7 +24,7 @@ limitations under the License.
 
 .status__top{
     margin-top: 100px;
-    
+    align-items: center;
     
     
 }
@@ -62,25 +62,19 @@ limitations under the License.
     text-align: center;
 }
 
-    /*STATUS TABLE*/
-
-.status th{
-    font-weight: 200;
-    padding-bottom: 10px;
+.width--5em{
+    width: 5em;
 }
 
-.status table{
-    width: 100%;
-    border-collapse: collapse;
+.width--6em{
+    width: 6em;
 }
 
-tr:nth-child(even) {
-    background-color: #343A40; /* Background color for even rows. */
+.width--11em{
+    width: 11em;
 }
 
-tr{
-    border-bottom: 1px #B5ADAD solid;
-}
+
 
 
     /*PREVIOUS EXECUTIONS*/
@@ -88,12 +82,36 @@ tr{
 .previousExe{
     color: white;
 }
+.previousExe__top{
+    justify-content: space-between;
+}
+.previousExe__top__line{
+    border: #B5ADAD 1px solid;
+    margin-top: 10px;
+}
+.previousExe__top span{
+    text-align: center;
+    
+}
+
+
+.grey--background{
+    background-color: #343A40;
+}
 
      /* EXECUTION QUEUE */
 
 .queue{
     color: white;
     margin-bottom: 200px;
+    text-align: center;
+}
+.queue__top__line{
+    border: #B5ADAD 1px solid;
+    margin-top: 10px;
+}
+.queue__top{
+    justify-content: space-around;
 }
 
     /* SPINNER */
@@ -110,4 +128,46 @@ tr{
     margin-top: 200px;
     text-align: center;
     font-size: 3rem;
+}
+
+
+ /* MEDIA QUERIES FOR TABLETS */
+ @media only screen and (max-width: 1225px) {
+    .status{
+        padding: 0px 20px 50px 20px;
+    }
+    .status__top__text h2{
+        font-size: 4rem;
+    }
+    .statusStats{
+        width: 300px;
+
+    }
+    .hiddenResponsiveMobile{
+        display: none;
+    }
+    .hiddenResponsiveDesktop{
+        display: block;
+    }
+
+ }
+
+
+  /* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .status__top{
+        flex-direction: column;
+        justify-content: center;
+    }
+    .status__top__text{
+        width: 100%;
+        margin-right: 0px;
+        text-align: center;
+    }
+    .statusStats{
+        width: 300px;
+        height: 300px;
+        margin-top: 50px;
+
+    }
 }

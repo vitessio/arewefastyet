@@ -17,12 +17,14 @@ limitations under the License.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import RingLoader from "react-spinners/RingLoader";
+import { v4 as uuidv4 } from 'uuid';
 
-
-import './status.css'
 
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
+import PreviousExeRes from '../../components/PreviousExeResponsive/PreviousExeRes';
+import './status.css';
+
 
 
 
@@ -33,6 +35,7 @@ const Status = () => {
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
 
   
   useEffect(() => {
@@ -57,8 +60,11 @@ const Status = () => {
     fetchData();
   }, []);
   
-  
 
+  const handleClick = (index) => {
+    setSelectedButtonIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+  
 
     return (
         <div className='status'>
@@ -79,79 +85,71 @@ const Status = () => {
             </article>
             <figure className='line'></figure>
             
-            {isLoading ? (
+             {isLoading ? (
               <div className='loadingSpinner'>
                 <RingLoader loading={isLoading} color='#E77002' size={300}/>
                 </div>
-            ): (
-                <>
+            ): ( 
+                  <>
+                      {/* EXECUTION QUEUE  */}
 
-
-                      {/* EXECUTION QUEUE */}
-
-              
+                
                   {dataQueue.length > 0 ?(
                     <>
                       <article className='queue'>
                         <h3>Executions Queue</h3>
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>SHA</th>
-                              <th>Source</th>
-                              <th>Type</th>
-                              <th>Pull Request</th>
-                            </tr>
-                          </thead>
-                          <tbody>
+                        <div className='queue__top flex'>
+                            <span className='width--6em'>SHA</span>
+                            <span className='width--11em'> Source</span>
+                            <span className='width--11em'>Type</span>
+                            <span className='width--5em'>Pull Request</span>
+                        </div>
+                        <figure className='queue__top__line'></figure>
                               {dataQueue.map((queue,index) => {
                                 return (
                                   <ExeQueue data={queue} key={index}/>
                                 )
                               })}
-                          </tbody>
-                        </table>
+                          
                       </article>
                       <figure className='line'></figure>
                   </>
-                    ) : null}
-                
-              
-                  {/*PREVIOUS EXECUTIONS*/}
-                
-                {dataPreviousExe.length > 0 ? (
-                  <article className='previousExe'>
-                  <h3>Previous Execution</h3>
-                  <table>
-                      <thead className='previousExe__thead'>
-                          <tr className='previousExe__thead__tr '>
-                              <th>UUID</th>
-                              <th>SHA</th>
-                              <th>Source</th>
-                              <th>Started</th>
-                              <th>Finished</th>
-                              <th>Type</th>
-                              <th>PR</th>
-                              <th>Go Version</th>
-                              <th>Status</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          {dataPreviousExe.map((previousExe,index) => {
-                            return (
-                              <PreviousExe data={previousExe} key={index}/>
-                            )
-                          })}
-                      </tbody>
-                  </table>
-              </article>
+                    ) : null }
+                  
+                  
 
-                ): null}
-                
-             </>
-
-             )}
-            {error ? <div className='apiError'>{error}</div> : null}
+                    {/* PREVIOUS EXECUTIONS */}
+                  
+                  {dataPreviousExe.length > 0 ?(
+                      <article className='previousExe'>
+                      <h3> Previous Executions</h3>
+                      <div className='previousExe__top flex'>
+                        <span className='width--6em'>UUID</span>
+                        <span className='width--6em'>SHA</span>
+                        <span className='width--11em'>Source</span>
+                        <span className='width--11em'>Started</span>
+                        <span className='width--11em'>Finished</span>
+                        <span className='width--11em'>Type</span>
+                        <span className='width--5em'>PR</span>
+                        <span className='width--6em'>Go version</span>
+                        <span className='width--6em'>Status</span>
+                      </div>
+                      <figure className='previousExe__top__line'></figure>
+                      
+                            {dataPreviousExe.map((previousExe, index) => {
+                                  const isEvenIndex = index % 2 === 0;
+                                  const backgroundGrey = isEvenIndex ? 'grey--background' : '';
+  
+                                  return ( 
+                                    <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
+                                  )})}
+  
+                      </article>
+                  ) : null }
+                  
+                  </>
+              )}
+                 {error ? <div className='apiError'>{error}</div> : null}
               
         </div>
         
