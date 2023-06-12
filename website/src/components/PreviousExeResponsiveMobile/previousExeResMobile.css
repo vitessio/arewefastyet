@@ -1,0 +1,41 @@
+
+
+.previousExe__data__mobile{
+    display: none;
+    text-align: center;
+    padding: 20px 0px;
+    border-bottom: #B5ADAD 1px solid;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+.previousExe__data__mobile__top{
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+
+.fa-circle-info{
+    font-size: 1.5em;
+}
+
+.previousExe__data__mobile__bottom{
+    flex-direction: column;
+    
+}
+
+.previousExe__data__mobile__bottom__more{
+    flex-direction: row;
+    padding: 10px;
+}
+
+.fa-arrow-right{
+    padding: 0px 10px;
+}
+
+
+
+
+@media only screen and (max-width: 767px) {
+    .previousExe__data__mobile{
+        display: block;
+    }
+}
