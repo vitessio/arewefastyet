@@ -49,7 +49,7 @@ const PreviousExe = ({data, className}) => {
           
     return (
 
-        <div className={`previousExe__data flex ${className}`}>
+        <div className={`previousExe__data  ${className}`}>
           <span className='width--6em '>{data.uuid.slice(0, 8)}</span>
           <span className='width--6em'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
           <span className='tdSource width--11em'>{data.source}</span>

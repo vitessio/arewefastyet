@@ -19,6 +19,7 @@ limitations under the License.
     text-align: center;
     border-bottom: #B5ADAD 1px solid;
     padding: 20px 3px;
+    display: flex;
 }
 
 
@@ -57,8 +58,7 @@ a{
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-    .tdSource{
-        max-width: 5em;
-        word-wrap:break-word ;
+    .previousExe__data{
+        display: none;
     }
 }

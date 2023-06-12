@@ -74,6 +74,15 @@ limitations under the License.
     width: 11em;
 }
 
+.width--3em{
+    width: 3em;
+}
+.hiddenDesktop{
+    display: none;
+}
+
+
+
 
 
 
@@ -93,6 +102,8 @@ limitations under the License.
     text-align: center;
     
 }
+
+
 
 
 .grey--background{
@@ -143,12 +154,10 @@ limitations under the License.
         width: 300px;
 
     }
-    .hiddenResponsiveMobile{
-        display: none;
-    }
-    .hiddenResponsiveDesktop{
+    .hiddenDesktop{
         display: block;
     }
+    
 
  }
 
@@ -169,5 +178,8 @@ limitations under the License.
         height: 300px;
         margin-top: 50px;
 
+    }
+    .hiddenMobile{
+        display: none;
     }
 }

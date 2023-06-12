@@ -22,7 +22,7 @@ import './status.css';
 
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
-import PreviousExeRes from '../../components/PreviousExeResponsive/PreviousExeRes';
+import PreviousExeResMobile from '../../components/PreviousExeResponsiveMobile/PreviousExeResMobile';
 
 
 
@@ -59,11 +59,6 @@ const Status = () => {
   
     fetchData();
   }, []);
-  
-
-  const handleClick = (index) => {
-    setSelectedButtonIndex((prevIndex) => (prevIndex === index ? null : index));
-  };
   
 
     return (
@@ -124,24 +119,28 @@ const Status = () => {
                       <article className='previousExe'>
                       <h3> Previous Executions</h3>
                       <div className='previousExe__top flex'>
-                        <span className='width--6em'>UUID</span>
-                        <span className='width--6em'>SHA</span>
+                        <span className='width--6em hiddenMobile'>UUID</span>
+                        <span className='width--6em hiddenMobile'>SHA</span>
                         <span className='width--11em'>Source</span>
-                        <span className='width--11em'>Started</span>
-                        <span className='width--11em'>Finished</span>
-                        <span className='width--11em'>Type</span>
-                        <span className='width--5em'>PR</span>
-                        <span className='width--6em'>Go version</span>
+                        <span className='width--11em hiddenMobile'>Started</span>
+                        <span className='width--11em hiddenMobile'>Finished</span>
+                        <span className='width--11em hiddenMobile'>Type</span>
+                        <span className='width--5em hiddenMobile'>PR</span>
+                        <span className='width--6em hiddenMobile'>Go version</span>
                         <span className='width--6em'>Status</span>
+                        <span className='hiddenDesktop width--3em'>More</span>
                       </div>
                       <figure className='previousExe__top__line'></figure>
                       
                             {dataPreviousExe.map((previousExe, index) => {
                                   const isEvenIndex = index % 2 === 0;
                                   const backgroundGrey = isEvenIndex ? 'grey--background' : '';
-  
+                                  
                                   return ( 
-                                    <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
+                                    <React.Fragment key={previousExe.uuid}>
+                                      <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
+                                      <PreviousExeResMobile data={previousExe} key={uuidv4()} className={backgroundGrey} />
+                                    </React.Fragment>
                                   )})}
   
                       </article>
