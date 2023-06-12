@@ -84,83 +84,68 @@ const Status = () => {
             </article>
             <figure className='line'></figure>
             
-            {isLoading ? (
+             {isLoading ? (
               <div className='loadingSpinner'>
                 <RingLoader loading={isLoading} color='#E77002' size={300}/>
                 </div>
-            ): (
-                <>
+            ): ( 
+                  <>
+                      {/* EXECUTION QUEUE  */}
 
-
-                      {/* EXECUTION QUEUE */}
-
-              
-                  {dataQueue.length > 0 ?(
+                
+                  {/* {dataQueue.length > 0 ?( */}
                     <>
                       <article className='queue'>
                         <h3>Executions Queue</h3>
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>SHA</th>
-                              <th>Source</th>
-                              <th>Type</th>
-                              <th>Pull Request</th>
-                            </tr>
-                          </thead>
-                          <tbody>
+                        <div className='queue__top flex'>
+                            <span>SHA</span>
+                            <span>Source</span>
+                            <span>Type</span>
+                            <span>Pull Request</span>
+                        </div>
+                        <figure className='queue__top__line'></figure>
                               {dataQueue.map((queue,index) => {
                                 return (
                                   <ExeQueue data={queue} key={index}/>
                                 )
                               })}
-                          </tbody>
-                        </table>
+                          
                       </article>
                       <figure className='line'></figure>
                   </>
-                    ) : null}
-                
-              
-                  {/*PREVIOUS EXECUTIONS*/}
-                
-                {dataPreviousExe.length > 0 ? (
+                    {/* ) : null } */}
+                  
+                  
+
+                    {/* PREVIOUS EXECUTIONS */}
+
                   <article className='previousExe'>
-                  <h3>Previous Execution</h3>
-                  <table>
-                      <thead className='previousExe__thead'>
-                          <tr className='previousExe__thead__tr '>
-                              <th className='hiddenResponsiveMobile'>UUID</th>
-                              <th className='hiddenResponsiveMobile'>SHA</th>
-                              <th>Source</th>
-                              <th className='hiddenResponsiveMobile'>Started</th>
-                              <th className='hiddenResponsiveMobile'>Finished</th>
-                              <th className='hiddenResponsiveMobile'>Type</th>
-                              <th className='hiddenResponsiveMobile'>PR</th>
-                              <th className='hiddenResponsiveMobile'>Go Version</th>
-                              <th>Status</th>
-                              <th className='hiddenResponsiveDesktop'>More</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                      {dataPreviousExe.map((previousExe, index) => {
-                          return (
-                            <React.Fragment key={uuidv4()}>
-                              <PreviousExe data={previousExe} key={index} handleClick={() => handleClick(index)}/>
-                              {selectedButtonIndex === index && <PreviousExeRes data={previousExe} key={uuidv4()} />}
-                            </React.Fragment>
-                          );
-                        })}
-                      </tbody>
-                  </table>
-              </article>
+                    <h3> Previous Executions</h3>
+                    <div className='previousExe__top flex'>
+                      <span className='previousExe__top__6em'>UUID</span>
+                      <span className='previousExe__top__6em'>SHA</span>
+                      <span className='previousExe__top__11em'>Source</span>
+                      <span className='previousExe__top__11em'>Started</span>
+                      <span className='previousExe__top__11em'>Finished</span>
+                      <span className='previousExe__top__11em'>Type</span>
+                      <span className='previousExe__top__5em'>PR</span>
+                      <span className='previousExe__top__6em'>Go version</span>
+                      <span className='previousExe__top__6em'>Status</span>
+                    </div>
+                    <figure className='previousExe__top__line'></figure>
+                    
+                          {dataPreviousExe.map((previousExe, index) => {
+                                const isEvenIndex = index % 2 === 0;
+                                const backgroundGrey = isEvenIndex ? 'grey-background' : '';
 
-                ): null}
-                
-             </>
+                                return ( 
+                                  <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
+                                )})}
 
-             )}
-            {error ? <div className='apiError'>{error}</div> : null}
+                    </article>
+                  </>
+              )}
+
               
         </div>
         

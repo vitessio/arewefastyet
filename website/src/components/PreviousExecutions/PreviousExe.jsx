@@ -19,7 +19,7 @@ import moment from 'moment';
 
 import '../PreviousExecutions/previousexe.css'
 
-const PreviousExe = ({data, handleClick}) => {
+const PreviousExe = ({data, className}) => {
         /*BACKGROUND STATUS*/ 
 
     const getStatusClass = (status) => {
@@ -49,18 +49,17 @@ const PreviousExe = ({data, handleClick}) => {
           
     return (
 
-        <tr className='previousExetd'>
-            <td className='hiddenResponsiveMobile'>{data.uuid.slice(0, 8)}</td>
-            <td className='hiddenResponsiveMobile'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></td>
-            <td className='tdSource'>{data.source}</td>
-            <td className='hiddenResponsiveMobile'>{formattedStartedDate}</td>
-            <td className='hiddenResponsiveMobile'>{formattedFinishedDate}</td>
-            <td className='hiddenResponsiveMobile'>{data.type_of}</td>
-            <td className='tdPR hiddenResponsiveMobile'>{data.pull_nb}</td>
-            <td className='hiddenResponsiveMobile'>{data.golang_version}</td>
-            <td ><span className={`data ${getStatusClass(data.status)} tdStatus`}>{data.status}</span></td>
-            <td  className='tdInfos hiddenResponsiveDesktop '><i id={data.uuid} onClick={handleClick} className='fa-sharp fa-solid fa-circle-info'></i></td>
-        </tr>
+        <div className={`previousExe__data flex ${className}`}>
+          <span className='previousExe__data__6em '>{data.uuid.slice(0, 8)}</span>
+          <span className='previousExe__data__6em'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
+          <span className='tdSource previousExe__data__11em'>{data.source}</span>
+          <span className='tdSource previousExe__data__11em'>{formattedStartedDate}</span>
+          <span className='tdSource previousExe__data__11em'>{formattedFinishedDate}</span>
+          <span className='previousExe__data__11em'>{data.type_of}</span>
+          <span className='previousExe__PR'>{data.pull_nb}</span>
+          <span className='previousExe__data__6em'>{data.golang_version}</span>
+          <span  className={`data ${getStatusClass(data.status)} spanStatus previousExe__data__6em`}>{data.status}</span>
+        </div>
         
     );
 };

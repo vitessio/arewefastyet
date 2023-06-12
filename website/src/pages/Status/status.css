@@ -62,30 +62,6 @@ limitations under the License.
     text-align: center;
 }
 
-    /*STATUS TABLE*/
-
-.status th{
-    font-weight: 200;
-    padding-bottom: 10px;
-}
-
-.status table{
-    width: 100%;
-    border-collapse: collapse;
-}
-
-tr:nth-child(even) {
-    background-color: #343A40; /* Background color for even rows. */
-}
-
-tr{
-    border-bottom: 1px #B5ADAD solid;
-}
-
-.bodyCotainer{
-    display: block;
-    width: 100%;
-}
 
 
     /*PREVIOUS EXECUTIONS*/
@@ -93,8 +69,32 @@ tr{
 .previousExe{
     color: white;
 }
-.hiddenResponsiveDesktop{
-    display: none;
+.previousExe__top{
+    justify-content: space-between;
+}
+.previousExe__top__line{
+    border: #B5ADAD 1px solid;
+    margin-top: 10px;
+}
+.previousExe__top span{
+    text-align: center;
+    
+}
+
+.previousExe__top__5em{
+    width: 5em;
+}
+
+.previousExe__top__6em{
+    width: 6em;
+}
+
+.previousExe__top__11em{
+    width: 11em;
+}
+
+.grey-background{
+    background-color: #343A40;
 }
 
      /* EXECUTION QUEUE */
@@ -102,6 +102,13 @@ tr{
 .queue{
     color: white;
     margin-bottom: 200px;
+}
+.queue__top__line{
+    border: #B5ADAD 1px solid;
+    margin-top: 10px;
+}
+.queue__top{
+    justify-content: space-around;
 }
 
     /* SPINNER */
