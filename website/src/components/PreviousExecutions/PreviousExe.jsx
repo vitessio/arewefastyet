@@ -50,15 +50,15 @@ const PreviousExe = ({data, className}) => {
     return (
 
         <div className={`previousExe__data flex ${className}`}>
-          <span className='previousExe__data__6em '>{data.uuid.slice(0, 8)}</span>
-          <span className='previousExe__data__6em'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
-          <span className='tdSource previousExe__data__11em'>{data.source}</span>
-          <span className='tdSource previousExe__data__11em'>{formattedStartedDate}</span>
-          <span className='tdSource previousExe__data__11em'>{formattedFinishedDate}</span>
-          <span className='previousExe__data__11em'>{data.type_of}</span>
-          <span className='previousExe__PR'>{data.pull_nb}</span>
-          <span className='previousExe__data__6em'>{data.golang_version}</span>
-          <span  className={`data ${getStatusClass(data.status)} spanStatus previousExe__data__6em`}>{data.status}</span>
+          <span className='width--6em '>{data.uuid.slice(0, 8)}</span>
+          <span className='width--6em'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
+          <span className='tdSource width--11em'>{data.source}</span>
+          <span className='tdSource width--11em'>{formattedStartedDate}</span>
+          <span className='tdSource width--11em'>{formattedFinishedDate}</span>
+          <span className='width--11em'>{data.type_of}</span>
+          <span className='width--5em'>{data.pull_nb}</span>
+          <span className='width--6em'>{data.golang_version}</span>
+          <span  className={`data ${getStatusClass(data.status)} spanStatus width--6em`}>{data.status}</span>
         </div>
         
     );

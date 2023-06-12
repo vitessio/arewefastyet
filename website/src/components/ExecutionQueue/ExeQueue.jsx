@@ -16,15 +16,16 @@ limitations under the License.
 
 import React from 'react';
 
+import '../ExecutionQueue/exeQueue.css'
 
 const ExeQueue = ({data}) => {
     return (
-        <tr>
-            <td><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0, 6)}</a></td>
-            <td>{data.source}</td>
-            <td>{data.type_of}</td>
-            <td>{data.pull_nb}</td>
-        </tr>
+        <div className='queue__data flex'>
+            <span className='sha'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
+            <span className='width--11em'>{data.source}</span>
+            <span className='width--11em'>{data.type_of}</span>
+            <span className='width--5em'>{data.pull_nb}</span>
+        </div>
     );
 };
 

@@ -1,0 +1,9 @@
+.queue__data{
+    justify-content: space-around;
+    border-bottom: #B5ADAD 1px solid;
+    padding: 20px 3px;
+}
+
+.sha{
+    min-width: 6em;
+}

@@ -18,12 +18,13 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import RingLoader from "react-spinners/RingLoader";
 import { v4 as uuidv4 } from 'uuid';
-
-import './status.css'
+import './status.css';
 
 import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
 import PreviousExeRes from '../../components/PreviousExeResponsive/PreviousExeRes';
+
+
 
 
 
@@ -93,15 +94,15 @@ const Status = () => {
                       {/* EXECUTION QUEUE  */}
 
                 
-                  {/* {dataQueue.length > 0 ?( */}
+                  {dataQueue.length > 0 ?(
                     <>
                       <article className='queue'>
                         <h3>Executions Queue</h3>
                         <div className='queue__top flex'>
-                            <span>SHA</span>
-                            <span>Source</span>
-                            <span>Type</span>
-                            <span>Pull Request</span>
+                            <span className='width--6em'>SHA</span>
+                            <span className='width--11em'> Source</span>
+                            <span className='width--11em'>Type</span>
+                            <span className='width--5em'>Pull Request</span>
                         </div>
                         <figure className='queue__top__line'></figure>
                               {dataQueue.map((queue,index) => {
@@ -113,39 +114,42 @@ const Status = () => {
                       </article>
                       <figure className='line'></figure>
                   </>
-                    {/* ) : null } */}
+                    ) : null }
                   
                   
 
                     {/* PREVIOUS EXECUTIONS */}
-
-                  <article className='previousExe'>
-                    <h3> Previous Executions</h3>
-                    <div className='previousExe__top flex'>
-                      <span className='previousExe__top__6em'>UUID</span>
-                      <span className='previousExe__top__6em'>SHA</span>
-                      <span className='previousExe__top__11em'>Source</span>
-                      <span className='previousExe__top__11em'>Started</span>
-                      <span className='previousExe__top__11em'>Finished</span>
-                      <span className='previousExe__top__11em'>Type</span>
-                      <span className='previousExe__top__5em'>PR</span>
-                      <span className='previousExe__top__6em'>Go version</span>
-                      <span className='previousExe__top__6em'>Status</span>
-                    </div>
-                    <figure className='previousExe__top__line'></figure>
-                    
-                          {dataPreviousExe.map((previousExe, index) => {
-                                const isEvenIndex = index % 2 === 0;
-                                const backgroundGrey = isEvenIndex ? 'grey-background' : '';
-
-                                return ( 
-                                  <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
-                                )})}
-
-                    </article>
+                  
+                  {dataPreviousExe.length > 0 ?(
+                      <article className='previousExe'>
+                      <h3> Previous Executions</h3>
+                      <div className='previousExe__top flex'>
+                        <span className='width--6em'>UUID</span>
+                        <span className='width--6em'>SHA</span>
+                        <span className='width--11em'>Source</span>
+                        <span className='width--11em'>Started</span>
+                        <span className='width--11em'>Finished</span>
+                        <span className='width--11em'>Type</span>
+                        <span className='width--5em'>PR</span>
+                        <span className='width--6em'>Go version</span>
+                        <span className='width--6em'>Status</span>
+                      </div>
+                      <figure className='previousExe__top__line'></figure>
+                      
+                            {dataPreviousExe.map((previousExe, index) => {
+                                  const isEvenIndex = index % 2 === 0;
+                                  const backgroundGrey = isEvenIndex ? 'grey--background' : '';
+  
+                                  return ( 
+                                    <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
+                                  )})}
+  
+                      </article>
+                  ) : null }
+                  
                   </>
               )}
-
+                 {error ? <div className='apiError'>{error}</div> : null}
               
         </div>
         

@@ -62,6 +62,19 @@ limitations under the License.
     text-align: center;
 }
 
+.width--5em{
+    width: 5em;
+}
+
+.width--6em{
+    width: 6em;
+}
+
+.width--11em{
+    width: 11em;
+}
+
+
 
 
     /*PREVIOUS EXECUTIONS*/
@@ -81,19 +94,8 @@ limitations under the License.
     
 }
 
-.previousExe__top__5em{
-    width: 5em;
-}
 
-.previousExe__top__6em{
-    width: 6em;
-}
-
-.previousExe__top__11em{
-    width: 11em;
-}
-
-.grey-background{
+.grey--background{
     background-color: #343A40;
 }
 
@@ -102,6 +104,7 @@ limitations under the License.
 .queue{
     color: white;
     margin-bottom: 200px;
+    text-align: center;
 }
 .queue__top__line{
     border: #B5ADAD 1px solid;
