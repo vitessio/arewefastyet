@@ -15,34 +15,14 @@ limitations under the License.
 */
 
 import React, {useState} from 'react';
-import moment from 'moment';
+
 
 import './previousExeResMobile.css'
+import { getStatusClass, formatDate} from '../../utils/utils';
 
 const PreviousExeRes = ({data, className}) => {
 
-    const getStatusClass = (status) => {
-        switch (status) {
-            case 'finished':
-              return 'finished';
-            case 'failed':
-              return 'failed';
-            case 'started':
-              return 'started';
-            default:
-              return 'default';
-          }
-    }
-
-
-    // Create a Moment object from the given date string
-    const startedDate = moment(data.started_at)
-    const finishedDate = moment(data.finished_at)
     
-    // Format the date using the format method of Moment.js
-    // Here, we use 'DD/MM/YYYY HH:mm:ss' as the desired format
-    const formattedStartedDate = startedDate.format('MM/DD/YYYY HH:mm')
-    const formattedFinishedDate = finishedDate.format('MM/DD/YYYY HH:mm')
 
 
     const [maxHeight, setMaxHeight] = useState(70);
@@ -81,12 +61,12 @@ const PreviousExeRes = ({data, className}) => {
                 <div className='previousExe__data__mobile__bottom__more flex'>
                     <span>Started</span>
                     <i className="fa-solid fa-arrow-right"></i>
-                    <span>{formattedStartedDate}</span>
+                    <span>{formatDate(data.started_at)}</span>
                 </div>
                 <div className='previousExe__data__mobile__bottom__more flex'>
                     <span>Finished</span>
                     <i className="fa-solid fa-arrow-right"></i>
-                    <span>{formattedFinishedDate}</span>
+                    <span>{formatDate(data.finished_at)}</span>
                 </div>
                 <div className='previousExe__data__mobile__bottom__more flex'>
                     <span>PR</span>

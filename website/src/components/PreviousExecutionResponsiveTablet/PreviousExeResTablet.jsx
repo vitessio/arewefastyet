@@ -15,35 +15,11 @@ limitations under the License.
 */
 
 import React, {useState} from 'react';
-import moment from 'moment';
 
 import '../PreviousExecutionResponsiveTablet/previousExeResTablet.css'
+import { getStatusClass, formatDate} from '../../utils/utils';
 
 const PreviousExeResTablet = ({data, className}) => {
-
-    const getStatusClass = (status) => {
-        switch (status) {
-            case 'finished':
-              return 'finished';
-            case 'failed':
-              return 'failed';
-            case 'started':
-              return 'started';
-            default:
-              return 'default';
-          }
-    }
-
-
-    // Create a Moment object from the given date string
-    const startedDate = moment(data.started_at)
-    const finishedDate = moment(data.finished_at)
-    
-    // Format the date using the format method of Moment.js
-    // Here, we use 'DD/MM/YYYY HH:mm:ss' as the desired format
-    const formattedStartedDate = startedDate.format('MM/DD/YYYY HH:mm')
-    const formattedFinishedDate = finishedDate.format('MM/DD/YYYY HH:mm')
-
 
     const [maxHeight, setMaxHeight] = useState(70);
 
@@ -52,15 +28,16 @@ const PreviousExeResTablet = ({data, className}) => {
             setMaxHeight(400);
           } else {
             setMaxHeight(70);
-          }
-        };
+        }
+    };
+
     return (
         <div className={`previousExe__data__tablet ${className}`} style={{ maxHeight: `${maxHeight}px` }}>
             <div className='previousExe__data__tablet__top flex'>
                 <span className='width--6em'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
                 <span className='width--11em'>{data.source}</span>
-                <span className='width--11em'>{formattedStartedDate}</span>
-                <span className='width--11em'>{formattedFinishedDate}</span>
+                <span className='width--11em'>{formatDate(data.started_at)}</span>
+                <span className='width--11em'>{formatDate(data.finished_at)}</span>
                 <span  className={`data ${getStatusClass(data.status)} spanStatus width--6em`}>{data.status}</span>
                 <span className='width--3em'><i className="fa-solid fa-circle-info" onClick={handleClick}></i></span>
 

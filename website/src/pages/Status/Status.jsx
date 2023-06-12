@@ -138,7 +138,7 @@ const Status = () => {
                                   const backgroundGrey = isEvenIndex ? 'grey--background' : '';
                                   
                                   return ( 
-                                    <React.Fragment key={previousExe.uuid}>
+                                    <React.Fragment key={uuidv4()}>
                                       <PreviousExe data={previousExe} key={index} className={backgroundGrey}/>
                                       <PreviousExeResMobile data={previousExe} key={uuidv4()} className={backgroundGrey} />
                                       <PreviousExeResTablet data={previousExe} key={uuidv4()} className={backgroundGrey}/> 
