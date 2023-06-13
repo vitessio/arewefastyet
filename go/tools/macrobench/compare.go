@@ -21,6 +21,7 @@ package macrobench
 import (
 	"fmt"
 
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage"
 )
 
@@ -43,6 +44,29 @@ func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string,
 	macrosMatrixes := map[string]ComparisonArray{}
 	for _, mtype := range types {
 		macrosMatrixes[mtype] = CompareDetailsArrays(macros[reference][mtype], macros[compare][mtype])
+		if macrosMatrixes[mtype] == nil {
+			emptyExecMetrics := metrics.ExecutionMetrics{
+				ComponentsCPUTime: map[string]float64{
+					"vtgate":   0,
+					"vttablet": 0,
+				},
+				ComponentsMemStatsAllocBytes: map[string]float64{
+					"vtgate":   0,
+					"vttablet": 0,
+				},
+			}
+			macrosMatrixes[mtype] = ComparisonArray{
+				Comparison{
+					DiffMetrics: emptyExecMetrics,
+					Reference: Details{
+						Metrics:     emptyExecMetrics,
+					},
+					Compare: Details{
+						Metrics:     emptyExecMetrics,
+					},
+				},
+			}
+		}
 	}
 	return macrosMatrixes, nil
 }
