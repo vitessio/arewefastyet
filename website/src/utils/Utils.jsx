@@ -14,37 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.previousExeRes{
-    text-align: start;
-    height: 200px;
-    width: 100%;
-    background: none;
-    
-}
-.previousExeRes td{
-    padding-top: 20px;
-}
+import moment from 'moment';
 
-.previousExeRes__span{
-    padding-left: 20px;
-}
-.previousExeRes__containter{
-    width: 100%;
-    padding-top: 20px;
-}
-
-
-.previousExeRes__td{
-    display: grid;
-    grid-column: span;
-}
-
-.fa-arrow-right{
-    color: rgb(248, 107, 37);
-}
-
-@media only screen and (min-width: 1225px) {
-    .previousExeRes{
-        display: none;
+// BACKGROUND STATUS
+export const getStatusClass = (status) => {
+    if (status != 'finished' && status != 'failed' && status != 'started') {
+        return 'default';
     }
+    return status
+}
+
+// FORMATDATE
+export const formatDate = (date) => {
+    return moment(date).format('MM/DD/YYYY HH:mm')
 }

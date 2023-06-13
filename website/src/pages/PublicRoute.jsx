@@ -20,7 +20,7 @@ import { Routes,Route } from 'react-router-dom';
 
 import Home from './Home/Home';
 import Status from './Status/Status';
-import Error from '../utils_/Error';
+import Error from '../utils/Error/Error';
 import Layout from '../pages/Layout'
 
 

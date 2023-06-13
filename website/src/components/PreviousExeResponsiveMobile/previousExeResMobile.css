@@ -14,51 +14,42 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.previousExe__data{
-    justify-content: space-between;
+.previousExe__data__mobile{
+    display: none;
     text-align: center;
+    padding: 20px 0px;
     border-bottom: #B5ADAD 1px solid;
-    padding: 20px 3px;
-    display: flex;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+.previousExe__data__mobile__top{
+    justify-content: space-between;
+    padding-bottom: 20px;
 }
 
-
-
-
-a{
-    text-decoration: none;
-    color:#E77002
+.fa-circle-info{
+    font-size: 1.5em;
 }
 
-
-
-.spanStatus{
-    padding: 3px 20px;
-    border-radius: 20px;
+.previousExe__data__mobile__bottom{
+    flex-direction: column;
     
 }
 
+.previousExe__data__mobile__bottom__more{
+    flex-direction: row;
+    padding: 10px;
+}
 
-
-.finished {
-    background-color: green;
-}
-  
-.failed {
-    background-color: red;
-}
-.started{
-    background-color: rgb(0, 92, 241);
-}
-.default{
-    background-color: grey;
+.fa-arrow-right{
+    padding: 0px 10px;
 }
 
 
 
-/* MEDIA QUERIES FOR TABLETS */
-@media only screen and (max-width: 1225px) {
-    .previousExe__data{
-        display: none;
+
+@media only screen and (max-width: 767px) {
+    .previousExe__data__mobile{
+        display: block;
     }
 }
