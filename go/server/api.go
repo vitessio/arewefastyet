@@ -164,3 +164,22 @@ func (s *Server) compareMacrobenchmarks(c *gin.Context) {
 
 	c.JSON(http.StatusOK, cmpMacros)
 }
+
+func (s *Server) sendMacroBenchmarkComparisonFields(c *gin.Context) {
+	c.JSON(http.StatusOK, []string{
+		"total",
+		"reads",
+		"writes",
+		"other",
+		"tps",
+		"latency",
+		"errors",
+		"reconnects",
+		"time",
+		"threads",
+		"TotalComponentsCPUTime",
+		"ComponentsCPUTime",
+		"TotalComponentsMemStatsAllocBytes",
+		"ComponentsMemStatsAllocBytes",
+	})
+}
