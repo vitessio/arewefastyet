@@ -66,12 +66,12 @@ limitations under the License.
 
 .macro__bottom__DropDownLeft{
     position: absolute;
+    background-color: #1F1D1D;
     border: #E77002 solid 1px;
     border-radius: 15px;
     width: 200px;
     padding:0px 15px;
     text-align: center;
-    flex-direction: column;
     align-items: center;
     overflow: hidden;
     cursor: pointer;
@@ -79,7 +79,7 @@ limitations under the License.
     left: 20%;
     top: 30px;
     box-shadow: #E77002 2px 2px 10px;
-
+    z-index: 200;
 }
 
 .DropDown__Base{
@@ -111,11 +111,11 @@ limitations under the License.
 .macro__bottom__DropDownRight{
     position: absolute;
     border: #E77002 solid 1px;
+    background-color: #1F1D1D;
     border-radius: 15px;
     width: 200px;
     padding:0px 15px;
     text-align: center;
-    flex-direction: column;
     align-items: center;
     overflow: hidden;
     cursor: pointer;
@@ -123,6 +123,31 @@ limitations under the License.
     left: 65%;
     top: 30px;
     box-shadow: #E77002 2px 2px 10px;
+    z-index: 200;
+}
+
+/* Benchmark table. */
+
+.macrobench__Container{
+    position: relative;
+    z-index: 2;
+}
+.macrobench__Sidebar{
+    background-color: rgb(231, 112, 2, 0.4);
+    padding: 0px 20px 20px 20px;
+    font-style: italic;
+    border: #E77002 1px solid;
+    border-radius: 10px;
+    text-align: center;
+    width: 20%;
+    margin-top: 145px;
 
 }
 
+.macrobench__Sidebar span{
+    padding: 20px;
+}
+
+.macrobench__Compare{
+    width: 100%;
+}

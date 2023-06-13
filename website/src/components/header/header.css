@@ -20,6 +20,7 @@ limitations under the License.
     background-color: #343A40;
     justify-content: space-between;
     top: 0;
+    z-index: 3000;
     
     
 }

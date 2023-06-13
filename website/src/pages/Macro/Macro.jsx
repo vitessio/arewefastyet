@@ -18,6 +18,7 @@ import React, { useState, useEffect } from 'react';
 import RingLoader from "react-spinners/RingLoader";
 
 import '../Macro/macro.css'
+import Macrobench from '../../components/Macrobench/Macrobench';
 
 const Macro = () => {
     const [dropDownLeft, setDropDownLeft] = useState('Left');
@@ -92,8 +93,6 @@ const Macro = () => {
         setOpenDropDown(58);
     }
 
-    // https://github.com/vitessio/vitess/commit/d0caade2b46addc0e1050c10867e8b187d2a1d03
-
     return (
         <div className='macro'>
             <div className='macro__top justify--content'>
@@ -112,9 +111,9 @@ const Macro = () => {
             </div>
             <figure className='line'></figure>
             <div className='macro__bottom'>
-                <h3>Comparing result for <a target="_blank" href={`https://github.com/vitessio/vitess/commit/${commitHashLeft}`}>{dropDownLeft}</a> and <a target="_blank" href={`https://github.com/vitessio/vitess/commit/${commitHashRight}`}>{dropDownRight}</a> </h3>
+                <h3>Comparing result for <a target="_blank" href={commitHashLeft ? `https://github.com/vitessio/vitess/commit/${commitHashLeft}` : undefined}>{dropDownLeft}</a> and <a target="_blank" href={commitHashRight ? `https://github.com/vitessio/vitess/commit/${commitHashRight}` : undefined}>{dropDownRight}</a> </h3>
                 <div className='macro__bottom__DropDownContainer'>
-                    <figure className='macro__bottom__DropDownLeft flex' style={{ maxHeight: `${openDropDownLeft}px` }}>
+                    <figure className='macro__bottom__DropDownLeft flex--column' style={{ maxHeight: `${openDropDownLeft}px` }}>
                         <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownLeft, setOpenDropDownLeft)}>{dropDownLeft} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {
                             return (
@@ -125,7 +124,7 @@ const Macro = () => {
                             )
                         })}
                     </figure>
-                    <figure className='macro__bottom__DropDownRight flex' style={{ maxHeight: `${openDropDownRight}px` }}>
+                    <figure className='macro__bottom__DropDownRight flex--column' style={{ maxHeight: `${openDropDownRight}px` }}>
                         <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownRight, setOpenDropDownRight)}>{dropDownRight} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {
                             return (
@@ -136,6 +135,34 @@ const Macro = () => {
                             )
                         })}
                     </figure>
+                </div>
+
+                <div className='macrobench__Container flex'>
+                    <div className='macrobench__Sidebar flex--column'>
+                        <span>QPS Total</span>
+                        <span>QPS Reads</span>
+                        <span>QPS Writes</span>
+                        <span>QPS Other</span>
+                        <span>TPS</span>
+                        <span>Latency</span>
+                        <span>Errors</span>
+                        <span>Reconnects</span>
+                        <span>Time</span>
+                        <span>Threads</span>
+                        <span>Total CPU time</span>
+                        <span>CPU time vtgate</span>
+                        <span>CPU time vttablet</span>
+                        <span>Total Allocs bytes</span>
+                        <span>Allocs bytes vtgate</span>
+                        <span>Allocs bytes vttablet</span>
+                    </div>
+                    <div className='macrobench__Compare'>
+                        {dataMacrobench.map((macro, index) => {
+                            return (
+                                <Macrobench key={index} data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight}/>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
         </div>

@@ -34,6 +34,7 @@ body{
 /*Basic class*/
 
 .flex,
+.flex--column,
 .justify--content,
 .space--between{
   display: flex;
@@ -44,6 +45,9 @@ body{
 }
 .space--between{
   justify-content: space-between;
+}
+.flex--column{
+  flex-direction: column;
 }
 .visible{
   visibility: visible;
