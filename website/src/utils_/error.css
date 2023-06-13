@@ -32,16 +32,15 @@ limitations under the License.
 
 
 .error h2 {
-    font-size: 5em;
+    font-size: 8em;
     color: white;
-    margin-top: 200px;
+    margin-top: 400px;
    
 }
 
 .error a{
     font-size: 2em;
-    margin-bottom: -200px;
-    margin-top: 150px;
+    margin-top: 100px;
     text-decoration: underline;
 }
 
@@ -49,8 +48,8 @@ limitations under the License.
 
 @media only screen and (max-width: 1224px) {
     .error h2 {
-      font-size: 4em; 
-      margin-top: 200px;
+      font-size: 6em; 
+      margin-top: 400px;
     }
     .error {
         background-size: 700px;
@@ -65,8 +64,8 @@ limitations under the License.
   
   @media only screen and (max-width: 768px) {
     .error h2 {
-      font-size: 2em; 
-      margin-top: 0px;
+      font-size: 4em; 
+      margin-top: 250px;
 
     }
     .error {

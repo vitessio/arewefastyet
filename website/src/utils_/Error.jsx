@@ -24,7 +24,7 @@ import logo from '../assets/homeLogoLarge.png'
 const Error = () => {
     return (
         <div className='error'>
-           <h2>ERROR 404</h2>
+           <h2>404</h2>
 
             <Link to='/home'>Back to home </Link>
         </div>
