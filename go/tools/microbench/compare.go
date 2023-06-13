@@ -20,14 +20,15 @@ package microbench
 
 import (
 	"fmt"
+
 	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 // Compare takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the microbenchmark
 // results for the 2 SHAs and compares them. The result is a comparison array.
-func Compare(client storage.SQLClient, reference string, compare string) (ComparisonArray, error) {
+func Compare(client storage.SQLClient, right string, left string) (ComparisonArray, error) {
 	// compare micro benchmarks
-	SHAs := []string{reference, compare}
+	SHAs := []string{right, left}
 	micros := map[string]DetailsArray{}
 	for _, sha := range SHAs {
 		micro, err := GetResultsForGitRef(sha, client)
@@ -36,7 +37,7 @@ func Compare(client storage.SQLClient, reference string, compare string) (Compar
 		}
 		micros[sha] = micro.ReduceSimpleMedianByName()
 	}
-	microsMatrix := MergeDetails(micros[reference], micros[compare])
+	microsMatrix := MergeDetails(micros[right], micros[left])
 	// The result of the merge will be sorted by the package name and then the benchmark name
 	return microsMatrix, nil
 }

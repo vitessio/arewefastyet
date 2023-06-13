@@ -113,14 +113,14 @@ func TestCompareMacroBenchmark(t *testing.T) {
 func BenchmarkCompareMacroBenchmark(b *testing.B) {
 	c := qt.New(b)
 
-	run := func(b *testing.B, planner macrobench.PlannerVersion, reference, compare string) {
+	run := func(b *testing.B, planner macrobench.PlannerVersion, right, left string) {
 		if skip != "" {
 			c.Skip(skip)
 		}
 		b.ReportAllocs()
 		types := []string{"OLTP", "TPCC"}
 		for i := 0; i < b.N; i++ {
-			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, reference, compare, planner, types)
+			macrosMatrices, err := macrobench.CompareMacroBenchmarks(dbClient, right, left, planner, types)
 			if err != nil {
 				c.Fatal(err)
 			}
