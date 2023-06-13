@@ -32,7 +32,6 @@ const Status = () => {
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
 
   
   useEffect(() => {
