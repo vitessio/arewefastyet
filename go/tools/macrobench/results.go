@@ -133,7 +133,7 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 			cmp.Diff.Latency = (compareResult.Latency - referenceResult.Latency) / referenceResult.Latency * 100
 			cmp.Diff.Reconnects = (compareResult.Reconnects - referenceResult.Reconnects) / referenceResult.Reconnects * 100
 			cmp.Diff.Errors = (compareResult.Errors - referenceResult.Errors) / referenceResult.Errors * 100
-			cmp.Diff.Time = int(float64(compareResult.Time) - (float64(referenceResult.Time)) / float64(referenceResult.Time) * 100)
+			cmp.Diff.Time = int(float64(compareResult.Time) - (float64(referenceResult.Time))/float64(referenceResult.Time)*100)
 			cmp.Diff.Threads = (compareResult.Threads - referenceResult.Threads) / referenceResult.Threads * 100
 			awftmath.CheckForNaN(&cmp.Diff, 0)
 			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
