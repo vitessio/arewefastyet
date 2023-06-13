@@ -44,10 +44,11 @@ const Header = () => {
           if (scrollTop > lastScrollTop && scrollTop > 55) {
             // If we scroll down more than 50px, we hide the div.
             setVisible(false);
-            setOpenMenu(false);
+            
           } else {
             // Otherwise, we display the div again.
             setVisible(true);
+            
             
           }
           setLastScrollTop(scrollTop);
