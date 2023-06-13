@@ -16,6 +16,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
     "react-spinners": "^0.13.8",
+    "swiper": "^9.4.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

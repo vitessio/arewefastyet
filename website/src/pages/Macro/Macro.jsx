@@ -16,8 +16,13 @@ limitations under the License.
 
 import React, { useState, useEffect } from 'react';
 import RingLoader from "react-spinners/RingLoader";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import '../Macro/macro.css'
+import "swiper/css";
+import "swiper/css/pagination";
+
+import { Mousewheel, Pagination } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
 
 const Macro = () => {
@@ -71,9 +76,7 @@ const Macro = () => {
     }, [commitHashLeft, commitHashRight])
        
         
-
     
-
 
     // OPEN DROP DOWN
 
@@ -156,12 +159,27 @@ const Macro = () => {
                         <span>Allocs bytes vtgate</span>
                         <span>Allocs bytes vttablet</span>
                     </div>
-                    <div className='macrobench__Compare'>
-                        {dataMacrobench.map((macro, index) => {
-                            return (
-                                <Macrobench key={index} data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight}/>
-                            )
-                        })}
+                    <div className='carousel__container'>
+                        <Swiper
+                            direction={"vertical"}
+                            slidesPerView={1}
+                            spaceBetween={30}
+                            mousewheel={true}
+                            pagination={{
+                            clickable: true,
+                            }}
+                            modules={[Mousewheel, Pagination]}
+                            className="mySwiper"
+                            >
+                            {dataMacrobench.map((macro, index) => {
+                                return (
+                                    <SwiperSlide key={index}>
+                                        <Macrobench data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
+                                    </SwiperSlide>
+                                )
+                            })}
+                            
+                        </Swiper>
                     </div>
                 </div>
             </div>

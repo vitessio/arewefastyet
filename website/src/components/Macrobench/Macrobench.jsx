@@ -18,7 +18,7 @@ import React from 'react';
 
 import '../Macrobench/macrobench.css'
 
-const Macrobench = ({data, dropDownLeft, dropDownRight}) => {
+const Macrobench = ({data, dropDownLeft, dropDownRight, swiperSlide}) => {
     return (
         <div className='macrobench__component'>
             <h3>{data.type}</h3>
