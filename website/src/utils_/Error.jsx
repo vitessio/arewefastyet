@@ -15,11 +15,18 @@ limitations under the License.
 */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
+
+
+import '../utils_/error.css'
+import logo from '../assets/homeLogoLarge.png'
 
 const Error = () => {
     return (
-        <div>
-            error
+        <div className='error'>
+           <h2>404</h2>
+
+            <Link to='/home'>Back to home </Link>
         </div>
     );
 };
