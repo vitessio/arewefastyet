@@ -58,10 +58,10 @@ func CompareMacroBenchmarks(client storage.SQLClient, reference, compare string,
 			macrosMatrixes[mtype] = ComparisonArray{
 				Comparison{
 					DiffMetrics: emptyExecMetrics,
-					Reference: Details{
+					Right: Details{
 						Metrics:     emptyExecMetrics,
 					},
-					Compare: Details{
+					Left: Details{
 						Metrics:     emptyExecMetrics,
 					},
 				},
