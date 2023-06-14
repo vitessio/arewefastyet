@@ -139,7 +139,9 @@ limitations under the License.
     background-color: rgb(231, 112, 2, 0.4);
     padding: 0px 20px 20px 20px;
     font-style: italic;
-    border: #E77002 1px solid;
+    border-top: #E77002 1px  solid;
+    border-left: #E77002 1px  solid;
+    border-bottom: #E77002 1px  solid;
     border-radius: 10px;
     text-align: center;
     width: 20%;

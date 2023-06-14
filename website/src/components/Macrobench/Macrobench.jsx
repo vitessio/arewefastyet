@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import React from 'react';
+import { formatByteForGB } from '../../utils/utils';
 
 import '../Macrobench/macrobench.css'
 
@@ -38,7 +39,7 @@ const Macrobench = ({data, dropDownLeft, dropDownRight, swiperSlide}) => {
                     <span>{data.diff.Left.Metrics.TotalComponentsCPUTime}</span>
                     {/* <span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span>
                     <span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span> */}
-                    <span>{data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes}</span>
+                    <span>{formatByteForGB(data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes)}</span>
                     {/* <span>{data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate}</span>
                     <span>{data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
                     
