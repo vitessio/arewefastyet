@@ -57,12 +57,12 @@ limitations under the License.
 .macro__bottom h3{
     text-align: center;
     font-size: 2rem;
+    padding: 0px 50px;
     
 }
 
 .macro__bottom__DropDownContainer{
     position: relative;
-    margin-bottom: 100px;
     width: 100%;
     height: 200px;
 }
@@ -134,18 +134,19 @@ limitations under the License.
 .macrobench__Container{
     position: relative;
     z-index: 2;
+    justify-content: center;
 }
 .macrobench__Sidebar{
     background-color: rgb(117, 58, 3);;
-    padding: 0px 20px 20px 20px;
+    padding: 0px 20px 0px 20px;
     font-style: italic;
     border-top: #E77002 1px  solid;
     border-left: #E77002 1px  solid;
     border-bottom: #E77002 1px  solid;
     border-radius: 10px;
-    text-align: center;
-    width: 20%;
-    margin-top: 150px;
+    text-align: end;
+    width: 13%;
+    margin-top: 85px;
 
 }
 
@@ -154,7 +155,9 @@ limitations under the License.
 }
 
 .macrobench__Sidebar span{
-    padding: 21.25px 0px;
+    padding: 13px 0px;
+    font-size: 0.8rem;
+    font-weight: bold;
 }
 
 .macrobench__Compare{
@@ -179,8 +182,8 @@ limitations under the License.
 
 
 .carousel__container{
-    width: 100%;
-    max-height: 1155px;
+    width: 70%;
+    max-height: 759px;
 }
 
 .macrobench__apiError{
@@ -244,12 +247,15 @@ limitations under the License.
     }
 
     .macrobench__Sidebar{
-        width: 40%;
+        width: 35%;
         border: #E77002 1px solid;
+        margin-top: 84px;
+        padding: 0px 7px;
     }
 
     .carousel__container{
-        width: 70%;
+        width: 65%;
+        max-height: 760px;
     }
 
     .macro{
@@ -260,12 +266,17 @@ limitations under the License.
         font-size: 0.7rem;
         min-height: 27px;
         padding: 0px;
-        margin: 17.25px 0px;
+        margin: 7px 0px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
     }
 
     .macro__bottom__DropDownContainer{
         margin-bottom: 00px;
     }
+
+    
     
     
 }

@@ -18,7 +18,7 @@ limitations under the License.
     width: 100%;
     border: #E77002 1px solid;
     border-radius: 10px;
-    
+    border-bottom: #E77002 3px solid;
 }
 
 .macrobench__component h3{
@@ -27,22 +27,24 @@ limitations under the License.
 }
 
 .macrobench__component__container{
-    justify-content: space-around;
+    justify-content: center;
 }
 .macrobench__data{
-    width: 20%;
+    width: 33%;
     text-align: center;
+    
 }
 
 .macrobench__data h4{
-    border: #E77002 1px solid;
-    border-radius: 10px;
-    background-color: rgb(117, 58, 3);
-    padding: 40px 20px;
+    border-bottom: #E77002 2px solid;
+    padding: 10px 20px;
+    font-size: 0.8rem;
 }
 
 .macrobench__data span{
-    padding: 20px;
+    font-size: 1.1rem;
+    font-weight: 400;
+    padding: 15px 0px 5px 0px;
     border-bottom: solid 1px #B5ADAD;
     background-color: #1F1D1D;
 }
@@ -63,14 +65,23 @@ limitations under the License.
     }
 
     .macrobench__data{
+        border-radius: 10px;
+    }
+
+    .macrobench__data{
         width: 60%;
-        margin-left: 50px;
+        margin-left: 20px;
         margin-top: 20px;
         
     }
 
+    .macrobench__component h3{
+        padding: 0px;
+    }
+
     .macrobench__data h4{
-        background-color: rgb(117, 58, 3);
-        
+        background-color: #1F1D1D;
+        border: #E77002 1px solid;
+        border-radius: 10px 10px 0px 0px;
     }
 }

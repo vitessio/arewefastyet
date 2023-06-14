@@ -22,7 +22,7 @@ import '../Macro/macro.css'
 import "swiper/css";
 import "swiper/css/pagination";
 
-import { Mousewheel, Pagination } from "swiper";
+import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
 
@@ -143,7 +143,7 @@ const Macro = () => {
                 {error ? <div className='macrobench__apiError'>{error}</div> : null}
                 <div className='macrobench__Container flex'>
                     <div className='macrobench__Sidebar flex--column'>
-                        <span>QPS Total</span>
+                        <span >QPS Total</span>
                         <figure className='macrobench__Sidebar__line'></figure>
                         <span>QPS Reads</span>
                         <figure className='macrobench__Sidebar__line'></figure>
@@ -174,7 +174,6 @@ const Macro = () => {
                         <span>Allocs bytes vtgate</span>
                         <figure className='macrobench__Sidebar__line'></figure>
                         <span>Allocs bytes vttablet</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
                     </div>
                     <div className='carousel__container'>
                         <Swiper
@@ -182,10 +181,13 @@ const Macro = () => {
                             slidesPerView={1}
                             spaceBetween={30}
                             mousewheel={true}
+                            keyboard={{
+                                enabled: true,
+                              }}
                             pagination={{
                             clickable: true,
                             }}
-                            modules={[Mousewheel, Pagination]}
+                            modules={[Mousewheel, Pagination, Keyboard]}
                             className="mySwiper"
                             >
                             {dataMacrobench.map((macro, index) => {

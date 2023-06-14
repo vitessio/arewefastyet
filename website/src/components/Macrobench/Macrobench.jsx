@@ -37,11 +37,11 @@ const Macrobench = ({data, dropDownLeft, dropDownRight}) => {
                     <span>{data.diff.Left.Result.time}</span>
                     <span>{data.diff.Left.Result.threads}</span>
                     <span>{data.diff.Left.Metrics.TotalComponentsCPUTime.toFixed(0)}</span>
-                    {/* <span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span>
-                    <span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span> */}
+                    <span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span>
+                    <span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span>
                     <span>{formatByteForGB(data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes)}</span>
-                    {/* <span>{data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate}</span>
-                    <span>{data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
+                    <span>{formatByteForGB(data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate)}</span>
+                    <span>{formatByteForGB(data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet)}</span>
                     
                 </div>
                 <div className='macrobench__data flex--column' >
@@ -57,11 +57,11 @@ const Macrobench = ({data, dropDownLeft, dropDownRight}) => {
                     <span>{data.diff.Right.Result.time}</span>
                     <span>{data.diff.Right.Result.threads}</span>
                     <span>{data.diff.Right.Metrics.TotalComponentsCPUTime.toFixed(0)}</span>
-                    {/* <span>{data.diff.Right.Metrics.ComponentsCPUTime.vtgate}</span>
-                    <span>{data.diff.Right.Metrics.ComponentsCPUTime.vttablet}</span> */}
+                    <span>{data.diff.Right.Metrics.ComponentsCPUTime.vtgate}</span>
+                    <span>{data.diff.Right.Metrics.ComponentsCPUTime.vttablet}</span>
                     <span>{formatByteForGB(data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes)}</span>
-                    {/* <span>{data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate}</span>
-                    <span>{data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
+                    <span>{formatByteForGB(data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate)}</span>
+                    <span>{formatByteForGB(data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vttablet)}</span>
                 </div>
                 <div className='macrobench__data flex--column'>
                     <h4>Impoved by %</h4>
@@ -76,11 +76,11 @@ const Macrobench = ({data, dropDownLeft, dropDownRight}) => {
                     <span>{data.diff.Diff.time.toFixed(2)}</span>
                     <span>{data.diff.Diff.threads.toFixed(2)}</span>
                     <span>{data.diff.DiffMetrics.TotalComponentsCPUTime.toFixed(2)}</span>
-                    {/* <span>{data.diff.DiffMetrics.ComponentsCPUTime.vtgate}</span>
-                    <span>{data.diff.DiffMetrics.ComponentsCPUTime.vttablet}</span> */}
+                    <span>{data.diff.DiffMetrics.ComponentsCPUTime.vtgate.toFixed(2)}</span>
+                    <span>{data.diff.DiffMetrics.ComponentsCPUTime.vttablet.toFixed(2)}</span>
                     <span>{data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes.toFixed(2)}</span>
-                    {/* <span>{data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate}</span>
-                    <span>{data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
+                    <span>{data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate.toFixed(2)}</span>
+                    <span>{data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet.toFixed(2)}</span>
                 </div>
             </div>
         </div>
