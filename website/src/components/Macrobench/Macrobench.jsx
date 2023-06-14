@@ -25,42 +25,42 @@ const Macrobench = ({data, dropDownLeft, dropDownRight, swiperSlide}) => {
             <div className='macrobench__component__container flex'>
                 <div className='macrobench__data flex--column'>
                     <h4>{dropDownLeft}</h4>
-                    <span>{data.diff.Compare.Result.qps.total}</span>
-                    <span>{data.diff.Compare.Result.qps.reads}</span>
-                    <span>{data.diff.Compare.Result.qps.writes}</span>
-                    <span>{data.diff.Compare.Result.qps.other}</span>
-                    <span>{data.diff.Compare.Result.tps}</span>
-                    <span>{data.diff.Compare.Result.latency}</span>
-                    <span>{data.diff.Compare.Result.errors}</span>
-                    <span>{data.diff.Compare.Result.reconnects}</span>
-                    <span>{data.diff.Compare.Result.time}</span>
-                    <span>{data.diff.Compare.Result.threads}</span>
-                    <span>{data.diff.Compare.Metrics.TotalComponentsCPUTime}</span>
-                    {/* <span>{data.diff.Compare.Metrics.ComponentsCPUTime.vtgate}</span>
-                    <span>{data.diff.Compare.Metrics.ComponentsCPUTime.vttablet}</span> */}
-                    <span>{data.diff.Compare.Metrics.TotalComponentsMemStatsAllocBytes}</span>
-                    {/* <span>{data.diff.Compare.Metrics.ComponentsMemStatsAllocBytes.vtgate}</span>
-                    <span>{data.diff.Compare.Metrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
+                    <span>{data.diff.Left.Result.qps.total}</span>
+                    <span>{data.diff.Left.Result.qps.reads}</span>
+                    <span>{data.diff.Left.Result.qps.writes}</span>
+                    <span>{data.diff.Left.Result.qps.other}</span>
+                    <span>{data.diff.Left.Result.tps}</span>
+                    <span>{data.diff.Left.Result.latency}</span>
+                    <span>{data.diff.Left.Result.errors}</span>
+                    <span>{data.diff.Left.Result.reconnects}</span>
+                    <span>{data.diff.Left.Result.time}</span>
+                    <span>{data.diff.Left.Result.threads}</span>
+                    <span>{data.diff.Left.Metrics.TotalComponentsCPUTime}</span>
+                    {/* <span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span>
+                    <span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span> */}
+                    <span>{data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes}</span>
+                    {/* <span>{data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate}</span>
+                    <span>{data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
                     
                 </div>
                 <div className='macrobench__data flex--column' >
                     <h4>{dropDownRight}</h4>
-                    <span>{data.diff.Reference.Result.qps.total}</span>
-                    <span>{data.diff.Reference.Result.qps.reads}</span>
-                    <span>{data.diff.Reference.Result.qps.writes}</span>
-                    <span>{data.diff.Reference.Result.qps.other}</span>
-                    <span>{data.diff.Reference.Result.tps}</span>
-                    <span>{data.diff.Reference.Result.latency}</span>
-                    <span>{data.diff.Reference.Result.errors}</span>
-                    <span>{data.diff.Reference.Result.reconnects}</span>
-                    <span>{data.diff.Reference.Result.time}</span>
-                    <span>{data.diff.Reference.Result.threads}</span>
-                    <span>{data.diff.Reference.Metrics.TotalComponentsCPUTime}</span>
-                    {/* <span>{data.diff.Reference.Metrics.ComponentsCPUTime.vtgate}</span>
-                    <span>{data.diff.Reference.Metrics.ComponentsCPUTime.vttablet}</span> */}
-                    <span>{data.diff.Reference.Metrics.TotalComponentsMemStatsAllocBytes}</span>
-                    {/* <span>{data.diff.Reference.Metrics.ComponentsMemStatsAllocBytes.vtgate}</span>
-                    <span>{data.diff.Reference.Metrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
+                    <span>{data.diff.Right.Result.qps.total}</span>
+                    <span>{data.diff.Right.Result.qps.reads}</span>
+                    <span>{data.diff.Right.Result.qps.writes}</span>
+                    <span>{data.diff.Right.Result.qps.other}</span>
+                    <span>{data.diff.Right.Result.tps}</span>
+                    <span>{data.diff.Right.Result.latency}</span>
+                    <span>{data.diff.Right.Result.errors}</span>
+                    <span>{data.diff.Right.Result.reconnects}</span>
+                    <span>{data.diff.Right.Result.time}</span>
+                    <span>{data.diff.Right.Result.threads}</span>
+                    <span>{data.diff.Right.Metrics.TotalComponentsCPUTime}</span>
+                    {/* <span>{data.diff.Right.Metrics.ComponentsCPUTime.vtgate}</span>
+                    <span>{data.diff.Right.Metrics.ComponentsCPUTime.vttablet}</span> */}
+                    <span>{data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes}</span>
+                    {/* <span>{data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate}</span>
+                    <span>{data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vttablet}</span> */}
                 </div>
                 <div className='macrobench__data flex--column'>
                     <h4>Impoved by %</h4>
