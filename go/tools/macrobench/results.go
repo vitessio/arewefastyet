@@ -86,7 +86,7 @@ type (
 	Comparison struct {
 		Right, Left Details
 		Diff        Result
-		DiffMetrics        metrics.ExecutionMetrics
+		DiffMetrics metrics.ExecutionMetrics
 	}
 
 	ResultsArray []Result
@@ -114,8 +114,17 @@ func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects
 // CompareDetailsArrays compare two DetailsArray and return
 // their comparison in a ComparisonArray.
 func CompareDetailsArrays(references, compares DetailsArray) (compared ComparisonArray) {
+	emptyCmp := Comparison{
+		Right: Details{
+			Metrics: metrics.NewExecMetrics(),
+		},
+		Left: Details{
+			Metrics: metrics.NewExecMetrics(),
+		},
+		DiffMetrics: metrics.NewExecMetrics(),
+	}
 	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
-		var cmp Comparison
+		cmp := emptyCmp
 		if i < len(references) {
 			cmp.Right = references[i]
 		}
@@ -140,6 +149,9 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 			cmp.DiffMetrics = metrics.CompareTwo(cmp.Left.Metrics, cmp.Right.Metrics)
 		}
 		compared = append(compared, cmp)
+	}
+	if len(compared) == 0 {
+		compared = append(compared, emptyCmp)
 	}
 	return compared
 }
