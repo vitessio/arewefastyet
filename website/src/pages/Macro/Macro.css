@@ -123,7 +123,7 @@ limitations under the License.
     overflow: hidden;
     cursor: pointer;
     transition: max-height 1s ease;
-    left: 65%;
+    right: 20%;
     top: 30px;
     box-shadow: #E77002 2px 2px 10px;
     z-index: 200;
@@ -177,4 +177,60 @@ limitations under the License.
 .carousel__container{
     width: 100%;
     max-height: 1155px;
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .macro__top__text h2{
+        font-size: 3rem;
+    }
+
+    .macro__top__text{
+        margin-right: 100px;
+    }
+
+    .macroStats{
+        border: solid 2px white;
+        width: 300px;
+        height: 300px;
+        margin-top: 100px;
+    }
+
+    .macrobench__Sidebar{
+        width: 30%;
+    }
+}
+
+ /* MEDIA QUERIES FOR MOBILE */
+ @media only screen and (max-width: 767px){
+    .macro__top__text{
+        width: 100%;
+        text-align: center;
+    }
+
+    .macro__top__text h2{
+        font-size: 2rem;
+    }
+
+    .macro__top{
+        flex-direction: column;
+    }
+
+    .macroStats{
+        margin: auto;
+        margin-top: 30px;
+    }
+
+    .macro__bottom__DropDownRight{
+        width: 150px;
+        right: 3%;
+        padding: 0px;
+    }
+
+    .macro__bottom__DropDownLeft{
+        width: 150px;
+        left: 3%;
+        padding: 0px;
+    }
+
 }

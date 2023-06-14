@@ -45,3 +45,12 @@ limitations under the License.
     padding: 20px;
     border-bottom: solid 1px #B5ADAD;
 }
+
+@media only screen and (max-width: 1225px) {
+    .macrobench__data{
+        width: 28%;
+    }
+    .macrobench__data h4{
+        font-weight: 200;
+    }
+}
