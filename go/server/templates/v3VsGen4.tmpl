@@ -77,89 +77,89 @@ limitations under the License.
                     {{ range $elem := $val }}
                         <tr>
                             <th scope="row" class="text-right">QPS Total</th>
-                            <td class="text-center">{{ $elem.Compare.Result.QPS.TotalStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.QPS.TotalStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.QPS.TotalStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.QPS.TotalStr }}</td>
                             <td class="text-center">{{ $elem.Diff.QPS.TotalStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">QPS Reads</th>
-                            <td class="text-center">{{ $elem.Compare.Result.QPS.ReadsStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.QPS.ReadsStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.QPS.ReadsStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.QPS.ReadsStr }}</td>
                             <td class="text-center">{{ $elem.Diff.QPS.ReadsStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">QPS Writes</th>
-                            <td class="text-center">{{ $elem.Compare.Result.QPS.WritesStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.QPS.WritesStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.QPS.WritesStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.QPS.WritesStr }}</td>
                             <td class="text-center">{{ $elem.Diff.QPS.WritesStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">QPS Other</th>
-                            <td class="text-center">{{ $elem.Compare.Result.QPS.OtherStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.QPS.OtherStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.QPS.OtherStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.QPS.OtherStr }}</td>
                             <td class="text-center">{{ $elem.Diff.QPS.OtherStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">TPS</th>
-                            <td class="text-center">{{ $elem.Compare.Result.TPSStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.TPSStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.TPSStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.TPSStr }}</td>
                             <td class="text-center">{{ $elem.Diff.TPSStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">Latency</th>
-                            <td class="text-center">{{ $elem.Compare.Result.LatencyStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.LatencyStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.LatencyStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.LatencyStr }}</td>
                             <td class="text-center">{{ $elem.Diff.LatencyStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">Errors</th>
-                            <td class="text-center">{{ $elem.Compare.Result.ErrorsStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.ErrorsStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.ErrorsStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.ErrorsStr }}</td>
                             <td class="text-center">{{ $elem.Diff.ErrorsStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">Reconnects</th>
-                            <td class="text-center">{{ $elem.Compare.Result.ReconnectsStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.ReconnectsStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.ReconnectsStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.ReconnectsStr }}</td>
                             <td class="text-center">{{ $elem.Diff.ReconnectsStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">Time</th>
-                            <td class="text-center">{{ $elem.Compare.Result.TimeStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.TimeStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.TimeStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.TimeStr }}</td>
                             <td class="text-center">{{ $elem.Diff.TimeStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">Threads</th>
-                            <td class="text-center">{{ $elem.Compare.Result.ThreadsStr }}</td>
-                            <td class="text-center">{{ $elem.Reference.Result.ThreadsStr }}</td>
+                            <td class="text-center">{{ $elem.Left.Result.ThreadsStr }}</td>
+                            <td class="text-center">{{ $elem.Right.Result.ThreadsStr }}</td>
                             <td class="text-center">{{ $elem.Diff.ThreadsStr }}</td>
                         </tr>
                         <tr>
                             <th scope="row" class="text-right">Total CPU time</th>
-                            <td class="text-center">{{ formatFloat $elem.Compare.Metrics.TotalComponentsCPUTime }}</td>
-                            <td class="text-center">{{ formatFloat $elem.Reference.Metrics.TotalComponentsCPUTime }}</td>
+                            <td class="text-center">{{ formatFloat $elem.Left.Metrics.TotalComponentsCPUTime }}</td>
+                            <td class="text-center">{{ formatFloat $elem.Right.Metrics.TotalComponentsCPUTime }}</td>
                             <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsCPUTime }}</td>
                         </tr>
-                        {{ range $componentCPUName, $componentCPUValue := $elem.Compare.Metrics.ComponentsCPUTime }}
+                        {{ range $componentCPUName, $componentCPUValue := $elem.Left.Metrics.ComponentsCPUTime }}
                             <tr>
                                 <th scope="row" class="text-right">CPU time {{$componentCPUName}}</th>
-                                <td class="text-center">{{ formatFloat (index $elem.Compare.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
-                                <td class="text-center">{{ formatFloat (index $elem.Reference.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                <td class="text-center">{{ formatFloat (index $elem.Left.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
+                                <td class="text-center">{{ formatFloat (index $elem.Right.Metrics.ComponentsCPUTime $componentCPUName) }}</td>
                                 <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsCPUTime $componentCPUName) }}</td>
                             </tr>
                         {{ end }}
                         <tr>
                             <th scope="row" class="text-right">Total Allocs bytes</th>
-                            <td class="text-center">{{ formatBytes $elem.Compare.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
-                            <td class="text-center">{{ formatBytes $elem.Reference.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                            <td class="text-center">{{ formatBytes $elem.Left.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
+                            <td class="text-center">{{ formatBytes $elem.Right.Metrics.TotalComponentsMemStatsAllocBytes }}</td>
                             <td class="text-center">{{ formatFloat $elem.DiffMetrics.TotalComponentsMemStatsAllocBytes }}</td>
                         </tr>
-                        {{ range $componentAllocsName, $componentAllocsValue := $elem.Compare.Metrics.ComponentsMemStatsAllocBytes }}
+                        {{ range $componentAllocsName, $componentAllocsValue := $elem.Left.Metrics.ComponentsMemStatsAllocBytes }}
                         <tr>
                             <th scope="row" class="text-right">Allocs bytes {{$componentAllocsName}}</th>
-                            <td class="text-center">{{ formatBytes (index $elem.Compare.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
-                            <td class="text-center">{{ formatBytes (index $elem.Reference.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
+                            <td class="text-center">{{ formatBytes (index $elem.Left.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
+                            <td class="text-center">{{ formatBytes (index $elem.Right.Metrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
                             <td class="text-center">{{ formatFloat (index $elem.DiffMetrics.ComponentsMemStatsAllocBytes $componentAllocsName) }}</td>
                         </tr>
                         {{ end }}
@@ -190,18 +190,18 @@ limitations under the License.
 
         function macroCmpBarCharts(type, macro) {
             for (const macroKey in macro) {
-                var compareMacros = macro[macroKey]["Compare"]["Result"]
-                var referenceMacros = macro[macroKey]["Reference"]["Result"]
+                var leftMacros = macro[macroKey]["Left"]["Result"]
+                var rightMacros = macro[macroKey]["Right"]["Result"]
 
                 var labels = []
                 var dataCmp = []
                 var dataRef = []
                 var wants = ["total", "reads", "writes", "other"]
-                for (var x in referenceMacros["qps"]) {
+                for (var x in rightMacros["qps"]) {
                     if (wants.includes(x)) {
                         labels.push(x)
-                        dataCmp.push(compareMacros["qps"][x])
-                        dataRef.push(referenceMacros["qps"][x])
+                        dataCmp.push(leftMacros["qps"][x])
+                        dataRef.push(rightMacros["qps"][x])
                     }
                 }
                 const data = {
