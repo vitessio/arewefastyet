@@ -109,35 +109,35 @@ func (s *Server) statusHandler(c *gin.Context) {
 
 func (s *Server) compareHandler(c *gin.Context) {
 	planner := getPlannerVersion()
-	reference := c.Query("r")
-	compare := c.Query("c")
+	right := c.Query("r")
+	left := c.Query("c")
 
-	compareSHA := map[string]interface{}{
-		"SHA":   compare,
-		"short": git.ShortenSHA(compare),
+	leftSHA := map[string]interface{}{
+		"SHA":   left,
+		"short": git.ShortenSHA(left),
 	}
-	referenceSHA := map[string]interface{}{
-		"SHA":   reference,
-		"short": git.ShortenSHA(reference),
+	rightSHA := map[string]interface{}{
+		"SHA":   right,
+		"short": git.ShortenSHA(right),
 	}
-	if reference == "" || compare == "" {
+	if right == "" || left == "" {
 		c.HTML(http.StatusOK, "compare.tmpl", gin.H{
-			"title":     "Vitess benchmark",
-			"reference": referenceSHA,
-			"compare":   compareSHA,
+			"title": "Vitess benchmark",
+			"right": rightSHA,
+			"left":  leftSHA,
 		})
 		return
 	}
 
 	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, reference, compare, planner, s.benchmarkTypes)
+	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, right, left, planner, s.benchmarkTypes)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
 
 	// Compare Microbenchmarks for the two given SHAs.
-	microsMatrix, err := microbench.Compare(s.dbClient, reference, compare)
+	microsMatrix, err := microbench.Compare(s.dbClient, right, left)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
@@ -145,8 +145,8 @@ func (s *Server) compareHandler(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "compare.tmpl", gin.H{
 		"title":          "Vitess benchmark",
-		"reference":      referenceSHA,
-		"compare":        compareSHA,
+		"right":          rightSHA,
+		"left":           leftSHA,
 		"microbenchmark": microsMatrix,
 		"macrobenchmark": macrosMatrices,
 	})
