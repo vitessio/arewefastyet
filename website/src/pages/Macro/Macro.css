@@ -143,7 +143,7 @@ limitations under the License.
     border-top: #E77002 1px  solid;
     border-left: #E77002 1px  solid;
     border-bottom: #E77002 1px  solid;
-    border-radius: 10px;
+    border-radius: 10px 0px 0px 10px;
     text-align: end;
     width: 13%;
     margin-top: 85px;
@@ -251,6 +251,7 @@ limitations under the License.
         border: #E77002 1px solid;
         margin-top: 84px;
         padding: 0px 7px;
+        border-radius: 10px;
     }
 
     .carousel__container{

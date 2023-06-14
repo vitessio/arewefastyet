@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import RingLoader from "react-spinners/RingLoader";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -27,8 +28,9 @@ import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
 
 const Macro = () => {
-    const [dropDownLeft, setDropDownLeft] = useState('Left');
-    const [dropDownRight, setDropDownRight] = useState('Right');
+    const urlParams = new URLSearchParams(window.location.search);
+    const [dropDownLeft, setDropDownLeft] = useState(urlParams.get('ltag') == null ? 'Left' : urlParams.get('ltag'));
+    const [dropDownRight, setDropDownRight] = useState(urlParams.get('rtag') == null ? 'Right' : urlParams.get('rtag'));
     const [openDropDownLeft, setOpenDropDownLeft] = useState(58);
     const [openDropDownRight, setOpenDropDownRight] = useState(58);
     const [dataRefs, setDataRefs] = useState([]);
@@ -37,9 +39,10 @@ const Macro = () => {
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [testUrl, setTestUrl] = useState()
     
     
-
+    console.log(urlParams.get('ltag'))
     useEffect(() => {
         const fetchData = async () => {
           try {
@@ -91,11 +94,19 @@ const Macro = () => {
 
     // CHANGE VALUE DROPDOWN
 
-    const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown) => {
+    const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, setChangeUrl) => {
         setDropDown(ref.Name)
         setCommitHash(ref.CommitHash)
         setOpenDropDown(58);
     }
+
+    //Changing the URL relative to the reference of a selected benchmark.
+
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        navigate(`?ltag=${dropDownLeft}&rtag=${dropDownRight}`)
+    }, [dropDownLeft, dropDownRight])    
 
     return (
         <div className='macro'>
@@ -123,7 +134,7 @@ const Macro = () => {
                             return (
                                 <React.Fragment key={index}>
                                     <figure className='dropDown--line'></figure>
-                                    <span className='dropDown__ref' onClick={() => valueDropDown(ref, setDropDownLeft, setCommitHashLeft, setOpenDropDownLeft)}>{ref.Name}</span>
+                                    <span className='dropDown__ref' onClick={() => {valueDropDown(ref, setDropDownLeft, setCommitHashLeft, setOpenDropDownLeft)}}>{ref.Name}</span>
                                 </React.Fragment>
                             )
                         })}
