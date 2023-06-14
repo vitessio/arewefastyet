@@ -24,6 +24,7 @@ import "swiper/css/pagination";
 
 import { Mousewheel, Pagination } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
+import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
 
 const Macro = () => {
     const [dropDownLeft, setDropDownLeft] = useState('Left');
@@ -139,25 +140,41 @@ const Macro = () => {
                         })}
                     </figure>
                 </div>
-
+                {error ? <div className='macrobench__apiError'>{error}</div> : null}
                 <div className='macrobench__Container flex'>
                     <div className='macrobench__Sidebar flex--column'>
                         <span>QPS Total</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>QPS Reads</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>QPS Writes</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>QPS Other</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>TPS</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Latency</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Errors</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Reconnects</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Time</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Threads</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Total CPU time</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>CPU time vtgate</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>CPU time vttablet</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Total Allocs bytes</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Allocs bytes vtgate</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                         <span>Allocs bytes vttablet</span>
+                        <figure className='macrobench__Sidebar__line'></figure>
                     </div>
                     <div className='carousel__container'>
                         <Swiper
@@ -175,6 +192,7 @@ const Macro = () => {
                                 return (
                                     <SwiperSlide key={index}>
                                         <Macrobench data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
+                                        <MacrobenchMobile data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
                                     </SwiperSlide>
                                 )
                             })}
@@ -183,6 +201,7 @@ const Macro = () => {
                     </div>
                 </div>
             </div>
+            
         </div>
     );
 };

@@ -136,7 +136,7 @@ limitations under the License.
     z-index: 2;
 }
 .macrobench__Sidebar{
-    background-color: rgb(231, 112, 2, 0.4);
+    background-color: rgb(117, 58, 3);;
     padding: 0px 20px 20px 20px;
     font-style: italic;
     border-top: #E77002 1px  solid;
@@ -149,8 +149,12 @@ limitations under the License.
 
 }
 
+.macrobench__Sidebar__line{
+    border-top: #B5ADAD 1px solid;
+}
+
 .macrobench__Sidebar span{
-    padding: 21.75px 0px;
+    padding: 21.25px 0px;
 }
 
 .macrobench__Compare{
@@ -177,6 +181,12 @@ limitations under the License.
 .carousel__container{
     width: 100%;
     max-height: 1155px;
+}
+
+.macrobench__apiError{
+    color: #E77002;
+    text-align: center;
+    font-size: 3rem;
 }
 
 /* MEDIA QUERIES FOR TABLETS */
@@ -233,4 +243,29 @@ limitations under the License.
         padding: 0px;
     }
 
+    .macrobench__Sidebar{
+        width: 40%;
+        border: #E77002 1px solid;
+    }
+
+    .carousel__container{
+        width: 70%;
+    }
+
+    .macro{
+        padding: 0px 5px;
+    }
+
+    .macrobench__Sidebar span{
+        font-size: 0.7rem;
+        min-height: 27px;
+        padding: 0px;
+        margin: 17.25px 0px;
+    }
+
+    .macro__bottom__DropDownContainer{
+        margin-bottom: 00px;
+    }
+    
+    
 }

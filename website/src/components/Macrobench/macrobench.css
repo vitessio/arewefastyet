@@ -37,13 +37,14 @@ limitations under the License.
 .macrobench__data h4{
     border: #E77002 1px solid;
     border-radius: 10px;
-    background-color: rgb(231, 112, 2, 0.4);
+    background-color: rgb(117, 58, 3);
     padding: 40px 20px;
 }
 
 .macrobench__data span{
     padding: 20px;
     border-bottom: solid 1px #B5ADAD;
+    background-color: #1F1D1D;
 }
 
 @media only screen and (max-width: 1225px) {
@@ -52,5 +53,24 @@ limitations under the License.
     }
     .macrobench__data h4{
         font-weight: 200;
+    }
+}
+
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .macrobench__component{
+        display: none;
+    }
+
+    .macrobench__data{
+        width: 60%;
+        margin-left: 50px;
+        margin-top: 20px;
+        
+    }
+
+    .macrobench__data h4{
+        background-color: rgb(117, 58, 3);
+        
     }
 }
