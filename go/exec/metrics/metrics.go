@@ -265,7 +265,7 @@ func compareSafeComponentMap(left, right map[string]float64) map[string]float64 
 // Ex: left=100, right=50, we decreased by 1/2, thus result=50
 func compareSafe(left, right float64) (result float64) {
 	if left != 0 {
-		result = (left - right) / right * 100
+		result = (left - right) / left * 100
 	} else if right > 0 {
 		result = -100
 	}
