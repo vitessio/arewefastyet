@@ -17,8 +17,10 @@ limitations under the License.
 .macrobench__component{
     width: 100%;
     border: #E77002 1px solid;
-    border-radius: 10px;
+    border-radius: 10px 10px 10px 0px;
     border-bottom: #E77002 3px solid;
+    position: relative;
+    z-index: 2;
 }
 
 .macrobench__component h3{
@@ -35,24 +37,47 @@ limitations under the License.
     
 }
 
-.macrobench__data h4{
+.macrobench__component h4{
     border-bottom: #E77002 2px solid;
     padding: 10px 20px;
     font-size: 0.8rem;
 }
 
 .macrobench__data span{
+    position: relative;
     font-size: 1.1rem;
     font-weight: 400;
     padding: 15px 0px 5px 0px;
     border-bottom: solid 1px #B5ADAD;
     background-color: #1F1D1D;
+    z-index: 1;
 }
 
+/* //tableau */
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.macrobench__component th{
+    width: 33%;
+}
+.macrobench__component tr{
+    border-bottom: 1px solid #B5ADAD ;
+}
+.macrobench__component tr:hover{
+    background-color: #B5ADAD;
+}
+.macrobench__component thead{
+    width: 100%;
+}
+.macrobench__component td{
+    padding: 15px 0px 5px 0px;
+}
+tr:nth-child(2n) {
+    background-color: #343A40;
+  }
+
 @media only screen and (max-width: 1225px) {
-    .macrobench__data{
-        width: 28%;
-    }
     .macrobench__data h4{
         font-weight: 200;
     }
@@ -62,6 +87,7 @@ limitations under the License.
 @media only screen and (max-width: 767px){
     .macrobench__component{
         display: none;
+        border-radius: 10px;
     }
 
     .macrobench__data{
@@ -75,9 +101,7 @@ limitations under the License.
         
     }
 
-    .macrobench__component h3{
-        padding: 0px;
-    }
+    
 
     .macrobench__data h4{
         background-color: #1F1D1D;

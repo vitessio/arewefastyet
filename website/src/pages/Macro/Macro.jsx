@@ -39,10 +39,8 @@ const Macro = () => {
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [testUrl, setTestUrl] = useState()
     
     
-    console.log(urlParams.get('ltag'))
     useEffect(() => {
         const fetchData = async () => {
           try {
@@ -152,67 +150,74 @@ const Macro = () => {
                     </figure>
                 </div>
                 {error ? <div className='macrobench__apiError'>{error}</div> : null}
-                <div className='macrobench__Container flex'>
-                    <div className='macrobench__Sidebar flex--column'>
-                        <span >QPS Total</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>QPS Reads</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>QPS Writes</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>QPS Other</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>TPS</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Latency</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Errors</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Reconnects</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Time</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Threads</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Total CPU time</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>CPU time vtgate</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>CPU time vttablet</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Total Allocs bytes</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Allocs bytes vtgate</span>
-                        <figure className='macrobench__Sidebar__line'></figure>
-                        <span>Allocs bytes vttablet</span>
-                    </div>
-                    <div className='carousel__container'>
-                        <Swiper
-                            direction={"vertical"}
-                            slidesPerView={1}
-                            spaceBetween={30}
-                            mousewheel={true}
-                            keyboard={{
-                                enabled: true,
-                              }}
-                            pagination={{
-                            clickable: true,
-                            }}
-                            modules={[Mousewheel, Pagination, Keyboard]}
-                            className="mySwiper"
-                            >
-                            {dataMacrobench.map((macro, index) => {
-                                return (
-                                    <SwiperSlide key={index}>
-                                        <Macrobench data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
-                                        <MacrobenchMobile data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
-                                    </SwiperSlide>
-                                )
-                            })}
-                            
-                        </Swiper>
-                    </div>
-                </div>
+
+                {isLoading ? (
+                    <div className='loadingSpinner'>
+                        <RingLoader loading={isLoading} color='#E77002' size={300}/>
+                        </div>
+                    ): ( 
+                        <div className='macrobench__Container flex'>
+                            <div className='macrobench__Sidebar flex--column'>
+                                <span >QPS Total</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>QPS Reads</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>QPS Writes</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>QPS Other</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>TPS</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Latency</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Errors</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Reconnects</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Time</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Threads</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Total CPU time</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>CPU time vtgate</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>CPU time vttablet</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Total Allocs bytes</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Allocs bytes vtgate</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Allocs bytes vttablet</span>
+                            </div>
+                            <div className='carousel__container'>
+                                <Swiper
+                                    direction={"vertical"}
+                                    slidesPerView={1}
+                                    spaceBetween={30}
+                                    mousewheel={true}
+                                    keyboard={{
+                                        enabled: true,
+                                    }}
+                                    pagination={{
+                                    clickable: true,
+                                    }}
+                                    modules={[Mousewheel, Pagination, Keyboard]}
+                                    className="mySwiper"
+                                    >
+                                    {dataMacrobench.map((macro, index) => {
+                                        return (
+                                            <SwiperSlide key={index}>
+                                                <Macrobench data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
+                                                <MacrobenchMobile data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
+                                            </SwiperSlide>
+                                        )
+                                    })}
+                                    
+                                </Swiper>
+                            </div>
+                        </div>
+                    )}
             </div>
             
         </div>

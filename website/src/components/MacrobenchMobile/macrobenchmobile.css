@@ -1,5 +1,5 @@
 .macrobench__mobile h3{
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 200;
 }
 
@@ -10,5 +10,9 @@
 @media only screen and (max-width: 767px){
     .macrobench__mobile{
         display: contents;
+    }
+    .macrobench__mobile h3{
+        padding: 0px;
+        
     }
 }

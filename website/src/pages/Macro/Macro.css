@@ -155,7 +155,7 @@ limitations under the License.
 }
 
 .macrobench__Sidebar span{
-    padding: 13px 0px;
+    padding: 13.25px 0px;
     font-size: 0.8rem;
     font-weight: bold;
 }
@@ -183,7 +183,7 @@ limitations under the License.
 
 .carousel__container{
     width: 70%;
-    max-height: 759px;
+    max-height: 770px;
 }
 
 .macrobench__apiError{
@@ -210,7 +210,7 @@ limitations under the License.
     }
 
     .macrobench__Sidebar{
-        width: 30%;
+        width: 24%;
     }
 }
 
@@ -249,14 +249,14 @@ limitations under the License.
     .macrobench__Sidebar{
         width: 35%;
         border: #E77002 1px solid;
-        margin-top: 84px;
+        margin-top: 69px;
         padding: 0px 7px;
         border-radius: 10px;
     }
 
     .carousel__container{
         width: 65%;
-        max-height: 760px;
+        max-height: 745px;
     }
 
     .macro{
