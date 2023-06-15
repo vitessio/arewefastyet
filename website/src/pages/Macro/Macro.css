@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 .macro{
     color: white;
     padding: 0px 20px 0px 20px;
@@ -180,7 +179,6 @@ limitations under the License.
     align-items: center;
   }
 
-
 .carousel__container{
     width: 70%;
     max-height: 770px;
@@ -276,8 +274,5 @@ limitations under the License.
     .macro__bottom__DropDownContainer{
         margin-bottom: 00px;
     }
-
-    
-    
-    
+  
 }

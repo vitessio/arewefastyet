@@ -31,11 +31,6 @@ limitations under the License.
 .macrobench__component__container{
     justify-content: center;
 }
-.macrobench__data{
-    width: 33%;
-    text-align: center;
-    
-}
 
 .macrobench__component h4{
     border-bottom: #E77002 2px solid;
@@ -43,36 +38,33 @@ limitations under the License.
     font-size: 0.8rem;
 }
 
-.macrobench__data span{
-    position: relative;
-    font-size: 1.1rem;
-    font-weight: 400;
-    padding: 15px 0px 5px 0px;
-    border-bottom: solid 1px #B5ADAD;
-    background-color: #1F1D1D;
-    z-index: 1;
-}
+/* Array */
 
-/* //tableau */
 table{
     width: 100%;
     border-collapse: collapse;
 }
+
 .macrobench__component th{
     width: 33%;
 }
+
 .macrobench__component tr{
     border-bottom: 1px solid #B5ADAD ;
-}
+} 
+
 .macrobench__component tr:hover{
     background-color: #B5ADAD;
 }
+
 .macrobench__component thead{
     width: 100%;
 }
+
 .macrobench__component td{
     padding: 15px 0px 5px 0px;
 }
+
 tr:nth-child(2n) {
     background-color: #343A40;
   }
@@ -90,22 +82,4 @@ tr:nth-child(2n) {
         border-radius: 10px;
     }
 
-    .macrobench__data{
-        border-radius: 10px;
-    }
-
-    .macrobench__data{
-        width: 60%;
-        margin-left: 20px;
-        margin-top: 20px;
-        
-    }
-
-    
-
-    .macrobench__data h4{
-        background-color: #1F1D1D;
-        border: #E77002 1px solid;
-        border-radius: 10px 10px 0px 0px;
-    }
 }

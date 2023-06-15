@@ -24,7 +24,6 @@ const Macrobench = ({data, dropDownLeft, dropDownRight}) => {
         <div className='macrobench__component'>
             <h3>{data.type}</h3>
             <table>
-                
                 <thead>
                     <tr>
                         <th><h4>{dropDownLeft}</h4></th>
