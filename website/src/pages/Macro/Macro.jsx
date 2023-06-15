@@ -39,6 +39,8 @@ const Macro = () => {
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
+    const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(urlParams.get('ptagM') == null ? '0' : urlParams.get('ptagM'))
     
     
     useEffect(() => {
@@ -49,7 +51,7 @@ const Macro = () => {
             const jsonDataRefs = await responseRefs.json();
             
             setDataRefs(jsonDataRefs);
-            console.log(jsonDataRefs)
+            
             setIsLoading(false)
           } catch (error) {
             console.log('Error while retrieving data from the API', error);
@@ -67,7 +69,7 @@ const Macro = () => {
                 const responseMacrobench = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`)
 
                 const jsonDataMacrobench = await responseMacrobench.json();
-                console.log(jsonDataMacrobench)
+
                 setDataMacrobench(jsonDataMacrobench)
             } catch (error) {
                 console.log('Error while retrieving data from the API', error);
@@ -77,8 +79,6 @@ const Macro = () => {
         fetchData();
     }, [commitHashLeft, commitHashRight])
        
-        
-    
 
     // OPEN DROP DOWN
 
@@ -99,13 +99,20 @@ const Macro = () => {
     }
 
     //Changing the URL relative to the reference of a selected benchmark.
-
+    // Storing the carousel position as a URL parameter.
     const navigate = useNavigate();
     
     useEffect(() => {
-        navigate(`?ltag=${dropDownLeft}&rtag=${dropDownRight}`)
-    }, [dropDownLeft, dropDownRight])    
+        navigate(`?ltag=${dropDownLeft}&rtag=${dropDownRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`)
+    }, [dropDownLeft, dropDownRight, currentSlideIndex, currentSlideIndexMobile]) 
+    
+    
 
+    const handleSlideChange = (swiper) => {
+        setCurrentSlideIndex(swiper.realIndex);
+      };
+    
+    
     return (
         <div className='macro'>
             <div className='macro__top justify--content'>
@@ -203,13 +210,23 @@ const Macro = () => {
                                     clickable: true,
                                     }}
                                     modules={[Mousewheel, Pagination, Keyboard]}
+                                    onSlideChange={handleSlideChange}
+                                    initialSlide={currentSlideIndex}
                                     className="mySwiper"
                                     >
                                     {dataMacrobench.map((macro, index) => {
                                         return (
                                             <SwiperSlide key={index}>
                                                 <Macrobench data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
-                                                <MacrobenchMobile data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
+                                                <MacrobenchMobile 
+                                                data={macro} 
+                                                dropDownLeft={dropDownLeft} 
+                                                dropDownRight={dropDownRight} 
+                                                swiperSlide={SwiperSlide} 
+                                                handleSlideChange={handleSlideChange} 
+                                                setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
+                                                currentSlideIndexMobile={currentSlideIndexMobile}
+                                                />
                                             </SwiperSlide>
                                         )
                                     })}

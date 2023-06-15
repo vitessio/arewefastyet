@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatByteForGB } from '../../utils/utils';
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -8,7 +8,12 @@ import "swiper/css/effect-cards";
 
 import { EffectCards } from "swiper";
 
-const MacrobenchMobile = ({data, dropDownLeft, dropDownRight}) => {
+const MacrobenchMobile = ({data, dropDownLeft, dropDownRight, setCurrentSlideIndexMobile, currentSlideIndexMobile}) => {
+
+    const handleSlideChange = (swiper) => {
+        setCurrentSlideIndexMobile(swiper.realIndex);
+      };
+      
     return (
         <div className='macrobench__mobile'>
             <h3>{data.type}</h3>
@@ -17,6 +22,8 @@ const MacrobenchMobile = ({data, dropDownLeft, dropDownRight}) => {
                     effect={"cards"}
                     grabCursor={true}
                     modules={[EffectCards]}
+                    onSlideChange={handleSlideChange}
+                    initialSlide={currentSlideIndexMobile}
                     className="mySwiper"
                 >
                     <SwiperSlide>

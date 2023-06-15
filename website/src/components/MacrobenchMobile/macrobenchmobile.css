@@ -3,9 +3,18 @@
     font-weight: 200;
 }
 
+.macrobench__mobile h4{
+    padding: 10px;
+}
+
 .macrobench__mobile{
     display: none;
 }
+
+.macrobench__mobile span:nth-child(2n) {
+    background-color: #343A40;
+  }
+
 
 @media only screen and (max-width: 767px){
     .macrobench__mobile{

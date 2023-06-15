@@ -249,14 +249,14 @@ limitations under the License.
     .macrobench__Sidebar{
         width: 35%;
         border: #E77002 1px solid;
-        margin-top: 69px;
+        margin-top: 88px;
         padding: 0px 7px;
         border-radius: 10px;
     }
 
     .carousel__container{
         width: 65%;
-        max-height: 745px;
+        max-height: 760px;
     }
 
     .macro{
