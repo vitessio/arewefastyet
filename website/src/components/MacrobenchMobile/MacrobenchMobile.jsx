@@ -24,7 +24,7 @@ import "swiper/css/effect-cards";
 
 import { EffectCards } from "swiper";
 
-const MacrobenchMobile = ({data, dropDownLeft, dropDownRight, setCurrentSlideIndexMobile, currentSlideIndexMobile}) => {
+const MacrobenchMobile = ({data, gitRefLeft, gitRefRight, setCurrentSlideIndexMobile, currentSlideIndexMobile}) => {
 
     const handleSlideChange = (swiper) => {
         setCurrentSlideIndexMobile(swiper.realIndex);
@@ -65,7 +65,7 @@ const MacrobenchMobile = ({data, dropDownLeft, dropDownRight, setCurrentSlideInd
                     </SwiperSlide>
                     <SwiperSlide>
                         <div className='macrobench__data flex--column'>
-                            <h4>{dropDownLeft}</h4>
+                            <h4>{gitRefLeft}</h4>
                             <span>{data.diff.Left.Result.qps.total}</span>
                             <span>{data.diff.Left.Result.qps.reads}</span>
                             <span>{data.diff.Left.Result.qps.writes}</span>
@@ -87,7 +87,7 @@ const MacrobenchMobile = ({data, dropDownLeft, dropDownRight, setCurrentSlideInd
                     </SwiperSlide>
                     <SwiperSlide>
                         <div className='macrobench__data flex--column' >
-                            <h4>{dropDownRight}</h4>
+                            <h4>{gitRefRight}</h4>
                             <span>{data.diff.Right.Result.qps.total}</span>
                             <span>{data.diff.Right.Result.qps.reads}</span>
                             <span>{data.diff.Right.Result.qps.writes}</span>

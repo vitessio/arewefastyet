@@ -26,15 +26,22 @@ import "swiper/css/pagination";
 import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
+import { errorApi } from '../../utils/utils';
 
 const Macro = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const [dropDownLeft, setDropDownLeft] = useState(urlParams.get('ltag') == null ? 'Left' : urlParams.get('ltag'));
-    const [dropDownRight, setDropDownRight] = useState(urlParams.get('rtag') == null ? 'Right' : urlParams.get('rtag'));
+// The following code sets up state variables `gitRefLeft` and `gitRefRight` using the `useState` hook.
+// The values of these variables are based on the query parameters extracted from the URL.
+
+// If the 'ltag' query parameter is null or undefined, set the initial value of `gitRefLeft` to 'Left',
+// otherwise, use the value of the 'ltag' query parameter.
+    const [gitRefLeft, setGitRefLeft] = useState(urlParams.get('ltag') == null ? 'Left' : urlParams.get('ltag'));
+    const [gitRefRight, setGitRefRight] = useState(urlParams.get('rtag') == null ? 'Right' : urlParams.get('rtag'));
     const [openDropDownLeft, setOpenDropDownLeft] = useState(58);
     const [openDropDownRight, setOpenDropDownRight] = useState(58);
     const [dataRefs, setDataRefs] = useState([]);
-    const [dataMacrobench, setDataMacrobench] = useState([]);
+    const [isFirstCallFinished,setIsFirstCallFinished] = useState(false)
+    const [dataMacrobench, setDataMacrobench] = useState([]); 
     const [commitHashLeft, setCommitHashLeft] = useState('')
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
@@ -42,6 +49,11 @@ const Macro = () => {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
     const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(urlParams.get('ptagM') == null ? '0' : urlParams.get('ptagM'))
     
+    // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
+    const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
+        const obj = jsonDataRefs.find(item => item.Name === gitRef);
+            setCommitHash(obj ? obj.CommitHash : null);
+    }
     
     useEffect(() => {
         const fetchData = async () => {
@@ -51,11 +63,16 @@ const Macro = () => {
             const jsonDataRefs = await responseRefs.json();
             
             setDataRefs(jsonDataRefs);
-            
             setIsLoading(false)
+
+            updateCommitHash(gitRefLeft, setCommitHashLeft, jsonDataRefs)
+            updateCommitHash(gitRefRight, setCommitHashRight, jsonDataRefs)
+            
+            setIsFirstCallFinished(true)
+
           } catch (error) {
             console.log('Error while retrieving data from the API', error);
-            setError('An error occurred while retrieving data from the API. Please try again.');
+            setError(errorApi);
             setIsLoading(false);
           }
         };
@@ -64,19 +81,20 @@ const Macro = () => {
       }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const responseMacrobench = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`)
+        if (isFirstCallFinished) {
+            const fetchData = async () => {
+                try {
+                    const responseMacrobench = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`)
 
-                const jsonDataMacrobench = await responseMacrobench.json();
-
-                setDataMacrobench(jsonDataMacrobench)
-            } catch (error) {
-                console.log('Error while retrieving data from the API', error);
-                setError('An error occurred while retrieving data from the API. Please try again.');
-            }
-        };
-        fetchData();
+                    const jsonDataMacrobench = await responseMacrobench.json();
+                    setDataMacrobench(jsonDataMacrobench)
+                } catch (error) {
+                    console.log('Error while retrieving data from the API', error);
+                    setError(errorApi);
+                }
+            };
+            fetchData();
+        }  
     }, [commitHashLeft, commitHashRight])
        
 
@@ -98,21 +116,20 @@ const Macro = () => {
         setOpenDropDown(58);
     }
 
-    //Changing the URL relative to the reference of a selected benchmark.
+    // Changing the URL relative to the reference of a selected benchmark.
     // Storing the carousel position as a URL parameter.
     const navigate = useNavigate();
     
     useEffect(() => {
-        navigate(`?ltag=${dropDownLeft}&rtag=${dropDownRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`)
-    }, [dropDownLeft, dropDownRight, currentSlideIndex, currentSlideIndexMobile]) 
+        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`)
+    }, [gitRefLeft, gitRefRight, currentSlideIndex, currentSlideIndexMobile]) 
     
     
 
     const handleSlideChange = (swiper) => {
         setCurrentSlideIndex(swiper.realIndex);
-      };
-    
-    
+    };
+        
     return (
         <div className='macro'>
             <div className='macro__top justify--content'>
@@ -131,112 +148,113 @@ const Macro = () => {
             </div>
             <figure className='line'></figure>
             <div className='macro__bottom'>
-                <h3>Comparing result for <a target="_blank" href={commitHashLeft ? `https://github.com/vitessio/vitess/commit/${commitHashLeft}` : undefined}>{dropDownLeft}</a> and <a target="_blank" href={commitHashRight ? `https://github.com/vitessio/vitess/commit/${commitHashRight}` : undefined}>{dropDownRight}</a> </h3>
+                <h3>Comparing result for <a target="_blank" href={commitHashLeft ? `https://github.com/vitessio/vitess/commit/${commitHashLeft}` : undefined}>{gitRefLeft}</a> and <a target="_blank" href={commitHashRight ? `https://github.com/vitessio/vitess/commit/${commitHashRight}` : undefined}>{gitRefRight}</a> </h3>
                 <div className='macro__bottom__DropDownContainer'>
                     <figure className='macro__bottom__DropDownLeft flex--column' style={{ maxHeight: `${openDropDownLeft}px` }}>
-                        <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownLeft, setOpenDropDownLeft)}>{dropDownLeft} <i className="fa-solid fa-circle-arrow-down"></i></span>
+                        <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownLeft, setOpenDropDownLeft)}>{gitRefLeft} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {
                             return (
                                 <React.Fragment key={index}>
                                     <figure className='dropDown--line'></figure>
-                                    <span className='dropDown__ref' onClick={() => {valueDropDown(ref, setDropDownLeft, setCommitHashLeft, setOpenDropDownLeft)}}>{ref.Name}</span>
+                                    <span className='dropDown__ref' onClick={() => {valueDropDown(ref, setGitRefLeft, setCommitHashLeft, setOpenDropDownLeft)}}>{ref.Name}</span>
                                 </React.Fragment>
                             )
                         })}
                     </figure>
                     <figure className='macro__bottom__DropDownRight flex--column' style={{ maxHeight: `${openDropDownRight}px` }}>
-                        <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownRight, setOpenDropDownRight)}>{dropDownRight} <i className="fa-solid fa-circle-arrow-down"></i></span>
+                        <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownRight, setOpenDropDownRight)}>{gitRefRight} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {
                             return (
                                 <React.Fragment key={index}>
                                     <figure className='dropDown--line'></figure>
-                                    <span className='dropDown__ref' onClick={() => valueDropDown(ref, setDropDownRight, setCommitHashRight, setOpenDropDownRight)}>{ref.Name}</span>
+                                    <span className='dropDown__ref' onClick={() => valueDropDown(ref, setGitRefRight, setCommitHashRight, setOpenDropDownRight)}>{ref.Name}</span>
                                 </React.Fragment>
                             )
                         })}
                     </figure>
                 </div>
-                {error ? <div className='macrobench__apiError'>{error}</div> : null}
-
-                {isLoading ? (
-                    <div className='loadingSpinner'>
-                        <RingLoader loading={isLoading} color='#E77002' size={300}/>
-                        </div>
-                    ): ( 
-                        <div className='macrobench__Container flex'>
-                            <div className='macrobench__Sidebar flex--column'>
-                                <span >QPS Total</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>QPS Reads</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>QPS Writes</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>QPS Other</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>TPS</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Latency</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Errors</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Reconnects</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Time</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Threads</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Total CPU time</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>CPU time vtgate</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>CPU time vttablet</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Total Allocs bytes</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Allocs bytes vtgate</span>
-                                <figure className='macrobench__Sidebar__line'></figure>
-                                <span>Allocs bytes vttablet</span>
+                {error ? (
+                    <div className='macrobench__apiError'>{error}</div> 
+                ) : (
+                    isLoading ? (
+                        <div className='loadingSpinner'>
+                            <RingLoader loading={isLoading} color='#E77002' size={300}/>
                             </div>
-                            <div className='carousel__container'>
-                                <Swiper
-                                    direction={"vertical"}
-                                    slidesPerView={1}
-                                    spaceBetween={30}
-                                    mousewheel={true}
-                                    keyboard={{
-                                        enabled: true,
-                                    }}
-                                    pagination={{
-                                    clickable: true,
-                                    }}
-                                    modules={[Mousewheel, Pagination, Keyboard]}
-                                    onSlideChange={handleSlideChange}
-                                    initialSlide={currentSlideIndex}
-                                    className="mySwiper"
-                                    >
-                                    {dataMacrobench.map((macro, index) => {
-                                        return (
-                                            <SwiperSlide key={index}>
-                                                <Macrobench data={macro} dropDownLeft={dropDownLeft} dropDownRight={dropDownRight} swiperSlide={SwiperSlide}/>
-                                                <MacrobenchMobile 
-                                                data={macro} 
-                                                dropDownLeft={dropDownLeft} 
-                                                dropDownRight={dropDownRight} 
-                                                swiperSlide={SwiperSlide} 
-                                                handleSlideChange={handleSlideChange} 
-                                                setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
-                                                currentSlideIndexMobile={currentSlideIndexMobile}
-                                                />
-                                            </SwiperSlide>
-                                        )
-                                    })}
-                                    
-                                </Swiper>
+                        ): ( 
+                            <div className='macrobench__Container flex'>
+                                <div className='macrobench__Sidebar flex--column'>
+                                    <span >QPS Total</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>QPS Reads</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>QPS Writes</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>QPS Other</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>TPS</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Latency</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Errors</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Reconnects</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Time</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Threads</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Total CPU time</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>CPU time vtgate</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>CPU time vttablet</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Total Allocs bytes</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Allocs bytes vtgate</span>
+                                    <figure className='macrobench__Sidebar__line'></figure>
+                                    <span>Allocs bytes vttablet</span>
+                                </div>
+                                <div className='carousel__container'>
+                                    <Swiper
+                                        direction={"vertical"}
+                                        slidesPerView={1}
+                                        spaceBetween={30}
+                                        mousewheel={true}
+                                        keyboard={{
+                                            enabled: true,
+                                        }}
+                                        pagination={{
+                                        clickable: true,
+                                        }}
+                                        modules={[Mousewheel, Pagination, Keyboard]}
+                                        onSlideChange={handleSlideChange}
+                                        initialSlide={currentSlideIndex}
+                                        className="mySwiper"
+                                        >
+                                        {dataMacrobench.map((macro, index) => {
+                                            return (
+                                                <SwiperSlide key={index}>
+                                                    <Macrobench data={macro} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight} swiperSlide={SwiperSlide}/>
+                                                    <MacrobenchMobile 
+                                                    data={macro} 
+                                                    gitRefLeft={gitRefLeft} 
+                                                    gitRefRight={gitRefRight} 
+                                                    swiperSlide={SwiperSlide} 
+                                                    handleSlideChange={handleSlideChange} 
+                                                    setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
+                                                    currentSlideIndexMobile={currentSlideIndexMobile}
+                                                    />
+                                                </SwiperSlide>
+                                            )
+                                        })}
+                                        
+                                    </Swiper>
+                                </div>                
                             </div>
-                        </div>
-                    )}
+                    ))}
             </div>
-            
+                
         </div>
     );
 };

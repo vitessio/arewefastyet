@@ -19,15 +19,15 @@ import { formatByteForGB } from '../../utils/utils';
 
 import '../Macrobench/macrobench.css'
 
-const Macrobench = ({data, dropDownLeft, dropDownRight}) => {
+const Macrobench = ({data, gitRefLeft, gitRefRight}) => {
     return (
         <div className='macrobench__component'>
             <h3>{data.type}</h3>
             <table>
                 <thead>
                     <tr>
-                        <th><h4>{dropDownLeft}</h4></th>
-                        <th><h4>{dropDownRight}</h4></th>
+                        <th><h4>{gitRefLeft}</h4></th>
+                        <th><h4>{gitRefRight}</h4></th>
                         <th><h4>Impoved by %</h4></th>
                     </tr>
                 </thead>

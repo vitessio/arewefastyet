@@ -48,8 +48,7 @@ const Header = () => {
           } else {
             // Otherwise, we display the div again.
             setVisible(true);
-            
-            
+        
           }
           setLastScrollTop(scrollTop);
         };

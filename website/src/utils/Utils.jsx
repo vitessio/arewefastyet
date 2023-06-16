@@ -32,8 +32,10 @@ export const formatDate = (date) => {
 }
 
 //FORMATTING BYTES TO GB
-
 export const formatByteForGB = (byte) => {
     return bytes(byte).toString('GB');
 }
+
+//ERROR API MESSAGE ERROR
+export const errorApi = 'An error occurred while retrieving data from the API. Please try again.'
 
