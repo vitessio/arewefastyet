@@ -15,6 +15,8 @@ limitations under the License.
 */
 
 import moment from 'moment';
+import bytes from 'bytes';
+
 
 // BACKGROUND STATUS
 export const getStatusClass = (status) => {
@@ -28,3 +30,16 @@ export const getStatusClass = (status) => {
 export const formatDate = (date) => {
     return moment(date).format('MM/DD/YYYY HH:mm')
 }
+
+//FORMATTING BYTES TO GB
+export const formatByteForGB = (byte) => {
+    return bytes(byte).toString('GB');
+}
+
+//ERROR API MESSAGE ERROR
+export const errorApi = 'An error occurred while retrieving data from the API. Please try again.'
+
+
+//NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN
+export const openDropDownValue = 1000
+export const closeDropDownValue = 58

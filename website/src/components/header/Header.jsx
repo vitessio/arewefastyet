@@ -44,11 +44,11 @@ const Header = () => {
           if (scrollTop > lastScrollTop && scrollTop > 55) {
             // If we scroll down more than 50px, we hide the div.
             setVisible(false);
-            setOpenMenu(false);
+            
           } else {
             // Otherwise, we display the div again.
             setVisible(true);
-            
+        
           }
           setLastScrollTop(scrollTop);
         };
@@ -93,7 +93,7 @@ const Header = () => {
                             { to: '/status', label: 'Compare' },
                             { to: '/status', label: 'Search' },
                             { to: '/status', label: 'Micro' },
-                            { to: '/status', label: 'Macro' }
+                            { to: '/macro', label: 'Macro' }
                             ].map((link, index) => (
                               <div key={index}>
                                   <li>

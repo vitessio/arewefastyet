@@ -22,6 +22,7 @@ import Home from './Home/Home';
 import Status from './Status/Status';
 import Error from '../utils/Error/Error';
 import Layout from '../pages/Layout'
+import Macro from './Macro/Macro';
 
 
 
@@ -33,7 +34,8 @@ const PublicRoute = () => {
 
             <Route path='/home' element={<Home/>}/>
             <Route path='/status' element={<Status/>}/>
-            
+            <Route path='/macro' element={<Macro/>}/>
+
             <Route path='*' element={<Error/>}/>
 
          </Route> 

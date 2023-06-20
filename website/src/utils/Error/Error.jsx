@@ -18,8 +18,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 
-import '../utils_/error.css'
-import logo from '../assets/homeLogoLarge.png'
+import '../Error/error.css'
+
 
 const Error = () => {
     return (

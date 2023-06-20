@@ -20,6 +20,7 @@ limitations under the License.
     background-color: #343A40;
     justify-content: space-between;
     top: 0;
+    z-index: 3000;
     
     
 }
@@ -115,7 +116,7 @@ limitations under the License.
 }
 .lineMenu{
     border: 1px solid #B5ADAD;
-    
+    visibility: hidden;
 }
 
 
@@ -171,6 +172,9 @@ limitations under the License.
     }
     .hamburgerMenu{
         display: block;
+    }
+    .lineMenu{
+        visibility: visible;
     }
 }
 

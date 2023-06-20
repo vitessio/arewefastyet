@@ -24,6 +24,7 @@ import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
 import PreviousExeResMobile from '../../components/PreviousExeResponsiveMobile/PreviousExeResMobile';
 import PreviousExeResTablet from '../../components/PreviousExecutionResponsiveTablet/PreviousExeResTablet';
+import { errorApi } from '../../utils/utils';
 import './status.css';
 
 const Status = () => {
@@ -32,7 +33,6 @@ const Status = () => {
   const [dataQueue, setDataQueue] = useState([]);
   const [dataPreviousExe, setDataPreviousExe] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
 
   
   useEffect(() => {
@@ -49,7 +49,7 @@ const Status = () => {
         setIsLoading(false)
       } catch (error) {
         console.log('Error while retrieving data from the API', error);
-        setError('An error occurred while retrieving data from the API. Please try again.');
+        setError(errorApi);
         setIsLoading(false);
       }
     };
