@@ -37,8 +37,8 @@ const Macro = () => {
     // otherwise, use the value of the 'ltag' query parameter.
     const [gitRefLeft, setGitRefLeft] = useState(urlParams.get('ltag') == null ? 'Left' : urlParams.get('ltag'));
     const [gitRefRight, setGitRefRight] = useState(urlParams.get('rtag') == null ? 'Right' : urlParams.get('rtag'));
-    const [openDropDownLeft, setOpenDropDownLeft] = useState(58);
-    const [openDropDownRight, setOpenDropDownRight] = useState(58);
+    const [openDropDownLeft, setOpenDropDownLeft] = useState(openDropDownValue);
+    const [openDropDownRight, setOpenDropDownRight] = useState(openDropDownValue);
     const [dataRefs, setDataRefs] = useState([]);
     const [isFirstCallFinished,setIsFirstCallFinished] = useState(false)
     const [dataMacrobench, setDataMacrobench] = useState([]); 
