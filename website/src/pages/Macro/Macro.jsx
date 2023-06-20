@@ -30,11 +30,11 @@ import { errorApi } from '../../utils/utils';
 
 const Macro = () => {
     const urlParams = new URLSearchParams(window.location.search);
-// The following code sets up state variables `gitRefLeft` and `gitRefRight` using the `useState` hook.
-// The values of these variables are based on the query parameters extracted from the URL.
+    // The following code sets up state variables `gitRefLeft` and `gitRefRight` using the `useState` hook.
+    // The values of these variables are based on the query parameters extracted from the URL.
 
-// If the 'ltag' query parameter is null or undefined, set the initial value of `gitRefLeft` to 'Left',
-// otherwise, use the value of the 'ltag' query parameter.
+    // If the 'ltag' query parameter is null or undefined, set the initial value of `gitRefLeft` to 'Left',
+    // otherwise, use the value of the 'ltag' query parameter.
     const [gitRefLeft, setGitRefLeft] = useState(urlParams.get('ltag') == null ? 'Left' : urlParams.get('ltag'));
     const [gitRefRight, setGitRefRight] = useState(urlParams.get('rtag') == null ? 'Right' : urlParams.get('rtag'));
     const [openDropDownLeft, setOpenDropDownLeft] = useState(58);
