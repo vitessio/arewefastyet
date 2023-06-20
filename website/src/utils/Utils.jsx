@@ -39,3 +39,7 @@ export const formatByteForGB = (byte) => {
 //ERROR API MESSAGE ERROR
 export const errorApi = 'An error occurred while retrieving data from the API. Please try again.'
 
+
+//NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN
+export const openDropDownValue = 1000
+export const closeDropDownValue = 58

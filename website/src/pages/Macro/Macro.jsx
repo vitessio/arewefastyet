@@ -26,7 +26,7 @@ import "swiper/css/pagination";
 import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
-import { errorApi } from '../../utils/utils';
+import { errorApi, openDropDownValue, closeDropDownValue } from '../../utils/utils';
 
 const Macro = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -101,10 +101,10 @@ const Macro = () => {
     // OPEN DROP DOWN
 
     const openDropDown = (openDropDown, setOpenDropDown) =>{
-        if (openDropDown === 58) {
-            setOpenDropDown(1000);
+        if (openDropDown === closeDropDownValue) {
+            setOpenDropDown(openDropDownValue);
           } else {
-            setOpenDropDown(58);
+            setOpenDropDown(closeDropDownValue);
           }
     }
 
@@ -113,7 +113,7 @@ const Macro = () => {
     const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, setChangeUrl) => {
         setDropDown(ref.Name)
         setCommitHash(ref.CommitHash)
-        setOpenDropDown(58);
+        setOpenDropDown(closeDropDownValue);
     }
 
     // Changing the URL relative to the reference of a selected benchmark.
