@@ -27,6 +27,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
+	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
 
 type ErrorAPI struct {
@@ -163,4 +164,28 @@ func (s *Server) compareMacrobenchmarks(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, cmpMacros)
+}
+
+func (s *Server) compareMicrobenchmarks(c *gin.Context) {
+	leftSHA := c.Query("ltag")
+	rightSHA := c.Query("rtag")
+
+	// Get the results from the SHAs
+	leftMbd, err := microbench.GetResultsForGitRef(leftSHA, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	leftMbd = leftMbd.ReduceSimpleMedianByName()
+	rightMbd, err := microbench.GetResultsForGitRef(rightSHA, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	rightMbd = rightMbd.ReduceSimpleMedianByName()
+
+	matrix := microbench.MergeDetails(rightMbd, leftMbd)
+	c.JSON(http.StatusOK, matrix)
 }
