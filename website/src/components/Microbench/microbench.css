@@ -14,43 +14,46 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.previousExe__data__mobile{
-    display: none;
-    text-align: center;
+.microbench{
     padding: 20px 0px;
-    border-bottom: #B5ADAD 1px solid;
+    text-align: center;
+    border-top: 1px solid #B5ADAD;
     overflow: hidden;
-    transition: max-height 0.5s ease;
-}
-.previousExe__data__mobile__top{
-    justify-content: space-between;
-    padding-bottom: 20px;
+    transition: 0.8s;
+    font-weight: 200;
 }
 
-.fa-circle-info{
-    font-size: 1.5em;
-    cursor: pointer;
+.name{
+    word-wrap: break-word;
 }
 
-.previousExe__data__mobile__bottom{
-    flex-direction: column;
+.microbench__bottom{
+    border: #B5ADAD 1px solid;
+    width: 75%;
+    margin: auto;
+    padding: 15px;
+    margin-top: 30px;
     
 }
 
-.previousExe__data__mobile__bottom__more{
-    flex-direction: row;
-    padding: 10px;
+.microbench__bottom__line{
+    border-bottom:#B5ADAD solid 2px;
+    margin: 10px 0px;
 }
 
-.fa-arrow-right{
-    padding: 0px 10px;
+.microbenchMore{
+    padding: 10px 0px;
+    font-weight: 200;
 }
 
+.positif--Micro{
+    background-color: green;
+    border-radius: 20px;
+    padding: 5px 0px;
+}
 
-
-
-@media only screen and (max-width: 767px) {
-    .previousExe__data__mobile{
-        display: block;
-    }
+.negatif--Micro{
+    background-color: red;
+    border-radius: 20px;
+    padding: 5px 0px;
 }
