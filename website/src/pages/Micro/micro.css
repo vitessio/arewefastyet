@@ -53,6 +53,10 @@ limitations under the License.
 
 /*MICRO BOTTOM*/
 
+.micro__bottom__title{
+    flex-wrap: wrap;
+}
+
 .micro__bottom__DropDownLeft{
     position: relative;
     margin: -20px 10px 0px 10px;
@@ -139,4 +143,78 @@ limitations under the License.
     padding: 20px 0px;
 }
 
+.space--between--flex{
+    display: flex;
+    justify-content: space-between;
+  }
 
+.hiddenDesktop{
+    display: none;
+}
+
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1100px) {
+    .hiddenDesktop{
+        display: flex;
+    }
+    .hiddenTablet{
+        display: none;
+    }
+    .micro__top__text h2{
+        font-size: 3rem;
+    }
+
+    .micro__top__text{
+        margin-right: 100px;
+    }
+
+    .microStats{
+        border: solid 2px white;
+        width: 300px;
+        height: 300px;
+        margin-top: 100px;
+    }
+}
+
+ /* MEDIA QUERIES FOR MOBILE */
+ @media only screen and (max-width: 767px){
+    .hiddenMobile{
+        display: none;
+    }
+
+    .micro__top__text{
+        width: 100%;
+        text-align: center;
+    }
+
+    .micro__top__text h2{
+        font-size: 2rem;
+    }
+
+    .micro__top{
+        flex-direction: column;
+    }
+
+    .microStats{
+        margin: auto;
+        margin-top: 30px;
+    }
+
+    .micro__bottom__title{
+        align-items: center;
+    }
+
+    .micro__bottom__title figure{
+        margin-top: 10px;
+    }
+
+    .micro__bottom__title h3{
+        font-size: 0.8em;
+    }
+    
+    .micro__bottom__DropDownRight{
+        margin-left: 120px;
+    }
+    
+ }

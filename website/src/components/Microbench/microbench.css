@@ -15,6 +15,8 @@ limitations under the License.
 */
 
 .microbench{
+    display: flex;
+    flex-direction: column;
     padding: 20px 0px;
     text-align: center;
     border-top: 1px solid #B5ADAD;
@@ -56,4 +58,11 @@ limitations under the License.
     background-color: red;
     border-radius: 20px;
     padding: 5px 0px;
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 767px) {
+    .microbench__bottom{
+        width: 98%;
+    }
 }

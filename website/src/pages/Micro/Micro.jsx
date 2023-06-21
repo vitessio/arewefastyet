@@ -159,20 +159,20 @@ const Micro = () => {
                     <div className='micro__thead space--between'>
                         <span className='width--12em'>Package</span>
                         <span className='width--14em'>Benchmark Name</span>
-                        <span className='width--18em'>Number of Iterations</span>
-                        <span className='width--18em'>Time/op</span>
+                        <span className='width--18em hiddenMobile'>Number of Iterations</span>
+                        <span className='width--18em hiddenTablet'>Time/op</span>
                         <span className='width--6em'>More</span>
                     </div>
                     <figure className='micro__thead__line'></figure>
-                    <div className='space--between data__top'>
+                    <div className='space--between--flex data__top hiddenMobile'>
                         <div className='width--12em'></div>
                         <div className='width--14em'></div>
-                        <div className='width--18em space--between'>
+                        <div className='width--18em space--between--flex'>
                             <span className='width--100'>{gitRefLeft}</span> 
                             <span className='width--100'>{gitRefRight}</span>
                             <span className='width--100'>Diff %</span>
                         </div>
-                        <div className='width--18em space--between'>
+                        <div className='width--18em space--between--flex hiddenTablet'>
                             <span className='width--100'>{gitRefLeft}</span> 
                             <span className='width--100'>{gitRefRight}</span>
                             <span className='width--100'>Diff %</span>
