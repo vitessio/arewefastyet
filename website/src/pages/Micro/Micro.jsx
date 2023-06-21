@@ -15,18 +15,22 @@ limitations under the License.
 */
 
 import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 import '../Micro/micro.css'
 
 import { errorApi, openDropDownValue, closeDropDownValue } from '../../utils/utils';
+import Microbench from '../../components/Microbench/Microbench';
 
 const Micro = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const [gitRefLeft, setGitRefLeft] = useState(urlParams.get('ltag') == null ? 'Left' : urlParams.get('ltag'));
     const [gitRefRight, setGitRefRight] = useState(urlParams.get('rtag') == null ? 'Right' : urlParams.get('rtag'));
-    const [openDropDownLeft, setOpenDropDownLeft] = useState(openDropDownValue);
-    const [openDropDownRight, setOpenDropDownRight] = useState(openDropDownValue);
+    const [openDropDownLeft, setOpenDropDownLeft] = useState(closeDropDownValue);
+    const [openDropDownRight, setOpenDropDownRight] = useState(closeDropDownValue);
     const [dataRefs, setDataRefs] = useState([]);
+    const [dataMicrobench, setDataMicrobench] = useState([]); 
+    const [isFirstCallFinished,setIsFirstCallFinished] = useState(false)
     const [commitHashLeft, setCommitHashLeft] = useState('')
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
@@ -62,6 +66,24 @@ const Micro = () => {
       
         fetchData();
       }, []);
+      console.log(commitHashLeft)
+      useEffect(() => {
+        if (isFirstCallFinished) {
+            const fetchData = async () => {
+                try {
+                    const responseMicrobench = await fetch(`${import.meta.env.VITE_API_URL}microbench/compare?rtag=83eef5d198ae1d9c5245270c8ca39961ca847b13&ltag=60dc8b997fccb0060ed2b29f811dc0dea38e9123`)
+
+                    const jsonDataMicrobench = await responseMicrobench.json();
+                    setDataMicrobench(jsonDataMicrobench)
+                    console.log(jsonDataMicrobench)
+                } catch (error) {
+                    console.log('Error while retrieving data from the API', error);
+                    setError(errorApi);
+                }
+            };
+            fetchData();
+        }  
+    }, [commitHashLeft, commitHashRight])
 
       // OPEN DROP DOWN
 
@@ -80,6 +102,16 @@ const Micro = () => {
         setCommitHash(ref.CommitHash)
         setOpenDropDown(closeDropDownValue);
     }
+
+     // Changing the URL relative to the reference of a selected benchmark.
+    // Storing the carousel position as a URL parameter.
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}`)
+    }, [gitRefLeft, gitRefRight]) 
+
+
     return (
         <div className='micro'>
             <div className='micro__top justify--content'>
@@ -122,6 +154,38 @@ const Micro = () => {
                             )
                         })}
                     </figure>
+                </div>
+                <div className='micro__container'>
+                    <div className='micro__thead space--between'>
+                        <span className='width--12em'>Package</span>
+                        <span className='width--14em'>Benchmark Name</span>
+                        <span className='width--18em'>Number of Iterations</span>
+                        <span className='width--18em'>Time/op</span>
+                        <span className='width--6em'>More</span>
+                    </div>
+                    <figure className='micro__thead__line'></figure>
+                    <div className='space--between data__top'>
+                        <div className='width--12em'></div>
+                        <div className='width--14em'></div>
+                        <div className='width--18em space--between'>
+                            <span className='width--100'>{gitRefLeft}</span> 
+                            <span className='width--100'>{gitRefRight}</span>
+                            <span className='width--100'>Diff %</span>
+                        </div>
+                        <div className='width--18em space--between'>
+                            <span className='width--100'>{gitRefLeft}</span> 
+                            <span className='width--100'>{gitRefRight}</span>
+                            <span className='width--100'>Diff %</span>
+                        </div>
+                        <div className='width--6em'></div>
+                    </div>
+                    {dataMicrobench.map((micro, index) => {
+                        const isEvenIndex = index % 2 === 0;
+                        const backgroundGrey = isEvenIndex ? 'grey--background' : '';
+                        return(
+                            <Microbench data={micro} key={index} className={backgroundGrey} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight}/>
+                        )
+                    })}
                 </div>
             </div>
         </div>

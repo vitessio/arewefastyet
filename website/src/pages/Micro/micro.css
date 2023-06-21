@@ -90,3 +90,53 @@ limitations under the License.
    
     font-size: 1rem;
 }
+
+/*Compare array*/
+
+.width--6em{
+    width: 6em;
+}
+
+.width--12em{
+    width: 12em;
+}
+
+.width--14em{
+    width: 14em;
+}
+
+.width--16em{
+    width: 16em;
+}
+
+.width--18em{
+    width: 18em;
+}
+
+.width--100{
+ width: 100%;
+}
+
+
+
+
+.micro__container{
+    margin-top: 70px;
+}
+
+.micro__thead{
+    text-align: center;
+   
+}
+
+.micro__thead__line{
+    border-bottom: #B5ADAD 2px solid;
+    margin-top: 7px;
+}
+
+.data__top{
+    text-align: center;
+    padding: 20px 0px;
+}
+
+
