@@ -43,3 +43,10 @@ export const errorApi = 'An error occurred while retrieving data from the API. P
 //NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN
 export const openDropDownValue = 1000
 export const closeDropDownValue = 58
+
+ // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
+ export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
+    const obj = jsonDataRefs.find(item => item.Name === gitRef);
+        setCommitHash(obj ? obj.CommitHash : null);
+}
+

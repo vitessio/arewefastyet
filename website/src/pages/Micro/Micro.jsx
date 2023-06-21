@@ -16,10 +16,11 @@ limitations under the License.
 
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
+import RingLoader from "react-spinners/RingLoader";
 
 import '../Micro/micro.css'
 
-import { errorApi, openDropDownValue, closeDropDownValue } from '../../utils/utils';
+import { errorApi, openDropDownValue, closeDropDownValue, updateCommitHash} from '../../utils/utils';
 import Microbench from '../../components/Microbench/Microbench';
 
 const Micro = () => {
@@ -36,11 +37,7 @@ const Micro = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
-    const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
-        const obj = jsonDataRefs.find(item => item.Name === gitRef);
-            setCommitHash(obj ? obj.CommitHash : null);
-    }
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -66,7 +63,6 @@ const Micro = () => {
       
         fetchData();
       }, []);
-      console.log(commitHashLeft)
       useEffect(() => {
         if (isFirstCallFinished) {
             const fetchData = async () => {
@@ -75,7 +71,6 @@ const Micro = () => {
 
                     const jsonDataMicrobench = await responseMicrobench.json();
                     setDataMicrobench(jsonDataMicrobench)
-                    console.log(jsonDataMicrobench)
                 } catch (error) {
                     console.log('Error while retrieving data from the API', error);
                     setError(errorApi);
@@ -155,6 +150,14 @@ const Micro = () => {
                         })}
                     </figure>
                 </div>
+                {error ? (
+                    <div className='apiError'>{error}</div> 
+                ) : (
+                isLoading ? (
+              <div className='loadingSpinner'>
+                <RingLoader loading={isLoading} color='#E77002' size={300}/>
+                </div>
+                ): ( 
                 <div className='micro__container'>
                     <div className='micro__thead space--between'>
                         <span className='width--12em'>Package</span>
@@ -187,6 +190,7 @@ const Micro = () => {
                         )
                     })}
                 </div>
+                ))}
             </div>
         </div>
     );

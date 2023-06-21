@@ -121,9 +121,6 @@ limitations under the License.
  width: 100%;
 }
 
-
-
-
 .micro__container{
     margin-top: 70px;
 }
@@ -151,7 +148,6 @@ limitations under the License.
 .hiddenDesktop{
     display: none;
 }
-
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1100px) {
@@ -212,7 +208,7 @@ limitations under the License.
     .micro__bottom__title h3{
         font-size: 0.8em;
     }
-    
+
     .micro__bottom__DropDownRight{
         margin-left: 120px;
     }
