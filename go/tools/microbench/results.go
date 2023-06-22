@@ -20,12 +20,13 @@ package microbench
 
 import (
 	"fmt"
-	"github.com/vitessio/arewefastyet/go/storage"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/vitessio/arewefastyet/go/storage"
 
 	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/tools/math"
@@ -60,9 +61,9 @@ type (
 	// that share the same BenchmarkId.
 	Comparison struct {
 		BenchmarkId
-		Current, Last Result
+		Right, Left Result
 
-		// Difference between Current and Last.
+		// Difference between Right and Left.
 		Diff Result
 	}
 
@@ -100,27 +101,31 @@ func NewResult(ops, NSPerOp, MBPerSec, BytesPerOp, AllocsPerOp float64) *Result 
 	}
 }
 
-// MergeDetails merges two DetailsArray into a single
-// ComparisonArray.
-func MergeDetails(currentMbd, lastMbd DetailsArray) (compareMbs ComparisonArray) {
-	for _, details := range currentMbd {
+// MergeDetails merges two DetailsArray into a single ComparisonArray.
+func MergeDetails(rightMbd, leftMbd DetailsArray) (compareMbs ComparisonArray) {
+	for _, details := range rightMbd {
 		compareMb := Comparison{
 			BenchmarkId: details.BenchmarkId,
-			Current:     details.Result,
+			Right:       details.Result,
 		}
-		for j := 0; j < len(lastMbd); j++ {
-			if lastMbd[j].BenchmarkId == details.BenchmarkId {
-				compareMb.Last = lastMbd[j].Result
-				compareMb.Diff.NSPerOp = (compareMb.Current.NSPerOp - compareMb.Last.NSPerOp) / compareMb.Current.NSPerOp * -100
-				compareMb.Diff.Ops = (compareMb.Current.Ops - compareMb.Last.Ops) / compareMb.Current.Ops * 100
-				compareMb.Diff.BytesPerOp = (compareMb.Current.BytesPerOp - compareMb.Last.BytesPerOp) / compareMb.Current.BytesPerOp * -100
-				compareMb.Diff.MBPerSec = (compareMb.Current.MBPerSec - compareMb.Last.MBPerSec) / compareMb.Current.MBPerSec * -100
-				compareMb.Diff.AllocsPerOp = (compareMb.Current.AllocsPerOp - compareMb.Last.AllocsPerOp) / compareMb.Current.AllocsPerOp * -100
+		for j := 0; j < len(leftMbd); j++ {
+			if leftMbd[j].BenchmarkId == details.BenchmarkId {
+				compareMb.Left = leftMbd[j].Result
+				compareMb.Diff.NSPerOp = (compareMb.Right.NSPerOp - compareMb.Left.NSPerOp) / compareMb.Right.NSPerOp * -100
+				compareMb.Diff.Ops = (compareMb.Right.Ops - compareMb.Left.Ops) / compareMb.Right.Ops * 100
+				compareMb.Diff.BytesPerOp = (compareMb.Right.BytesPerOp - compareMb.Left.BytesPerOp) / compareMb.Right.BytesPerOp * -100
+				compareMb.Diff.MBPerSec = (compareMb.Right.MBPerSec - compareMb.Left.MBPerSec) / compareMb.Right.MBPerSec * -100
+				compareMb.Diff.AllocsPerOp = (compareMb.Right.AllocsPerOp - compareMb.Left.AllocsPerOp) / compareMb.Right.AllocsPerOp * -100
 				math.CheckForNaN(&compareMb.Diff, 0)
 				break
 			}
 		}
 		compareMbs = append(compareMbs, compareMb)
+	}
+	if compareMbs == nil {
+		return ComparisonArray{
+			Comparison{},
+		}
 	}
 	return compareMbs
 }

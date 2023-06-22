@@ -84,9 +84,9 @@ type (
 	// Comparison contains two Details and their difference in a
 	// Result field.
 	Comparison struct {
-		Reference, Compare Details
-		Diff               Result
-		DiffMetrics        metrics.ExecutionMetrics
+		Right, Left Details
+		Diff        Result
+		DiffMetrics metrics.ExecutionMetrics
 	}
 
 	ResultsArray []Result
@@ -114,17 +114,26 @@ func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects
 // CompareDetailsArrays compare two DetailsArray and return
 // their comparison in a ComparisonArray.
 func CompareDetailsArrays(references, compares DetailsArray) (compared ComparisonArray) {
+	emptyCmp := Comparison{
+		Right: Details{
+			Metrics: metrics.NewExecMetrics(),
+		},
+		Left: Details{
+			Metrics: metrics.NewExecMetrics(),
+		},
+		DiffMetrics: metrics.NewExecMetrics(),
+	}
 	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
-		var cmp Comparison
+		cmp := emptyCmp
 		if i < len(references) {
-			cmp.Reference = references[i]
+			cmp.Right = references[i]
 		}
 		if i < len(compares) {
-			cmp.Compare = compares[i]
+			cmp.Left = compares[i]
 		}
-		if cmp.Compare.GitRef != "" && cmp.Reference.GitRef != "" {
-			compareResult := cmp.Compare.Result
-			referenceResult := cmp.Reference.Result
+		if cmp.Left.GitRef != "" && cmp.Right.GitRef != "" {
+			compareResult := cmp.Left.Result
+			referenceResult := cmp.Right.Result
 			cmp.Diff.QPS.Total = (referenceResult.QPS.Total - compareResult.QPS.Total) / compareResult.QPS.Total * 100
 			cmp.Diff.QPS.Reads = (referenceResult.QPS.Reads - compareResult.QPS.Reads) / compareResult.QPS.Reads * 100
 			cmp.Diff.QPS.Writes = (referenceResult.QPS.Writes - compareResult.QPS.Writes) / compareResult.QPS.Writes * 100
@@ -133,13 +142,16 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 			cmp.Diff.Latency = (compareResult.Latency - referenceResult.Latency) / referenceResult.Latency * 100
 			cmp.Diff.Reconnects = (compareResult.Reconnects - referenceResult.Reconnects) / referenceResult.Reconnects * 100
 			cmp.Diff.Errors = (compareResult.Errors - referenceResult.Errors) / referenceResult.Errors * 100
-			cmp.Diff.Time = int(float64(compareResult.Time) - (float64(referenceResult.Time)) / float64(referenceResult.Time) * 100)
+			cmp.Diff.Time = int(float64(compareResult.Time) - (float64(referenceResult.Time))/float64(referenceResult.Time)*100)
 			cmp.Diff.Threads = (compareResult.Threads - referenceResult.Threads) / referenceResult.Threads * 100
 			awftmath.CheckForNaN(&cmp.Diff, 0)
 			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
-			cmp.DiffMetrics = metrics.CompareTwo(cmp.Compare.Metrics, cmp.Reference.Metrics)
+			cmp.DiffMetrics = metrics.CompareTwo(cmp.Left.Metrics, cmp.Right.Metrics)
 		}
 		compared = append(compared, cmp)
+	}
+	if len(compared) == 0 {
+		compared = append(compared, emptyCmp)
 	}
 	return compared
 }

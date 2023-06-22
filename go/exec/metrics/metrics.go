@@ -76,7 +76,7 @@ type (
 // GetExecutionMetrics fetches and computes a single execution's metrics.
 // Metrics are fetched using the given influxdb.Client and execUUID.
 func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
-	execMetrics := newExecMetrics()
+	execMetrics := NewExecMetrics()
 
 	var err error
 	for _, component := range components {
@@ -95,29 +95,35 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 	return execMetrics, nil
 }
 
-func newExecMetrics() ExecutionMetrics {
+func NewExecMetrics() ExecutionMetrics {
 	return ExecutionMetrics{
-		ComponentsCPUTime:            map[string]float64{},
-		ComponentsMemStatsAllocBytes: map[string]float64{},
+		ComponentsCPUTime: map[string]float64{
+			"vtgate":   0,
+			"vttablet": 0,
+		},
+		ComponentsMemStatsAllocBytes: map[string]float64{
+			"vtgate":   0,
+			"vttablet": 0,
+		},
 	}
 }
 
 func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetrics ExecutionMetrics) error {
 	query := "INSERT INTO metrics(exec_uuid, `name`, `value`) VALUES (?, ?, ?), (?, ?, ?)"
 	args := []interface{}{
-		execUUID, "TotalComponentsCPUTime", math.Round(float64(int(execMetrics.TotalComponentsCPUTime*100)))/100,
-		execUUID, "TotalComponentsMemStatsAllocBytes", math.Round(float64(int(execMetrics.TotalComponentsMemStatsAllocBytes*100)))/100,
+		execUUID, "TotalComponentsCPUTime", math.Round(float64(int(execMetrics.TotalComponentsCPUTime*100))) / 100,
+		execUUID, "TotalComponentsMemStatsAllocBytes", math.Round(float64(int(execMetrics.TotalComponentsMemStatsAllocBytes*100))) / 100,
 	}
 	for k, v := range execMetrics.ComponentsCPUTime {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsCPUTime." + k, math.Round(float64(int(v*100)))/100,
+			execUUID, "ComponentsCPUTime." + k, math.Round(float64(int(v*100))) / 100,
 		}...)
 	}
 	for k, v := range execMetrics.ComponentsMemStatsAllocBytes {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsMemStatsAllocBytes." + k, math.Round(float64(int(v*100)))/100,
+			execUUID, "ComponentsMemStatsAllocBytes." + k, math.Round(float64(int(v*100))) / 100,
 		}...)
 	}
 	_, err := client.Insert(query, args...)
@@ -132,7 +138,7 @@ func GetExecutionMetricsSQL(client storage.SQLClient, execUUID string) (Executio
 	}
 	defer rows.Close()
 
-	result := newExecMetrics()
+	result := NewExecMetrics()
 	for rows.Next() {
 		var name string
 		var value float64
@@ -147,10 +153,10 @@ func GetExecutionMetricsSQL(client storage.SQLClient, execUUID string) (Executio
 			result.TotalComponentsMemStatsAllocBytes = value
 		case strings.HasPrefix(name, "ComponentsCPUTime."):
 			key := strings.Split(name, ".")[1]
-			result.ComponentsCPUTime[key]=value
+			result.ComponentsCPUTime[key] = value
 		case strings.HasPrefix(name, "ComponentsMemStatsAllocBytes."):
 			key := strings.Split(name, ".")[1]
-			result.ComponentsMemStatsAllocBytes[key]=value
+			result.ComponentsMemStatsAllocBytes[key] = value
 		}
 	}
 	return result, nil
@@ -259,7 +265,7 @@ func compareSafeComponentMap(left, right map[string]float64) map[string]float64 
 // Ex: left=100, right=50, we decreased by 1/2, thus result=50
 func compareSafe(left, right float64) (result float64) {
 	if left != 0 {
-		result = (left - right) / right * 100
+		result = (left - right) / left * 100
 	} else if right > 0 {
 		result = -100
 	}

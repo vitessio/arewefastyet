@@ -103,24 +103,24 @@ limitations under the License.
                     <tr>
                         <td>{{ $val.PkgName }}</td>
                         <td><a href="/microbench/{{ $val.Name }}?subBenchmarkName={{ $val.SubBenchmarkName }}">{{ $val.SubBenchmarkName }}</a></td>
-                        <td class="text-right">{{ $val.Last.OpsStr }}</td>
-                        <td class="text-right">{{ $val.Current.OpsStr }}</td>
+                        <td class="text-right">{{ $val.Left.OpsStr }}</td>
+                        <td class="text-right">{{ $val.Right.OpsStr }}</td>
                         <td class="text-right {{if le $val.Diff.Ops -5.0 }} bg-danger {{ else if ge $val.Diff.Ops 5.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.Ops }}</td>
 
-                        <td class="text-right">{{ $val.Last.NSPerOpToDurationStr }}</td>
-                        <td class="text-right">{{ $val.Current.NSPerOpToDurationStr }}</td>
+                        <td class="text-right">{{ $val.Left.NSPerOpToDurationStr }}</td>
+                        <td class="text-right">{{ $val.Right.NSPerOpToDurationStr }}</td>
                         <td class="text-right {{if le $val.Diff.NSPerOp -10.0 }} bg-danger {{ else if ge $val.Diff.NSPerOp 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.NSPerOp }}</td>
 
-                        <td class="text-right">{{ $val.Last.BytesPerOpStr }}</td>
-                        <td class="text-right">{{ $val.Current.BytesPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Left.BytesPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Right.BytesPerOpStr }}</td>
                         <td class="text-right {{if le $val.Diff.BytesPerOp -10.0 }} bg-danger {{ else if ge $val.Diff.BytesPerOp 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.BytesPerOp }}</td>
 
-                        <td class="text-right">{{ $val.Last.MBPerSecStr }}</td>
-                        <td class="text-right">{{ $val.Current.MBPerSecStr }}</td>
+                        <td class="text-right">{{ $val.Left.MBPerSecStr }}</td>
+                        <td class="text-right">{{ $val.Right.MBPerSecStr }}</td>
                         <td class="text-right {{if le $val.Diff.MBPerSec -10.0 }} bg-danger {{ else if ge $val.Diff.MBPerSec 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.MBPerSec }}</td>
 
-                        <td class="text-right">{{ $val.Last.AllocsPerOpStr }}</td>
-                        <td class="text-right">{{ $val.Current.AllocsPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Left.AllocsPerOpStr }}</td>
+                        <td class="text-right">{{ $val.Right.AllocsPerOpStr }}</td>
                         <td class="text-right {{if le $val.Diff.AllocsPerOp -10.0 }} bg-danger {{ else if ge $val.Diff.AllocsPerOp 10.0 }} bg-success {{ end }}">{{ formatFloat $val.Diff.AllocsPerOp }}</td>
                     </tr>
                 {{end}}
