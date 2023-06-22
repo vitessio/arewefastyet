@@ -32,6 +32,7 @@ limitations under the License.
 .microbench__bottom{
     border: #B5ADAD 1px solid;
     width: 75%;
+    max-width: 800px;
     margin: auto;
     padding: 15px;
     margin-top: 30px;

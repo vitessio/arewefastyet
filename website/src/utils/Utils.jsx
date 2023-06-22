@@ -46,8 +46,8 @@ export const closeDropDownValue = 58
 
  // OPEN DROP DOWN
 
- export const openDropDown = (openDropDown, setOpenDropDown) =>{
-    if (openDropDown === closeDropDownValue) {
+ export const openDropDown = (currentValue, setOpenDropDown) =>{
+    if (currentValue === closeDropDownValue) {
         setOpenDropDown(openDropDownValue);
       } else {
         setOpenDropDown(closeDropDownValue);
@@ -68,3 +68,7 @@ export const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, 
         setCommitHash(obj ? obj.CommitHash : null);
 }
 
+
+////THE NUMBER OF PIXELS THAT ARE USED TO OPEN AND CLOSE THE PREVIOUS EXECUTIONS AND MICROBENCH TABLES
+export const openTables = 400
+export const closeTables = 70

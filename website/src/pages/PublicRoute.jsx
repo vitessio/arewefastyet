@@ -26,12 +26,6 @@ import Macro from './Macro/Macro';
 import Micro from './Micro/Micro';
 
 const PublicRoute = () => {
-    const test = () => {
-        const [error, setError] = useState(null);
-        const [isLoading, setIsLoading] = useState(true);
-    }
-    
-
     return (
         <Routes>
         <Route element={<Layout/>}>
@@ -40,7 +34,7 @@ const PublicRoute = () => {
             <Route path='/home' element={<Home/>}/>
             <Route path='/status' element={<Status/>}/>
             <Route path='/macro' element={<Macro/>}/>
-            <Route path='/micro' element={<Micro test={test}/>}/>
+            <Route path='/micro' element={<Micro/>}/>
             <Route path='*' element={<Error/>}/>
 
          </Route> 

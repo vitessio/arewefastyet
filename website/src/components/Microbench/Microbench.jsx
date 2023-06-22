@@ -18,15 +18,17 @@ import React, {useState} from 'react';
 
 import '../Microbench/microbench.css'
 
+import { closeTables, openTables } from '../../utils/utils';
+
 const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
 
-    const [maxHeight, setMaxHeight] = useState(70);
+    const [maxHeight, setMaxHeight] = useState(closeTables);
 
     const handleClick = () => {
-        if (maxHeight === 70) {
-            setMaxHeight(400);
+        if (maxHeight === closeTables) {
+            setMaxHeight(openTables);
           } else {
-            setMaxHeight(70);
+            setMaxHeight(closeTables);
         }
     };
 

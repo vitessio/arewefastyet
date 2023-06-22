@@ -66,8 +66,8 @@ const Micro = () => {
         if (isFirstCallFinished) {
             const fetchData = async () => {
                 try {
-                    const responseMicrobench = await fetch(`${import.meta.env.VITE_API_URL}microbench/compare?rtag=83eef5d198ae1d9c5245270c8ca39961ca847b13&ltag=60dc8b997fccb0060ed2b29f811dc0dea38e9123`)
-
+                    const responseMicrobench = await fetch(`${import.meta.env.VITE_API_URL}microbench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`)
+                    console.log(commitHashLeft)
                     const jsonDataMicrobench = await responseMicrobench.json();
                     setDataMicrobench(jsonDataMicrobench)
                 } catch (error) {
@@ -93,7 +93,7 @@ const Micro = () => {
         <div className='micro'>
             <div className='micro__top justify--content'>
                 <div className='micro__top__text'>
-                    <h2>MicroBenchmark</h2>
+                    <h2>Compare Microbenchmarks</h2>
                     <span>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a augue mi.
                             Etiam sed imperdiet ligula, vel elementum velit.
