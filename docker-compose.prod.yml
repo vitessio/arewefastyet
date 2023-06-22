@@ -5,12 +5,13 @@ services:
     image: "traefik:v2.10"
     container_name: "traefik"
     command:
+      - "--accesslog=false"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=cncf-vitess-project@cncf.io"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.https.address=:443"
+      - "--certificatesresolvers.tlsresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.tlsresolver.acme.email=cncf-vitess-project@cncf.io"
+      - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
     volumes:
@@ -18,20 +19,25 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     network_mode: bridge
 
-  backend-frontend:
+  api:
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
-    image: "arewefastyet-backend-frontend"
-    container_name: "backend-frontend"
+    image: "arewefastyet-api"
+    container_name: "api"
     volumes:
       - "./exec/:/exec"
-      - "./config/prod/:/config/"
+      - "./config/dev/config.yaml:/config/config.yaml"
+      - "./config/dev/secrets.yaml:/config/secrets.yaml"
+      - "./config/benchmarks:/config/benchmarks"
+      - "./go/server/templates/:/go/server/templates"
+      - "./go/server/static/:/go/server/static"
+      - "./ansible:/ansible"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend-frontend.rule=Host(`benchmark.vitess.io`)"
-      - "traefik.http.routers.backend-frontend.entrypoints=websecure"
-      - "traefik.http.routers.backend-frontend.tls.certresolver=myresolver"
-      - "traefik.http.services.backend-frontend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.api.entrypoints=https"
+      - "traefik.http.routers.api.tls.certresolver=tlsresolver"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
     network_mode: bridge
