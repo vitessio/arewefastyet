@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import RingLoader from "react-spinners/RingLoader";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import '../Macro/macro.css'
+import '../Macro/Macro.css'
 import "swiper/css";
 import "swiper/css/pagination";
 
