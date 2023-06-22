@@ -20,7 +20,7 @@ import RingLoader from "react-spinners/RingLoader";
 
 import '../Micro/micro.css'
 
-import { errorApi, openDropDownValue, closeDropDownValue, updateCommitHash} from '../../utils/utils';
+import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown} from '../../utils/utils';
 import Microbench from '../../components/Microbench/Microbench';
 
 const Micro = () => {
@@ -36,8 +36,6 @@ const Micro = () => {
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,6 +61,7 @@ const Micro = () => {
       
         fetchData();
       }, []);
+
       useEffect(() => {
         if (isFirstCallFinished) {
             const fetchData = async () => {
@@ -80,23 +79,6 @@ const Micro = () => {
         }  
     }, [commitHashLeft, commitHashRight])
 
-      // OPEN DROP DOWN
-
-    const openDropDown = (openDropDown, setOpenDropDown) =>{
-        if (openDropDown === closeDropDownValue) {
-            setOpenDropDown(openDropDownValue);
-          } else {
-            setOpenDropDown(closeDropDownValue);
-          }
-    }
-
-     // CHANGE VALUE DROPDOWN
-
-     const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, setChangeUrl) => {
-        setDropDown(ref.Name)
-        setCommitHash(ref.CommitHash)
-        setOpenDropDown(closeDropDownValue);
-    }
 
      // Changing the URL relative to the reference of a selected benchmark.
     // Storing the carousel position as a URL parameter.
@@ -137,7 +119,7 @@ const Micro = () => {
                             )
                         })}
                     </figure>
-                    <h3>and</h3>
+                    {/* <h3>and</h3> */}
                     <figure className='micro__bottom__DropDownRight flex--column' style={{ maxHeight: `${openDropDownRight}px` }}>
                         <span className='DropDown__BaseSpan'  onClick={() => openDropDown(openDropDownRight, setOpenDropDownRight)}>{gitRefRight} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {

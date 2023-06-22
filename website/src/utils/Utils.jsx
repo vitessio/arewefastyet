@@ -44,6 +44,24 @@ export const errorApi = 'An error occurred while retrieving data from the API. P
 export const openDropDownValue = 1000
 export const closeDropDownValue = 58
 
+ // OPEN DROP DOWN
+
+ export const openDropDown = (openDropDown, setOpenDropDown) =>{
+    if (openDropDown === closeDropDownValue) {
+        setOpenDropDown(openDropDownValue);
+      } else {
+        setOpenDropDown(closeDropDownValue);
+      }
+}
+
+// CHANGE VALUE DROPDOWN
+
+export const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, setChangeUrl) => {
+    setDropDown(ref.Name)
+    setCommitHash(ref.CommitHash)
+    setOpenDropDown(closeDropDownValue);
+}
+
  // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
  export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
     const obj = jsonDataRefs.find(item => item.Name === gitRef);

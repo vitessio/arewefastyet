@@ -53,12 +53,19 @@ limitations under the License.
 
 /*MICRO BOTTOM*/
 
+.micro__bottom{
+    position: relative;
+}
+
 .micro__bottom__title{
     flex-wrap: wrap;
+    margin-bottom: 200px;
 }
 
 .micro__bottom__DropDownLeft{
-    position: relative;
+    position: absolute;
+    left: 20%;
+    top: 50px;
     margin: -20px 10px 0px 10px;
     background-color: #1F1D1D;
     border: #E77002 solid 1px;
@@ -74,7 +81,9 @@ limitations under the License.
 }
 
 .micro__bottom__DropDownRight{
-    position: relative;
+    position: absolute;
+    right: 20%;
+    top: 50px;
     margin: -20px 10px 0px 10px;
     border: #E77002 solid 1px;
     background-color: #1F1D1D;
@@ -209,8 +218,16 @@ limitations under the License.
         font-size: 0.8em;
     }
 
-    .micro__bottom__DropDownRight{
-        margin-left: 120px;
+    .micro__bottom__DropDownLeft{
+        left:0%;
+        font-size: 0.7rem;
     }
+
+    .micro__bottom__DropDownRight{
+        right: 0%;
+        font-size: 0.7rem;
+    }
+
+    
     
  }
