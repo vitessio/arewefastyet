@@ -50,7 +50,7 @@ services:
     image: "arewefastyet-frontend"
     restart: always
     container_name: "frontend"
-    command: "npm run build && npm run start"
+    command: "./entrypoint.sh"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
