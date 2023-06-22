@@ -6,15 +6,16 @@ services:
     container_name: "traefik"
     command:
       - "--accesslog=true"
-      - "--accesslog.bufferingsize=50"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.https.address=:443"
+      - "--entrypoints.https-frontend.address=:8000"
       - "--certificatesresolvers.tlsresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.tlsresolver.acme.email=cncf-vitess-project@cncf.io"
       - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
+      - "8000:8000"
     volumes:
       - "/var/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -41,4 +42,19 @@ services:
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
+    network_mode: bridge
+
+  frontend:
+    build:
+      context: ./website
+    image: "arewefastyet-frontend"
+    restart: always
+    container_name: "frontend"
+    command: "npm run build && npm run start"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.frontend.entrypoints=https-frontend"
+      - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
     network_mode: bridge

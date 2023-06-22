@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --mode dev --host",
-    "build": "vite build",
+    "start": "serve -s dist",
+    "build": "vite --mode prod build",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -17,6 +18,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.2",
     "react-spinners": "^0.13.8",
+    "serve": "^14.2.0",
     "swiper": "^9.4.1",
     "uuid": "^9.0.0"
   },
