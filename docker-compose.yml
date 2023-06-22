@@ -25,6 +25,7 @@ services:
     image: "arewefastyet-api"
     container_name: "api"
     volumes:
+      - "~/.ssh:/root/.ssh"
       - "./exec/:/exec"
       - "./config/dev/config.yaml:/config/config.yaml"
       - "./config/dev/secrets.yaml:/config/secrets.yaml"
