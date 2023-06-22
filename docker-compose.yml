@@ -5,6 +5,7 @@ services:
     image: "traefik:v2.10"
     container_name: "traefik"
     command:
+      - "--accesslog=false"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -16,13 +17,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     network_mode: bridge
 
-  backend-frontend:
+  api:
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
-    image: "arewefastyet-backend-frontend"
-    container_name: "backend-frontend"
+    image: "arewefastyet-api"
+    container_name: "api"
     volumes:
       - "./exec/:/exec"
       - "./config/dev/config.yaml:/config/config.yaml"
@@ -33,14 +34,16 @@ services:
       - "./ansible:/ansible"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend-frontend.rule=Host(`api.localhost`)"
-      - "traefik.http.routers.backend-frontend.entrypoints=http"
-      - "traefik.http.services.backend-frontend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.api.rule=Host(`localhost`)"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=http"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
     network_mode: bridge
 
-  vite_docker:
+  frontend:
     build:
       context: ./website
+    image: "arewefastyet-frontend"
     restart: always
     container_name: "frontend"
     volumes:
@@ -48,7 +51,7 @@ services:
       - "./website/public:/app/public"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vite_docker.rule=Host(`localhost`)"
-      - "traefik.http.routers.vite_docker.entrypoints=http"
-      - "traefik.http.services.vite_docker.loadbalancer.server.port=5173"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=http"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
     network_mode: bridge
