@@ -18,7 +18,7 @@ import React from 'react';
 
 
 import '../PreviousExecutions/previousexe.css'
-import { getStatusClass, formatDate} from '../../utils/utils';
+import { getStatusClass, formatDate} from '../../utils/Utils';
 
 const PreviousExe = ({data, className}) => {
           

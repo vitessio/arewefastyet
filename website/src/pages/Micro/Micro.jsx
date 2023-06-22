@@ -20,7 +20,7 @@ import RingLoader from "react-spinners/RingLoader";
 
 import '../Micro/micro.css'
 
-import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown} from '../../utils/utils';
+import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown} from '../../utils/Utils';
 import Microbench from '../../components/Microbench/Microbench';
 
 const Micro = () => {

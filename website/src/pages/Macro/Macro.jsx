@@ -19,14 +19,14 @@ import { useNavigate } from 'react-router-dom';
 import RingLoader from "react-spinners/RingLoader";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import '../Macro/macro.css'
+import '../Macro/Macro.css'
 import "swiper/css";
 import "swiper/css/pagination";
 
 import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
-import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/utils';
+import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/Utils';
 
 const Macro = () => {
     const urlParams = new URLSearchParams(window.location.search);

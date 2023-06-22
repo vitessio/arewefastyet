@@ -18,7 +18,7 @@ import React, {useState} from 'react';
 
 
 import './previousExeResMobile.css'
-import { getStatusClass, formatDate, closeTables, openTables} from '../../utils/utils';
+import { getStatusClass, formatDate, closeTables, openTables} from '../../utils/Utils';
 
 const PreviousExeRes = ({data, className}) => {
 

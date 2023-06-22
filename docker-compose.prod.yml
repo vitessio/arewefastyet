@@ -1,0 +1,75 @@
+# Copyright 2023 The Vitess Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      - "--accesslog=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.https.address=:443"
+      - "--entrypoints.https-frontend.address=:8000"
+      - "--certificatesresolvers.tlsresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.tlsresolver.acme.email=cncf-vitess-project@cncf.io"
+      - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "8000:8000"
+    volumes:
+      - "/var/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    network_mode: bridge
+
+  api:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "arewefastyet-api"
+    container_name: "api"
+    volumes:
+      - "~/.ssh:/root/.ssh"
+      - "./exec/:/exec"
+      - "./config/prod/config.yaml:/config/config.yaml"
+      - "./config/prod/secrets.yaml:/config/secrets.yaml"
+      - "./config/benchmarks:/config/benchmarks"
+      - "./go/server/templates/:/go/server/templates"
+      - "./go/server/static/:/go/server/static"
+      - "./ansible:/ansible"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.api.entrypoints=https"
+      - "traefik.http.routers.api.tls.certresolver=tlsresolver"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+    network_mode: bridge
+
+  frontend:
+    build:
+      context: ./website
+    image: "arewefastyet-frontend"
+    restart: always
+    container_name: "frontend"
+    command: "./entrypoint.sh"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.frontend.entrypoints=https-frontend"
+      - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    network_mode: bridge

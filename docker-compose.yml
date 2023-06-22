@@ -1,0 +1,72 @@
+# Copyright 2023 The Vitess Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: "3.3"
+
+services:
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      - "--accesslog=false"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    network_mode: bridge
+
+  api:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "arewefastyet-api"
+    container_name: "api"
+    volumes:
+      - "~/.ssh:/root/.ssh"
+      - "./exec/:/exec"
+      - "./config/dev/config.yaml:/config/config.yaml"
+      - "./config/dev/secrets.yaml:/config/secrets.yaml"
+      - "./config/benchmarks:/config/benchmarks"
+      - "./go/server/templates/:/go/server/templates"
+      - "./go/server/static/:/go/server/static"
+      - "./ansible:/ansible"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`localhost`)"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=http"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+    network_mode: bridge
+
+  frontend:
+    build:
+      context: ./website
+    image: "arewefastyet-frontend"
+    restart: always
+    container_name: "frontend"
+    volumes:
+      - "./website/src:/app/src"
+      - "./website/public:/app/public"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=http"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+    network_mode: bridge

@@ -24,7 +24,7 @@ import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
 import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
 import PreviousExeResMobile from '../../components/PreviousExeResponsiveMobile/PreviousExeResMobile';
 import PreviousExeResTablet from '../../components/PreviousExecutionResponsiveTablet/PreviousExeResTablet';
-import { errorApi } from '../../utils/utils';
+import { errorApi } from '../../utils/Utils';
 import './status.css';
 
 const Status = () => {
