@@ -164,13 +164,15 @@ const Micro = () => {
                         </div>
                         <div className='width--6em'></div>
                     </div>
-                    {dataMicrobench.map((micro, index) => {
-                        const isEvenIndex = index % 2 === 0;
-                        const backgroundGrey = isEvenIndex ? 'grey--background' : '';
-                        return(
-                            <Microbench data={micro} key={index} className={backgroundGrey} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight}/>
-                        )
-                    })}
+                    {dataMicrobench.length > 0 && dataMicrobench[0].PkgName !== '' && dataMicrobench[0].Name !== '' && dataMicrobench[0].SubBenchmarkName !== '' && (
+                        dataMicrobench.map((micro, index) => {
+                            const isEvenIndex = index % 2 === 0;
+                            const backgroundGrey = isEvenIndex ? 'grey--background' : '';
+                            return(
+                                <Microbench data={micro} key={index} className={backgroundGrey} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight}/>
+                            )
+                        })
+                    )}
                 </div>
                 ))}
             </div>
