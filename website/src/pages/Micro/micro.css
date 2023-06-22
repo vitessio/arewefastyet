@@ -1,0 +1,230 @@
+/*
+Copyright 2023 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.micro{
+    color: white;
+    padding: 0px 20px 0px 20px;
+    position: relative;
+    height: 100%;
+}
+
+/* MICRO TOP */
+.micro__top{
+    margin-top: 100px;
+    
+}
+
+.micro__top__text{
+    width: 50%;
+    margin-right: 200px;
+}
+
+.micro__top__text h2{
+    font-size: 5rem;
+    font-weight:100;
+    margin-bottom: 50px;
+    margin-top: 20px;
+    width: 100%
+}
+
+.micro__top__text span{
+    color: #B5ADAD;
+    width: 60%;
+    line-height: 40px;
+}
+
+.microStats{
+    border: solid 2px white;
+    width: 400px;
+}
+
+/*MICRO BOTTOM*/
+
+.micro__bottom{
+    position: relative;
+}
+
+.micro__bottom__title{
+    flex-wrap: wrap;
+    margin-bottom: 200px;
+}
+
+.micro__bottom__DropDownLeft{
+    position: absolute;
+    left: 20%;
+    top: 50px;
+    margin: -20px 10px 0px 10px;
+    background-color: #1F1D1D;
+    border: #E77002 solid 1px;
+    border-radius: 15px;
+    text-align: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: max-height 1s ease;
+    box-shadow: #E77002 2px 2px 10px;
+    z-index: 200;
+    min-width: 100px;
+}
+
+.micro__bottom__DropDownRight{
+    position: absolute;
+    right: 20%;
+    top: 50px;
+    margin: -20px 10px 0px 10px;
+    border: #E77002 solid 1px;
+    background-color: #1F1D1D;
+    border-radius: 15px;
+    text-align: center;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: max-height 1s ease;
+    box-shadow: #E77002 2px 2px 10px;
+    z-index: 200;
+}
+
+.DropDown__BaseSpan{
+    padding: 15px 0px;
+    padding-bottom: 30px;
+   
+    font-size: 1rem;
+}
+
+/*Compare array*/
+
+.width--6em{
+    width: 6em;
+}
+
+.width--12em{
+    width: 12em;
+}
+
+.width--14em{
+    width: 14em;
+}
+
+.width--16em{
+    width: 16em;
+}
+
+.width--18em{
+    width: 18em;
+}
+
+.width--100{
+ width: 100%;
+}
+
+.micro__container{
+    margin-top: 70px;
+}
+
+.micro__thead{
+    text-align: center;
+   
+}
+
+.micro__thead__line{
+    border-bottom: #B5ADAD 2px solid;
+    margin-top: 7px;
+}
+
+.data__top{
+    text-align: center;
+    padding: 20px 0px;
+}
+
+.space--between--flex{
+    display: flex;
+    justify-content: space-between;
+  }
+
+.hiddenDesktop{
+    display: none;
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1100px) {
+    .hiddenDesktop{
+        display: flex;
+    }
+    .hiddenTablet{
+        display: none;
+    }
+    .micro__top__text h2{
+        font-size: 3rem;
+    }
+
+    .micro__top__text{
+        margin-right: 100px;
+    }
+
+    .microStats{
+        border: solid 2px white;
+        width: 300px;
+        height: 300px;
+        margin-top: 100px;
+    }
+}
+
+ /* MEDIA QUERIES FOR MOBILE */
+ @media only screen and (max-width: 767px){
+    .hiddenMobile{
+        display: none;
+    }
+
+    .micro__top__text{
+        width: 100%;
+        text-align: center;
+    }
+
+    .micro__top__text h2{
+        font-size: 2rem;
+    }
+
+    .micro__top{
+        flex-direction: column;
+    }
+
+    .microStats{
+        margin: auto;
+        margin-top: 30px;
+    }
+
+    .micro__bottom__title{
+        align-items: center;
+    }
+
+    .micro__bottom__title figure{
+        margin-top: 10px;
+    }
+
+    .micro__bottom__title h3{
+        font-size: 0.8em;
+    }
+
+    .micro__bottom__DropDownLeft{
+        left:0%;
+        font-size: 0.7rem;
+    }
+
+    .micro__bottom__DropDownRight{
+        right: 0%;
+        font-size: 0.7rem;
+    }
+ }

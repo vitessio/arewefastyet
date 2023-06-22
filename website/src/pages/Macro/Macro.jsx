@@ -26,7 +26,7 @@ import "swiper/css/pagination";
 import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
-import { errorApi, openDropDownValue, closeDropDownValue } from '../../utils/utils';
+import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/utils';
 
 const Macro = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -37,8 +37,8 @@ const Macro = () => {
     // otherwise, use the value of the 'ltag' query parameter.
     const [gitRefLeft, setGitRefLeft] = useState(urlParams.get('ltag') == null ? 'Left' : urlParams.get('ltag'));
     const [gitRefRight, setGitRefRight] = useState(urlParams.get('rtag') == null ? 'Right' : urlParams.get('rtag'));
-    const [openDropDownLeft, setOpenDropDownLeft] = useState(58);
-    const [openDropDownRight, setOpenDropDownRight] = useState(58);
+    const [openDropDownLeft, setOpenDropDownLeft] = useState(closeDropDownValue);
+    const [openDropDownRight, setOpenDropDownRight] = useState(closeDropDownValue);
     const [dataRefs, setDataRefs] = useState([]);
     const [isFirstCallFinished,setIsFirstCallFinished] = useState(false)
     const [dataMacrobench, setDataMacrobench] = useState([]); 
@@ -48,12 +48,6 @@ const Macro = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
     const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(urlParams.get('ptagM') == null ? '0' : urlParams.get('ptagM'))
-    
-    // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
-    const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
-        const obj = jsonDataRefs.find(item => item.Name === gitRef);
-            setCommitHash(obj ? obj.CommitHash : null);
-    }
     
     useEffect(() => {
         const fetchData = async () => {
@@ -96,25 +90,7 @@ const Macro = () => {
             fetchData();
         }  
     }, [commitHashLeft, commitHashRight])
-       
 
-    // OPEN DROP DOWN
-
-    const openDropDown = (openDropDown, setOpenDropDown) =>{
-        if (openDropDown === closeDropDownValue) {
-            setOpenDropDown(openDropDownValue);
-          } else {
-            setOpenDropDown(closeDropDownValue);
-          }
-    }
-
-    // CHANGE VALUE DROPDOWN
-
-    const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, setChangeUrl) => {
-        setDropDown(ref.Name)
-        setCommitHash(ref.CommitHash)
-        setOpenDropDown(closeDropDownValue);
-    }
 
     // Changing the URL relative to the reference of a selected benchmark.
     // Storing the carousel position as a URL parameter.

@@ -43,3 +43,32 @@ export const errorApi = 'An error occurred while retrieving data from the API. P
 //NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN
 export const openDropDownValue = 1000
 export const closeDropDownValue = 58
+
+ // OPEN DROP DOWN
+
+ export const openDropDown = (currentValue, setOpenDropDown) =>{
+    if (currentValue === closeDropDownValue) {
+        setOpenDropDown(openDropDownValue);
+      } else {
+        setOpenDropDown(closeDropDownValue);
+      }
+}
+
+// CHANGE VALUE DROPDOWN
+
+export const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, setChangeUrl) => {
+    setDropDown(ref.Name)
+    setCommitHash(ref.CommitHash)
+    setOpenDropDown(closeDropDownValue);
+}
+
+ // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
+ export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
+    const obj = jsonDataRefs.find(item => item.Name === gitRef);
+        setCommitHash(obj ? obj.CommitHash : null);
+}
+
+
+////THE NUMBER OF PIXELS THAT ARE USED TO OPEN AND CLOSE THE PREVIOUS EXECUTIONS AND MICROBENCH TABLES
+export const openTables = 400
+export const closeTables = 70

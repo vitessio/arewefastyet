@@ -17,17 +17,17 @@ limitations under the License.
 import React, {useState} from 'react';
 
 import '../PreviousExecutionResponsiveTablet/previousExeResTablet.css'
-import { getStatusClass, formatDate} from '../../utils/utils';
+import { getStatusClass, formatDate, closeTables, openTables} from '../../utils/utils';
 
 const PreviousExeResTablet = ({data, className}) => {
 
-    const [maxHeight, setMaxHeight] = useState(70);
+    const [maxHeight, setMaxHeight] = useState(closeTables);
 
     const handleClick = () => {
-        if (maxHeight === 70) {
-            setMaxHeight(400);
+        if (maxHeight === closeTables) {
+            setMaxHeight(openTables);
           } else {
-            setMaxHeight(70);
+            setMaxHeight(closeTables);
         }
     };
 
