@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import React from 'react';
-import { formatByteForGB } from '../../utils/utils';
+import { formatByteForGB } from '../../utils/Utils';
 
 import '../Macrobench/macrobench.css'
 

@@ -26,7 +26,7 @@ import "swiper/css/pagination";
 import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
-import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/utils';
+import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/Utils';
 
 const Macro = () => {
     const urlParams = new URLSearchParams(window.location.search);

@@ -18,7 +18,7 @@ import React, {useState} from 'react';
 
 import '../Microbench/microbench.css'
 
-import { closeTables, openTables } from '../../utils/utils';
+import { closeTables, openTables } from '../../utils/Utils';
 
 const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
 
