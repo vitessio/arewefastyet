@@ -6,7 +6,8 @@ services:
     container_name: "traefik"
     command:
       - "--accesslog=true"
-      - "--accesslog.filepath=/access.log"
+      - "--accesslog.filepath=/tmp/access.log"
+      - "--accesslog.bufferingsize=50"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.https.address=:443"
@@ -18,7 +19,7 @@ services:
     volumes:
       - "/var/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/var/access.log:/access.log"
+      - "/var/log/access.log:/tmp/access.log"
     network_mode: bridge
 
   api:
