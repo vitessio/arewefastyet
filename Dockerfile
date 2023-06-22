@@ -6,13 +6,12 @@ COPY go.mod go.sum ./
 
 RUN go mod download
 
-COPY . ./
+COPY . .
 
+# Build arewefastyet
 RUN CGO_ENABLED=0 GOOS=linux go build -o /arewefastyetcli ./go/main.go
 
 FROM debian:buster AS run-stage
-
-ARG env
 
 # Install Git, Golang, and Python
 RUN apt-get update && apt-get install -y \
@@ -31,17 +30,22 @@ ENV PATH="/venv/bin:$PATH"
 RUN pip3 install --upgrade pip
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
+
+# Install ansible add-ons
 RUN ansible-galaxy install cloudalchemy.node_exporter && ansible-galaxy install cloudalchemy.prometheus
 
 # Copy the source code to the working directory
-COPY . .
 COPY --from=build-stage /arewefastyetcli /arewefastyetcli
 
 EXPOSE 8080
 
+# Needed for Ansible to execute sub-processes
 ENV OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
-RUN cp ./config/${env}/*.yaml ./config/
+# Make sure all directories are created
+RUN mkdir -p /config /exec
 
-# Set the entry point for the container
-CMD ["/arewefastyetcli", "web", "--config", "./config/config.yaml", "--secrets", "./config/secrets.yaml"]
+# Configuration files MUST be attached to the container using a volume.
+# The configuration files are not mounted on the Docker image for obvious
+# security reasons.
+CMD ["/arewefastyetcli", "web", "--config", "/config/config.yaml", "--secrets", "/config/secrets.yaml"]
