@@ -56,5 +56,5 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
       - "traefik.http.routers.frontend.entrypoints=https-frontend"
       - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
-      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     network_mode: bridge
