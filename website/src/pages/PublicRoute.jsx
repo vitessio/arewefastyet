@@ -24,6 +24,7 @@ import Error from '../utils/Error/Error';
 import Layout from '../pages/Layout'
 import Macro from './Macro/Macro';
 import Micro from './Micro/Micro';
+import Search from './Search/Search';
 
 const PublicRoute = () => {
     return (
@@ -33,8 +34,10 @@ const PublicRoute = () => {
 
             <Route path='/home' element={<Home/>}/>
             <Route path='/status' element={<Status/>}/>
+            <Route path='/search' element={<Search/>}/>
             <Route path='/macro' element={<Macro/>}/>
             <Route path='/micro' element={<Micro/>}/>
+
             <Route path='*' element={<Error/>}/>
 
          </Route> 
