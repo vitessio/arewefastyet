@@ -189,3 +189,33 @@ func (s *Server) compareMicrobenchmarks(c *gin.Context) {
 	matrix := microbench.MergeDetails(rightMbd, leftMbd)
 	c.JSON(http.StatusOK, matrix)
 }
+
+type searchResult struct {
+	Macros map[string]macrobench.DetailsArray 
+	Micro  microbench.DetailsArray
+}
+
+func (s *Server) searchBenchmarck(c *gin.Context) {
+	gitRef := c.Query("git_ref")
+
+	macros, err := macrobench.GetDetailsArraysFromAllTypes(gitRef, macrobench.Gen4Planner, s.dbClient, s.benchmarkTypes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+
+	micro, err := microbench.GetResultsForGitRef(gitRef, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	micro = micro.ReduceSimpleMedianByName()
+
+	var res searchResult 
+	res.Macros = macros
+	res.Micro = micro
+
+	c.JSON(http.StatusOK, res)
+}
