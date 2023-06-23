@@ -25,6 +25,7 @@ import "swiper/css/pagination";
 
 import { errorApi } from '../../utils/Utils';
 import { Mousewheel, Pagination, Keyboard } from "swiper";
+import SearchMacro from '../../components/SearchMacro/SearchMacro';
 
 const Search = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -105,7 +106,7 @@ const Search = () => {
                     <button type="submit">Search</button>
                 </form>
             </div>
-            {/* <div className='search__macro '>
+            <div className='search__macro justify--content '>
                 <div className='macrobench__Sidebar flex--column'>
                     <span >QPS Total</span>
                     <figure className='macrobench__Sidebar__line'></figure>
@@ -139,31 +140,35 @@ const Search = () => {
                     <figure className='macrobench__Sidebar__line'></figure>
                     <span>Allocs bytes vttablet</span>
                 </div>          
-                                
-                <Swiper
-                    direction={"vertical"}
-                    slidesPerView={1}
-                    spaceBetween={30}
-                    mousewheel={true}
-                    keyboard={{
-                        enabled: true,
-                    }}
-                    pagination={{
-                    clickable: true,
-                    }}
-                    modules={[Mousewheel, Pagination, Keyboard]}
-                    onSlideChange={handleSlideChange}
-                    initialSlide={currentSlideIndex}
-                    className="mySwiper"
-                > 
-                    {(Object.entries(dataSearch).flat()).map(function(search, index) {
-                        return (
-                            <p key={index}>{search.OLTP-DOMRectReadOnly.GitRef}</p>
-                        )
-                    })}
-                    
-                 </Swiper>
-            </div> */}
+                <div className='carousel__container'>
+                    <Swiper
+                        direction={"vertical"}
+                        slidesPerView={1}
+                        spaceBetween={30}
+                        mousewheel={true}
+                        keyboard={{
+                            enabled: true,
+                        }}
+                        pagination={{
+                        clickable: true,
+                        }}
+                        modules={[Mousewheel, Pagination, Keyboard]}
+                        onSlideChange={handleSlideChange}
+                        initialSlide={currentSlideIndex}
+                        className="mySwiper"
+                    > 
+                        {dataSearch.Macros && typeof dataSearch.Macros === 'object' && Object.entries(dataSearch.Macros).map(function (search, index)  {
+                            return (
+                                <SwiperSlide key={index} >
+                                    <SearchMacro data={search}/>
+                                </SwiperSlide>
+                            )
+                        })}
+                        
+                    </Swiper>
+                </div>             
+                
+            </div>
         </div>
     );
 };
