@@ -16,8 +16,8 @@ limitations under the License.
 
 import React, {useState} from 'react';
 
-import '../PreviousExecutionResponsiveTablet/previousExeResTablet.css'
-import { getStatusClass, formatDate, closeTables, openTables} from '../../utils/Utils';
+import './previousExeResTablet.css'
+import { getStatusClass, formatDate, closeTables, openTables} from '../../../utils/Utils';
 
 const PreviousExeResTablet = ({data, className}) => {
 

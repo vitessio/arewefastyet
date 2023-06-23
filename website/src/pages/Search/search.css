@@ -85,3 +85,98 @@ limitations under the License.
 .search__macro{
     margin-top: 100px;
 }
+
+.search__micro{
+    margin-top: 100px;
+    padding: 0px 100px;
+}
+
+.searchSidebar{
+    background-color: rgb(117, 58, 3);;
+    padding: 0px 20px 0px 20px;
+    font-style: italic;
+    border-top: #E77002 1px  solid;
+    border-left: #E77002 1px  solid;
+    border-bottom: #E77002 1px  solid;
+    border-radius: 10px 0px 0px 10px;
+    text-align: end;
+    width: 15%;
+    margin-top: 85px;
+}
+
+.searchSidebar span{
+    padding: 13.25px 0px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+@media only screen and (max-width: 1100px) {
+    .search__micro{
+        padding: 0px 10px;
+    }
+
+    .search__top__text h2{
+        font-size: 3rem;
+    }
+
+    .search__top__text{
+        margin-right: 100px;
+    }
+
+    .searchStats{
+        border: solid 2px white;
+        width: 300px;
+        height: 300px;
+        margin-top: 100px;
+    }
+
+    .searchSidebar{
+        width: 24%;
+    }
+}
+
+@media only screen and (max-width: 767px){
+    .search{
+        padding: 0px 3px 0px 3px;
+    }
+
+    .search__micro{
+        padding: 0px 2px;
+    }
+
+    .search__top__text{
+        width: 100%;
+        text-align: center;
+    }
+
+    .search__top__text h2{
+        font-size: 2rem;
+    }
+
+    .search__top{
+        flex-direction: column;
+    }
+
+    .searchStats{
+        margin: auto;
+        margin-top: 30px;
+    }
+
+    .searchSidebar{
+        border-radius: 10px 0px 0px 10px;
+        width: 35%;
+        border: #E77002 1px solid;
+        margin-top: 88px;
+        padding: 0px 7px;
+    }
+
+    .searchSidebar span{
+        font-size: 0.7rem;
+        min-height: 27px;
+        padding: 0px;
+        margin: 7.25px 0px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+    }
+}

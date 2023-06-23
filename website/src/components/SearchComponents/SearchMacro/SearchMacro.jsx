@@ -28,7 +28,7 @@ const SearchMacro = ({data}) => {
            {result ? (
                 <table>
                     <tbody>
-                        <tr><td><span>{data[1][0].Result.qps.total}</span></td></tr>
+                        <tr ><td id='marginTr'><span className='marginTr'>{data[1][0].Result.qps.total}</span></td></tr>
                         <tr><td><span>{data[1][0].Result.qps.reads}</span></td></tr>
                         <tr><td><span>{data[1][0].Result.qps.writes}</span></td></tr>
                         <tr><td><span>{data[1][0].Result.qps.other}</span></td></tr>

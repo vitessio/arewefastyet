@@ -62,5 +62,10 @@ table{
 @media only screen and (max-width: 767px){
     .search__macro__data h3{
         font-size: 1rem;
+        padding-bottom: 53px;
+    }
+
+    #marginTr{
+        padding: 15.5px 0px 5px 0px;
     }
 }

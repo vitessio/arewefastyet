@@ -25,7 +25,8 @@ import "swiper/css/pagination";
 
 import { errorApi } from '../../utils/Utils';
 import { Mousewheel, Pagination, Keyboard } from "swiper";
-import SearchMacro from '../../components/SearchMacro/SearchMacro';
+import SearchMacro from '../../components/SearchComponents/SearchMacro/SearchMacro';
+import SearchMicro from '../../components/SearchComponents/SearchMicro/SearchMicro';
 
 const Search = () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -35,6 +36,7 @@ const Search = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -60,14 +62,14 @@ const Search = () => {
     const navigate = useNavigate();
     
     useEffect(() => {
-        navigate(`?git_ref=${gitRef}`)
-    }, [gitRef]) 
+        navigate(`?git_ref=${gitRef}&ptag=${currentSlideIndex}`)
+    }, [gitRef, currentSlideIndex]) 
 
     const handleInputChange = (e) => {
         setGitRef(e.target.value);
       };
       
-      const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setIsFormSubmitted((prevState) => !prevState);
       };
@@ -75,9 +77,7 @@ const Search = () => {
     const handleSlideChange = (swiper) => {
         setCurrentSlideIndex(swiper.realIndex);
     };
-
-    const macros = dataSearch.Macros
-    console.log(Object.entries(dataSearch))
+    
     return (
         <div className='search'>
             <div className='search__top justify--content'>
@@ -106,69 +106,91 @@ const Search = () => {
                     <button type="submit">Search</button>
                 </form>
             </div>
-            <div className='search__macro justify--content '>
-                <div className='macrobench__Sidebar flex--column'>
-                    <span >QPS Total</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>QPS Reads</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>QPS Writes</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>QPS Other</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>TPS</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Latency</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Errors</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Reconnects</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Time</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Threads</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Total CPU time</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>CPU time vtgate</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>CPU time vttablet</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Total Allocs bytes</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Allocs bytes vtgate</span>
-                    <figure className='macrobench__Sidebar__line'></figure>
-                    <span>Allocs bytes vttablet</span>
-                </div>          
-                <div className='carousel__container'>
-                    <Swiper
-                        direction={"vertical"}
-                        slidesPerView={1}
-                        spaceBetween={30}
-                        mousewheel={true}
-                        keyboard={{
-                            enabled: true,
-                        }}
-                        pagination={{
-                        clickable: true,
-                        }}
-                        modules={[Mousewheel, Pagination, Keyboard]}
-                        onSlideChange={handleSlideChange}
-                        initialSlide={currentSlideIndex}
-                        className="mySwiper"
-                    > 
-                        {dataSearch.Macros && typeof dataSearch.Macros === 'object' && Object.entries(dataSearch.Macros).map(function (search, index)  {
-                            return (
-                                <SwiperSlide key={index} >
-                                    <SearchMacro data={search}/>
-                                </SwiperSlide>
-                            )
-                        })}
-                        
-                    </Swiper>
-                </div>             
-                
-            </div>
+            {error ? (
+                    <div className='macrobench__apiError'>{error}</div> 
+                ) : (
+                    <>
+                        <div className='search__macro justify--content '>
+                            <div className='searchSidebar flex--column'>
+                                <span >QPS Total</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>QPS Reads</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>QPS Writes</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>QPS Other</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>TPS</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Latency</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Errors</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Reconnects</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Time</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Threads</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Total CPU time</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>CPU time vtgate</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>CPU time vttablet</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Total Allocs bytes</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Allocs bytes vtgate</span>
+                                <figure className='macrobench__Sidebar__line'></figure>
+                                <span>Allocs bytes vttablet</span>
+                            </div>          
+                            <div className='carousel__container'>
+                                <Swiper
+                                    direction={"vertical"}
+                                    slidesPerView={1}
+                                    spaceBetween={30}
+                                    mousewheel={true}
+                                    keyboard={{
+                                        enabled: true,
+                                    }}
+                                    pagination={{
+                                    clickable: true,
+                                    }}
+                                    modules={[Mousewheel, Pagination, Keyboard]}
+                                    onSlideChange={handleSlideChange}
+                                    initialSlide={currentSlideIndex}
+                                    className="mySwiper"
+                                > 
+                                    {dataSearch.Macros && typeof dataSearch.Macros === 'object' && Object.entries(dataSearch.Macros).map(function (searchMacro, index)  {
+                                        return (
+                                            <SwiperSlide key={index} >
+                                                <SearchMacro data={searchMacro}/>
+                                            </SwiperSlide>
+                                        )
+                                    })}
+                                    
+                                </Swiper>
+                            </div>             
+                        </div>
+                        <div className='search__micro'>
+                            <div className='micro__thead space--between'>
+                                <span className='width--12em'>Package</span>
+                                <span className='width--14em'>Benchmark Name</span>
+                                <span className='width--18em hiddenMobile'>Number of Iterations</span>
+                                <span className='width--18em hiddenTablet'>Time/op</span>
+                                <span className='width--6em'>More</span>
+                            </div>
+                            <figure className='micro__thead__line'></figure>
+                            {dataSearch.Micro && typeof dataSearch.Micro === 'object' && Object.entries(dataSearch.Micro).map(function (searchMicro, index) {
+                                const isEvenIndex = index % 2 === 0;
+                                const backgroundGrey = isEvenIndex ? 'grey--background' : '';
+                                return(
+                                    <SearchMicro key={index} data={searchMicro} className={backgroundGrey}/>
+                                )
+                            })}
+                        </div>
+                </>
+            )}
         </div>
     );
 };
