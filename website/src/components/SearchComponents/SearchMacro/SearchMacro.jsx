@@ -47,7 +47,26 @@ const SearchMacro = ({data}) => {
                     </tbody>
                 </table>
            ) : (
-                <div className='dataNull'> null </div>
+            <table>
+            <tbody>
+                <tr ><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+                <tr><td><span>0</span></td></tr>
+            </tbody>
+        </table>
            )}
            
         </div>
