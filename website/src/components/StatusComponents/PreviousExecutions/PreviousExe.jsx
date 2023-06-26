@@ -17,8 +17,8 @@ limitations under the License.
 import React from 'react';
 
 
-import '../PreviousExecutions/previousexe.css'
-import { getStatusClass, formatDate} from '../../utils/Utils';
+import './previousexe.css'
+import { getStatusClass, formatDate} from '../../../utils/Utils';
 
 const PreviousExe = ({data, className}) => {
           

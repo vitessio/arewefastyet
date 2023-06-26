@@ -15,9 +15,9 @@ limitations under the License.
 */
 
 import React from 'react';
-import { formatByteForGB } from '../../utils/Utils';
+import { formatByteForGB } from '../../../utils/Utils';
 
-import '../Macrobench/macrobench.css'
+import './macrobench.css'
 
 const Macrobench = ({data, gitRefLeft, gitRefRight}) => {
     return (

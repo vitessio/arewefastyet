@@ -15,10 +15,10 @@ limitations under the License.
 */
 
 import React, { useState } from 'react';
-import { formatByteForGB } from '../../utils/Utils';
+import { formatByteForGB } from '../../../utils/Utils';
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import '../MacrobenchMobile/macrobenchmobile.css'
+import './macrobenchmobile.css'
 import "swiper/css";
 import "swiper/css/effect-cards";
 

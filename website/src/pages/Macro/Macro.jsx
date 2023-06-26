@@ -24,8 +24,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 import { Mousewheel, Pagination, Keyboard } from "swiper";
-import Macrobench from '../../components/Macrobench/Macrobench';
-import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
+import Macrobench from '../../components/MacroComponents/Macrobench/Macrobench';
+import MacrobenchMobile from '../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile';
 import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/Utils';
 
 const Macro = () => {
