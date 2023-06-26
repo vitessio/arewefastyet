@@ -26,8 +26,8 @@ const Macrobench = ({data, gitRefLeft, gitRefRight}) => {
             <table>
                 <thead>
                     <tr>
-                        <th><h4>{gitRefLeft}</h4></th>
-                        <th><h4>{gitRefRight}</h4></th>
+                        <th><h4>{gitRefLeft.slice(0, 20)}</h4></th>
+                        <th><h4>{gitRefRight.slice(0, 20)}</h4></th>
                         <th><h4>Impoved by %</h4></th>
                     </tr>
                 </thead>
