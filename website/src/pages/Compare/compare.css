@@ -13,3 +13,40 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+.compare{
+    color: white;
+    padding: 0px 20px 0px 20px;
+    position: relative;
+    height: 100%;
+}
+
+/* COMPARE TOP */
+.compare__top{
+    margin-top: 100px;
+    
+}
+
+.compare__top__text{
+    width: 50%;
+    margin-right: 200px;
+}
+
+.compare__top__text h2{
+    font-size: 5rem;
+    font-weight:100;
+    margin-bottom: 50px;
+    margin-top: 20px;
+    width: 100%
+}
+
+.compare__top__text span{
+    color: #B5ADAD;
+    width: 60%;
+    line-height: 40px;
+}
+
+.compareStats{
+    border: solid 2px white;
+    width: 400px;
+}
