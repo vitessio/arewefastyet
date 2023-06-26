@@ -14,11 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import '../Compare/compare.css'
 
 const Compare = () => {
+
+    const [gitRefLeft, setGitRefLeft] = useState('')
+    const [gitRefRight, setGitRefRight] = useState('')
+    
+    const handleInputChangeLeft = (e) => {
+        setGitRefLeft(e.target.value);
+      };
+    
+
+      const handleInputChangeRight = (e) => {
+        setGitRefRight(e.target.value);
+      };
     return (
         <div className='compare'>
             <div className='compare__top justify--content'>
@@ -36,6 +48,29 @@ const Compare = () => {
                 <figure className='compareStats'></figure>
             </div>
             <figure className='line'></figure>
+            <div className='compare__bottom'>
+                <div className='justify--content form__container'>
+                    <h3>Comparing <a href={`https://github.com/vitessio/vitess/commit/${gitRefLeft}`}>{gitRefLeft.slice(0, 8)}</a> with <a href={`https://github.com/vitessio/vitess/commit/${gitRefRight}`}>{gitRefRight.slice(0, 8)}</a></h3>
+                    <form className='justify--content'>
+                        <input
+                        type="text"
+                        value={gitRefLeft}
+                        onChange={handleInputChangeLeft}
+                        placeholder="Left commit SHA"
+                        className='form__inputLeft'></input>
+                        <input
+                        type="text"
+                        value={gitRefRight}
+                        onChange={handleInputChangeRight}
+                        placeholder="Left commit SHA"
+                        className='form__inputRight'
+                        >
+                        </input>
+                        <button>Compare</button>
+                    </form>
+                </div>
+                
+            </div>
         </div>
     );
 };
