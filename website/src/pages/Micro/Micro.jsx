@@ -153,7 +153,7 @@ const Micro = () => {
                         <div className='width--12em'></div>
                         <div className='width--14em'></div>
                         <div className='width--18em space--between--flex'>
-                            <span className='width--100'>{gitRefLeft}</span> 
+                            <span className='width--100'>{gitRefLeft}</span>
                             <span className='width--100'>{gitRefRight}</span>
                             <span className='width--100'>Diff %</span>
                         </div>

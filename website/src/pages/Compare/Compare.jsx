@@ -27,6 +27,7 @@ import { Mousewheel, Pagination, Keyboard } from "swiper";
 import { errorApi, updateCommitHash} from '../../utils/Utils';
 import Macrobench from '../../components/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
+import Microbench from '../../components/Microbench/Microbench';
 
 const Compare = () => {
 
@@ -43,6 +44,7 @@ const Compare = () => {
     const [dataMacrobench, setDataMacrobench] = useState([]); 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
     const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(urlParams.get('ptagM') == null ? '0' : urlParams.get('ptagM'))
+    const [dataMicrobench, setDataMicrobench] = useState([]); 
 
     useEffect(() => {
             const fetchData = async () => {
@@ -50,7 +52,7 @@ const Compare = () => {
                     const responseMacrobench = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`)
 
                     const jsonDataMacrobench = await responseMacrobench.json();
-                    console.log(jsonDataMacrobench)
+                    
                     setDataMacrobench(jsonDataMacrobench)
                     setIsLoading(false)
                 } catch (error) {
@@ -63,13 +65,30 @@ const Compare = () => {
         
     }, [gitRefLeft, gitRefRight])
 
+    useEffect(() => {
+            const fetchData = async () => {
+                try {
+                    const responseMicrobench = await fetch(`${import.meta.env.VITE_API_URL}microbench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`)
+                    
+                    const jsonDataMicrobench = await responseMicrobench.json();
+                    console.log(jsonDataMicrobench)
+                    setDataMicrobench(jsonDataMicrobench)
+                } catch (error) {
+                    console.log('Error while retrieving data from the API', error);
+                    setError(errorApi);
+                }
+            };
+            fetchData();
+         
+    }, [gitRefLeft, gitRefRight])
+
     // Changing the URL relative to the reference of a selected benchmark.
     // Storing the carousel position as a URL parameter.
     const navigate = useNavigate();
     
     useEffect(() => {
-        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}`)
-    }, [gitRefLeft, gitRefRight]) 
+        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`)
+    }, [gitRefLeft, gitRefRight, currentSlideIndex, currentSlideIndexMobile]) 
     
     const handleInputChangeLeft = (e) => {
         setGitRefLeft(e.target.value);
@@ -83,6 +102,8 @@ const Compare = () => {
       const handleSlideChange = (swiper) => {
         setCurrentSlideIndex(swiper.realIndex);
     };
+
+    const slicedRef = gitRefLeft.slice(0, 8);
     return (
         <div className='compare'>
             <div className='compare__top justify--content'>
@@ -130,7 +151,10 @@ const Compare = () => {
                             <RingLoader loading={isLoading} color='#E77002' size={300}/>
                             </div>
                         ): ( 
+                            <>
+                            <h3 className='compare__macrobench__title'>Macro Benchmarks</h3>
                             <div className='compare__macrobench__Container flex'>
+                                
                                 <div className='compare__macrobench__Sidebar flex--column'>
                                     <span >QPS Total</span>
                                     <figure className='macrobench__Sidebar__line'></figure>
@@ -201,6 +225,43 @@ const Compare = () => {
                                     </Swiper>
                                 </div>                
                             </div>
+                            
+                            <div className='compare__micro__container'>
+                                <h3>Micro benchmarks</h3>
+                                <div className='micro__thead space--between'>
+                                    <span className='width--12em'>Package</span>
+                                    <span className='width--14em'>Benchmark Name</span>
+                                    <span className='width--18em hiddenMobile'>Number of Iterations</span>
+                                    <span className='width--18em hiddenTablet'>Time/op</span>
+                                    <span className='width--6em'>More</span>
+                                </div>
+                                <figure className='micro__thead__line'></figure>
+                                <div className='space--between--flex data__top hiddenMobile'>
+                                    <div className='width--12em'></div>
+                                    <div className='width--14em'></div>
+                                    <div className='width--18em space--between--flex'>
+                                        <span className='width--100'>{gitRefLeft.slice(0, 8)}</span> 
+                                        <span className='width--100'>{gitRefRight.slice(0, 8)}</span>
+                                        <span className='width--100'>Diff %</span>
+                                    </div>
+                                    <div className='width--18em space--between--flex hiddenTablet'>
+                                        <span className='width--100'>{gitRefLeft.slice(0, 8)}</span> 
+                                        <span className='width--100'>{gitRefRight.slice(0, 8)}</span>
+                                        <span className='width--100'>Diff %</span>
+                                    </div>
+                                    <div className='width--6em'></div>
+                                </div>
+                                {dataMicrobench.length > 0 && dataMicrobench[0].PkgName !== '' && dataMicrobench[0].Name !== '' && dataMicrobench[0].SubBenchmarkName !== '' && (
+                                    dataMicrobench.map((micro, index) => {
+                                        const isEvenIndex = index % 2 === 0;
+                                        const backgroundGrey = isEvenIndex ? 'grey--background' : '';
+                                        return(
+                                            <Microbench data={micro} key={index} className={backgroundGrey} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight}/>
+                                        )
+                                    })
+                                )}
+                            </div>
+                        </>
                     ))}
                 
             </div>
