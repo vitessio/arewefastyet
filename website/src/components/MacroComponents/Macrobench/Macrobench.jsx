@@ -15,14 +15,16 @@ limitations under the License.
 */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { formatByteForGB } from '../../../utils/Utils';
 
 import './macrobench.css'
 
-const Macrobench = ({data, gitRefLeft, gitRefRight}) => {
+const Macrobench = ({data, gitRefLeft, gitRefRight, showSpan}) => {
     return (
         <div className='macrobench__component'>
             <h3>{data.type}</h3>
+            {showSpan && <span>Click <Link to="/macrobench/queries/compare" state={{some : data}}>here</Link> to see the query plans comparison for this benchmark.</span>}
             <table>
                 <thead>
                     <tr>

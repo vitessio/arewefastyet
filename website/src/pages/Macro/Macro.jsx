@@ -211,7 +211,7 @@ const Macro = () => {
                                         {dataMacrobench.map((macro, index) => {
                                             return (
                                                 <SwiperSlide key={index}>
-                                                    <Macrobench data={macro} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight} swiperSlide={SwiperSlide}/>
+                                                    <Macrobench data={macro} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight} swiperSlide={SwiperSlide} showSpan={true}/>
                                                     <MacrobenchMobile 
                                                     data={macro} 
                                                     gitRefLeft={gitRefLeft} 

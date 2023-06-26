@@ -25,6 +25,7 @@ import Layout from '../pages/Layout'
 import Macro from './Macro/Macro';
 import Micro from './Micro/Micro';
 import Search from './Search/Search';
+import MacroQueriesCompare from './MacroQueriesCompare/MacroQueriesCompare';
 
 const PublicRoute = () => {
     return (
@@ -36,7 +37,9 @@ const PublicRoute = () => {
             <Route path='/status' element={<Status/>}/>
             <Route path='/search' element={<Search/>}/>
             <Route path='/macro' element={<Macro/>}/>
+            <Route path='/macrobench/queries/compare' element={<MacroQueriesCompare/>}/>
             <Route path='/micro' element={<Micro/>}/>
+
 
             <Route path='*' element={<Error/>}/>
 
