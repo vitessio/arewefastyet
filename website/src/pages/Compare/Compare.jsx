@@ -139,7 +139,7 @@ const Compare = () => {
                         className='form__inputRight'
                         >
                         </input>
-                        <button>Compare</button>
+                        
                     </form>
                 </div>
 
