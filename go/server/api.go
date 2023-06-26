@@ -219,3 +219,29 @@ func (s *Server) searchBenchmarck(c *gin.Context) {
 
 	c.JSON(http.StatusOK, res)
 }
+
+func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
+	leftGitRef := c.Query("ltag")
+	rightGitRef := c.Query("rtag")
+	macroType := macrobench.Type(c.Query("type"))
+
+	if leftGitRef == "" || rightGitRef == "" || macroType == "" {
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "The gitref left and right and where the macrotype are incorrect are missing. Please kindly add them."})
+		return
+	}
+
+	plansLeft, err := macrobench.GetVTGateSelectQueryPlansWithFilter(leftGitRef, macroType, macrobench.Gen4Planner, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	plansRight, err := macrobench.GetVTGateSelectQueryPlansWithFilter(rightGitRef, macroType, macrobench.Gen4Planner, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	comparison := macrobench.CompareVTGateQueryPlans(plansLeft, plansRight)
+	c.JSON(http.StatusOK, comparison)
+}
