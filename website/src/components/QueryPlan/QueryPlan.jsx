@@ -20,22 +20,17 @@ import ReactJson from 'react-json-pretty';
 import 'react-json-pretty/themes/monikai.css';
 import '../QueryPlan/queryPlan.css'
 
-const QueryPlan = ({data}) => {
+const QueryPlan = ({data, isOpen, togglePlan}) => {
 
-    const [showPlan, setShowPlan] = useState(false);
-
-    const togglePlan = () => {
-        setShowPlan(!showPlan);
+    const queryPlanKeyStyle = {
+        background: isOpen ? 'orange' : 'initial',
     };
-
     
-    
-
     return (
         <div className='queryPlan'>
-            <div className='queryPlan__key' onClick={togglePlan}>
-                <span >{data.Key}</span>
-                {showPlan && (
+            <div className='queryPlan__key' style={queryPlanKeyStyle} onClick={togglePlan}>
+                <span>{data.Key}</span>
+                {isOpen && (
                 <div className='plan'>
                     <div className='statistics'>
                         <h3>Statistics</h3>
@@ -84,10 +79,21 @@ const QueryPlan = ({data}) => {
                             </div>
                         </div>
                     </div>
+                    {data.Left.Value.Plan === data.Right.Value.Plan ? (
+                        <div className='planEquivalent'>Plans are equivalent.</div>
+                    ) : (
+                        <div className='planDifferent'>Plans are différent</div>
+                    )}
                     <div className='plan__queryPlan'>
                         <h3>Query Plan</h3>
                         <ReactJson data={data.Left.Value.Instructions} className='json'/>
                     </div>
+                    {data.Left.Value.Plan === data.Right.Value.Plan ? null : (
+                        <div className='plan__queryPlan'>
+                            <h3>Query Plan</h3>
+                            <ReactJson data={data.Right.Value.Instructions} className='json'/>
+                        </div>
+                    )}
                 </div>
                 )}
             </div>

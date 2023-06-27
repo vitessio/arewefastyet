@@ -27,7 +27,7 @@ limitations under the License.
 }
 
 .queryPlan__key:hover{
-    background-color: #E77002;
+  background-color: orange !important;
 }
 
 .plan{
@@ -35,6 +35,7 @@ limitations under the License.
     width: 130%;
     left: 110%;
     top: 0%;
+    animation: fade-in 1.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
 }
 
 /* STATISTICS */
@@ -63,6 +64,7 @@ limitations under the License.
 
 .statistics table{
     border-collapse: collapse;
+    width: 100%;
 }
 
 .statistics thead{
@@ -94,3 +96,30 @@ limitations under the License.
     padding: 20px;
     background-color: #272822;
 }
+
+.planEquivalent{
+    width: 100%;
+    padding: 30px;
+    text-align: center;
+    background-color: green;
+    margin: 20px 0px;
+    font-size: 1.2rem;
+}
+
+.planDifferent{
+    width: 100%;
+    padding: 30px;
+    text-align: center;
+    background-color: red;
+    margin: 20px 0px;
+    font-size: 1.2rem;
+}
+
+@keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }

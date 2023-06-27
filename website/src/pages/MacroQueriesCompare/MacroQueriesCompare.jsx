@@ -46,8 +46,12 @@ const MacroQueriesCompare = () => {
         fetchData();
     }, [])
     
-    
-    
+    const [openPlanIndex, setOpenPlanIndex] = useState(0); // Index of the currently open plan
+
+    const togglePlan = (index) => {
+        setOpenPlanIndex((prevIndex) => (prevIndex === index ? -1 : index)); // If the plan is already open, close it; otherwise, open it
+    };
+
     return (
         <div className='query'>
             <div className='query__top flex--column'>
@@ -58,11 +62,13 @@ const MacroQueriesCompare = () => {
                 <span>Queries are ordered from the worst regression in execution time to the best. All executed queries are shown below.</span>
             </div>
             <figure className='line'></figure>
-            {dataQueryPlan.map((queryPlan, index) => {
-                return (
-                    <QueryPlan key={index} data={queryPlan}/>
-                )
-            })}
+            <div className='queryPlan__container'>
+                {dataQueryPlan.map((queryPlan, index) => {
+                    return (
+                        <QueryPlan key={index} data={queryPlan} isOpen={index === openPlanIndex} togglePlan={() => togglePlan(index)}/>
+                    )
+                })}
+            </div>
 
         </div>
     );

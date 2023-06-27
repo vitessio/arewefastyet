@@ -41,3 +41,7 @@ limitations under the License.
 .query__top b{
     color:#E77002
 }
+
+.queryPlan__container{
+    margin-bottom: 900px;
+}
