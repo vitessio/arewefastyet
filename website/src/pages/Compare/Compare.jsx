@@ -106,24 +106,9 @@ const Compare = () => {
     const slicedRef = gitRefLeft.slice(0, 8);
     return (
         <div className='compare'>
-            <div className='compare__top justify--content'>
-                <div className='compare__top__text'>
-                    <h2>Compare</h2>
-                    <span>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a augue mi.
-                            Etiam sed imperdiet ligula, vel elementum velit.
-                            Phasellus sodales felis eu condimentum convallis.
-                            Suspendisse sodales malesuada iaculis. Mauris molestie placerat ex non malesuada.
-                            Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt volutpat. 
-                    </span>
-                    
-                </div>
-                <figure className='compareStats'></figure>
-            </div>
-            <figure className='line'></figure>
-            <div className='compare__bottom'>
+            <div className='compare__top'>
                 <div className='justify--content form__container'>
-                    <h3>Comparing <a href={`https://github.com/vitessio/vitess/commit/${gitRefLeft}`}>{gitRefLeft.slice(0, 8)}</a> with <a href={`https://github.com/vitessio/vitess/commit/${gitRefRight}`}>{gitRefRight.slice(0, 8)}</a></h3>
+                    <h3>Comparing <a href={`https://github.com/vitessio/vitess/commit/${gitRefLeft}`}>{gitRefLeft ? gitRefLeft.slice(0, 8) : 'Left'}</a> with <a href={`https://github.com/vitessio/vitess/commit/${gitRefRight}`}>{gitRefRight ? gitRefRight.slice(0, 8) : 'Right'}</a></h3>
                     <form className='justify--content'>
                         <input
                         type="text"
@@ -135,7 +120,7 @@ const Compare = () => {
                         type="text"
                         value={gitRefRight}
                         onChange={handleInputChangeRight}
-                        placeholder="Left commit SHA"
+                        placeholder="Right commit SHA"
                         className='form__inputRight'
                         >
                         </input>
@@ -208,7 +193,7 @@ const Compare = () => {
                                         {dataMacrobench.map((macro, index) => {
                                             return (
                                                 <SwiperSlide key={index}>
-                                                    <Macrobench data={macro} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight} swiperSlide={SwiperSlide}/>
+                                                    <Macrobench data={macro} gitRefLeft={gitRefLeft.slice(0, 8)} gitRefRight={gitRefRight.slice(0, 8)} swiperSlide={SwiperSlide}/>
                                                     <MacrobenchMobile 
                                                     data={macro} 
                                                     gitRefLeft={gitRefLeft} 
@@ -256,7 +241,7 @@ const Compare = () => {
                                         const isEvenIndex = index % 2 === 0;
                                         const backgroundGrey = isEvenIndex ? 'grey--background' : '';
                                         return(
-                                            <Microbench data={micro} key={index} className={backgroundGrey} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight}/>
+                                            <Microbench data={micro} key={index} className={backgroundGrey} gitRefLeft={gitRefLeft.slice(0, 8)} gitRefRight={gitRefRight.slice(0, 8)}/>
                                         )
                                     })
                                 )}

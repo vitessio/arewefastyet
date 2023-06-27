@@ -52,8 +52,8 @@ const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
             <div className='microbench__bottom flex--column'>
                 <div className='space--between'>
                     <span className='width--18em'></span>
-                    <span className='width--12em'>{gitRefLeft.slice(0, 10)}</span>
-                    <span className='width--12em'>{gitRefRight.slice(0, 10)}</span>
+                    <span className='width--12em'>{gitRefLeft}</span>
+                    <span className='width--12em'>{gitRefRight}</span>
                     <span className='width--12em'>Diff %</span>
                 </div>
                 <figure className='microbench__bottom__line'></figure>

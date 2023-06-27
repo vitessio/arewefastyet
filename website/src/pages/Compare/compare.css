@@ -21,37 +21,9 @@ limitations under the License.
     height: 100%;
 }
 
-/* COMPARE TOP */
 .compare__top{
     margin-top: 100px;
-    
 }
-
-.compare__top__text{
-    width: 50%;
-    margin-right: 200px;
-}
-
-.compare__top__text h2{
-    font-size: 5rem;
-    font-weight:100;
-    margin-bottom: 50px;
-    margin-top: 20px;
-    width: 100%
-}
-
-.compare__top__text span{
-    color: #B5ADAD;
-    width: 60%;
-    line-height: 40px;
-}
-
-.compareStats{
-    border: solid 2px white;
-    width: 400px;
-}
-
-/*COMPARE BOTTOM*/
 
 .form__container{
     flex-direction: column;

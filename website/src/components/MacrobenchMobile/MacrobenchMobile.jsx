@@ -65,7 +65,7 @@ const MacrobenchMobile = ({data, gitRefLeft, gitRefRight, setCurrentSlideIndexMo
                     </SwiperSlide>
                     <SwiperSlide>
                         <div className='macrobench__data flex--column'>
-                            <h4>{gitRefLeft.slice(0, 19)}</h4>
+                            <h4>{gitRefLeft ? gitRefLeft : 'Left'}</h4>
                             <span>{data.diff.Left.Result.qps.total}</span>
                             <span>{data.diff.Left.Result.qps.reads}</span>
                             <span>{data.diff.Left.Result.qps.writes}</span>
@@ -87,7 +87,7 @@ const MacrobenchMobile = ({data, gitRefLeft, gitRefRight, setCurrentSlideIndexMo
                     </SwiperSlide>
                     <SwiperSlide>
                         <div className='macrobench__data flex--column' >
-                            <h4>{gitRefRight.slice(0, 19)}</h4>
+                            <h4>{gitRefRight ? gitRefRight : 'Right'}</h4>
                             <span>{data.diff.Right.Result.qps.total}</span>
                             <span>{data.diff.Right.Result.qps.reads}</span>
                             <span>{data.diff.Right.Result.qps.writes}</span>
