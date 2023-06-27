@@ -73,15 +73,24 @@ limitations under the License.
     padding: 20px;
 }
 
+.statistics__table{
+    padding: 10px;
+}
+
 /*QUERY PLAN*/
 
 .plan__queryPlan{
     margin-top: 20px;
     border: #E77002 solid 1px;
-    text-align: center;
+    text-align: start;
 }
 
 .plan__queryPlan h3{
     background-color: #343A40;
     padding: 10px;
+}
+
+.json{
+    padding: 20px;
+    background-color: #272822;
 }

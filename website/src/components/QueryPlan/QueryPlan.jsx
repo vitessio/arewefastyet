@@ -15,7 +15,9 @@ limitations under the License.
 */
 
 import React, {useState}from 'react';
+import ReactJson from 'react-json-pretty';
 
+import 'react-json-pretty/themes/monikai.css';
 import '../QueryPlan/queryPlan.css'
 
 const QueryPlan = ({data}) => {
@@ -25,6 +27,8 @@ const QueryPlan = ({data}) => {
     const togglePlan = () => {
         setShowPlan(!showPlan);
     };
+
+    
     
 
     return (
@@ -40,47 +44,49 @@ const QueryPlan = ({data}) => {
                                 <span className='statistics__key__title'><b>Query</b></span>
                                 <span className='statistics__key'>{data.Key}</span>
                             </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th colSpan="1"></th>
-                                        <th colSpan="1">A</th>
-                                        <th colSpan="1">B</th>
-                                        <th colSpan="1">Diff</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><b>ExecutionsCount</b></td>
-                                        <td>{data.Left.Value.ExecCount}</td>
-                                        <td>{data.Right.Value.ExecCount}</td>
-                                        <td>{data.ExecCountDiff}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Execution Time</b></td>
-                                        <td>{data.Left.Value.ExecTime}</td>
-                                        <td>{data.Right.Value.ExecTime}</td>
-                                        <td>{data.ExecTimeDiff}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Rows Returned</b></td>
-                                        <td>{data.Left.Value.RowsReturned}</td>
-                                        <td>{data.Right.Value.RowsReturned}</td>
-                                        <td>{data.RowsReturnedDiff}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Errors</b></td>
-                                        <td>{data.Left.Value.Errors}</td>
-                                        <td>{data.Right.Value.Errors}</td>
-                                        <td>{data.ErrorsDiff}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div className='statistics__table'>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th colSpan="1"></th>
+                                            <th colSpan="1">A</th>
+                                            <th colSpan="1">B</th>
+                                            <th colSpan="1">Diff</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><b>ExecutionsCount</b></td>
+                                            <td>{data.Left.Value.ExecCount}</td>
+                                            <td>{data.Right.Value.ExecCount}</td>
+                                            <td>{data.ExecCountDiff}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Execution Time</b></td>
+                                            <td>{data.Left.Value.ExecTime}</td>
+                                            <td>{data.Right.Value.ExecTime}</td>
+                                            <td>{data.ExecTimeDiff}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Rows Returned</b></td>
+                                            <td>{data.Left.Value.RowsReturned}</td>
+                                            <td>{data.Right.Value.RowsReturned}</td>
+                                            <td>{data.RowsReturnedDiff}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Errors</b></td>
+                                            <td>{data.Left.Value.Errors}</td>
+                                            <td>{data.Right.Value.Errors}</td>
+                                            <td>{data.ErrorsDiff}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div className='plan__queryPlan'>
                         <h3>Query Plan</h3>
-                        <span>{data.Left.Value.Instructions}</span>
+                        <ReactJson data={data.Left.Value.Instructions} className='json'/>
                     </div>
                 </div>
                 )}
