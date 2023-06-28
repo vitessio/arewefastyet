@@ -16,7 +16,7 @@ limitations under the License.
 
 import React from 'react';
 
-import '../ExecutionQueue/exeQueue.css'
+import './exeQueue.css'
 
 const ExeQueue = ({data}) => {
     return (

@@ -20,10 +20,10 @@ import RingLoader from "react-spinners/RingLoader";
 import { v4 as uuidv4 } from 'uuid';
 
 
-import PreviousExe from '../../components/PreviousExecutions/PreviousExe';
-import ExeQueue from '../../components/ExecutionQueue/ExeQueue';
-import PreviousExeResMobile from '../../components/PreviousExeResponsiveMobile/PreviousExeResMobile';
-import PreviousExeResTablet from '../../components/PreviousExecutionResponsiveTablet/PreviousExeResTablet';
+import PreviousExe from '../../components/StatusComponents/PreviousExecutions/PreviousExe';
+import ExeQueue from '../../components/StatusComponents/ExecutionQueue/ExeQueue';
+import PreviousExeResMobile from '../../components/StatusComponents/PreviousExeResponsiveMobile/PreviousExeResMobile';
+import PreviousExeResTablet from '../../components/StatusComponents/PreviousExecutionResponsiveTablet/PreviousExeResTablet';
 import { errorApi } from '../../utils/Utils';
 import './status.css';
 

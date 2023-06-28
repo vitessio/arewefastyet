@@ -19,7 +19,6 @@
 package macrobench
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -72,10 +71,10 @@ func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanCom
 		for j, rightPlan := range right {
 			if rightPlan.Key == plan.Key {
 				switch instructionRight := rightPlan.Value.Instructions.(type) {
-				case []byte:
+				case string:
 					switch instructionLeft := plan.Value.Instructions.(type) {
-					case []byte:
-						newCompare.SamePlan = bytes.Equal(instructionLeft, instructionRight)
+					case string:
+						newCompare.SamePlan = instructionLeft == instructionRight
 					}
 				}
 				newCompare.Right = &right[j]
@@ -227,7 +226,11 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 		if err != nil {
 			return nil, err
 		}
-
+		switch p := plan.Value.Instructions.(type) {
+		case []byte:
+			plan.Value.Instructions = string(p)
+		}
+		
 		// Remove all comments from the query
 		// This prevents the query from not match across two versions
 		// of Vitess where we changed query hints and added comments
