@@ -25,8 +25,8 @@ import "swiper/css/pagination";
 
 import { Mousewheel, Pagination, Keyboard } from "swiper";
 import { errorApi, updateCommitHash} from '../../utils/Utils';
-import Macrobench from '../../components/Macrobench/Macrobench';
-import MacrobenchMobile from '../../components/MacrobenchMobile/MacrobenchMobile';
+import Macrobench from '../../components/MacroComponents/Macrobench/Macrobench';
+import MacrobenchMobile from '../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile';
 import Microbench from '../../components/Microbench/Microbench';
 
 const Compare = () => {
