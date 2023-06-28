@@ -30,6 +30,35 @@ const QueryPlan = ({data, isOpen, togglePlan}) => {
         <div className='queryPlan'>
             <div className='queryPlan__key' style={queryPlanKeyStyle} onClick={togglePlan}>
                 <span>{data.Key}</span>
+                <div className='badge__container'>
+                    {(data.Left && data.Right) && (data.Left.Value.Errors > 0 && data.Right.Value.Errors > 0) && (
+                        <span className="badge badge--danger">Both Have Errors</span>
+                    )}
+                    {(data.Left && data.Right) && (data.Left.Value.Errors > 0) && (
+                        <span className="badge badge--danger">A Has Errors</span>
+                    )}
+                    {(data.Left && data.Right) && (data.Right.Value.Errors > 0) && (
+                        <span className="badge badge--danger">B Has Errors</span>
+                    )}
+                    {!data.Left && data.Right && (data.Right.Value.Errors > 0) && (
+                        <span className="badge badge--danger">B Has Errors</span>
+                    )}
+                    {!data.Left && data.Right && (
+                        <span className="badge badge--info">Only B</span>
+                    )}
+                    {!data.Right && data.Left && (data.Left.Value.Errors > 0) && (
+                        <span className="badge badge--danger">A Has Errors</span>
+                    )}
+                    {!data.Right && data.Left && (
+                        <span className="badge badge--info">Only A</span>
+                    )}
+                    {data.ExecTimeDiff > 5 && (
+                        <span className="badge badge--warning">A fastest</span>
+                    )}
+                    {data.ExecTimeDiff < -5 && (
+                        <span className="badge badge--succes">B fastest</span>
+                    )}
+                </div>
                 {isOpen && (
                 <div className='plan'>
                     <div className='statistics'>
@@ -79,7 +108,7 @@ const QueryPlan = ({data, isOpen, togglePlan}) => {
                             </div>
                         </div>
                     </div>
-                    {data.Left.Value.Plan === data.Right.Value.Plan ? (
+                    {data.Left.Value.Instructions === data.Right.Value.Instructions ? (
                         <div className='planEquivalent'>Plans are equivalent.</div>
                     ) : (
                         <div className='planDifferent'>Plans are différent</div>
@@ -88,7 +117,7 @@ const QueryPlan = ({data, isOpen, togglePlan}) => {
                         <h3>Query Plan</h3>
                         <ReactJson data={data.Left.Value.Instructions} className='json'/>
                     </div>
-                    {data.Left.Value.Plan === data.Right.Value.Plan ? null : (
+                    {data.Left.Value.Instructions === data.Right.Value.Instructions ? null : (
                         <div className='plan__queryPlan'>
                             <h3>Query Plan</h3>
                             <ReactJson data={data.Right.Value.Instructions} className='json'/>

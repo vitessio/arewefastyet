@@ -115,6 +115,36 @@ limitations under the License.
     font-size: 1.2rem;
 }
 
+/* BADGE */
+
+
+.badge__container{
+    margin-top: 10px;
+    padding-top: 10px;
+}
+.badge{
+    padding: 5px 10px;
+    width: 25%;
+    border-radius: 20px;
+}
+
+.badge--danger{
+    background-color: red;
+}
+
+.badge--info{
+    background-color: blue;
+}
+
+.badge--succes{
+    background-color: rgb(20, 194, 20);
+}
+
+.badge--warning{
+    background-color: rgb(166, 0, 255);
+}
+
+
 @keyframes fade-in {
     0% {
       opacity: 0;
