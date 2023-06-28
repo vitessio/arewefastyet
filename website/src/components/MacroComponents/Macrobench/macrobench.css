@@ -73,6 +73,10 @@ tr:nth-child(2n) {
     .macrobench__data h4{
         font-weight: 200;
     }
+
+    .linkQueryT{
+        font-size: 16px;
+    }
 }
 
 /* MEDIA QUERIES FOR MOBILE */

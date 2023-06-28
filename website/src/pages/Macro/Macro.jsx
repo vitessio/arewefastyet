@@ -224,6 +224,7 @@ const Macro = () => {
                                                     gitRefLeft={gitRefLeft} 
                                                     gitRefRight={gitRefRight} 
                                                     swiperSlide={SwiperSlide} 
+                                                    showSpan={true} 
                                                     handleSlideChange={handleSlideChange} 
                                                     setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                                                     currentSlideIndexMobile={currentSlideIndexMobile}

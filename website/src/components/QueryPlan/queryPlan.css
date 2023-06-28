@@ -122,6 +122,7 @@ limitations under the License.
     margin-top: 10px;
     padding-top: 10px;
 }
+
 .badge{
     padding: 5px 10px;
     width: 25%;
@@ -153,3 +154,63 @@ limitations under the License.
       opacity: 1;
     }
   }
+
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .plan{
+        position: relative;
+        left: 0%;
+        top: 0%;
+        width: 90%;
+        margin: 40px 0px;
+    }
+
+    .queryPlan__key:hover{
+        background-color: #1F1D1D !important;
+    }
+
+    .queryPlan__key__span{
+        padding: 50px 20px 30px 20px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .queryPlan__key{
+        display: flex;
+        flex-direction: column;
+        padding: 5px 5px 20px 5px;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .badge{
+        margin-bottom: 20px;
+    }
+
+    .statistics{
+        background-color: #272822;
+    }
+}
+
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .query{
+        padding: 2px;
+    }
+
+    .plan{
+        width: 100%;
+        
+    }
+
+    .statistics{
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .statistics td{
+        padding: 20px 5px;
+    }
+}

@@ -23,13 +23,17 @@ import '../QueryPlan/queryPlan.css'
 const QueryPlan = ({data, isOpen, togglePlan}) => {
 
     const queryPlanKeyStyle = {
-        background: isOpen ? 'orange' : 'initial',
-    };
+        background: isOpen && window.innerWidth > 1225 ? 'orange' : 'initial',
+      };
+    
+      const queryTitleStyle = {
+        background: isOpen && window.innerWidth < 1225 ? 'orange' : 'initial',
+      };
     
     return (
         <div className='queryPlan'>
             <div className='queryPlan__key' style={queryPlanKeyStyle} onClick={togglePlan}>
-                <span>{data.Key}</span>
+                <span className='queryPlan__key__span' style={queryTitleStyle}>{data.Key}</span>
                 <div className='badge__container'>
                     {(data.Left && data.Right) && (data.Left.Value.Errors > 0 && data.Right.Value.Errors > 0) && (
                         <span className="badge badge--danger">Both Have Errors</span>

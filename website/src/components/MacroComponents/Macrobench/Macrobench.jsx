@@ -24,7 +24,7 @@ const Macrobench = ({data, gitRefLeft, gitRefRight, showSpan, commitHashLeft, co
     return (
         <div className='macrobench__component'>
             <h3>{data.type}</h3>
-            {showSpan && <span>Click <Link to="/macrobench/queries/compare" state={{some : data, another : commitHashLeft, more : commitHashRight }}>here</Link> to see the query plans comparison for this benchmark.</span>}
+            {showSpan && <span className='linkQueryT'>Click <Link to="/macrobench/queries/compare" state={{some : data, another : commitHashLeft, more : commitHashRight }}>here</Link> to see the query plans comparison for this benchmark.</span>}
             <table>
                 <thead>
                     <tr>

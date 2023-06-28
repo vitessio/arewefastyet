@@ -45,3 +45,14 @@ limitations under the License.
 .queryPlan__container{
     margin-bottom: 900px;
 }
+
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .query__top h2{
+        font-size: 2rem;
+    }
+
+    .query__top{
+        font-size: 0.9rem;
+    }
+}
