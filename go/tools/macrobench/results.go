@@ -291,8 +291,8 @@ func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient s
 // GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	upperMacroType := macroType.ToUpper().String()
+func GetResultsForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
+	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +

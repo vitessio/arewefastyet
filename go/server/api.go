@@ -191,7 +191,7 @@ func (s *Server) compareMicrobenchmarks(c *gin.Context) {
 }
 
 type searchResult struct {
-	Macros map[string]macrobench.DetailsArray 
+	Macros map[string]macrobench.DetailsArray
 	Micro  microbench.DetailsArray
 }
 
@@ -213,7 +213,7 @@ func (s *Server) searchBenchmarck(c *gin.Context) {
 	}
 	micro = micro.ReduceSimpleMedianByName()
 
-	var res searchResult 
+	var res searchResult
 	res.Macros = macros
 	res.Micro = micro
 
@@ -244,4 +244,24 @@ func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 	}
 	comparison := macrobench.CompareVTGateQueryPlans(plansLeft, plansRight)
 	c.JSON(http.StatusOK, comparison)
+}
+
+type cronSingleSummary struct {
+	Name string
+	Data macrobench.DetailsArray
+}
+
+func (s *Server) getCronSummary(c *gin.Context) {
+	var cronSummary []cronSingleSummary
+	for _, benchmarkType := range s.benchmarkTypes {
+		data, err := macrobench.GetResultsForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
+		if err != nil {
+			slog.Warn(err.Error())
+		}
+		cronSummary = append(cronSummary, cronSingleSummary{
+			Name: benchmarkType,
+			Data: data,
+		})
+	}
+	c.JSON(http.StatusOK, cronSummary)
 }
