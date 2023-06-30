@@ -15,12 +15,39 @@ limitations under the License.
 */
 
 import React from 'react';
+import { ResponsiveLine } from '@nivo/line'
 
 import '../CRONSummary/cronSummary.css'
 const CronSummary = ({data}) => {
+
+    const transformedData = [
+        {
+          id: 'QPSTotal',
+          data: data.Data.map((item) => ({
+            x: item.CreatedAt,
+            y: item.QPSTotal,
+          })),
+        },
+      ];
+
     return (
-        <div className='cronSummary justify--content'>
-            <h3>{data.Name}</h3>
+        <div className='cronSummary flex--column'>
+            <div className='cronSummary__chart'>
+                <ResponsiveLine
+                    data={transformedData}
+                    width={300}
+                    height={100}
+                    enableGridX={false}
+                    enableGridY={false}
+                    colors={['#E77002']}
+                    />
+            </div>
+            <figure className='cronSummary__line'></figure>
+            <div className='cronSummary__text'>
+                <span>QPSTotal</span>
+                <h3>{data.Name}</h3>
+                <i className="fa-solid fa-arrow-right"></i>
+            </div>
         </div>
     );
 };

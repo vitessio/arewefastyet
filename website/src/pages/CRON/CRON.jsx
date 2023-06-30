@@ -62,13 +62,26 @@ const CRON = () => {
                     </span>
             </div>
             <figure className='line'></figure>
-            <div className='cron__summary__container justify--content'>
-                {dataCronSummary.map((cronSummary, index) => {
-                    return (
-                        <CronSummary key={index} data={cronSummary}/>
+            {error ? (
+                    <div className='macrobench__apiError'>{error}</div> 
+                ) : (
+                    isLoading ? (
+                        <div className='loadingSpinner'>
+                            <RingLoader loading={isLoading} color='#E77002' size={300}/>
+                            </div>
+                        ): ( 
+                            <>
+                                <div className='cron__summary__container justify--content'>
+                                    {dataCronSummary.map((cronSummary, index) => {
+                                        return (
+                                            <CronSummary key={index} data={cronSummary}/>
+                                        )
+                                    })}
+                                </div>
+                                <figure className='line'></figure>
+                            </>
                     )
-                })}
-            </div>
+                )}
         </div>
     );
 };
