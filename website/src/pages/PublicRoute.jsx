@@ -25,6 +25,7 @@ import Layout from '../pages/Layout'
 import Macro from './Macro/Macro';
 import Micro from './Micro/Micro';
 import Search from './Search/Search';
+import CRON from './CRON/CRON';
 
 const PublicRoute = () => {
     return (
@@ -34,6 +35,7 @@ const PublicRoute = () => {
 
             <Route path='/home' element={<Home/>}/>
             <Route path='/status' element={<Status/>}/>
+            <Route path='/cron' element={<CRON/>}/>
             <Route path='/search' element={<Search/>}/>
             <Route path='/macro' element={<Macro/>}/>
             <Route path='/micro' element={<Micro/>}/>
