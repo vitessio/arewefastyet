@@ -93,6 +93,11 @@ type (
 	DetailsArray []Details
 
 	ComparisonArray []Comparison
+
+	CronSummary struct {
+		CreatedAt *time.Time
+		QPSTotal float64
+	}
 )
 
 func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
@@ -316,6 +321,30 @@ func GetResultsForLastDays(macroType string, source string, planner PlannerVersi
 		macrodetails = append(macrodetails, res)
 	}
 	return macrodetails, nil
+}
+
+func GetSummaryForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (cronSummary []CronSummary, err error) {
+	upperMacroType := strings.ToUpper(macroType)
+	query := "SELECT e.finished_at, results.total_qps " +
+		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
+		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
+		"ORDER BY e.finished_at "
+
+	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	for result.Next() {
+		var res CronSummary
+		err = result.Scan(&res.CreatedAt, &res.QPSTotal)
+		if err != nil {
+			return nil, err
+		}
+		cronSummary = append(cronSummary, res)
+	}
+	return
 }
 
 // GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref

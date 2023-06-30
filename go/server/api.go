@@ -248,15 +248,17 @@ func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 
 type cronSingleSummary struct {
 	Name string
-	Data macrobench.DetailsArray
+	Data []macrobench.CronSummary
 }
 
 func (s *Server) getCronSummary(c *gin.Context) {
 	var cronSummary []cronSingleSummary
 	for _, benchmarkType := range s.benchmarkTypes {
-		data, err := macrobench.GetResultsForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
+		data, err := macrobench.GetSummaryForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
 		if err != nil {
-			slog.Warn(err.Error())
+			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+			slog.Error(err)
+			return
 		}
 		cronSummary = append(cronSummary, cronSingleSummary{
 			Name: benchmarkType,
