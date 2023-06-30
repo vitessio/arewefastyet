@@ -288,7 +288,9 @@ func (s *Server) Run() error {
 	s.router.GET("/api/microbench/compare", s.compareMicrobenchmarks)
 	s.router.GET("/api/search", s.searchBenchmarck)
 	s.router.GET("/api/macrobench/compare/queries", s.queriesCompareMacrobenchmarks)
-	s.router.GET("/api/cron", s.getCronSummary)
+	s.router.GET("/api/cronsummary", s.getCronSummary)
+	s.router.GET("/api/cron", s.getCron)
+
 	return s.router.Run(":" + s.port)
 }
 
