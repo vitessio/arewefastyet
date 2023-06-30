@@ -14,33 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.cron{
-    color: white;
-    padding: 0px 20px 0px 20px;
-    position: relative;
-    height: 100%;
-}
-
-.cron__top{
-    margin-top: 100px;
-    text-align: center;
-}
-
-.cron__top h2{
-    font-size: 5rem;
-    font-weight:100;
-    margin-bottom: 50px;
-    margin-top: 20px;
-    width: 100%
-}
-
-.cron__top span{
-    color: #B5ADAD;
-    width: 60%;
-    line-height: 40px;
-}
-
-.cron__summary__container{
-    flex-wrap: wrap;
-    
+.cronSummary{
+    border: solid;
+    width: 30%;
+    height: 250px;
+    margin-right: 5px;
+    margin-top: 10px;
 }

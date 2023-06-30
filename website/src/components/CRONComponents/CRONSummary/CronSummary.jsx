@@ -14,33 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.cron{
-    color: white;
-    padding: 0px 20px 0px 20px;
-    position: relative;
-    height: 100%;
-}
+import React from 'react';
 
-.cron__top{
-    margin-top: 100px;
-    text-align: center;
-}
+import '../CRONSummary/cronSummary.css'
+const CronSummary = ({data}) => {
+    return (
+        <div className='cronSummary justify--content'>
+            <h3>{data.Name}</h3>
+        </div>
+    );
+};
 
-.cron__top h2{
-    font-size: 5rem;
-    font-weight:100;
-    margin-bottom: 50px;
-    margin-top: 20px;
-    width: 100%
-}
-
-.cron__top span{
-    color: #B5ADAD;
-    width: 60%;
-    line-height: 40px;
-}
-
-.cron__summary__container{
-    flex-wrap: wrap;
-    
-}
+export default CronSummary;
