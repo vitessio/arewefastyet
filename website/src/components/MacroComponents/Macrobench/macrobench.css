@@ -65,6 +65,10 @@ table{
     padding: 15px 0px 5px 0px;
 }
 
+.macrobench__component h4{
+    min-height: 37px;
+}
+
 tr:nth-child(2n) {
     background-color: #343A40;
   }
