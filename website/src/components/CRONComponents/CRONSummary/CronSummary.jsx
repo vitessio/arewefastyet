@@ -18,7 +18,8 @@ import React from 'react';
 import { ResponsiveLine } from '@nivo/line'
 
 import '../CRONSummary/cronSummary.css'
-const CronSummary = ({data}) => {
+
+const CronSummary = ({data, setBenchmarktype}) => {
 
     const transformedData = [
         {
@@ -30,8 +31,12 @@ const CronSummary = ({data}) => {
         },
       ];
 
+      const getBenchmarkType = () => {
+        setBenchmarktype(data.Name)
+      }
+
     return (
-        <div className='cronSummary flex--column'>
+        <div className='cronSummary flex--column' onClick={getBenchmarkType}>
             <div className='cronSummary__chart'>
                 <ResponsiveLine
                     data={transformedData}

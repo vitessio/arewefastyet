@@ -19,6 +19,7 @@ limitations under the License.
     padding: 0px 20px 0px 20px;
     position: relative;
     height: 100%;
+    overflow-x: scroll;
 }
 
 .cron__top{
@@ -42,5 +43,53 @@ limitations under the License.
 
 .cron__summary__container{
     flex-wrap: wrap;
+
+}
+
+/*CHART*/
+
+.cron__container{
+    width: 100%;
+    margin-bottom: 300px;
+    
     
 }
+
+.cron__container h3{
+    font-size: 1.5rem;
+    margin-left: 30px;
+    
+}
+
+.chart{
+    width: 100%;
+    height: 200px;
+}
+
+
+.chart__title{
+    margin-top: 300px;
+}
+
+.tooltip{
+    color: black;
+    background-color: white;
+    padding: 5px;
+    gap: 10px;
+}
+
+.tooltip figure{
+    width: 20px;
+    height: 20px;
+}
+
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .chart{
+        width: 1200px;
+        height: 200px;
+        
+    }
+}
+
