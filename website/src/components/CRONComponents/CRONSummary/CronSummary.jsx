@@ -19,7 +19,7 @@ import { ResponsiveLine } from '@nivo/line'
 
 import '../CRONSummary/cronSummary.css'
 
-const CronSummary = ({data, setBenchmarktype}) => {
+const CronSummary = ({data, setBenchmarktype, setIsLoading2, benchmarkType}) => {
 
     const transformedData = [
         {
@@ -32,7 +32,11 @@ const CronSummary = ({data, setBenchmarktype}) => {
       ];
 
       const getBenchmarkType = () => {
+        if (benchmarkType.length == 0) {
+            setIsLoading2(true)
+        }
         setBenchmarktype(data.Name)
+        
       }
 
     return (

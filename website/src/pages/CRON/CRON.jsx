@@ -14,633 +14,670 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import RingLoader from "react-spinners/RingLoader";
-import { useNavigate } from 'react-router-dom';
-import { ResponsiveLine } from '@nivo/line'
+import { useNavigate } from "react-router-dom";
+import { ResponsiveLine } from "@nivo/line";
 
+import "../CRON/cron.css";
 
-import '../CRON/cron.css'
-
-import { errorApi, formatByteForGB} from '../../utils/Utils';
-import CronSummary from '../../components/CRONComponents/CRONSummary/CronSummary';
+import { errorApi, formatByteForGB } from "../../utils/Utils";
+import CronSummary from "../../components/CRONComponents/CRONSummary/CronSummary";
 
 const CRON = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const [dataCronSummary, setDataCronSummary] = useState([]);
+  const [dataCron, setDataCron] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading2, setIsLoading2] = useState(true);
+  const [benchmarkType, setBenchmarktype] = useState(
+    urlParams.get("type") == null ? "" : urlParams.get("type")
+  );
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const [dataCronSummary, setDataCronSummary] = useState([])
-    const [dataCron, setDataCron] = useState([])
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isLoading2, setIsLoading2] = useState(true);
-    const [benchmarkType, setBenchmarktype] = useState(urlParams.get('type') == null ? '' : urlParams.get('type'))
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseCronSummary = await fetch(
+          `${import.meta.env.VITE_API_URL}cronsummary`
+        );
 
-    useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const responseCronSummary = await fetch(`${import.meta.env.VITE_API_URL}cronsummary`);
-      
-            const jsonDataCronSummary = await responseCronSummary.json();
-            
-            setDataCronSummary(jsonDataCronSummary);
-            setIsLoading(false)
+        const jsonDataCronSummary = await responseCronSummary.json();
 
-          } catch (error) {
-            console.log('Error while retrieving data from the API', error);
-            setError(errorApi);
-            setIsLoading(false);
-          }
-        };
-      
-        fetchData();
-      }, []);
+        setDataCronSummary(jsonDataCronSummary);
+        setIsLoading(false);
+      } catch (error) {
+        console.log("Error while retrieving data from the API", error);
+        setError(errorApi);
+        setIsLoading(false);
+      }
+    };
 
-      useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const responseCron = await fetch(`${import.meta.env.VITE_API_URL}cron?type=${benchmarkType}`);
-      
-            const jsonDataCron = await responseCron.json();
-            
-            setDataCron(jsonDataCron);
-            setIsLoading2(false)
-            
-          } catch (error) {
-            console.log('Error while retrieving data from the API', error);
-            setError(errorApi);
-            setIsLoading2(false);
-          }
-        };
-      
-        fetchData();
-      }, [benchmarkType]);
+    fetchData();
+  }, []);
 
-    // Changing the URL relative to the reference of a selected benchmark.
-    // Storing the carousel position as a URL parameter.
-    const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseCron = await fetch(
+          `${import.meta.env.VITE_API_URL}cron?type=${benchmarkType}`
+        );
 
-      useEffect(() => {
-        navigate(`?type=${benchmarkType}`)
-    }, [benchmarkType]) 
+        const jsonDataCron = await responseCron.json();
 
-    
-        const TPSData = [{
-            id: 'TPS',
-            data: [],
-        }];
+        setDataCron(jsonDataCron);
+        setIsLoading2(false);
+      } catch (error) {
+        console.log("Error while retrieving data from the API", error);
+        setError(errorApi);
+        setIsLoading2(false);
+      }
+    };
 
-        const QPSData = [{
-            id: 'Reads',
-            data: [],
-        },
-        {
-            id: 'Total',
-            data: [],
-        },
-        
-        {
-            id: 'Writes',
-            data: [],
-        }];              
+    fetchData();
+  }, [benchmarkType]);
 
-        const latencyData = [{
-            id: 'Latency',
-            data: [],
-        }];
+  // Changing the URL relative to the reference of a selected benchmark.
+  // Storing the carousel position as a URL parameter.
+  const navigate = useNavigate();
 
-        const CPUTimeData = [
-            {
-            id:'Total',
-            data:[]
-        },
-        {
-            id:'vtgate',
-            data:[]
-        },
-        {
-            id:'vttablet',
-            data:[]
-        }
-    ];
+  useEffect(() => {
+    navigate(`?type=${benchmarkType}`);
+  }, [benchmarkType]);
 
-        const MemBytesData = [
-            {
-            id:'Total',
-            data:[]
-        },
-        {
-            id:'vtgate',
-            data:[]
-        },
-        {
-            id:'vttablet',
-            data:[]
-        }
-    ]
+  const TPSData = [
+    {
+      id: "TPS",
+      data: [],
+    },
+  ];
 
-        for (const item of dataCron) {
-            const xValue = item.GitRef.slice(0, 8);
-                
-            // TPS Data
-            
-            TPSData[0].data.push({
-                x: xValue,
-                y: item.Result.tps
-            });
+  const QPSData = [
+    {
+      id: "Reads",
+      data: [],
+    },
+    {
+      id: "Total",
+      data: [],
+    },
 
-            // QPS Data
-            
-            QPSData[0].data.push({
-                x: xValue,
-                y: item.Result.qps.reads
-            });
+    {
+      id: "Writes",
+      data: [],
+    },
+  ];
 
-            
-            QPSData[1].data.push({ 
-                x: xValue,
-                y: item.Result.qps.total
-            });
+  const latencyData = [
+    {
+      id: "Latency",
+      data: [],
+    },
+  ];
 
-            
-            QPSData[2].data.push({
-                x: xValue,
-                y: item.Result.qps.writes
-            });
+  const CPUTimeData = [
+    {
+      id: "Total",
+      data: [],
+    },
+    {
+      id: "vtgate",
+      data: [],
+    },
+    {
+      id: "vttablet",
+      data: [],
+    },
+  ];
 
-            // Latency Data
-            
-            latencyData[0].data.push({
-                x: xValue,
-                y: item.Result.latency
-            });
+  const MemBytesData = [
+    {
+      id: "Total",
+      data: [],
+    },
+    {
+      id: "vtgate",
+      data: [],
+    },
+    {
+      id: "vttablet",
+      data: [],
+    },
+  ];
+  
+  for (const item of dataCron) {
+    const xValue = item.GitRef.slice(0, 8);
 
-            // CPUTime Data
+    // TPS Data
 
-            CPUTimeData[0].data.push({
-                x: xValue,
-                y: item.Metrics.TotalComponentsCPUTime
-            })
+    TPSData[0].data.push({
+      x: xValue,
+      y: item.Result.tps,
+    });
 
-            CPUTimeData[1].data.push({
-                x: xValue,
-                y: item.Metrics.ComponentsCPUTime.vtgate
-            })
+    // QPS Data
 
-            CPUTimeData[2].data.push({
-                x: xValue,
-                y: item.Metrics.ComponentsCPUTime.vttablet
-            })
+    QPSData[0].data.push({
+      x: xValue,
+      y: item.Result.qps.reads,
+    });
 
-            //MemStatsAllocBytes Data
+    QPSData[1].data.push({
+      x: xValue,
+      y: item.Result.qps.total,
+    });
 
-            MemBytesData[0].data.push({
-                x: xValue,
-                y: formatByteForGB(item.Metrics.TotalComponentsMemStatsAllocBytes)
-            })
+    QPSData[2].data.push({
+      x: xValue,
+      y: item.Result.qps.writes,
+    });
 
-            MemBytesData[1].data.push({
-                x: xValue,
-                y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vtgate)
-            })
+    // Latency Data
 
-            MemBytesData[2].data.push({
-                x: xValue,
-                y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vttablet)
-            })
-        }
+    latencyData[0].data.push({
+      x: xValue,
+      y: item.Result.latency,
+    });
 
-        
-      
-    return (
-        <div className='cron'>
-            <div className='cron__top'>
-            <h2>CRON</h2>
-                    <span>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a augue mi.
-                            Etiam sed imperdiet ligula, vel elementum velit.
-                            Phasellus sodales felis eu condimentum convallis.
-                            Suspendisse sodales malesuada iaculis. Mauris molestie placerat ex non malesuada.
-                            Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt volutpat. 
-                    </span>
-            </div>
-            <figure className='line'></figure>
-            {error ? (
-                    <div className='macrobench__apiError'>{error}</div> 
-                ) : (
-                    isLoading ? (
-                        <div className='loadingSpinner'>
-                            <RingLoader loading={isLoading} color='#E77002' size={300}/>
-                            </div>
-                        ): ( 
-                            <>
-                                <div className='cron__summary__container justify--content'>
-                                    {dataCronSummary.map((cronSummary, index) => {
-                                        return (
-                                            <CronSummary key={index} data={cronSummary} setBenchmarktype={setBenchmarktype}/>
-                                        )
-                                    })}
-                                </div>
-                                <figure className='line'></figure>
-                                {isLoading2 ? (
-                                        <div className='loadingSpinner'>
-                                            <RingLoader loading={isLoading2} color='#E77002' size={300}/>
-                                        </div>
-                                    ) : (
-                                            <div className='cron__container'>
-                                                <h3 >QPS (Queries per second)</h3>
-                                                <div className='chart'>
-                                                    <ResponsiveLine
-                                                        data={QPSData}
+    // CPUTime Data
 
-                                                        height={450}
-                                                        colors={['Yellow', 'orange', 'brown']}
-                                                        theme={{
-                                                            axis:{
-                                                                ticks:{
-                                                                    text:{
-                                                                        fontSize:'13px',
-                                                                        fill:'white'
-                                                                    }
-                                                                }
-                                                            },
-                                                            legends:{
-                                                                text:{
-                                                                    fontSize:'14px',
-                                                                    fill:'white'
-                                                                }
-                                                            }
-                                                        }}
-                                                        tooltip={({ point }) => (
-                                                            <div className='tooltip flex'>
-                                                                <figure style={{ backgroundColor: point.serieColor }}></figure>
-                                                              <div>x : {point.data.x}</div>
-                                                              <div>y : {point.data.y}</div>
-                                                            </div>
-                                                          )}
-                                                        areaBaselineValue={50}
-                                                        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                                                        xScale={{ type: 'point' }}
-                                                        yScale={{
-                                                            type: 'linear',
-                                                            min: '0',
-                                                            max: 'auto',
-                                                            reverse: false
-                                                        }}
-                                                        yFormat=" >-.2f"
-                                                        axisTop={null}
-                                                        axisRight={null}
-                                                        pointSize={10}
-                                                        isInteractive={true}
-                                                        pointBorderWidth={2}
-                                                        pointBorderColor={{ from: 'serieColor' }}
-                                                        pointLabelYOffset={-12}
-                                                        areaOpacity={0.1}
-                                                        useMesh={true}
-                                                        legends={[
-                                                            {
-                                                                anchor: 'bottom-right',
-                                                                direction: 'column',
-                                                                justify: false,
-                                                                translateX: 100,
-                                                                translateY: 0,
-                                                                itemsSpacing: 0,
-                                                                itemDirection: 'left-to-right',
-                                                                itemWidth: 80,
-                                                                itemHeight: 20,
-                                                                itemOpacity: 0.75,
-                                                                symbolSize: 12,
-                                                                symbolShape: 'circle',
-                                                                symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                                                                effects: [
-                                                                    {
-                                                                        on: 'hover',
-                                                                        style: {
-                                                                            itemBackground: 'rgba(0, 0, 0, .03)',
-                                                                            itemOpacity: 1
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]}
-                                                        />
-                                                </div>
-                                                <h3 className='chart__title'>TPS (Transactions per second)</h3>
-                                                 <div className='chart'>
-                                                    <ResponsiveLine
-                                                        data={TPSData}
-                                                        height={400}
-                                                        colors={['#E77002']}
-                                                        theme={{
-                                                            axis:{
-                                                                ticks:{
-                                                                    text:{
-                                                                        fontSize:'13px',
-                                                                        fill:'white'
-                                                                    }
-                                                                }
-                                                            },
-                                                            legends:{
-                                                                    text:{
-                                                                        fontSize:'14px',
-                                                                        fill:'white'
-                                                                    }
-                                                            }
-                                                        }}
-                                                        tooltip={({ point }) => (
-                                                            <div className='tooltip flex'>
-                                                                <figure style={{ backgroundColor: point.serieColor }}></figure>
-                                                              <div>x : {point.data.x}</div>
-                                                              <div>y : {point.data.y}</div>
-                                                            </div>
-                                                          )}
-                                                        areaBaselineValue={50}
-                                                        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                                                        xScale={{ type: 'point' }}
-                                                        yScale={{
-                                                            type: 'linear',
-                                                            min: '0',
-                                                            max: 'auto',
-                                                            stacked: true,
-                                                            reverse: false
-                                                        }}
-                                                        yFormat=" >-.2f"
-                                                        axisTop={null}
-                                                        axisRight={null}
-                                                        pointSize={10}
-                                                        isInteractive={true}
-                                                        pointBorderWidth={2}
-                                                        pointBorderColor={{ from: 'serieColor' }}
-                                                        pointLabelYOffset={-12}
-                                                        areaOpacity={0.1}
-                                                        useMesh={true}
-                                                        legends={[
-                                                            {
-                                                                anchor: 'bottom-right',
-                                                                direction: 'column',
-                                                                justify: false,
-                                                                translateX: 100,
-                                                                translateY: 0,
-                                                                itemsSpacing: 0,
-                                                                itemDirection: 'left-to-right',
-                                                                itemWidth: 80,
-                                                                itemHeight: 20,
-                                                                itemOpacity: 0.75,
-                                                                symbolSize: 12,
-                                                                symbolShape: 'circle',
-                                                                symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                                                                effects: [
-                                                                    {
-                                                                        on: 'hover',
-                                                                        style: {
-                                                                            itemBackground: 'rgba(0, 0, 0, .03)',
-                                                                            itemOpacity: 1
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]}
-                                                        />
-                                                </div>                                              
-                                                <h3 className='chart__title'>Latency (Milliseconds)</h3>
-                                                <div className='chart'>
-                                                    <ResponsiveLine
-                                                        data={latencyData}
-                                                        height={400}
-                                                        theme={{
-                                                            axis:{
-                                                                ticks:{
-                                                                    text:{
-                                                                        fontSize:'13px',
-                                                                        fill:'white'
-                                                                    }
-                                                                }
-                                                            },
-                                                            legends:{
-                                                                text:{
-                                                                    fontSize:'14px',
-                                                                    fill:'white'
-                                                                }
-                                                            }
-                                                        }}
-                                                        tooltip={({ point }) => (
-                                                            <div className='tooltip flex'>
-                                                                <figure style={{ backgroundColor: point.serieColor }}></figure>
-                                                              <div>x : {point.data.x}</div>
-                                                              <div>y : {point.data.y}</div>
-                                                            </div>
-                                                          )}
-                                                        colors={['#E77002']}
-                                                        areaBaselineValue={50}
-                                                        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                                                        xScale={{ type: 'point' }}
-                                                        yScale={{
-                                                            type: 'linear',
-                                                            min: '0',
-                                                            max: 'auto',
-                                                            stacked: true,
-                                                            reverse: false
-                                                        }}
-                                                        yFormat=" >-.2f"
-                                                        axisTop={null}
-                                                        axisRight={null}
-                                                        pointSize={10}
-                                                        isInteractive={true}
-                                                        pointBorderWidth={2}
-                                                        pointBorderColor={{ from: 'serieColor' }}
-                                                        pointLabelYOffset={-12}
-                                                        areaOpacity={0.1}
-                                                        useMesh={true}
-                                                        legends={[
-                                                            {
-                                                                anchor: 'bottom-right',
-                                                                direction: 'column',
-                                                                justify: false,
-                                                                translateX: 100,
-                                                                translateY: 0,
-                                                                itemsSpacing: 0,
-                                                                itemDirection: 'left-to-right',
-                                                                itemWidth: 80,
-                                                                itemHeight: 20,
-                                                                itemOpacity: 0.75,
-                                                                symbolSize: 12,
-                                                                symbolShape: 'circle',
-                                                                symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                                                                effects: [
-                                                                    {
-                                                                        on: 'hover',
-                                                                        style: {
-                                                                            itemBackground: 'rgba(0, 0, 0, .03)',
-                                                                            itemOpacity: 1
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]}
-                                                        
-                                                        />
-                                                </div>
-                                                <h3 className='chart__title'>CPUTime</h3>
-                                                <div className='chart'>
-                                                    <ResponsiveLine
-                                                        data={CPUTimeData}
-                                                        
-                                                        height={400}
-                                                        colors={['Yellow', 'orange', 'brown']}
-                                                        theme={{
-                                                            axis:{
-                                                                ticks:{
-                                                                    text:{
-                                                                        fontSize:'13px',
-                                                                        fill:'white'
-                                                                    }
-                                                                }
-                                                            },
-                                                            legends:{
-                                                                    text:{
-                                                                        fontSize:'14px',
-                                                                        fill:'white'
-                                                                    }
-                                                            }
-                                                        }}
-                                                        tooltip={({ point }) => (
-                                                            <div className='tooltip flex'>
-                                                                <figure style={{ backgroundColor: point.serieColor }}></figure>
-                                                              <div>x : {point.data.x}</div>
-                                                              <div>y : {point.data.y}</div>
-                                                            </div>
-                                                          )}
-                                                        areaBaselineValue={50}
-                                                        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                                                        xScale={{ type: 'point' }}
-                                                        yScale={{
-                                                            type: 'linear',
-                                                            min: '0',
-                                                            max: 'auto',
-                                                            reverse: false
-                                                        }}
-                                                        yFormat=" >-.2f"
-                                                        axisTop={null}
-                                                        axisRight={null}
-                                                        pointSize={10}
-                                                        isInteractive={true}
-                                                        pointBorderWidth={2}
-                                                        pointBorderColor={{ from: 'serieColor' }}
-                                                        pointLabelYOffset={-12}
-                                                        areaOpacity={0.1}
-                                                        useMesh={true}
-                                                        legends={[
-                                                            {
-                                                                anchor: 'bottom-right',
-                                                                direction: 'column',
-                                                                justify: false,
-                                                                translateX: 100,
-                                                                translateY: 0,
-                                                                itemsSpacing: 0,
-                                                                itemDirection: 'left-to-right',
-                                                                itemWidth: 80,
-                                                                itemHeight: 20,
-                                                                itemOpacity: 0.75,
-                                                                symbolSize: 12,
-                                                                symbolShape: 'circle',
-                                                                symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                                                                effects: [
-                                                                    {
-                                                                        on: 'hover',
-                                                                        style: {
-                                                                            itemBackground: 'rgba(0, 0, 0, .03)',
-                                                                            itemOpacity: 1
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]}
-                                                        />
-                                                </div>  
-                                                <h3 className='chart__title'>MemStatsAllocBytes</h3>
-                                                <div className='chart'>
-                                                    <ResponsiveLine
-                                                        data={MemBytesData}
-                                                        
-                                                        height={400}
-                                                        colors={['Yellow', 'orange', 'brown']}
-                                                        theme={{
-                                                            axis:{
-                                                                ticks:{
-                                                                    text:{
-                                                                        fontSize:'13px',
-                                                                        fill:'white'
-                                                                    }
-                                                                }
-                                                            },
-                                                            legends:{
-                                                                    text:{
-                                                                        fontSize:'14px',
-                                                                        fill:'white'
-                                                                    }
-                                                            }
-                                                        }}
-                                                        tooltip={({ point }) => (
-                                                            <div className='tooltip flex'>
-                                                                <figure style={{ backgroundColor: point.serieColor }}></figure>
-                                                              <div>x : {point.data.x}</div>
-                                                              <div>y : {point.data.y}</div>
-                                                            </div>
-                                                          )}
-                                                        areaBaselineValue={50}
-                                                        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                                                        xScale={{ type: 'point' }}
-                                                        yScale={{
-                                                            type: 'linear',
-                                                            min: '0',
-                                                            max: 'auto',
-                                                            reverse: false
-                                                        }}
-                                                        yFormat=" >-.2f"
-                                                        axisTop={null}
-                                                        axisRight={null}
-                                                        pointSize={10}
-                                                        isInteractive={true}
-                                                        pointBorderWidth={2}
-                                                        pointBorderColor={{ from: 'serieColor' }}
-                                                        pointLabelYOffset={-12}
-                                                        areaOpacity={0.1}
-                                                        useMesh={true}
-                                                        legends={[
-                                                            {
-                                                                anchor: 'bottom-right',
-                                                                direction: 'column',
-                                                                justify: false,
-                                                                translateX: 100,
-                                                                translateY: 0,
-                                                                itemsSpacing: 0,
-                                                                itemDirection: 'left-to-right',
-                                                                itemWidth: 80,
-                                                                itemHeight: 20,
-                                                                itemOpacity: 0.75,
-                                                                symbolSize: 12,
-                                                                symbolShape: 'circle',
-                                                                symbolBorderColor: 'rgba(0, 0, 0, .5)',
-                                                                effects: [
-                                                                    {
-                                                                        on: 'hover',
-                                                                        style: {
-                                                                            itemBackground: 'rgba(0, 0, 0, .03)',
-                                                                            itemOpacity: 1
-                                                                        }
-                                                                    }
-                                                                ]
-                                                            }
-                                                        ]}
-                                                        />
-                                                </div> 
-                                            </div>
-                                    )}
-                            </>
-                    )
-                    
-                )}
+    CPUTimeData[0].data.push({
+      x: xValue,
+      y: item.Metrics.TotalComponentsCPUTime,
+    });
+
+    CPUTimeData[1].data.push({
+      x: xValue,
+      y: item.Metrics.ComponentsCPUTime.vtgate,
+    });
+
+    CPUTimeData[2].data.push({
+      x: xValue,
+      y: item.Metrics.ComponentsCPUTime.vttablet,
+    });
+
+    //MemStatsAllocBytes Data
+
+    MemBytesData[0].data.push({
+      x: xValue,
+      y: formatByteForGB(item.Metrics.TotalComponentsMemStatsAllocBytes),
+    });
+
+    MemBytesData[1].data.push({
+      x: xValue,
+      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vtgate),
+    });
+
+    MemBytesData[2].data.push({
+      x: xValue,
+      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vttablet),
+    });
+  }
+ console.log(isLoading2)
+
+  return (
+    <div className="cron">
+      <div className="cron__top">
+        <h2>CRON</h2>
+        <span>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
+          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
+          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
+          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
+          sagittis eros. Aliquam aliquam sem non tincidunt volutpat.
+        </span>
+      </div>
+      <figure className="line"></figure>
+      {error ? (
+        <div className="macrobench__apiError">{error}</div>
+      ) : isLoading ? (
+        <div className="loadingSpinner">
+          <RingLoader loading={isLoading} color="#E77002" size={300} />
         </div>
-    );
+      ) : (
+        <>
+          <div className="cron__summary__container justify--content">
+            {dataCronSummary.map((cronSummary, index) => {
+              return (
+                <CronSummary
+                  key={index}
+                  data={cronSummary}
+                  setBenchmarktype={setBenchmarktype}
+                  setIsLoading2={setIsLoading2}
+                  benchmarkType={benchmarkType}
+                />
+              );
+            })}
+          </div>
+          <figure className="line"></figure>
+          {isLoading2 ? (
+            <div className="loadingSpinner">
+              <RingLoader loading={isLoading2} color="#E77002" size={300} />
+            </div>
+          ) : (
+            <div className="cron__container">
+              {QPSData[0].data.length > 0 && (
+                <>
+                  <h3>QPS (Queries per second)</h3>
+                  <div className="chart">
+                    <ResponsiveLine
+                      data={QPSData}
+                      height={450}
+                      colors={["Yellow", "orange", "brown"]}
+                      theme={{
+                        axis: {
+                          ticks: {
+                            text: {
+                              fontSize: "13px",
+                              fill: "white",
+                            },
+                          },
+                        },
+                        legends: {
+                          text: {
+                            fontSize: "14px",
+                            fill: "white",
+                          },
+                        },
+                      }}
+                      tooltip={({ point }) => (
+                        <div className="tooltip flex">
+                          <figure
+                            style={{ backgroundColor: point.serieColor }}
+                          ></figure>
+                          <div>x : {point.data.x}</div>
+                          <div>y : {point.data.y}</div>
+                        </div>
+                      )}
+                      areaBaselineValue={50}
+                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+                      xScale={{ type: "point" }}
+                      yScale={{
+                        type: "linear",
+                        min: "0",
+                        max: "auto",
+                        reverse: false,
+                      }}
+                      yFormat=" >-.2f"
+                      axisTop={null}
+                      axisRight={null}
+                      pointSize={10}
+                      isInteractive={true}
+                      pointBorderWidth={2}
+                      pointBorderColor={{ from: "serieColor" }}
+                      pointLabelYOffset={-12}
+                      areaOpacity={0.1}
+                      useMesh={true}
+                      legends={[
+                        {
+                          anchor: "bottom-right",
+                          direction: "column",
+                          justify: false,
+                          translateX: 100,
+                          translateY: 0,
+                          itemsSpacing: 0,
+                          itemDirection: "left-to-right",
+                          itemWidth: 80,
+                          itemHeight: 20,
+                          itemOpacity: 0.75,
+                          symbolSize: 12,
+                          symbolShape: "circle",
+                          symbolBorderColor: "rgba(0, 0, 0, .5)",
+                          effects: [
+                            {
+                              on: "hover",
+                              style: {
+                                itemBackground: "rgba(0, 0, 0, .03)",
+                                itemOpacity: 1,
+                              },
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  </div>
+                </>
+              )}
+              {TPSData[0].data.length > 0 && (
+                <>
+                  <h3 className="chart__title">
+                    TPS (Transactions per second)
+                  </h3>
+                  <div className="chart">
+                    <ResponsiveLine
+                      data={TPSData}
+                      height={400}
+                      colors={["#E77002"]}
+                      theme={{
+                        axis: {
+                          ticks: {
+                            text: {
+                              fontSize: "13px",
+                              fill: "white",
+                            },
+                          },
+                        },
+                        legends: {
+                          text: {
+                            fontSize: "14px",
+                            fill: "white",
+                          },
+                        },
+                      }}
+                      tooltip={({ point }) => (
+                        <div className="tooltip flex">
+                          <figure
+                            style={{ backgroundColor: point.serieColor }}
+                          ></figure>
+                          <div>x : {point.data.x}</div>
+                          <div>y : {point.data.y}</div>
+                        </div>
+                      )}
+                      areaBaselineValue={50}
+                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+                      xScale={{ type: "point" }}
+                      yScale={{
+                        type: "linear",
+                        min: "0",
+                        max: "auto",
+                        stacked: true,
+                        reverse: false,
+                      }}
+                      yFormat=" >-.2f"
+                      axisTop={null}
+                      axisRight={null}
+                      pointSize={10}
+                      isInteractive={true}
+                      pointBorderWidth={2}
+                      pointBorderColor={{ from: "serieColor" }}
+                      pointLabelYOffset={-12}
+                      areaOpacity={0.1}
+                      useMesh={true}
+                      legends={[
+                        {
+                          anchor: "bottom-right",
+                          direction: "column",
+                          justify: false,
+                          translateX: 100,
+                          translateY: 0,
+                          itemsSpacing: 0,
+                          itemDirection: "left-to-right",
+                          itemWidth: 80,
+                          itemHeight: 20,
+                          itemOpacity: 0.75,
+                          symbolSize: 12,
+                          symbolShape: "circle",
+                          symbolBorderColor: "rgba(0, 0, 0, .5)",
+                          effects: [
+                            {
+                              on: "hover",
+                              style: {
+                                itemBackground: "rgba(0, 0, 0, .03)",
+                                itemOpacity: 1,
+                              },
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  </div>
+                </>
+              )}
+
+              {latencyData[0].data.length > 0 && (
+                <>
+                  <h3 className="chart__title">Latency (Milliseconds)</h3>
+                  <div className="chart">
+                    <ResponsiveLine
+                      data={latencyData}
+                      height={400}
+                      theme={{
+                        axis: {
+                          ticks: {
+                            text: {
+                              fontSize: "13px",
+                              fill: "white",
+                            },
+                          },
+                        },
+                        legends: {
+                          text: {
+                            fontSize: "14px",
+                            fill: "white",
+                          },
+                        },
+                      }}
+                      tooltip={({ point }) => (
+                        <div className="tooltip flex">
+                          <figure
+                            style={{ backgroundColor: point.serieColor }}
+                          ></figure>
+                          <div>x : {point.data.x}</div>
+                          <div>y : {point.data.y}</div>
+                        </div>
+                      )}
+                      colors={["#E77002"]}
+                      areaBaselineValue={50}
+                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+                      xScale={{ type: "point" }}
+                      yScale={{
+                        type: "linear",
+                        min: "0",
+                        max: "auto",
+                        stacked: true,
+                        reverse: false,
+                      }}
+                      yFormat=" >-.2f"
+                      axisTop={null}
+                      axisRight={null}
+                      pointSize={10}
+                      isInteractive={true}
+                      pointBorderWidth={2}
+                      pointBorderColor={{ from: "serieColor" }}
+                      pointLabelYOffset={-12}
+                      areaOpacity={0.1}
+                      useMesh={true}
+                      legends={[
+                        {
+                          anchor: "bottom-right",
+                          direction: "column",
+                          justify: false,
+                          translateX: 100,
+                          translateY: 0,
+                          itemsSpacing: 0,
+                          itemDirection: "left-to-right",
+                          itemWidth: 80,
+                          itemHeight: 20,
+                          itemOpacity: 0.75,
+                          symbolSize: 12,
+                          symbolShape: "circle",
+                          symbolBorderColor: "rgba(0, 0, 0, .5)",
+                          effects: [
+                            {
+                              on: "hover",
+                              style: {
+                                itemBackground: "rgba(0, 0, 0, .03)",
+                                itemOpacity: 1,
+                              },
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  </div>
+                </>
+              )}
+
+              {CPUTimeData[0].data.length > 0 && (
+                <>
+                  <h3 className="chart__title">CPUTime</h3>
+                  <div className="chart">
+                    <ResponsiveLine
+                      data={CPUTimeData}
+                      height={400}
+                      colors={["Yellow", "orange", "brown"]}
+                      theme={{
+                        axis: {
+                          ticks: {
+                            text: {
+                              fontSize: "13px",
+                              fill: "white",
+                            },
+                          },
+                        },
+                        legends: {
+                          text: {
+                            fontSize: "14px",
+                            fill: "white",
+                          },
+                        },
+                      }}
+                      tooltip={({ point }) => (
+                        <div className="tooltip flex">
+                          <figure
+                            style={{ backgroundColor: point.serieColor }}
+                          ></figure>
+                          <div>x : {point.data.x}</div>
+                          <div>y : {point.data.y}</div>
+                        </div>
+                      )}
+                      areaBaselineValue={50}
+                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+                      xScale={{ type: "point" }}
+                      yScale={{
+                        type: "linear",
+                        min: "0",
+                        max: "auto",
+                        reverse: false,
+                      }}
+                      yFormat=" >-.2f"
+                      axisTop={null}
+                      axisRight={null}
+                      pointSize={10}
+                      isInteractive={true}
+                      pointBorderWidth={2}
+                      pointBorderColor={{ from: "serieColor" }}
+                      pointLabelYOffset={-12}
+                      areaOpacity={0.1}
+                      useMesh={true}
+                      legends={[
+                        {
+                          anchor: "bottom-right",
+                          direction: "column",
+                          justify: false,
+                          translateX: 100,
+                          translateY: 0,
+                          itemsSpacing: 0,
+                          itemDirection: "left-to-right",
+                          itemWidth: 80,
+                          itemHeight: 20,
+                          itemOpacity: 0.75,
+                          symbolSize: 12,
+                          symbolShape: "circle",
+                          symbolBorderColor: "rgba(0, 0, 0, .5)",
+                          effects: [
+                            {
+                              on: "hover",
+                              style: {
+                                itemBackground: "rgba(0, 0, 0, .03)",
+                                itemOpacity: 1,
+                              },
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  </div>
+                </>
+              )}
+              {MemBytesData[0].data.length > 0 && (
+                <>
+                  <h3 className="chart__title">MemStatsAllocBytes</h3>
+                  <div className="chart">
+                    <ResponsiveLine
+                      data={MemBytesData}
+                      height={400}
+                      colors={["Yellow", "orange", "brown"]}
+                      theme={{
+                        axis: {
+                          ticks: {
+                            text: {
+                              fontSize: "13px",
+                              fill: "white",
+                            },
+                          },
+                        },
+                        legends: {
+                          text: {
+                            fontSize: "14px",
+                            fill: "white",
+                          },
+                        },
+                      }}
+                      tooltip={({ point }) => (
+                        <div className="tooltip flex">
+                          <figure
+                            style={{ backgroundColor: point.serieColor }}
+                          ></figure>
+                          <div>x : {point.data.x}</div>
+                          <div>y : {point.data.y}</div>
+                        </div>
+                      )}
+                      areaBaselineValue={50}
+                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+                      xScale={{ type: "point" }}
+                      yScale={{
+                        type: "linear",
+                        min: "0",
+                        max: "auto",
+                        reverse: false,
+                      }}
+                      yFormat=" >-.2f"
+                      axisTop={null}
+                      axisRight={null}
+                      pointSize={10}
+                      isInteractive={true}
+                      pointBorderWidth={2}
+                      pointBorderColor={{ from: "serieColor" }}
+                      pointLabelYOffset={-12}
+                      areaOpacity={0.1}
+                      useMesh={true}
+                      legends={[
+                        {
+                          anchor: "bottom-right",
+                          direction: "column",
+                          justify: false,
+                          translateX: 100,
+                          translateY: 0,
+                          itemsSpacing: 0,
+                          itemDirection: "left-to-right",
+                          itemWidth: 80,
+                          itemHeight: 20,
+                          itemOpacity: 0.75,
+                          symbolSize: 12,
+                          symbolShape: "circle",
+                          symbolBorderColor: "rgba(0, 0, 0, .5)",
+                          effects: [
+                            {
+                              on: "hover",
+                              style: {
+                                itemBackground: "rgba(0, 0, 0, .03)",
+                                itemOpacity: 1,
+                              },
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 };
 
 export default CRON;
