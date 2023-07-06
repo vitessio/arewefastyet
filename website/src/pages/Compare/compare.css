@@ -1,0 +1,228 @@
+/*
+Copyright 2023 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.compare{
+    color: white;
+    padding: 0px 20px 0px 20px;
+    position: relative;
+    height: 100%;
+}
+
+.compare__top{
+    margin-top: 100px;
+}
+
+.form__container{
+    flex-direction: column;
+    align-items: center;
+}
+
+.form__container h3{
+    font-size: 2rem;
+}
+
+.form__container form{
+    width: 100%;
+    margin-top: 50px;
+}
+
+.form__inputLeft{
+    width: 40%;
+    padding: 20px 10px;
+    font-size: 1.5rem;
+    border: #E77002 solid 2px;
+    border-radius: 20px 0px 0px 20px;
+    background-color: #1F1D1D;
+    box-shadow: #E77002 2px 2px 10px;
+    color: white;
+}
+
+.form__inputRight{
+    width: 40%;
+    padding: 20px 10px;
+    font-size: 1.5rem;
+    border: #E77002 solid 2px;
+    background-color: #1F1D1D;
+    box-shadow: #E77002 2px 2px 10px;
+    border-radius: 0px 20px 20px 0px;
+    color: white;
+}
+
+.form__container button{
+    border: #E77002 solid 2px;
+    border-left: 0px;
+    background-color: #343A40;
+    color: white;
+    padding: 20px;
+    border-radius: 0px 20px 20px 0px;
+    box-shadow: #E77002 2px 2px 10px;
+    font-size: 1.5rem;
+}
+
+/*Macrobench*/
+
+
+.compare__macrobench__Container{
+    position: relative;
+    z-index: 2;
+    justify-content: center;
+    
+}
+
+.compare__macrobench__title{
+    margin-top: 100px;
+    margin-bottom: 100px;
+    font-size: 2rem;
+}
+
+.compare__macrobench__Sidebar{
+    background-color: rgb(117, 58, 3);;
+    padding: 0px 20px 0px 20px;
+    font-style: italic;
+    border-top: #E77002 1px  solid;
+    border-left: #E77002 1px  solid;
+    border-bottom: #E77002 1px  solid;
+    border-radius: 10px 0px 0px 10px;
+    text-align: end;
+    width: 16%;
+    margin-top: 73px;
+
+}
+
+.compare__macrobench__Sidebar span{
+    padding: 13.25px 0px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.compare__carousel__container{
+    width: 70%;
+    max-height: 757px;
+}
+
+.compare__micro__container{
+    margin-top: 70px;
+    margin-top: 150px;
+}
+
+.compare__micro__container h3{
+    margin-bottom: 100px;
+    font-size: 2rem;
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+    .compare__top__text h2{
+        font-size: 3rem;
+    }
+
+    .compare__top__text{
+        margin-right: 100px;
+    }
+
+    .compareStats{
+        border: solid 2px white;
+        width: 300px;
+        height: 300px;
+        margin-top: 100px;
+    }
+
+    .compare__macrobench__Sidebar{
+        width: 24%;
+    }
+
+    .hiddenTablet{
+        display: none;
+    }
+}
+
+ /* MEDIA QUERIES FOR MOBILE */
+ @media only screen and (max-width: 767px){
+    .compare__top__text{
+        width: 100%;
+        text-align: center;
+    }
+
+    .compare__top__text h2{
+        font-size: 2rem;
+    }
+
+    .compare__top{
+        flex-direction: column;
+    }
+
+    .compareStats{
+        margin: auto;
+        margin-top: 30px;
+    }
+
+    .compare__macrobench__Sidebar{
+        width: 35%;
+        border: #E77002 1px solid;
+        margin-top: 84px;
+        padding: 0px 7px;
+        border-radius: 10px;
+    }
+
+    .compare__macrobench__Sidebar span{
+        padding: 13px 0px;
+        font-size: 0.7rem;
+        min-height: 27px;
+        padding: 0px;
+        margin: 7px 0px;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+    }
+
+    .compare__carousel__container{
+        width: 65%;
+        max-height: 760px;
+    }
+
+    .compare{
+        padding: 0px 5px;
+    }
+
+    .form__container h3{
+        font-size: 1rem;
+    }
+
+    .form__inputLeft,
+    .form__inputRight{
+        font-size: 0.8rem;
+        padding: 15px;
+        width: 45%;
+    }
+
+    .compare__micro__container h3{
+        font-size: 1rem;
+        margin-top: 0px;
+        margin-bottom: 50px;
+    }
+
+    .compare__micro__container{
+        margin-top: 50px;
+        text-align: center;
+    }
+
+    .compare__macrobench__title{
+        font-size: 1rem;
+        text-align: center;
+        margin: 50px 0px;
+    }
+    
+ }

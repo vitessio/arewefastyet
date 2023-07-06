@@ -90,7 +90,7 @@ const Header = () => {
                             { to: '/home', label: 'Home' },
                             { to: '/status', label: 'Status' },
                             { to: '/cron', label: 'CRON' },
-                            { to: '/status', label: 'Compare' },
+                            { to: '/compare', label: 'Compare' },
                             { to: '/search', label: 'Search' },
                             { to: '/micro', label: 'Micro' },
                             { to: '/macro', label: 'Macro' }

@@ -213,7 +213,6 @@ const CRON = () => {
       y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vttablet),
     });
   }
- console.log(isLoading2)
 
   return (
     <div className="cron">
