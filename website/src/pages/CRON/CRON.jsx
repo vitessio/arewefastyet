@@ -30,7 +30,7 @@ const CRON = () => {
   const [dataCron, setDataCron] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoading2, setIsLoading2] = useState(true);
+  const [isLoadingChart, setIsLoadingChart] = useState(true);
   const [benchmarkType, setBenchmarktype] = useState(
     urlParams.get("type") == null ? "" : urlParams.get("type")
   );
@@ -242,7 +242,7 @@ const CRON = () => {
                   key={index}
                   data={cronSummary}
                   setBenchmarktype={setBenchmarktype}
-                  setIsLoading2={setIsLoading2}
+                  setIsLoading2={setIsLoadingChart}
                   benchmarkType={benchmarkType}
                 />
               );

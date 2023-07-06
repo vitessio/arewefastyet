@@ -96,7 +96,7 @@ type (
 
 	CronSummary struct {
 		CreatedAt *time.Time
-		QPSTotal float64
+		QPSTotal  float64
 	}
 )
 
