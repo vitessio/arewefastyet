@@ -83,6 +83,8 @@ const QueryPlan = ({data, isOpen, togglePlan}) => {
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    {data.Left && data.Right && (
+                                        <>
                                         <tr>
                                             <td><b>ExecutionsCount</b></td>
                                             <td>{data.Left.Value.ExecCount}</td>
@@ -107,31 +109,35 @@ const QueryPlan = ({data, isOpen, togglePlan}) => {
                                             <td>{data.Right.Value.Errors}</td>
                                             <td>{data.ErrorsDiff}</td>
                                         </tr>
+                                        </>
+                                    )}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    {data.Left.Value.Instructions === data.Right.Value.Instructions ? (
-                        <div className='planEquivalent'>Plans are equivalent.</div>
-                    ) : (
-                        <div className='planDifferent'>Plans are différent</div>
-                    )}
-                    <div className='plan__queryPlan'>
-                        <h3>Query Plan</h3>
-                        <ReactJson data={data.Left.Value.Instructions} className='json'/>
-                    </div>
-                    {data.Left.Value.Instructions === data.Right.Value.Instructions ? null : (
-                        <div className='plan__queryPlan'>
-                            <h3>Query Plan</h3>
-                            <ReactJson data={data.Right.Value.Instructions} className='json'/>
-                        </div>
-                    )}
-                </div>
-                )}
+                    {data.Left && data.Right && (data.Left.Value.Instructions === data.Right.Value.Instructions) ? (
+              <div className='planEquivalent'>Plans are equivalent.</div>
+            ) : (
+              <div className='planDifferent'>Plans are different</div>
+            )}
+            <div className='plan__queryPlan'>
+              <h3>Query Plan</h3>
+              {data.Left && (
+                <ReactJson data={data.Left.Value.Instructions} className='json' />
+              )}
             </div>
-        </div>
-    );
+            {data.Left && data.Right && (data.Left.Value.Instructions !== data.Right.Value.Instructions) && (
+              <div className='plan__queryPlan'>
+                <h3>Query Plan</h3>
+                <ReactJson data={data.Right.Value.Instructions} className='json' />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default QueryPlan;

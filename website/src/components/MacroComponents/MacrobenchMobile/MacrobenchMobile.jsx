@@ -16,7 +16,7 @@ limitations under the License.
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { formatByteForGB } from '../../../utils/Utils';
+import { formatByteForGB, fixed } from '../../../utils/Utils';
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import './macrobenchmobile.css'
@@ -47,22 +47,22 @@ const MacrobenchMobile = ({data, gitRefLeft, gitRefRight, setCurrentSlideIndexMo
                     <SwiperSlide>
                         <div className='macrobench__data flex--column'>
                             <h4>Impoved by %</h4>
-                            <span>{data.diff.Diff.qps.total.toFixed(2)}</span>
-                            <span>{data.diff.Diff.qps.reads.toFixed(2)}</span>
-                            <span>{data.diff.Diff.qps.writes.toFixed(2)}</span>
-                            <span>{data.diff.Diff.qps.other.toFixed(2)}</span>
-                            <span>{data.diff.Diff.tps.toFixed(2)}</span>
-                            <span>{data.diff.Diff.latency.toFixed(2)}</span>
-                            <span>{data.diff.Diff.errors.toFixed(2)}</span>
-                            <span>{data.diff.Diff.reconnects.toFixed(2)}</span>
-                            <span>{data.diff.Diff.time.toFixed(2)}</span>
-                            <span>{data.diff.Diff.threads.toFixed(2)}</span>
-                            <span>{data.diff.DiffMetrics.TotalComponentsCPUTime.toFixed(2)}</span>
-                            <span>{data.diff.DiffMetrics.ComponentsCPUTime.vtgate.toFixed(2)}</span>
-                            <span>{data.diff.DiffMetrics.ComponentsCPUTime.vttablet.toFixed(2)}</span>
+                            <span>{fixed(data.diff.Diff.qps.total, 0)}</span>
+                            <span>{fixed(data.diff.Diff.qps.reads, 0)}</span>
+                            <span>{fixed(data.diff.Diff.qps.writes, 0)}</span>
+                            <span>{fixed(data.diff.Diff.qps.other, 0)}</span>
+                            <span>{fixed(data.diff.Diff.tps, 0)}</span>
+                            <span>{fixed(data.diff.Diff.latency, 0)}</span>
+                            <span>{fixed(data.diff.Diff.errors, 0)}</span>
+                            <span>{fixed(data.diff.Diff.reconnects, 0)}</span>
+                            <span>{fixed(data.diff.Diff.time, 0)}</span>
+                            <span>{fixed(data.diff.Diff.threads, 0)}</span>
+                            <span>{fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 0)}</span>
+                            <span>{fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 0)}</span>
+                            <span>{fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 0)}</span>
                             <span>{formatByteForGB(data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes)}</span>
-                            <span>{data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate.toFixed(2)}</span>
-                            <span>{data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet.toFixed(2)}</span>
+                            <span>{fixed(data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate, 0)}</span>
+                            <span>{fixed(data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet, 0)}</span>
                         </div>
                     </SwiperSlide>
                     <SwiperSlide>
@@ -78,7 +78,7 @@ const MacrobenchMobile = ({data, gitRefLeft, gitRefRight, setCurrentSlideIndexMo
                             <span>{data.diff.Left.Result.reconnects}</span>
                             <span>{data.diff.Left.Result.time}</span>
                             <span>{data.diff.Left.Result.threads}</span>
-                            <span>{data.diff.Left.Metrics.TotalComponentsCPUTime.toFixed(0)}</span>
+                            <span>{fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0)}</span>
                             <span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span>
                             <span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span>
                             <span>{formatByteForGB(data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes)}</span>
