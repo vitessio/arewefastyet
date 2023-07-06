@@ -28,8 +28,8 @@ const Macrobench = ({data, gitRefLeft, gitRefRight, showSpan, commitHashLeft, co
             <table>
                 <thead>
                     <tr>
-                        <th><h4>{gitRefLeft}</h4></th>
-                        <th><h4>{gitRefRight}</h4></th>
+                        <th><h4>{gitRefLeft ? gitRefLeft : 'Left'}</h4></th>
+                        <th><h4>{gitRefRight ? gitRefRight : 'Right'}</h4></th>
                         <th><h4>Impoved by %</h4></th>
                     </tr>
                 </thead>
