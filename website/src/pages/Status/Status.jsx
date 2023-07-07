@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 import React from "react";
-import { useState, useEffect } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { v4 as uuidv4 } from "uuid";
 import useApiCall from "../../utils/Hook";
@@ -24,7 +23,6 @@ import PreviousExe from "../../components/StatusComponents/PreviousExecutions/Pr
 import ExeQueue from "../../components/StatusComponents/ExecutionQueue/ExeQueue";
 import PreviousExeResMobile from "../../components/StatusComponents/PreviousExeResponsiveMobile/PreviousExeResMobile";
 import PreviousExeResTablet from "../../components/StatusComponents/PreviousExecutionResponsiveTablet/PreviousExeResTablet";
-// import { errorApi } from "../../utils/Error";
 import "./status.css";
 
 const Status = () => {

@@ -131,6 +131,7 @@ limitations under the License.
     display:flex;
     justify-content: center;
     align-items: center;
+    margin: 100px 0px;
 }
 
 .apiError{
