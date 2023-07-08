@@ -23,10 +23,13 @@ import { errorApi } from '../../utils/Utils';
 import QueryPlan from '../../components/QueryPlan/QueryPlan';
 const MacroQueriesCompare = () => {
 
+    const [error, setError] = useState(null);
+
     const { state } = useLocation()
-    const commitA = state.another
-    const commitB = state.more
-    const type = state.some.type
+    const commitA = state.commitHashLeft
+    const commitB = state.commitHashRight
+    const type = state.data.type
+    
 
     const [dataQueryPlan, setDataQueryPlan] = useState([])
 
@@ -36,7 +39,7 @@ const MacroQueriesCompare = () => {
                 const responseQueryPlan = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${commitA}&rtag=${commitB}&type=${type}`);
 
                 const jsonDataQueryPlan = await responseQueryPlan.json()
-                console.log(jsonDataQueryPlan)
+                
                 setDataQueryPlan(jsonDataQueryPlan)
             } catch (error){
                 console.log('Error while retrieving data from the API', error);
