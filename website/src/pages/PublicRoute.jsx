@@ -26,6 +26,7 @@ import Macro from './Macro/Macro';
 import Micro from './Micro/Micro';
 import Search from './Search/Search';
 import Compare from './Compare/Compare';
+import PR from './PR/PR';
 
 const PublicRoute = () => {
     return (
@@ -39,6 +40,7 @@ const PublicRoute = () => {
             <Route path='/compare' element={<Compare/>}/>
             <Route path='/macro' element={<Macro/>}/>
             <Route path='/micro' element={<Micro/>}/>
+            <Route path='/pr' element={<PR/>}/>
 
             <Route path='*' element={<Error/>}/>
 

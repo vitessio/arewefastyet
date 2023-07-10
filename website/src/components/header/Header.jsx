@@ -93,7 +93,8 @@ const Header = () => {
                             { to: '/compare', label: 'Compare' },
                             { to: '/search', label: 'Search' },
                             { to: '/micro', label: 'Micro' },
-                            { to: '/macro', label: 'Macro' }
+                            { to: '/macro', label: 'Macro' },
+                            { to: '/pr', label: 'PR' }
                             ].map((link, index) => (
                               <div key={index}>
                                   <li>
