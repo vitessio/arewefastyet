@@ -39,3 +39,26 @@ func GetPullRequestList(client storage.SQLClient) ([]int, error) {
 	}
 	return res, nil
 }
+
+type pullRequestInfo struct {
+	Main string
+	PR   string
+}
+
+func GetPullRequestInfo(client storage.SQLClient, pullNumber int) (pullRequestInfo, error){
+	rows, err := client.Select("select cron_pr.git_ref as pr, cron_pr_base.git_ref as main from (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr' order by started_at desc limit 1) cron_pr , (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr_base' order by started_at desc limit 1) cron_pr_base ", pullNumber, pullNumber)
+	if err != nil {
+		return pullRequestInfo{}, err
+	}
+
+	defer rows.Close()
+
+	var res pullRequestInfo
+	if rows.Next() {
+		err = rows.Scan(&res.PR, &res.Main)
+		if err != nil {
+			return pullRequestInfo{}, err
+		}
+	}
+	return res, nil
+}

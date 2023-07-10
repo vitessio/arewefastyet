@@ -289,6 +289,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/search", s.searchBenchmarck)
 	s.router.GET("/api/macrobench/compare/queries", s.queriesCompareMacrobenchmarks)
 	s.router.GET("/api/pr/list", s.getPullRequest)
+	s.router.GET("/api/pr/info/:nb", s.getPullRequestInfo)
 
 	return s.router.Run(":" + s.port)
 }

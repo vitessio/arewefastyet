@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"sort"
 	"time"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
@@ -254,4 +255,22 @@ func (s *Server) getPullRequest(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, pullNumbers)
+}
+
+func (s *Server) getPullRequestInfo(c *gin.Context) {
+	pullNbStr := c.Param("nb")
+	pullNb, err := strconv.Atoi(pullNbStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	pullRequestInfo, err := exec.GetPullRequestInfo(s.dbClient, pullNb)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, pullRequestInfo)
+
 }
