@@ -245,3 +245,13 @@ func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 	comparison := macrobench.CompareVTGateQueryPlans(plansLeft, plansRight)
 	c.JSON(http.StatusOK, comparison)
 }
+
+func (s *Server) getPullRequest(c *gin.Context) {
+	pullNumbers, err := exec.GetPullRequestList(s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, pullNumbers)
+}
