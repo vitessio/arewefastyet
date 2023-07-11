@@ -35,7 +35,7 @@ a{
 .spanStatus{
     padding: 3px 20px;
     border-radius: 20px;
-    
+    max-height: 25px;
 }
 
 
