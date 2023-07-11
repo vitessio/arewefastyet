@@ -100,7 +100,6 @@ const Macro = () => {
         navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`)
     }, [gitRefLeft, gitRefRight, currentSlideIndex, currentSlideIndexMobile]) 
     
-    
 
     const handleSlideChange = (swiper) => {
         setCurrentSlideIndex(swiper.realIndex);
@@ -211,12 +210,21 @@ const Macro = () => {
                                         {dataMacrobench.map((macro, index) => {
                                             return (
                                                 <SwiperSlide key={index}>
-                                                    <Macrobench data={macro} gitRefLeft={gitRefLeft} gitRefRight={gitRefRight} swiperSlide={SwiperSlide}/>
+                                                    <Macrobench
+                                                        data={macro} 
+                                                        gitRefLeft={gitRefLeft} 
+                                                        gitRefRight={gitRefRight} 
+                                                        swiperSlide={SwiperSlide} 
+                                                        showSpan={true} 
+                                                        commitHashLeft={commitHashLeft}
+                                                        commitHashRight={commitHashRight}
+                                                    />
                                                     <MacrobenchMobile 
                                                     data={macro} 
                                                     gitRefLeft={gitRefLeft} 
                                                     gitRefRight={gitRefRight} 
                                                     swiperSlide={SwiperSlide} 
+                                                    showSpan={true} 
                                                     handleSlideChange={handleSlideChange} 
                                                     setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                                                     currentSlideIndexMobile={currentSlideIndexMobile}

@@ -1,0 +1,58 @@
+/*
+Copyright 2023 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.query{
+    color: white;
+    padding: 0px 20px 0px 20px;
+    position: relative;
+    height: 100%;
+}
+
+.query__top{
+    margin-top: 100px;
+    text-align: center;
+}
+
+.query__top h2{
+    font-size: 3rem;
+}
+
+.query__top span{
+    margin-top: 30px;
+}
+
+.query__top a, .query__top b{
+    font-size: 1.3rem;
+}
+
+.query__top b{
+    color:#E77002
+}
+
+.queryPlan__container{
+    margin-bottom: 900px;
+}
+
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .query__top h2{
+        font-size: 2rem;
+    }
+
+    .query__top{
+        font-size: 0.9rem;
+    }
+}
