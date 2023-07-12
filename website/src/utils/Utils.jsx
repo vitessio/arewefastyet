@@ -14,73 +14,76 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import moment from 'moment';
-import bytes from 'bytes';
-
+import moment from "moment";
+import bytes from "bytes";
 
 // BACKGROUND STATUS
 export const getStatusClass = (status) => {
-    if (status != 'finished' && status != 'failed' && status != 'started') {
-        return 'default';
-    }
-    return status
-}
+  if (status != "finished" && status != "failed" && status != "started") {
+    return "default";
+  }
+  return status;
+};
 
 // FORMATDATE
 export const formatDate = (date) => {
-    return moment(date).format('MM/DD/YYYY HH:mm')
-}
+  return moment(date).format("MM/DD/YYYY HH:mm");
+};
 
 //FORMATTING BYTES TO GB
 export const formatByteForGB = (byte) => {
-    const byteValue = bytes(byte)
-    if (byteValue === null){
-        return "0"
-    }
-    return byteValue.toString('GB');
-}
+  const byteValue = bytes(byte);
+  if (byteValue === null) {
+    return "0";
+  }
+  return byteValue.toString("GB");
+};
 
 export const fixed = (value, f) => {
-    if(value === null){
-        return "0"
-    }
-    console.log(value)
-    return value.toFixed(f);
-}
+  if (value === null || typeof value === "undefined") {
+    return "0";
+  }
+  return value.toFixed(f);
+};
 
 //ERROR API MESSAGE ERROR
-export const errorApi = 'An error occurred while retrieving data from the API. Please try again.'
-
+export const errorApi =
+  "An error occurred while retrieving data from the API. Please try again.";
 
 //NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN
-export const openDropDownValue = 1000
-export const closeDropDownValue = 58
+export const openDropDownValue = 1000;
+export const closeDropDownValue = 58;
 
- // OPEN DROP DOWN
+// OPEN DROP DOWN
 
- export const openDropDown = (currentValue, setOpenDropDown) =>{
-    if (currentValue === closeDropDownValue) {
-        setOpenDropDown(openDropDownValue);
-      } else {
-        setOpenDropDown(closeDropDownValue);
-      }
-}
+export const openDropDown = (currentValue, setOpenDropDown) => {
+  if (currentValue === closeDropDownValue) {
+    setOpenDropDown(openDropDownValue);
+  } else {
+    setOpenDropDown(closeDropDownValue);
+  }
+};
 
 // CHANGE VALUE DROPDOWN
 
-export const valueDropDown = (ref, setDropDown, setCommitHash, setOpenDropDown, setChangeUrl) => {
-    setDropDown(ref.Name)
-    setCommitHash(ref.CommitHash)
-    setOpenDropDown(closeDropDownValue);
-}
+export const valueDropDown = (
+  ref,
+  setDropDown,
+  setCommitHash,
+  setOpenDropDown,
+  setChangeUrl
+) => {
+  setDropDown(ref.Name);
+  setCommitHash(ref.CommitHash);
+  setOpenDropDown(closeDropDownValue);
+};
 
- // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
- export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
-    const obj = jsonDataRefs.find(item => item.Name === gitRef);
-        setCommitHash(obj ? obj.CommitHash : null);
-}
-
+// updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
+export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
+  const obj = jsonDataRefs.find((item) => item.Name === gitRef);
+  setCommitHash(obj ? obj.CommitHash : null);
+};
 
 ////THE NUMBER OF PIXELS THAT ARE USED TO OPEN AND CLOSE THE PREVIOUS EXECUTIONS AND MICROBENCH TABLES
-export const openTables = 400
-export const closeTables = 70
+export const openTables = 400;
+export const closeTables = 70;

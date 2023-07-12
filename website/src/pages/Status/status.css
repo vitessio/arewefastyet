@@ -62,29 +62,10 @@ limitations under the License.
     text-align: center;
 }
 
-.width--5em{
-    width: 5em;
-}
 
-.width--6em{
-    width: 6em;
-}
-
-.width--11em{
-    width: 11em;
-}
-
-.width--3em{
-    width: 3em;
-}
 .hiddenDesktop{
     display: none;
 }
-
-
-
-
-
 
     /*PREVIOUS EXECUTIONS*/
 
@@ -102,9 +83,6 @@ limitations under the License.
     text-align: center;
     
 }
-
-
-
 
 .grey--background{
     background-color: #343A40;

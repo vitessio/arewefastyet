@@ -15,37 +15,22 @@ limitations under the License.
 */
 
 import React, { useState, useEffect } from "react";
+import useApiCall from "../../utils/Hook";
 
 import "../PR/PR.css";
 
 import { errorApi } from "../../utils/Utils";
-import { Link } from "react-router-dom";
+import PRGitInfo from "../../components/PRcomponents/PRGitInfo";
 
 const PR = () => {
-  const [dataPRList, setDataPRList] = useState([]);
-  const [error, setError] = useState(null);
   const [prNumber, setPrNumber] = useState("");
   const [dataPRInfo, setDataPRInfo] = useState([]);
-  const [destination, setDestination] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responsePRList = await fetch(
-          `${import.meta.env.VITE_API_URL}pr/list`
-        );
-
-        const jsonDataPRList = await responsePRList.json();
-        console.log(jsonDataPRList);
-        setDataPRList(jsonDataPRList);
-      } catch (error) {
-        console.log("Error while retrieving data from the API", error);
-        setError(errorApi);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const {
+    data: dataPRList,
+    isLoading: isPRListLoading,
+    error: PRListError,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}pr/list`, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,11 +58,6 @@ const PR = () => {
     fetchData();
   }, [prNumber]);
 
-  const handlePrInfo = (e) => {
-    const number = e.toString();
-    setPrNumber(number);
-  };
-
   return (
     <div className="pr">
       <div className="pr__top justify--content">
@@ -91,12 +71,22 @@ const PR = () => {
         </span>
       </div>
       <figure className="line"></figure>
+      <div className="pr__sidebar">
+        <span className="pullnbTitle width--5em">Pull_nb</span>
+        <span className="width--15em">PR title</span>
+        <span className="width--6em">Author</span>
+        <span className="width--10em">creation date</span>
+        <span className="width--11em"></span>
+      </div>
       <div className="pr__container justify--content">
         {dataPRList.map((PRList, index) => {
           return (
-            <span key={index} onClick={() => handlePrInfo(PRList)}>
-              {PRList}
-            </span>
+            <PRGitInfo
+              key={index}
+              pull_nb={PRList}
+              setPrNumber={setPrNumber}
+              className={index % 2 === 0 ? "gray-background" : ""}
+            />
           );
         })}
       </div>

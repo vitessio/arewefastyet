@@ -14,46 +14,51 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.pr{
-    min-height: 100vh;
+.pr {
+  min-height: 100vh;
+  padding: 20px;
 }
 
-.pr__top{
-    margin-top: 100px;
-    flex-direction: column;
+.pr__top {
+  margin-top: 100px;
+  flex-direction: column;
 }
 
-.pr__top h1{
-    color: white;
-    font-size: 6rem;
-    font-weight:100;
-    margin: 20px 0px 50px 30px;
-    width: 100%
+.pr__top h1 {
+  color: white;
+  font-size: 6rem;
+  font-weight: 100;
+  margin: 20px 0px 50px 30px;
+  width: 100%;
 }
 
-.pr__top span{
-    color: #B5ADAD;
-    width: 100%;
-    line-height: 40px;
-    margin-left: 30px;
+.pr__top span {
+  color: #b5adad;
+  width: 100%;
+  line-height: 40px;
+  margin-left: 30px;
 }
 
-.pr__container{
-    flex-direction: row;
-    color: white;
-    gap: 20px;
-    flex-wrap: wrap;
+.pr__container {
+  flex-direction: column;
+  color: white;
 }
 
-.pr__container span{
-    padding: 50px;
-    border: 1px solid white;
-    border-radius: 10px;
-    cursor: pointer;
+.gray-background {
+  background-color: #343a40;
 }
 
-.pr__container span:hover{
-    background-color: white;
-    color: black;
+.pr__sidebar {
+  color: white;
+  padding: 30px 0px;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  border-bottom: 2px solid white;
+  border-top: 2px solid white;
 }
 
+.pr__sidebar span {
+  font-weight: bold;
+}
