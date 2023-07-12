@@ -18,7 +18,7 @@ import React, {useState} from 'react';
 
 import '../Microbench/microbench.css'
 
-import { closeTables, openTables } from '../../utils/Utils';
+import { closeTables, openTables, fixed } from '../../utils/Utils';
 
 const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
 
@@ -38,13 +38,13 @@ const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
                 <span className='width--12em'>{data.PkgName}</span>
                 <span className='width--14em name'>{data.Name}</span>
                 <div className='width--18em space--between--flex hiddenMobile'>
-                    <span className='width--100'>{data.Right.Ops.toFixed(0)}</span>
-                    <span className='width--100'>{data.Left.Ops.toFixed(0)}</span>
+                    <span className='width--100'>{fixed(data.Right.Ops, 0)}</span>
+                    <span className='width--100'>{fixed(data.Left.Ops, 0)}</span>
                     <span className={`width--100 ${data.Diff.Ops <= -5 ? 'negatif--Micro' : (data.Diff.Ops >= 5 ? 'positif--Micro' : '')}`}>{data.Diff.Ops.toFixed(2)}</span>
                 </div>
                 <div className='width--18em space--between--flex hiddenTablet'>
-                    <span className='width--100'>{data.Right.NSPerOp.toFixed(0)}</span>
-                    <span className='width--100'>{data.Left.NSPerOp.toFixed(0)}</span>
+                    <span className='width--100'>{fixed(data.Right.NSPerOp, 0)}</span>
+                    <span className='width--100'>{fixed(data.Left.NSPerOp, 0)}</span>
                     <span className={`width--100 ${data.Diff.Ops <= -10 ? 'negatif--Micro' : (data.Diff.Ops >= 10 ? 'positif--Micro' : '')}`}>{data.Diff.NSPerOp.toFixed(2)}</span>
                 </div>
                 <div className='width--6em'><i className="fa-solid fa-circle-info" onClick={handleClick}></i></div>
@@ -59,14 +59,14 @@ const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
                 <figure className='microbench__bottom__line'></figure>
                 <div className='hiddenDesktop microbenchMore'>
                     <span className='width--18em'>Number of Iterations</span>
-                    <span className='width--12em'>{data.Right.Ops.toFixed(0)}</span>
-                    <span className='width--12em'>{data.Left.Ops.toFixed(0)}</span>
+                    <span className='width--12em'>{fixed(data.Right.Ops, 0)}</span>
+                    <span className='width--12em'>{fixed(data.Left.Ops, 0)}</span>
                     <span className={`width--12em ${data.Diff.Ops <= -5 ? 'negatif--Micro' : (data.Diff.Ops >= 5 ? 'positif--Micro' : '')}`}>{data.Diff.Ops.toFixed(2)}</span>
                 </div>
                 <div className=' hiddenDesktop microbenchMore'>
                     <span className='width--18em'>Time/op</span>
-                    <span className='width--12em'>{data.Right.NSPerOp.toFixed(0)}</span>
-                    <span className='width--12em'>{data.Left.NSPerOp.toFixed(0)}</span>
+                    <span className='width--12em'>{fixed(data.Right.NSPerOp, 0)}</span>
+                    <span className='width--12em'>{fixed(data.Left.NSPerOp, 0)}</span>
                     <span className={`width--12em ${data.Diff.Ops <= -10 ? 'negatif--Micro' : (data.Diff.Ops >= 10 ? 'positif--Micro' : '')}`}>{data.Diff.NSPerOp.toFixed(2)}</span>
                 </div>
                 <div className='flex microbenchMore'>

@@ -14,51 +14,45 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.previousExe__data{
-    justify-content: space-between;
-    text-align: center;
-    border-bottom: #B5ADAD 1px solid;
-    padding: 20px 3px;
-    display: flex;
+.query{
+    color: white;
+    padding: 0px 20px 0px 20px;
+    position: relative;
+    height: 100%;
 }
 
+.query__top{
+    margin-top: 100px;
+    text-align: center;
+}
 
+.query__top h2{
+    font-size: 3rem;
+}
 
+.query__top span{
+    margin-top: 30px;
+}
 
-a{
-    text-decoration: none;
+.query__top a, .query__top b{
+    font-size: 1.3rem;
+}
+
+.query__top b{
     color:#E77002
 }
 
-
-
-.spanStatus{
-    padding: 3px 20px;
-    border-radius: 20px;
-    max-height: 25px;
+.queryPlan__container{
+    margin-bottom: 900px;
 }
 
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px){
+    .query__top h2{
+        font-size: 2rem;
+    }
 
-
-.finished {
-    background-color: green;
-}
-  
-.failed {
-    background-color: red;
-}
-.started{
-    background-color: rgb(0, 92, 241);
-}
-.default{
-    background-color: grey;
-}
-
-
-
-/* MEDIA QUERIES FOR TABLETS */
-@media only screen and (max-width: 1225px) {
-    .previousExe__data{
-        display: none;
+    .query__top{
+        font-size: 0.9rem;
     }
 }

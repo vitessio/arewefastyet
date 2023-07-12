@@ -33,7 +33,19 @@ export const formatDate = (date) => {
 
 //FORMATTING BYTES TO GB
 export const formatByteForGB = (byte) => {
-    return bytes(byte).toString('GB');
+    const byteValue = bytes(byte)
+    if (byteValue === null){
+        return "0"
+    }
+    return byteValue.toString('GB');
+}
+
+export const fixed = (value, f) => {
+    if(value === null){
+        return "0"
+    }
+    console.log(value)
+    return value.toFixed(f);
 }
 
 //ERROR API MESSAGE ERROR

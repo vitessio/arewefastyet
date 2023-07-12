@@ -25,6 +25,7 @@ limitations under the License.
 
 .macrobench__mobile{
     display: none;
+    position: relative;
 }
 
 .macrobench__mobile span:nth-child(2n) {
@@ -45,6 +46,15 @@ limitations under the License.
     border-bottom: solid 1px #B5ADAD;
     background-color: #1F1D1D;
     z-index: 1;
+}
+
+.linkQuery{
+    font-size: 14px;
+    position: absolute;
+    top: 3%;
+    left: 0%;
+    background: none;
+    width: 100%;
 }
 
 
