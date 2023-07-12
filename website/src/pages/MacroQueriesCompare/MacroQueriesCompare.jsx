@@ -21,6 +21,7 @@ import '../MacroQueriesCompare/macroQueriesCompare.css'
 
 import { errorApi } from '../../utils/Utils';
 import QueryPlan from '../../components/QueryPlan/QueryPlan';
+
 const MacroQueriesCompare = () => {
 
     const [error, setError] = useState(null);
