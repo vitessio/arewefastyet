@@ -66,3 +66,27 @@ body{
   margin-top: 100px;
   margin-bottom: 100px;
 }
+
+.width--5em{
+  width: 5em;
+}
+
+.width--6em{
+  width: 6em;
+}
+
+.width--11em{
+  width: 11em;
+}
+
+.width--3em{
+  width: 3em;
+}
+
+.width--15em{
+  width: 15em;
+}
+
+.width--10em{
+  width: 10em;
+}
