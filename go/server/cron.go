@@ -28,14 +28,6 @@ import (
 )
 
 type (
-	executionQueueElement struct {
-		config                  benchmarkConfig
-		retry                   int
-		identifier              executionIdentifier
-		compareWith             []executionIdentifier
-		notifyAlways, Executing bool
-	}
-
 	executionIdentifier struct {
 		GitRef, Source, BenchmarkType, PlannerVersion string
 		PullNb                                        int
@@ -43,7 +35,15 @@ type (
 		Version                                       git.Version
 	}
 
-	executionQueue map[executionIdentifier]*executionQueueElement
+	executionQueueElement struct {
+		config                  benchmarkConfig
+		retry                   int
+		Identifier              executionIdentifier
+		compareWith             []executionIdentifier
+		notifyAlways, Executing bool
+	}
+
+	executionQueue []*executionQueueElement
 )
 
 const (
@@ -72,7 +72,7 @@ func createIndividualCron(schedule string, job func()) error {
 }
 
 func (s *Server) createCrons() error {
-	queue = make(executionQueue)
+	queue = make(executionQueue, 0, 1)
 
 	crons := []struct {
 		schedule string
@@ -107,26 +107,27 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 		mtx.Unlock()
 	}()
 
-	if len(s.sourceFilter) > 0 && !slices.Contains(s.sourceFilter, element.identifier.Source) {
+	if len(s.sourceFilter) > 0 && !slices.Contains(s.sourceFilter, element.Identifier.Source) {
 		return
 	}
-	if len(s.excludeSourceFilter) > 0 && slices.Contains(s.excludeSourceFilter, element.identifier.Source) {
+	if len(s.excludeSourceFilter) > 0 && slices.Contains(s.excludeSourceFilter, element.Identifier.Source) {
 		return
 	}
 
-	_, found := queue[element.identifier]
-
-	if found {
-		return
+	for _, queueElement := range queue {
+		if queueElement.Identifier == element.Identifier {
+			return
+		}
 	}
-	exists, err := s.checkIfExecutionExists(element.identifier)
+
+	exists, err := s.checkIfExecutionExists(element.Identifier)
 	if err != nil {
 		slog.Error(err.Error())
 		return
 	}
 	if !exists {
-		queue[element.identifier] = element
-		slog.Infof("%+v is added to the queue", element.identifier)
+		queue = append(queue, element)
+		slog.Infof("%+v is added to the queue", element.Identifier)
 
 		// we sleep here to avoid adding too many similar elements to the queue at the same time.
 		time.Sleep(2 * time.Second)

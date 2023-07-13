@@ -26,6 +26,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
+	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
@@ -78,10 +79,10 @@ func (s *Server) getExecutionsQueue(c *gin.Context) {
 			continue
 		}
 		recentExecs = append(recentExecs, RecentExecutions{
-			Source: e.identifier.Source,
-			GitRef: e.identifier.GitRef,
-			TypeOf: e.identifier.BenchmarkType,
-			PullNb: e.identifier.PullNb,
+			Source: e.Identifier.Source,
+			GitRef: e.Identifier.GitRef,
+			TypeOf: e.Identifier.BenchmarkType,
+			PullNb: e.Identifier.PullNb,
 		})
 	}
 	sort.Slice(recentExecs, func(i, j int) bool {
@@ -192,7 +193,7 @@ func (s *Server) compareMicrobenchmarks(c *gin.Context) {
 }
 
 type searchResult struct {
-	Macros map[string]macrobench.DetailsArray 
+	Macros map[string]macrobench.DetailsArray
 	Micro  microbench.DetailsArray
 }
 
@@ -214,7 +215,7 @@ func (s *Server) searchBenchmarck(c *gin.Context) {
 	}
 	micro = micro.ReduceSimpleMedianByName()
 
-	var res searchResult 
+	var res searchResult
 	res.Macros = macros
 	res.Micro = micro
 
@@ -273,4 +274,47 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, pullRequestInfo)
 
+}
+
+
+type cronSingleSummary struct {
+	Name string
+	Data []macrobench.CronSummary
+}
+
+func (s *Server) getCronSummary(c *gin.Context) {
+	var cronSummary []cronSingleSummary
+	for _, benchmarkType := range s.benchmarkTypes {
+		data, err := macrobench.GetSummaryForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+			slog.Error(err)
+			return
+		}
+		cronSummary = append(cronSummary, cronSingleSummary{
+			Name: benchmarkType,
+			Data: data,
+		})
+	}
+	c.JSON(http.StatusOK, cronSummary)
+}
+
+func (s *Server) getCron(c *gin.Context) {
+	benchmarkType := c.Query("type")
+	data, err := macrobench.GetResultsForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	for i, d := range data {
+		m, err := metrics.GetExecutionMetricsSQL(s.dbClient, d.ExecUUID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+			slog.Error(err)
+			return
+		}
+		data[i].Metrics = m
+	}
+	c.JSON(http.StatusOK, data)
 }

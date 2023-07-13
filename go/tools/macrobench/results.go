@@ -93,6 +93,11 @@ type (
 	DetailsArray []Details
 
 	ComparisonArray []Comparison
+
+	CronSummary struct {
+		CreatedAt *time.Time
+		QPSTotal  float64
+	}
 )
 
 func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
@@ -291,8 +296,9 @@ func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient s
 // GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	upperMacroType := macroType.ToUpper().String()
+func GetResultsForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
+	macrodetails = []Details{}
+	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
@@ -316,6 +322,30 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 		macrodetails = append(macrodetails, res)
 	}
 	return macrodetails, nil
+}
+
+func GetSummaryForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (cronSummary []CronSummary, err error) {
+	upperMacroType := strings.ToUpper(macroType)
+	query := "SELECT e.finished_at, results.total_qps " +
+		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
+		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
+		"ORDER BY e.finished_at "
+
+	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	for result.Next() {
+		var res CronSummary
+		err = result.Scan(&res.CreatedAt, &res.QPSTotal)
+		if err != nil {
+			return nil, err
+		}
+		cronSummary = append(cronSummary, res)
+	}
+	return
 }
 
 // GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
