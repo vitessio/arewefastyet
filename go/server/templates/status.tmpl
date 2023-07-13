@@ -46,22 +46,22 @@ limitations under the License.
               </tr>
             </thead>
             <tbody>
-              {{ range $key, $elem := .queue }}
+          {{ range $elem := .queue }}
 				  {{ if not $elem.Executing }}
 					  <tr>
 						<td class="text-center">
-						  <a target="_blank" href="https://github.com/vitessio/vitess/commit/{{$key.GitRef}}">{{ first8Letters $key.GitRef }}</a>
+						  <a target="_blank" href="https://github.com/vitessio/vitess/commit/{{$elem.Identifier.GitRef}}">{{ first8Letters $elem.Identifier.GitRef }}</a>
 						</td>
-						<td class="text-center">{{ $key.Source }}</td>
-						<td class="text-center">{{ $key.BenchmarkType }}</td>
+						<td class="text-center">{{ $elem.Identifier.Source }}</td>
+						<td class="text-center">{{ $elem.Identifier.BenchmarkType }}</td>
 						<td class="text-center">
-						  {{ if gt $key.PullNb 0 }}
-							<a href="https://github.com/vitessio/vitess/pull/{{$key.PullNb}}">{{ $key.PullNb }}</a>
+						  {{ if gt $elem.Identifier.PullNb 0 }}
+							<a href="https://github.com/vitessio/vitess/pull/{{$elem.Identifier.PullNb}}">{{ $elem.Identifier.PullNb }}</a>
 						  {{ else }}
-							{{ $key.PullNb }}
+							{{ $elem.Identifier.PullNb }}
 						  {{ end }}
 						</td>
-						<td class="text-center">{{ $key.PlannerVersion }}</td>
+						<td class="text-center">{{ $elem.Identifier.PlannerVersion }}</td>
 					  </tr>
 				  {{ end }}
               {{ end }}
