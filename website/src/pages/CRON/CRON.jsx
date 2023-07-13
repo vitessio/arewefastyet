@@ -144,7 +144,7 @@ const CRON = () => {
       data: [],
     },
   ];
-  
+
   for (const item of dataCron) {
     const xValue = item.GitRef.slice(0, 8);
 
