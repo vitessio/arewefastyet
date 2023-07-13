@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/vitessio/arewefastyet/go/exec"
+	"golang.org/x/exp/slices"
 )
 
 func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier) (err error) {
@@ -85,18 +86,18 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 
 func (s *Server) executeElement(element *executionQueueElement) {
 	if element.retry < 0 {
-		if _, found := queue[element.identifier]; found {
-			// removing the element from the queue since we are done with it
-			mtx.Lock()
-			delete(queue, element.identifier)
-			mtx.Unlock()
+		mtx.Lock()
+		idx := slices.Index(queue, element)
+		if idx >= 0 {
+			queue = append(queue[:idx], queue[idx+1:]...)
 		}
+		mtx.Unlock()
 		decrementNumberOfOnGoingExecution()
 		return
 	}
 
 	// execute with the given configuration file and exec identifier
-	err := s.executeSingle(element.config, element.identifier)
+	err := s.executeSingle(element.config, element.Identifier)
 	if err != nil {
 		slog.Error(err.Error())
 
@@ -109,7 +110,10 @@ func (s *Server) executeElement(element *executionQueueElement) {
 	go func() {
 		// removing the element from the queue since we are done with it
 		mtx.Lock()
-		delete(queue, element.identifier)
+		idx := slices.Index(queue, element)
+		if idx >= 0 {
+			queue = append(queue[:idx], queue[idx+1:]...)
+		}
 		mtx.Unlock()
 
 		// we will wait for the benchmarks we need to compare it against and notify users if needed
@@ -137,13 +141,13 @@ func (s *Server) compareElement(element *executionQueueElement) {
 			}
 			if comparerUUID != "" {
 				err := s.sendNotificationForRegression(
-					element.identifier.Source,
+					element.Identifier.Source,
 					comparer.Source,
-					element.identifier.GitRef,
+					element.Identifier.GitRef,
 					comparer.GitRef,
-					element.identifier.PlannerVersion,
-					element.identifier.BenchmarkType,
-					element.identifier.PullNb,
+					element.Identifier.PlannerVersion,
+					element.Identifier.BenchmarkType,
+					element.Identifier.PullNb,
 					element.notifyAlways,
 				)
 				if err != nil {
