@@ -30,6 +30,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/vitessio/arewefastyet/go/slack"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
+	"github.com/vitessio/arewefastyet/go/tools/github"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
@@ -97,6 +98,8 @@ type Server struct {
 	sourceFilter        []string
 	excludeSourceFilter []string
 
+	ghApp *github.App
+
 	// Mode used to run the server.
 	Mode
 }
@@ -138,6 +141,10 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 		s.dbCfg = &psdb.Config{}
 	}
 	s.dbCfg.AddToCommand(cmd)
+	if s.ghApp == nil {
+		s.ghApp = &github.App{}
+	}
+	s.ghApp.AddToCommand(cmd)
 }
 
 func (s *Server) isReady() bool {
@@ -198,6 +205,11 @@ func (s *Server) Run() error {
 	}
 
 	err := s.createCrons()
+	if err != nil {
+		return err
+	}
+
+	err = s.ghApp.Init()
 	if err != nil {
 		return err
 	}
