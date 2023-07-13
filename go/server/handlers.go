@@ -45,12 +45,12 @@ func handleRenderErrors(c *gin.Context, err error) {
 func (s *Server) cronHandler(c *gin.Context) {
 	planner := getPlannerVersion()
 
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron", planner, 31, s.dbClient)
+	oltpData, err := macrobench.GetResultsForLastDays("OLTP", "cron", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
 
-	tpccData, err := macrobench.GetResultsForLastDays(macrobench.TPCC, "cron", planner, 31, s.dbClient)
+	tpccData, err := macrobench.GetResultsForLastDays("TPCC", "cron", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}
@@ -65,7 +65,7 @@ func (s *Server) cronHandler(c *gin.Context) {
 func (s *Server) analyticsHandler(c *gin.Context) {
 	planner := getPlannerVersion()
 
-	oltpData, err := macrobench.GetResultsForLastDays(macrobench.OLTP, "cron_analytics", planner, 31, s.dbClient)
+	oltpData, err := macrobench.GetResultsForLastDays("OLTP", "cron_analytics", planner, 31, s.dbClient)
 	if err != nil {
 		slog.Warn(err.Error())
 	}

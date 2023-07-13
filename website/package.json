@@ -11,6 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nivo/core": "^0.83.0",
+    "@nivo/line": "^0.83.0",
     "bytes": "^3.1.2",
     "dotenv": "^16.1.4",
     "moment": "^2.29.4",
