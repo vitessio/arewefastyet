@@ -19,6 +19,10 @@
 package github
 
 import (
+	"context"
+	"net/http"
+	"time"
+
 	"github.com/google/go-github/v53/github"
 	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/spf13/cobra"
@@ -30,15 +34,17 @@ type App struct {
 	webHookSecret string
 	secretKey     string
 	port          string
+	installationID int
 
-	client *github.Client
+	client         *github.Client
 }
 
 const (
-	flagAppID         = "gh-app-id"
-	flagWebHookSecret = "gh-webhook-secret"
-	flagSecretKey     = "gh-secret-key"
-	flagPort          = "gh-port"
+	flagAppID          = "gh-app-id"
+	flagWebHookSecret  = "gh-webhook-secret"
+	flagSecretKey      = "gh-secret-key"
+	flagPort           = "gh-port"
+	flagInstallationID = "gh-installation-id"
 )
 
 // AddToCommand ...
@@ -47,17 +53,20 @@ func (a *App) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&a.webHookSecret, flagWebHookSecret, "", "xxx")
 	cmd.Flags().StringVar(&a.secretKey, flagSecretKey, "", "xxx")
 	cmd.Flags().StringVar(&a.port, flagPort, "8181", "xxx")
+	cmd.Flags().IntVar(&a.installationID, flagInstallationID, 0, "xxx")
 
 	_ = viper.BindPFlag(flagAppID, cmd.Flags().Lookup(flagAppID))
 	_ = viper.BindPFlag(flagWebHookSecret, cmd.Flags().Lookup(flagWebHookSecret))
 	_ = viper.BindPFlag(flagSecretKey, cmd.Flags().Lookup(flagSecretKey))
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
+	_ = viper.BindPFlag(flagInstallationID, cmd.Flags().Lookup(flagInstallationID))
 }
 
 func (a *App) Init() error {
 	// Create an authenticated client using go-githubapp
 	config := githubapp.Config{
 		V3APIURL: "https://api.github.com/",
+		V4APIURL: "https://api.github.com/graphql",
 		App: struct {
 			IntegrationID int64  `yaml:"integration_id" json:"integrationId"`
 			WebhookSecret string `yaml:"webhook_secret" json:"webhookSecret"`
@@ -73,10 +82,42 @@ func (a *App) Init() error {
 		return err
 	}
 
-	client, err := clientCreator.NewAppClient()
+	client, err := clientCreator.NewInstallationClient(int64(a.installationID))
 	if err != nil {
 		return err
 	}
 	a.client = client
+
+	go func() {
+		webhookHandler := githubapp.NewDefaultEventDispatcher(config)
+
+		http.Handle(githubapp.DefaultWebhookRoute, webhookHandler)
+
+		err = http.ListenAndServe("127.0.0.1:"+a.port, nil)
+	}()
+
 	return nil
+}
+
+type PRInfo struct {
+	ID        int
+	Author    string
+	Title     string
+	CreatedAt *time.Time
+}
+
+func (a *App) GetPullRequestInfo(prNumber int) (PRInfo, error) {
+	ctx := context.Background()
+	pr, _, err := a.client.PullRequests.Get(ctx, "vitessio", "vitess", prNumber)
+	if err != nil {
+		return PRInfo{}, err
+	}
+
+	createAt := pr.GetCreatedAt().Time
+	return PRInfo{
+		ID:        prNumber,
+		Author:    pr.User.GetLogin(),
+		Title:     pr.GetTitle(),
+		CreatedAt: &createAt,
+	}, nil
 }
