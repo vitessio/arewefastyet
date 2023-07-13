@@ -39,7 +39,7 @@ const CRON = () => {
     const fetchData = async () => {
       try {
         const responseCronSummary = await fetch(
-          `${import.meta.env.VITE_API_URL}cronsummary`
+          `${import.meta.env.VITE_API_URL}cron/summary`
         );
 
         const jsonDataCronSummary = await responseCronSummary.json();
@@ -66,11 +66,11 @@ const CRON = () => {
         const jsonDataCron = await responseCron.json();
 
         setDataCron(jsonDataCron);
-        setIsLoading2(false);
+        setIsLoadingChart(false);
       } catch (error) {
         console.log("Error while retrieving data from the API", error);
         setError(errorApi);
-        setIsLoading2(false);
+        setIsLoadingChart(false);
       }
     };
 
@@ -249,9 +249,9 @@ const CRON = () => {
             })}
           </div>
           <figure className="line"></figure>
-          {isLoading2 ? (
+          {isLoadingChart ? (
             <div className="loadingSpinner">
-              <RingLoader loading={isLoading2} color="#E77002" size={300} />
+              <RingLoader loading={isLoadingChart} color="#E77002" size={300} />
             </div>
           ) : (
             <div className="cron__container">
@@ -509,7 +509,7 @@ const CRON = () => {
 
               {CPUTimeData[0].data.length > 0 && (
                 <>
-                  <h3 className="chart__title">CPUTime</h3>
+                  <h3 className="chart__title">CPU Time</h3>
                   <div className="chart">
                     <ResponsiveLine
                       data={CPUTimeData}
@@ -591,7 +591,7 @@ const CRON = () => {
               )}
               {MemBytesData[0].data.length > 0 && (
                 <>
-                  <h3 className="chart__title">MemStatsAllocBytes</h3>
+                  <h3 className="chart__title">Allocated Bytes</h3>
                   <div className="chart">
                     <ResponsiveLine
                       data={MemBytesData}

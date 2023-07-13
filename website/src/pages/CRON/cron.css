@@ -19,7 +19,7 @@ limitations under the License.
     padding: 0px 20px 0px 20px;
     position: relative;
     height: 100%;
-    overflow-x: scroll;
+    
 }
 
 .cron__top{
@@ -86,9 +86,13 @@ limitations under the License.
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
+    .cron{
+        overflow-x: scroll;
+    }
     .chart{
         width: 1200px;
         height: 200px;
+
         
     }
 }

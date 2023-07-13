@@ -32,9 +32,6 @@ const CronSummary = ({data, setBenchmarktype, setIsLoadingChart, benchmarkType})
       ];
 
       const getBenchmarkType = () => {
-        if (benchmarkType.length == 0) {
-            setIsLoadingChart(true)
-        }
         setBenchmarktype(data.Name)
         
       }
@@ -53,7 +50,7 @@ const CronSummary = ({data, setBenchmarktype, setIsLoadingChart, benchmarkType})
             </div>
             <figure className='cronSummary__line'></figure>
             <div className='cronSummary__text'>
-                <span>QPSTotal</span>
+                <span>QPS Total</span>
                 <h3>{data.Name}</h3>
                 <i className="fa-solid fa-arrow-right"></i>
             </div>
