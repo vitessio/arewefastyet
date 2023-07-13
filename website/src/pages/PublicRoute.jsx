@@ -28,6 +28,7 @@ import Search from './Search/Search';
 import CRON from './CRON/CRON';
 import MacroQueriesCompare from './MacroQueriesCompare/MacroQueriesCompare';
 import Compare from './Compare/Compare';
+import PR from './PR/PR';
 
 const PublicRoute = () => {
     return (
@@ -43,6 +44,7 @@ const PublicRoute = () => {
             <Route path='/macro' element={<Macro/>}/>
             <Route path='/macrobench/queries/compare' element={<MacroQueriesCompare/>}/>
             <Route path='/micro' element={<Micro/>}/>
+            <Route path='/pr' element={<PR/>}/>
 
 
             <Route path='*' element={<Error/>}/>
