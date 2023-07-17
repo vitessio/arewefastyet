@@ -15,12 +15,21 @@ limitations under the License.
 */
 
 .prGit{
+    width: 100%;
     border-top: 1px solid white;
     border-bottom: 1px solid white;
     font-size: 1.2rem;
-    justify-content: space-around;
+    min-height: 90px;
     padding: 20px 0px;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    
+}
+
+.prGit__top{
+    justify-content: space-around;
     text-align: center;
+    width: 100%;
 }
 
 .linkToCompare{
@@ -30,12 +39,69 @@ limitations under the License.
 }
 
 .prGit:hover{
-    background-color: white;
-    color: black;
+    background-color: orange;
+    
 }
 
 .prGit span{
-    font-size: 24px;
+    font-size: 1.1rem;
     word-wrap: break-word;
     align-self: center;
 }
+
+.prGit table{
+    margin-top: 30px;
+    border: 1px solid white;
+    width: 60%;
+    padding: 10px;
+}
+
+.prGit__bottom{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.prGit tr{
+    border-bottom:1px solid white ;
+    padding: 10px;
+}
+
+@media only screen and (max-width: 1225px) {
+    .prGit td{
+        word-wrap: break-word;
+        font-size: 0.9rem;
+        padding: 15px;
+    }
+
+    .prGit th{
+        padding: 5px;
+        font-size: 0.9rem;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+
+    .prGit th{
+        padding: 5px;
+        font-size: 0.8rem;
+    }
+
+    .prGit tr{
+        font-size: 0.9rem;
+    }
+
+    .prGit table{
+        display: flex;
+        width: 100%;
+        text-align: start;
+    }
+
+    .prGit tr{
+        display: flex;
+        flex-direction: column;
+        border: none;
+    }
+
+   
+}
+

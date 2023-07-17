@@ -16,6 +16,7 @@ limitations under the License.
 
 import React, { useState, useEffect } from "react";
 import useApiCall from "../../utils/Hook";
+import RingLoader from "react-spinners/RingLoader";
 
 import "../PR/PR.css";
 
@@ -61,7 +62,7 @@ const PR = () => {
   return (
     <div className="pr">
       <div className="pr__top justify--content">
-        <h1>Pull Request</h1>
+        <h2>Pull Request</h2>
         <span>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
           augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
@@ -70,26 +71,47 @@ const PR = () => {
           sagittis eros. Aliquam aliquam sem non tincidunt volutpat.
         </span>
       </div>
-      <figure className="line"></figure>
-      <div className="pr__sidebar">
-        <span className="pullnbTitle width--5em">Pull_nb</span>
-        <span className="width--15em">PR title</span>
-        <span className="width--6em">Author</span>
-        <span className="width--10em">creation date</span>
-        <span className="width--11em"></span>
-      </div>
-      <div className="pr__container justify--content">
-        {dataPRList.map((PRList, index) => {
-          return (
-            <PRGitInfo
-              key={index}
-              pull_nb={PRList}
-              setPrNumber={setPrNumber}
-              className={index % 2 === 0 ? "gray-background" : ""}
-            />
-          );
-        })}
-      </div>
+      {PRListError ? (
+        <div className="macrobench__apiError">{PRListError}</div>
+      ) : (
+        <>
+          {isPRListLoading ? (
+            <div className="PrLoading justify--content">
+              <RingLoader
+                loading={isPRListLoading}
+                color="#E77002"
+                size={300}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="pr__sidebar">
+                <span className="pullnbTitle width--5em">Pull_nb</span>
+                <span className="width--15em hidden--tablet">PR title</span>
+                <span className="width--6em hidden--tablet">Author</span>
+                <span className="width--10em hidden--mobile">
+                  creation date
+                </span>
+                <span className="width--11em"></span>
+                <span className="hidden--desktop">More</span>
+              </div>
+
+              <div className="pr__container justify--content">
+                {dataPRList.map((PRList, index) => {
+                  return (
+                    <PRGitInfo
+                      key={index}
+                      data={PRList}
+                      setPrNumber={setPrNumber}
+                      className={index % 2 === 0 ? "gray-background" : ""}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </>
+      )}
     </div>
   );
 };

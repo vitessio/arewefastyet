@@ -14,41 +14,69 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import React, { useState } from "react";
 import useApiCall from "../../utils/Hook";
 
 import "../PRcomponents/PRGitInfo.css";
 
-const PRGitInfo = ({ pull_nb, setPrNumber, className }) => {
-  // const {
-  //     data: dataPRGit,
-  //     isLoading: isPRGitLoading,
-  //     error: PRGitError,
-  //   } = useApiCall(`https://api.github.com/repos/vitessio/vitess/pulls/${pull_nb}`, []);
-  //    console.log(dataPRGit)
+import { closeTables, openTables } from "../../utils/Utils";
 
-  const dataPRGit = {
-    title: "sdgkusdgisudhfvkjhdbfvkjbdfvkjhdfvhb",
-    author: "fouifoui",
-    created_at: "51651-65814-6145",
-  };
+const PRGitInfo = ({ data, setPrNumber, className }) => {
+
+
   const handlePrInfo = (e) => {
     const number = e.toString();
     setPrNumber(number);
   };
 
+  const [maxHeight, setMaxHeight] = useState(closeTables);
+
+  const handleClick = () => {
+    if (maxHeight === closeTables) {
+      setMaxHeight(openTables);
+    } else {
+      setMaxHeight(closeTables);
+    }
+  };
+
   return (
-    <div className={`prGit flex ${className}`}>
-      <span className="width--5em">{pull_nb}</span>
-      <span className="width--15em">{dataPRGit.title}</span>
-      <span className="width--6em">{dataPRGit.author}</span>
-      <span className="width--10em">{dataPRGit.created_at}</span>
-      <span
-        className="linkToCompare width--11em"
-        onClick={() => handlePrInfo(pull_nb)}
-      >
-        Click to compare with main
-      </span>
+    <div
+      className={`prGit flex--column ${className}`}
+      style={{ maxHeight: `${maxHeight}px` }}
+    >
+      <div className="prGit__top flex">
+        <span className="width--5em">{data.ID}</span>
+        <span className="width--15em hidden--tablet">{data.Title}</span>
+        <span className="width--6em hidden--tablet">{data.Author}</span>
+        <span className="width--10em hidden--mobile">{data.CreatedAt}</span>
+        <span
+          className="linkToCompare width--11em"
+          onClick={() => handlePrInfo(data.ID)}
+        >
+          Click to compare with main
+        </span>
+        <span className="hidden--desktop">
+          <i className="fa-solid fa-circle-info" onClick={handleClick}></i>
+        </span>
+      </div>
+      <div className="prGit__bottom ">
+        <table className="hidden--desktop">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Created_at</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{data.Title}</td>
+              <td>{data.Author}</td>
+              <td>{data.CreatedAt}</td>
+            </tr>
+          </tbody>
+          </table>
+      </div>
     </div>
   );
 };
