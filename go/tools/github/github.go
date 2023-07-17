@@ -20,7 +20,6 @@ package github
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/google/go-github/v53/github"
@@ -30,13 +29,13 @@ import (
 )
 
 type App struct {
-	appID         int
-	webHookSecret string
-	secretKey     string
-	port          string
+	appID          int
+	webHookSecret  string
+	secretKey      string
+	port           string
 	installationID int
 
-	client         *github.Client
+	client *github.Client
 }
 
 const (
@@ -88,13 +87,13 @@ func (a *App) Init() error {
 	}
 	a.client = client
 
-	go func() {
-		webhookHandler := githubapp.NewDefaultEventDispatcher(config)
-
-		http.Handle(githubapp.DefaultWebhookRoute, webhookHandler)
-
-		err = http.ListenAndServe("127.0.0.1:"+a.port, nil)
-	}()
+	// go func() {
+	// 	webhookHandler := githubapp.NewDefaultEventDispatcher(config)
+	//
+	// 	http.Handle(githubapp.DefaultWebhookRoute, webhookHandler)
+	//
+	// 	err = http.ListenAndServe("127.0.0.1:"+a.port, nil)
+	// }()
 
 	return nil
 }
