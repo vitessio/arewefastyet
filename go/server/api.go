@@ -21,13 +21,14 @@ package server
 import (
 	"net/http"
 	"sort"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/tools/git"
+	"github.com/vitessio/arewefastyet/go/tools/github"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
 )
@@ -249,13 +250,23 @@ func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 }
 
 func (s *Server) getPullRequest(c *gin.Context) {
-	pullNumbers, err := exec.GetPullRequestList(s.dbClient)
+	prNumbers, err := exec.GetPullRequestList(s.dbClient)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-	c.JSON(http.StatusOK, pullNumbers)
+	var prs []github.PRInfo
+	for _, prNumber := range prNumbers {
+		newPRInfo, err := s.ghApp.GetPullRequestInfo(prNumber)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+			slog.Error(err)
+			return
+		}
+		prs = append(prs, newPRInfo)
+	}
+	c.JSON(http.StatusOK, prs)
 }
 
 func (s *Server) getPullRequestInfo(c *gin.Context) {
