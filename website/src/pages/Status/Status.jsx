@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import React, { useRef } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { v4 as uuidv4 } from "uuid";
 import useApiCall from "../../utils/Hook";
+import CountUp from "react-countup";
 
 import PreviousExe from "../../components/StatusComponents/PreviousExecutions/PreviousExe";
 import ExeQueue from "../../components/StatusComponents/ExecutionQueue/ExeQueue";
@@ -36,6 +37,12 @@ const Status = () => {
     isLoading: isLoadingPreviousExe,
     error: errorPreviousExe,
   } = useApiCall(`${import.meta.env.VITE_API_URL}recent`);
+  const {
+    data: dataStatusStats,
+    isLoading: isLoadingStatusStats,
+    error: errorStatusStats,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}status/stats`);
+  console.log(dataStatusStats);
 
   return (
     <div className="status">
@@ -52,7 +59,29 @@ const Status = () => {
           </span>
         </div>
 
-        <figure className="statusStats"></figure>
+        <div className="statusStats flex--column">
+          <CountUp
+            start={0}
+            end={dataStatusStats.Benchmark_total}
+            style={{ fontSize: "5rem", color: "#E77002" }}
+            duration={3}
+          />
+          <span className="countUp__title">Benchmark Total</span>
+          <CountUp
+            start={0}
+            end={dataStatusStats.Benchmark_finished}
+            style={{ fontSize: "5rem", color: "#E77002" }}
+            duration={3}
+          />
+          <span className="countUp__title">Successful benchmarks</span>
+          <CountUp
+            start={0}
+            end={dataStatusStats.Benchmark_30Days}
+            style={{ fontSize: "5rem", color: "#E77002" }}
+            duration={3}
+          />
+          <span className="countUp__title">Successful benchmarks</span>
+        </div>
       </article>
       <figure className="line"></figure>
 
