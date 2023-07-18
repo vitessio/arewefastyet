@@ -287,7 +287,6 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 
 }
 
-
 type cronSingleSummary struct {
 	Name string
 	Data []macrobench.CronSummary
@@ -328,4 +327,14 @@ func (s *Server) getCron(c *gin.Context) {
 		data[i].Metrics = m
 	}
 	c.JSON(http.StatusOK, data)
+}
+
+func (s *Server) getStatusStats(c *gin.Context) {
+	stats, err := exec.GetBenchmarkStats(s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, stats)
 }

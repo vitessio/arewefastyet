@@ -18,9 +18,46 @@
 
 package exec
 
+import (
+	"github.com/vitessio/arewefastyet/go/storage"
+)
+
 const (
 	StatusCreated  = "created"
 	StatusStarted  = "started"
 	StatusFailed   = "failed"
 	StatusFinished = "finished"
 )
+
+type benchmarkStats struct {
+	Benchmark_total    int
+	Benchmark_finished int
+	Benchmark_30Days   int
+}
+
+func GetBenchmarkStats(client storage.SQLClient) (benchmarkStats, error) {
+	rows, err := client.Select(`
+        SELECT
+            (SELECT COUNT(uuid) FROM execution) AS count_status,
+            (SELECT COUNT(*) FROM execution WHERE status = 'finished') AS count_finished,
+            (SELECT COUNT(*) FROM execution WHERE started_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) AS count_all
+        FROM
+            execution
+		LIMIT 1;
+    `)
+
+	if err != nil {
+		return benchmarkStats{}, err
+	}
+
+	defer rows.Close()
+
+	var res benchmarkStats
+	if rows.Next() {
+		err := rows.Scan(&res.Benchmark_total, &res.Benchmark_finished, &res.Benchmark_30Days)
+		if err != nil {
+			return benchmarkStats{}, err
+		}
+	}
+	return res, nil
+}
