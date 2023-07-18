@@ -19,11 +19,9 @@ import useApiCall from "../../utils/Hook";
 
 import "../PRcomponents/PRGitInfo.css";
 
-import { closeTables, openTables } from "../../utils/Utils";
+import { closeTables, openTables, formatDate } from "../../utils/Utils";
 
 const PRGitInfo = ({ data, setPrNumber, className }) => {
-
-
   const handlePrInfo = (e) => {
     const number = e.toString();
     setPrNumber(number);
@@ -45,14 +43,17 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
       style={{ maxHeight: `${maxHeight}px` }}
     >
       <div className="prGit__top flex">
-        <span className="width--5em">{data.ID}</span>
-        <span className="width--15em hidden--tablet">{data.Title}</span>
-        <span className="width--6em hidden--tablet">{data.Author}</span>
-        <span className="width--10em hidden--mobile">{data.CreatedAt}</span>
-        <span
-          className="linkToCompare width--11em"
-          onClick={() => handlePrInfo(data.ID)}
-        >
+        <span className="width--4em">
+          <a href={`https://github.com/vitessio/vitess/pull/${data.ID}`}>
+            {data.ID}
+          </a>
+        </span>
+        <span className="width--40 hidden--tablet">{data.Title}</span>
+        <span className="width--20 hidden--tablet">{data.Author}</span>
+        <span className="width--10em hidden--mobile">
+          {formatDate(data.CreatedAt)}
+        </span>
+        <span className="linkToCompare" onClick={() => handlePrInfo(data.ID)}>
           Click to compare with main
         </span>
         <span className="hidden--desktop">
@@ -63,19 +64,19 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
         <table className="hidden--desktop">
           <thead>
             <tr>
-              <th>Title</th>
+              <th className="thTitle">Title</th>
               <th>Author</th>
               <th>Created_at</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>{data.Title}</td>
+              <td className="tdTitle">{data.Title}</td>
               <td>{data.Author}</td>
-              <td>{data.CreatedAt}</td>
+              <td>{formatDate(data.CreatedAt)}</td>
             </tr>
           </tbody>
-          </table>
+        </table>
       </div>
     </div>
   );

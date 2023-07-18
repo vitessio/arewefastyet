@@ -65,13 +65,16 @@ limitations under the License.
   font-weight: bold;
 }
 
-
 .hidden--desktop {
   display: none;
 }
 
+.linkSidebar {
+  width: 25%;
+}
+
 @media only screen and (max-width: 1225px) {
-  .hidden--desktop{
+  .hidden--desktop {
     display: block;
   }
 
@@ -79,18 +82,21 @@ limitations under the License.
     display: none;
   }
 
-  .pr__top h2{
+  .pr__top h2 {
     font-size: 4rem;
     margin-left: 0px;
   }
 
-  .pr__top{
+  .pr__top {
     text-align: center;
   }
 
-  .pr__top span{
+  .pr__top span {
     font-size: 0.8rem;
     margin-left: 0px;
+  }
+  .linkSidebar {
+    width: 40%;
   }
 }
 
@@ -99,7 +105,10 @@ limitations under the License.
     display: none;
   }
 
-  .pr__top h2{
+  .pr__top h2 {
     font-size: 2rem;
+  }
+  .linkSidebar {
+    width: 50%;
   }
 }

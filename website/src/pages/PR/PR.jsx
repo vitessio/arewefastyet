@@ -86,13 +86,11 @@ const PR = () => {
           ) : (
             <>
               <div className="pr__sidebar">
-                <span className="pullnbTitle width--5em">Pull_nb</span>
-                <span className="width--15em hidden--tablet">PR title</span>
-                <span className="width--6em hidden--tablet">Author</span>
-                <span className="width--10em hidden--mobile">
-                  creation date
-                </span>
-                <span className="width--11em"></span>
+                <span className="pullnbTitle width--4em">#</span>
+                <span className="width--40 hidden--tablet">Title</span>
+                <span className="width--20 hidden--tablet">Author</span>
+                <span className="width--10em hidden--mobile">Opened At</span>
+                <span className="linkSidebar"></span>
                 <span className="hidden--desktop">More</span>
               </div>
 
