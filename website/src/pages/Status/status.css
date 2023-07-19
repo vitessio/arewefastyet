@@ -31,6 +31,7 @@ limitations under the License.
 .status__top__text {
   width: 50%;
   margin-right: 200px;
+  height: 500px;
 }
 
 .status__top__text h2 {
@@ -38,7 +39,6 @@ limitations under the License.
   font-size: 6rem;
   font-weight: 100;
   margin-bottom: 50px;
-  margin-top: 20px;
   width: 100%;
 }
 
@@ -50,6 +50,7 @@ limitations under the License.
 .statusStats {
   color: white;
   min-width: 300px;
+  height: 500px;
 }
 
 .countUp__title {

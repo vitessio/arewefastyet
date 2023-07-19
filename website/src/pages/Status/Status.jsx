@@ -42,7 +42,6 @@ const Status = () => {
     isLoading: isLoadingStatusStats,
     error: errorStatusStats,
   } = useApiCall(`${import.meta.env.VITE_API_URL}status/stats`);
-  console.log(dataStatusStats);
 
   return (
     <div className="status">
@@ -62,25 +61,25 @@ const Status = () => {
         <div className="statusStats flex--column">
           <CountUp
             start={0}
-            end={dataStatusStats.Benchmark_total}
+            end={dataStatusStats.Total}
             style={{ fontSize: "5rem", color: "#E77002" }}
             duration={3}
           />
-          <span className="countUp__title">Benchmark Total</span>
+          <span className="countUp__title">Total Benchmark</span>
           <CountUp
             start={0}
-            end={dataStatusStats.Benchmark_finished}
+            end={dataStatusStats.Finished}
             style={{ fontSize: "5rem", color: "#E77002" }}
             duration={3}
           />
           <span className="countUp__title">Successful benchmarks</span>
           <CountUp
             start={0}
-            end={dataStatusStats.Benchmark_30Days}
+            end={dataStatusStats.Last30Days}
             style={{ fontSize: "5rem", color: "#E77002" }}
             duration={3}
           />
-          <span className="countUp__title">Successful benchmarks</span>
+          <span className="countUp__title">Total Benchmarks (last 30 days)</span>
         </div>
       </article>
       <figure className="line"></figure>
