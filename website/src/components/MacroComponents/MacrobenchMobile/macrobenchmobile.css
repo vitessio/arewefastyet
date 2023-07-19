@@ -61,10 +61,12 @@ limitations under the License.
 @media only screen and (max-width: 767px){
     .macrobench__mobile{
         display: contents;
+        
     }
 
     .macrobench__mobile h3{
         padding: 0px;
+        margin-top: 5px;
         
     }
 
@@ -84,5 +86,9 @@ limitations under the License.
         border: #E77002 1px solid;
         border-radius: 10px 10px 0px 0px;
         font-size: 0.85rem;
+    }
+
+    .linkQuery{
+        top: 4%;
     }
 }
