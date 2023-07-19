@@ -102,7 +102,6 @@ const Header = () => {
                                   {link.label}
                                   </NavLink>
                               </li>
-                              <figure  className='lineMenu'></figure>
                             </div>
                             ))}
                     </ul>

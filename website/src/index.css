@@ -63,8 +63,8 @@ body{
 /*Section separation line*/
 .line{
   border: 1px solid #B5ADAD;
-  margin-top: 100px;
-  margin-bottom: 100px;
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 .width--5em{

@@ -15,8 +15,7 @@ limitations under the License.
 */
 
 .status{
-    padding : 0px 50px 50px 50px;
-    background-color: #1F1D1D;  
+    padding : 0px 50px 50px 50px;  
     min-height: 100vh;
 }
 
@@ -37,7 +36,7 @@ limitations under the License.
 
 .status__top__text h2{
     color: white;
-    font-size: 6rem;
+    font-size: 5rem;
     font-weight:100;
     margin-bottom: 50px;
     margin-top: 20px;
@@ -56,9 +55,9 @@ limitations under the License.
 }
 
 .status h3{
-    font-size: 3rem;
+    font-size: 2rem;
     font-weight: 200;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     text-align: center;
 }
 
@@ -92,7 +91,7 @@ limitations under the License.
 
 .queue{
     color: white;
-    margin-bottom: 200px;
+    margin-bottom: 100px;
     text-align: center;
 }
 .queue__top__line{

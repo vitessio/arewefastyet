@@ -70,10 +70,6 @@ table{
     min-height: 37px;
 }
 
-tr:nth-child(2n) {
-    background-color: #343A40;
-  }
-
 @media only screen and (max-width: 1225px) {
     .macrobench__data h4{
         font-weight: 200;

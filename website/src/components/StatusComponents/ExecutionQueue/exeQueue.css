@@ -18,6 +18,7 @@ limitations under the License.
     justify-content: space-around;
     border-bottom: #B5ADAD 1px solid;
     padding: 20px 3px;
+    align-items: center;
 }
 
 .sha{

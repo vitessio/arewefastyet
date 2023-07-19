@@ -76,9 +76,11 @@ limitations under the License.
 
 
 .compare__macrobench__Container{
+    margin: 0 auto;
     position: relative;
     z-index: 2;
     justify-content: center;
+    max-width: 1200px;
     
 }
 

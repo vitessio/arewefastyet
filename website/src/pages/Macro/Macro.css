@@ -131,13 +131,15 @@ limitations under the License.
 /* Benchmark table. */
 
 .macrobench__Container{
+    margin: 0 auto;
     position: relative;
     z-index: 2;
     justify-content: center;
+    max-width: 1200px;
 }
 .macrobench__Sidebar{
-    background-color: rgb(117, 58, 3);;
-    padding: 0px 20px 0px 20px;
+    background-color: #1F1D1D;
+    padding: 0px 0px 0px 20px;
     font-style: italic;
     border-top: #E77002 1px  solid;
     border-left: #E77002 1px  solid;
@@ -145,7 +147,7 @@ limitations under the License.
     border-radius: 10px 0px 0px 10px;
     text-align: end;
     width: 16%;
-    margin-top: 107px;
+    margin-top: 107.5px;
 
 }
 
@@ -154,7 +156,7 @@ limitations under the License.
 }
 
 .macrobench__Sidebar span{
-    padding: 12px 0px;
+    padding: 12px 10px 12px 0px;
     font-size: 0.8rem;
     font-weight: bold;
 }
