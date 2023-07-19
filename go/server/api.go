@@ -80,10 +80,10 @@ func (s *Server) getExecutionsQueue(c *gin.Context) {
 			continue
 		}
 		recentExecs = append(recentExecs, RecentExecutions{
-			Source: e.Identifier.Source,
-			GitRef: e.Identifier.GitRef,
-			TypeOf: e.Identifier.BenchmarkType,
-			PullNb: e.Identifier.PullNb,
+			Source: e.identifier.Source,
+			GitRef: e.identifier.GitRef,
+			TypeOf: e.identifier.BenchmarkType,
+			PullNb: e.identifier.PullNb,
 		})
 	}
 	sort.Slice(recentExecs, func(i, j int) bool {
