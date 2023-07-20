@@ -147,7 +147,7 @@ limitations under the License.
     border-radius: 10px 0px 0px 10px;
     text-align: end;
     width: 16%;
-    margin-top: 107.5px;
+    margin-top: 106px;
 
 }
 
@@ -183,7 +183,7 @@ limitations under the License.
 
 .carousel__container{
     width: 70%;
-    max-height: 750px;
+    max-height: 747px;
 }
 
 .macrobench__apiError{

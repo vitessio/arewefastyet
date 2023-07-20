@@ -20,7 +20,6 @@ import { ResponsiveLine } from '@nivo/line'
 import '../CRONSummary/cronSummary.css'
 
 const CronSummary = ({data, setBenchmarktype, setIsLoadingChart, benchmarkType}) => {
-
     const transformedData = [
         {
           id: 'QPSTotal',
@@ -50,7 +49,6 @@ const CronSummary = ({data, setBenchmarktype, setIsLoadingChart, benchmarkType})
             </div>
             <figure className='cronSummary__line'></figure>
             <div className='cronSummary__text'>
-                <span>QPS Total</span>
                 <h3>{data.Name}</h3>
                 <i className="fa-solid fa-arrow-right"></i>
             </div>

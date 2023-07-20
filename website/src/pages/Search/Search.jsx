@@ -141,7 +141,7 @@ const Search = () => {
                   <figure className="macrobench__Sidebar__line"></figure>
                   <span>Allocs bytes vttablet</span>
                 </div>
-                <div className="carousel__container">
+                <div className="search__carousel__container">
                   <Swiper
                     direction={"vertical"}
                     slidesPerView={1}
@@ -174,16 +174,6 @@ const Search = () => {
                 </div>
               </div>
               <div className="search__micro">
-                <div className="micro__thead space--between">
-                  <span className="width--12em">Package</span>
-                  <span className="width--14em">Benchmark Name</span>
-                  <span className="width--18em hiddenMobile">
-                    Number of Iterations
-                  </span>
-                  <span className="width--18em hiddenTablet">Time/op</span>
-                  <span className="width--6em">More</span>
-                </div>
-                <figure className="micro__thead__line"></figure>
                 {dataSearch.Micro &&
                   typeof dataSearch.Micro === "object" &&
                   Object.entries(dataSearch.Micro).map(function (
@@ -195,11 +185,25 @@ const Search = () => {
                       ? "grey--background"
                       : "";
                     return (
-                      <SearchMicro
-                        key={index}
-                        data={searchMicro}
-                        className={backgroundGrey}
-                      />
+                      <>
+                        <div className="micro__thead space--between">
+                          <span className="width--12em">Package</span>
+                          <span className="width--14em">Benchmark Name</span>
+                          <span className="width--18em hiddenMobile">
+                            Number of Iterations
+                          </span>
+                          <span className="width--18em hiddenTablet">
+                            Time/op
+                          </span>
+                          <span className="width--6em">More</span>
+                        </div>
+                        <figure className="micro__thead__line"></figure>
+                        <SearchMicro
+                          key={index}
+                          data={searchMicro}
+                          className={backgroundGrey}
+                        />
+                      </>
                     );
                   })}
               </div>

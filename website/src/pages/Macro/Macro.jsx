@@ -57,7 +57,7 @@ const Macro = () => {
             const jsonDataRefs = await responseRefs.json();
             
             setDataRefs(jsonDataRefs);
-            setIsLoading(false)
+            
 
             updateCommitHash(gitRefLeft, setCommitHashLeft, jsonDataRefs)
             updateCommitHash(gitRefRight, setCommitHashRight, jsonDataRefs)
@@ -67,7 +67,7 @@ const Macro = () => {
           } catch (error) {
             console.log('Error while retrieving data from the API', error);
             setError(errorApi);
-            setIsLoading(false);
+            
           }
         };
       
@@ -82,9 +82,11 @@ const Macro = () => {
 
                     const jsonDataMacrobench = await responseMacrobench.json();
                     setDataMacrobench(jsonDataMacrobench)
+                    setIsLoading(false)
                 } catch (error) {
                     console.log('Error while retrieving data from the API', error);
                     setError(errorApi);
+                    setIsLoading(false);
                 }
             };
             fetchData();

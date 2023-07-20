@@ -18,7 +18,7 @@ limitations under the License.
     width: 100%;
     border: #E77002 1px solid;
     border-radius: 10px 10px 10px 0px;
-    border-bottom: #E77002 3px solid;
+    border-bottom: #E77002 1px solid;
     position: relative;
     z-index: 2;
 }
@@ -33,7 +33,7 @@ limitations under the License.
 }
 
 .macrobench__component h4{
-    border-bottom: #E77002 2px solid;
+    border-bottom: #E77002 1px solid;
     padding: 10px 20px;
     font-size: 0.8rem;
 }
@@ -49,11 +49,11 @@ table{
     width: 33%;
 }
 
-.macrobench__component tr{
+.border--bottom{
     border-bottom: 1px solid #B5ADAD ;
-} 
+}
 
-.macrobench__component tr:hover{
+.macrobench__component tbody tr:hover{
     background-color: #B5ADAD;
 }
 
