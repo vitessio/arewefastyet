@@ -14,30 +14,51 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
+import React from "react";
 
+import "./previousexe.css";
+import { getStatusClass, formatDate } from "../../../utils/Utils";
 
-import './previousexe.css'
-import { getStatusClass, formatDate} from '../../../utils/Utils';
-
-const PreviousExe = ({data}) => {
-          
-          
-    return (
-
-        <div className={`previousExe__data  `}>
-          <span className='width--6em '>{data.uuid.slice(0, 8)}</span>
-          <span className='width--6em'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
-          <span className='tdSource width--11em'>{data.source}</span>
-          <span className='tdSource width--11em'>{formatDate(data.started_at)}</span>
-          <span className='tdSource width--11em'>{formatDate(data.finished_at)}</span>
-          <span className='width--11em'>{data.type_of}</span>
-          <span className='width--5em'><a href=''>{data.pull_nb}</a></span>
-          <span className='width--6em'>{data.golang_version}</span>
-          <span  className={`data ${getStatusClass(data.status)} spanStatus width--6em`}>{data.status}</span>
-        </div>
-        
-    );
+const PreviousExe = ({ data }) => {
+  return (
+    <div className={`previousExe__data  `}>
+      <span className="width--6em ">{data.uuid.slice(0, 8)}</span>
+      <span className="width--6em">
+        <a
+          target="_blank"
+          href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}
+        >
+          {data.git_ref.slice(0, 6)}
+        </a>
+      </span>
+      <span className="tdSource width--11em">{data.source}</span>
+      <span className="tdSource width--11em">
+        {formatDate(data.started_at)}
+      </span>
+      <span className="tdSource width--11em">
+        {formatDate(data.finished_at)}
+      </span>
+      <span className="width--11em">{data.type_of}</span>
+      <span className="width--5em">
+        {data.pull_nb === 0 ? (
+          <span>{data.pull_nb}</span>
+        ) : (
+          <a
+            target="_blank"
+            href={`https://github.com/vitessio/vitess/pull/${data.pull_nb}`}
+          >
+            {data.pull_nb}
+          </a>
+        )}
+      </span>
+      <span className="width--6em">{data.golang_version}</span>
+      <span
+        className={`data ${getStatusClass(data.status)} spanStatus width--6em`}
+      >
+        {data.status}
+      </span>
+    </div>
+  );
 };
 
 export default PreviousExe;
