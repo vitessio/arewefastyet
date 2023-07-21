@@ -30,18 +30,18 @@ const (
 )
 
 type BenchmarkStats struct {
-	Total    int
-	Finished int
-	Last30Days   int
+	Total      int
+	Finished   int
+	Last30Days int
 }
 
 func GetBenchmarkStats(client storage.SQLClient) (BenchmarkStats, error) {
-	rows, err := client.Select(`SELECT
-            (SELECT COUNT(uuid) FROM execution) AS count_status,
-            (SELECT COUNT(*) FROM execution WHERE status = 'finished') AS count_finished,
-            (SELECT COUNT(*) FROM execution WHERE started_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) AS count_all
-        FROM
-            execution
+	rows, err := client.Select(`SELECT 
+			(SELECT COUNT(uuid) FROM execution) AS count_status,
+			(SELECT COUNT(*) FROM execution WHERE status = 'finished') AS count_finished,
+			(SELECT COUNT(*) FROM execution WHERE started_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) AS count_all
+		FROM
+			execution
 		LIMIT 1;`)
 
 	if err != nil {
