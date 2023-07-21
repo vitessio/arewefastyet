@@ -141,7 +141,10 @@ const Search = () => {
                   <figure className="macrobench__Sidebar__line"></figure>
                   <span>Allocs bytes vttablet</span>
                 </div>
-                <div className="search__carousel__container">
+                <div className="searchMacro__desktop">
+                    
+                </div>
+                <div className="search__carousel__containerMobile hidden--desktop">
                   <Swiper
                     direction={"vertical"}
                     slidesPerView={1}

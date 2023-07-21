@@ -15,63 +15,50 @@ limitations under the License.
 */
 
 import React from 'react';
+import '../SearchMacro/searchMacro.css';
 
-import '../SearchMacro/searchMacro.css'
+const SearchMacro = ({ data }) => {
+  const result = data[1]?.[0]?.Result;
+  const defaultValue = '0';
 
-const SearchMacro = ({data}) => {
-    const result = data[1] && Array.isArray(data[1]) && data[1].length > 0
-    ? data[1][0].Result
-    : null;
-    return (
-        <div className='search__macro__data'>
-           <h3>{data[0]}</h3>
-           {result ? (
-                <table>
-                    <tbody>
-                        <tr ><td id='marginTr'><span className='marginTr'>{data[1][0].Result.qps.total}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.qps.reads}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.qps.writes}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.qps.other}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.tps}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.latency}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.errors}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.reconnects}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.time}</span></td></tr>
-                        <tr><td><span>{data[1][0].Result.threads}</span></td></tr>
-                        <tr><td><span>{data[1][0].Metrics.TotalComponentsCPUTime.toFixed(0)}</span></td></tr>
-                        <tr><td><span>{data[1][0].Metrics.ComponentsCPUTime.vtgate}</span></td></tr>
-                        <tr><td><span>{data[1][0].Metrics.ComponentsCPUTime.vttablet}</span></td></tr>
-                        <tr><td><span>{data[1][0].Metrics.TotalComponentsMemStatsAllocBytes}</span></td></tr>
-                        <tr><td><span>{data[1][0].Metrics.ComponentsMemStatsAllocBytes.vtgate}</span></td></tr>
-                        <tr><td><span>{data[1][0].Metrics.ComponentsMemStatsAllocBytes.vttablet}</span></td></tr>
-                    </tbody>
-                </table>
-           ) : (
-            <table>
-            <tbody>
-                <tr ><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
-            </tbody>
+  const renderRow = (label, value) => (
+    <tr key={label}>
+      <td>
+        <span>{value || defaultValue}</span>
+      </td>
+    </tr>
+  );
+
+  return (
+    <div className='search__macro__data'>
+      <h3>{data[0]}</h3>
+      {result ? (
+        <table>
+          <tbody>
+            {Object.entries(result.qps).map(([key, value]) => renderRow(key, value))}
+            {renderRow('tps', result.tps)}
+            {renderRow('latency', result.latency)}
+            {renderRow('errors', result.errors)}
+            {renderRow('reconnects', result.reconnects)}
+            {renderRow('time', result.time)}
+            {renderRow('threads', result.threads)}
+            {renderRow('TotalComponentsCPUTime', data[1][0].Metrics.TotalComponentsCPUTime?.toFixed(0))}
+            {renderRow('ComponentsCPUTime.vtgate', data[1][0].Metrics.ComponentsCPUTime?.vtgate)}
+            {renderRow('ComponentsCPUTime.vttablet', data[1][0].Metrics.ComponentsCPUTime?.vttablet)}
+            {renderRow('TotalComponentsMemStatsAllocBytes', data[1][0].Metrics.TotalComponentsMemStatsAllocBytes)}
+            {renderRow('ComponentsMemStatsAllocBytes.vtgate', data[1][0].Metrics.ComponentsMemStatsAllocBytes?.vtgate)}
+            {renderRow('ComponentsMemStatsAllocBytes.vttablet', data[1][0].Metrics.ComponentsMemStatsAllocBytes?.vttablet)}
+          </tbody>
         </table>
-           )}
-           
-        </div>
-    );
-    
+      ) : (
+        <table>
+          <tbody>
+            {Array.from({ length: 16 }, (_, index) => renderRow(`default_${index}`, null))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
 };
 
 export default SearchMacro;

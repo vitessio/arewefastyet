@@ -59,6 +59,9 @@ body{
 .align--center{
   align-items: center;
 }
+.hidden--desktop{
+  display: none;
+}
 
 /*Section separation line*/
 .line{
@@ -89,4 +92,11 @@ body{
 
 .width--10em{
   width: 10em;
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+  .hidden--desktop{
+    display: block;
+  }
 }

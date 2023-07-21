@@ -109,7 +109,7 @@ limitations under the License.
     font-weight: bold;
 }
 
-.search__carousel__container{
+.search__carousel__containerMobile{
     width: 70%;
     max-height: 767px;
 }
