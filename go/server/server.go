@@ -304,6 +304,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/pr/info/:nb", s.getPullRequestInfo)
 	s.router.GET("/api/cron/summary", s.getCronSummary)
 	s.router.GET("/api/cron", s.getCron)
+	s.router.GET("/api/status/stats", s.getStatusStats)
 
 	return s.router.Run(":" + s.port)
 }

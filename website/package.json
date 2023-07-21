@@ -17,6 +17,7 @@
     "dotenv": "^16.1.4",
     "moment": "^2.29.4",
     "react": "^18.2.0",
+    "react-countup": "^6.4.2",
     "react-dom": "^18.2.0",
     "react-json-pretty": "^2.2.0",
     "react-router-dom": "^6.11.2",
