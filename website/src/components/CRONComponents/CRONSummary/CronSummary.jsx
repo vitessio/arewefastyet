@@ -14,46 +14,52 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
-import { ResponsiveLine } from '@nivo/line'
+import React from "react";
+import { ResponsiveLine } from "@nivo/line";
 
-import '../CRONSummary/cronSummary.css'
+import "../CRONSummary/cronSummary.css";
 
-const CronSummary = ({data, setBenchmarktype, setIsLoadingChart, benchmarkType}) => {
-    const transformedData = [
-        {
-          id: 'QPSTotal',
-          data: data.Data.map((item) => ({
-            x: item.CreatedAt,
-            y: item.QPSTotal,
-          })),
-        },
-      ];
+const CronSummary = ({
+  data,
+  setBenchmarktype,
+  setIsLoadingChart,
+  benchmarkType,
+}) => {
+  const transformedData = [
+    {
+      id: "QPSTotal",
+      data: data.Data.map((item) => ({
+        x: item.CreatedAt,
+        y: item.QPSTotal,
+      })),
+    },
+  ];
 
-      const getBenchmarkType = () => {
-        setBenchmarktype(data.Name)
-        
-      }
+  const getBenchmarkType = () => {
+    setBenchmarktype(data.Name);
+  };
 
-    return (
-        <div className='cronSummary flex--column' onClick={getBenchmarkType}>
-            <div className='cronSummary__chart'>
-                <ResponsiveLine
-                    data={transformedData}
-                    width={300}
-                    height={100}
-                    enableGridX={false}
-                    enableGridY={false}
-                    colors={['#E77002']}
-                    />
-            </div>
-            <figure className='cronSummary__line'></figure>
-            <div className='cronSummary__text'>
-                <h3>{data.Name}</h3>
-                <i className="fa-solid fa-arrow-right cron--fa-arrow-right"></i>
-            </div>
-        </div>
-    );
+  return (
+    <div className="cronSummary flex--column" onClick={getBenchmarkType}>
+      <div className="cronSummary__chart">
+        <ResponsiveLine
+          data={transformedData}
+          margin={{ top: 20, right: 30, bottom: 50, left: 10 }}
+          height={300}
+          enableGridX={false}
+          enableGridY={false}
+          colors={["#E77002"]}
+          axisBottom={null}
+          axisLeft={null}
+        />
+      </div>
+      <figure className="cronSummary__line"></figure>
+      <div className="cronSummary__text">
+        <h3>{data.Name}</h3>
+        <i className="fa-solid fa-arrow-right cron--fa-arrow-right"></i>
+      </div>
+    </div>
+  );
 };
 
 export default CronSummary;
