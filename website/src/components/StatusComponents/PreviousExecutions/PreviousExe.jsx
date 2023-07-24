@@ -41,7 +41,7 @@ const PreviousExe = ({ data }) => {
       <span className="width--11em">{data.type_of}</span>
       <span className="width--5em">
         {data.pull_nb === 0 ? (
-          <span>{data.pull_nb}</span>
+          <span></span>
         ) : (
           <a
             target="_blank"

@@ -19,8 +19,7 @@ import { ResponsiveLine } from "@nivo/line";
 
 const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
   return (
-    
-    data.length > 0 && (
+    data[0].data.length > 0 && (
       <div className="chart">
         {isFirstChart ? ( // Conditionally render h3 based on isFirstChart prop
           <h3>{title}</h3>

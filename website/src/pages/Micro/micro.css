@@ -152,7 +152,7 @@ limitations under the License.
 }
 
 /* MEDIA QUERIES FOR TABLETS */
-@media only screen and (max-width: 1100px) {
+@media only screen and (max-width: 1225px) {
   .hiddenDesktop {
     display: flex;
   }

@@ -22,15 +22,17 @@ import "../CRONSummary/cronSummary.css";
 const CronSummary = ({ data, setBenchmarktype }) => {
   const orange = "#E77002";
 
-  const transformedData = [
-    {
+  const transformedData = [];
+
+  if (data == null) {
+    transformedData.push({
       id: "QPSTotal",
       data: data.Data.map((item) => ({
         x: item.CreatedAt,
         y: item.QPSTotal,
       })),
-    },
-  ];
+    });
+  }
 
   const getBenchmarkType = () => {
     setBenchmarktype(data.Name);
