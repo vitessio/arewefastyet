@@ -112,21 +112,7 @@ const Macro = () => {
             <div className='macro__top justify--content'>
                 <div className='macro__top__text'>
                     <h2>Compare Macrobenchmarks</h2>
-                    <span>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a augue mi.
-                            Etiam sed imperdiet ligula, vel elementum velit.
-                            Phasellus sodales felis eu condimentum convallis.
-                            Suspendisse sodales malesuada iaculis. Mauris molestie placerat ex non malesuada.
-                            Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt volutpat. 
-                    </span>
-                    
-                </div>
-                <figure className='macroStats'></figure>
-            </div>
-            <figure className='line'></figure>
-            <div className='macro__bottom'>
-                <h3>Comparing result for <a target="_blank" href={commitHashLeft ? `https://github.com/vitessio/vitess/commit/${commitHashLeft}` : undefined}>{gitRefLeft}</a> and <a target="_blank" href={commitHashRight ? `https://github.com/vitessio/vitess/commit/${commitHashRight}` : undefined}>{gitRefRight}</a> </h3>
-                <div className='macro__bottom__DropDownContainer'>
+                    <div className='macro__bottom__DropDownContainer flex'>
                     <figure className='macro__bottom__DropDownLeft flex--column' style={{ maxHeight: `${openDropDownLeft}px` }}>
                         <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownLeft, setOpenDropDownLeft)}>{gitRefLeft} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {
@@ -150,6 +136,14 @@ const Macro = () => {
                         })}
                     </figure>
                 </div>
+                    
+                </div>
+                <figure className='macroStats'></figure>
+            </div>
+            <figure className='line'></figure>
+            <div className='macro__bottom'>
+               
+                
                 {error ? (
                     <div className='macrobench__apiError'>{error}</div> 
                 ) : (
