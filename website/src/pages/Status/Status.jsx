@@ -146,7 +146,6 @@ const Status = () => {
                 <PreviousExe
                   data={previousExe}
                   key={index}
-                  // className={backgroundGrey}
                 />
                 <PreviousExeResMobile
                   data={previousExe}

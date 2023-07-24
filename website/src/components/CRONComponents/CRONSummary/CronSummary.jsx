@@ -19,12 +19,9 @@ import { ResponsiveLine } from "@nivo/line";
 
 import "../CRONSummary/cronSummary.css";
 
-const CronSummary = ({
-  data,
-  setBenchmarktype,
-  setIsLoadingChart,
-  benchmarkType,
-}) => {
+const CronSummary = ({ data, setBenchmarktype }) => {
+  const orange = "#E77002";
+
   const transformedData = [
     {
       id: "QPSTotal",
@@ -41,18 +38,20 @@ const CronSummary = ({
 
   return (
     <div className="cronSummary flex--column" onClick={getBenchmarkType}>
-      <div className="cronSummary__chart">
-        <ResponsiveLine
-          data={transformedData}
-          margin={{ top: 20, right: 30, bottom: 50, left: 10 }}
-          height={300}
-          enableGridX={false}
-          enableGridY={false}
-          colors={["#E77002"]}
-          axisBottom={null}
-          axisLeft={null}
-        />
-      </div>
+      {data ? (
+        <div className="cronSummary__chart">
+          <ResponsiveLine
+            data={transformedData}
+            margin={{ top: 20, right: 30, bottom: 50, left: 10 }}
+            height={300}
+            enableGridX={false}
+            enableGridY={false}
+            colors={orange}
+            axisBottom={null}
+            axisLeft={null}
+          />
+        </div>
+      ) : null}
       <figure className="cronSummary__line"></figure>
       <div className="cronSummary__text">
         <h3>{data.Name}</h3>

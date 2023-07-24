@@ -19,6 +19,7 @@ import React from "react";
 import "../SearchMacroDesktop/searchMacroDesktop.css";
 
 import { formatByteForGB, fixed } from "../../../../utils/Utils";
+
 const SearchMacroDesktop = ({ data }) => {
   const renderZeroSpans = Array(16)
     .fill(0)

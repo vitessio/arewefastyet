@@ -234,12 +234,12 @@ const CRON = () => {
     {
       data: TPSData,
       title: "TPS (Transactions per second)",
-      colors: ["#E77002"],
+      colors: ["Yellow"],
     },
     {
       data: latencyData,
       title: "Latency (Milliseconds)",
-      colors: ["#E77002"],
+      colors: ["Yellow"],
     },
     {
       data: CPUTimeData,
@@ -281,8 +281,6 @@ const CRON = () => {
                   key={index}
                   data={cronSummary}
                   setBenchmarktype={setBenchmarktype}
-                  setIsLoading2={setIsLoadingChart}
-                  benchmarkType={benchmarkType}
                 />
               );
             })}
@@ -292,7 +290,7 @@ const CRON = () => {
             <div className="loadingSpinner">
               <RingLoader loading={isLoadingChart} color="#E77002" size={300} />
             </div>
-          ) : (
+          ) : benchmarkType !== "" ? (
             <div className="cron__container">
               {allChartData.map((chartData, index) => (
                 <ResponsiveChart
@@ -304,7 +302,7 @@ const CRON = () => {
                 />
               ))}
             </div>
-          )}
+          ) : null}
         </>
       )}
     </div>

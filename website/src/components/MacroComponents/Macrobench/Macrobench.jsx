@@ -21,7 +21,6 @@ import { formatByteForGB, fixed } from '../../../utils/Utils';
 import './macrobench.css'
 
 const Macrobench = React.memo(({data, gitRefLeft, gitRefRight, showSpan, commitHashLeft, commitHashRight}) => {
-    console.log(data)
     return (
         <div className='macrobench__component'>
             <div className='macrobench__component__header'>

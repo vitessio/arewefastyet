@@ -25,9 +25,9 @@ limitations under the License.
 }
 
 .macrobench__component__header{
-    position: absolute;
-    top: -90px;
-    z-index: 5;
+    position:absolute;
+    margin-top: -90px;
+    margin-left: 10%;
 }
 
 .macrobench__component h3{
