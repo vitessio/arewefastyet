@@ -18,7 +18,6 @@ import React from "react";
 import { ResponsiveLine } from "@nivo/line";
 
 const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
-  console.log(data)
   return (
     
     data.length > 0 && (
