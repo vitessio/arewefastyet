@@ -65,6 +65,7 @@ const (
 type benchmarkConfig struct {
 	file string
 	v    *viper.Viper
+	skip bool
 }
 
 type Server struct {
@@ -179,7 +180,7 @@ func (s *Server) Init() error {
 	}
 
 	s.benchmarkConfig = map[string]benchmarkConfig{
-		"micro":              {file: path.Join(s.benchmarkConfigPath, "micro.yaml"), v: viper.New()},
+		"micro":              {file: path.Join(s.benchmarkConfigPath, "micro.yaml"), v: viper.New(), skip: true},
 		"oltp":               {file: path.Join(s.benchmarkConfigPath, "oltp.yaml"), v: viper.New()},
 		"oltp-set":           {file: path.Join(s.benchmarkConfigPath, "oltp-set.yaml"), v: viper.New()},
 		"oltp-readonly":      {file: path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"), v: viper.New()},
@@ -304,6 +305,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/pr/info/:nb", s.getPullRequestInfo)
 	s.router.GET("/api/cron/summary", s.getCronSummary)
 	s.router.GET("/api/cron", s.getCron)
+	s.router.GET("/api/status/stats", s.getStatusStats)
 
 	return s.router.Run(":" + s.port)
 }

@@ -72,6 +72,9 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 
 	// We compare main with the previous hash of main and with the latest release
 	for configType, config := range configs {
+		if config.skip {
+			continue
+		}
 		if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 			continue
 		}
@@ -121,6 +124,9 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 		currVersion.Patch += 1
 
 		for configType, config := range configs {
+			if config.skip {
+				continue
+			}
 			if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 				continue
 			}
@@ -163,8 +169,8 @@ func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(config be
 		// creating an execution queue element for the latest benchmark with SourceCron as source
 		// this will not be executed since the benchmark already exist, we still create the element in order to compare
 		previousElement := s.createSimpleExecutionQueueElement(config, source, previousGitRef, configType, plannerVersion, false, 0, version)
-		previousElement.compareWith = append(previousElement.compareWith, newExecutionElement.Identifier)
-		newExecutionElement.compareWith = append(newExecutionElement.compareWith, previousElement.Identifier)
+		previousElement.compareWith = append(previousElement.compareWith, newExecutionElement.identifier)
+		newExecutionElement.compareWith = append(newExecutionElement.compareWith, previousElement.identifier)
 		elements = append(elements, previousElement)
 	}
 
@@ -172,8 +178,8 @@ func (s *Server) createBranchElementWithComparisonOnPreviousAndRelease(config be
 		// creating an execution queue element for the latest release (comparing branch with the latest release)
 		// this will probably not be executed the benchmark should already exist, we still create it to compare main once its benchmark is over
 		lastReleaseElement := s.createSimpleExecutionQueueElement(config, exec.SourceTag+lastRelease.Name, lastRelease.CommitHash, configType, plannerVersion, false, 0, lastRelease.Version)
-		lastReleaseElement.compareWith = append(lastReleaseElement.compareWith, newExecutionElement.Identifier)
-		newExecutionElement.compareWith = append(newExecutionElement.compareWith, lastReleaseElement.Identifier)
+		lastReleaseElement.compareWith = append(lastReleaseElement.compareWith, newExecutionElement.identifier)
+		newExecutionElement.compareWith = append(newExecutionElement.compareWith, lastReleaseElement.identifier)
 		elements = append(elements, lastReleaseElement)
 	}
 	return elements
@@ -212,6 +218,9 @@ func (s *Server) pullRequestsCronHandler() {
 				continue
 			}
 			for configType, config := range configs {
+				if config.skip {
+					continue
+				}
 				if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 					continue
 				}
@@ -239,13 +248,13 @@ func (s *Server) createPullRequestElementWithBaseComparison(config benchmarkConf
 	var elements []*executionQueueElement
 
 	newExecutionElement := s.createSimpleExecutionQueueElement(config, exec.SourcePullRequest, ref, configType, string(plannerVersion), true, pullNb, gitVersion)
-	newExecutionElement.Identifier.PullBaseRef = previousGitRef
+	newExecutionElement.identifier.PullBaseRef = previousGitRef
 	elements = append(elements, newExecutionElement)
 
 	if previousGitRef != "" {
 		previousElement := s.createSimpleExecutionQueueElement(config, exec.SourcePullRequestBase, previousGitRef, configType, string(plannerVersion), false, pullNb, gitVersion)
-		previousElement.compareWith = append(previousElement.compareWith, newExecutionElement.Identifier)
-		newExecutionElement.compareWith = append(newExecutionElement.compareWith, previousElement.Identifier)
+		previousElement.compareWith = append(previousElement.compareWith, newExecutionElement.identifier)
+		newExecutionElement.compareWith = append(newExecutionElement.compareWith, previousElement.identifier)
 		elements = append(elements, previousElement)
 	}
 	return elements
@@ -275,6 +284,9 @@ func (s *Server) tagsCronHandler() {
 	for _, release := range releases {
 		source := exec.SourceTag + release.Name
 		for configType, config := range configs {
+			if config.skip {
+				continue
+			}
 			if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > release.Version.Major {
 				continue
 			}
@@ -298,7 +310,7 @@ func (s *Server) createSimpleExecutionQueueElement(config benchmarkConfig, sourc
 		config:       config,
 		retry:        s.cronNbRetry,
 		notifyAlways: notify,
-		Identifier: executionIdentifier{
+		identifier: executionIdentifier{
 			GitRef:         ref,
 			Source:         source,
 			BenchmarkType:  configType,

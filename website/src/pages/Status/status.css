@@ -19,19 +19,18 @@ limitations under the License.
     min-height: 100vh;
 }
 
-    /*STATUS TOP*/
+/*STATUS TOP*/
 
-.status__top{
-    margin-top: 100px;
-    align-items: center;
-    
-    
+.status__top {
+  margin-top: 100px;
+  align-items: center;
+  height: 100%;
 }
 
-.status__top__text{
-    width: 50%;
-    margin-right: 200px;
-    
+.status__top__text {
+  width: 50%;
+  margin-right: 200px;
+  height: 500px;
 }
 
 .status__top__text h2{
@@ -43,15 +42,15 @@ limitations under the License.
     width: 100%
 }
 
-.status__top__text span{
-    color: #B5ADAD;
-    width: 60%;
-    line-height: 40px;
+.status__top__text span {
+  color: #b5adad;
+  width: 60%;
+  line-height: 40px;
 }
-.statusStats{
-    border: solid 2px white;
-    width: 400px;
-    height: 400px;
+.statusStats {
+  color: white;
+  min-width: 300px;
+  height: 500px;
 }
 
 .status h3{
@@ -60,25 +59,85 @@ limitations under the License.
     margin-bottom: 50px;
     text-align: center;
 }
+.countUp__title {
+  margin-bottom: 50px;
+  font-size: 1.2rem;
+}
 
+.hiddenDesktop {
+  display: none;
+}
 
-.hiddenDesktop{
+/*PREVIOUS EXECUTIONS*/
+
+.previousExe {
+  color: white;
+}
+.previousExe__top {
+  justify-content: space-between;
+}
+.previousExe__top__line {
+  border: #b5adad 1px solid;
+  margin-top: 10px;
+}
+.previousExe__top span {
+  text-align: center;
+}
+
+.grey--background {
+  background-color: #343a40;
+}
+
+/* EXECUTION QUEUE */
+
+.queue {
+  color: white;
+  margin-bottom: 200px;
+  text-align: center;
+}
+.queue__top__line {
+  border: #b5adad 1px solid;
+  margin-top: 10px;
+}
+.queue__top {
+  justify-content: space-around;
+}
+
+/* SPINNER */
+
+.loadingSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 100px 0px;
+}
+
+.apiError {
+  height: 50vh;
+  color: #e77002;
+  margin-top: 200px;
+  text-align: center;
+  font-size: 3rem;
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+  .status {
+    padding: 0px 20px 50px 20px;
+  }
+  .status__top__text h2 {
+    font-size: 4rem;
+  }
+  .statusStats {
+    width: 300px;
+  }
+  .hiddenDesktop {
+    display: block;
+  }
+  .hiddenTablet {
     display: none;
-}
-
-    /*PREVIOUS EXECUTIONS*/
-
-.previousExe{
-    color: white;
-}
-.previousExe__top{
-    justify-content: space-between;
-}
-.previousExe__top__line{
-    border: #B5ADAD 1px solid;
-    margin-top: 10px;
-}
-.previousExe__top span{
+  }
+  .statusStats {
     text-align: center;
     
 }
@@ -107,60 +166,20 @@ limitations under the License.
 .loadingSpinner{
     display:flex;
     justify-content: center;
-    align-items: center;
-    margin: 100px 0px;
-}
-
-.apiError{
-    height: 50vh;
-    color: #E77002;
-    margin-top: 200px;
+  }
+  .status__top__text {
+    width: 100%;
+    margin-right: 0px;
     text-align: center;
-    font-size: 3rem;
+  }
+  .statusStats {
+    margin-top: 50px;
+  }
 }
 
-
- /* MEDIA QUERIES FOR TABLETS */
- @media only screen and (max-width: 1225px) {
-    .status{
-        padding: 0px 20px 50px 20px;
-    }
-    .status__top__text h2{
-        font-size: 4rem;
-    }
-    .statusStats{
-        width: 300px;
-
-    }
-    .hiddenDesktop{
-        display: block;
-    }
-    .hiddenTablet{
-        display: none;
-    }
-    
-
- }
-
-
-  /* MEDIA QUERIES FOR MOBILE */
-@media only screen and (max-width: 767px){
-    .status__top{
-        flex-direction: column;
-        justify-content: center;
-    }
-    .status__top__text{
-        width: 100%;
-        margin-right: 0px;
-        text-align: center;
-    }
-    .statusStats{
-        width: 300px;
-        height: 300px;
-        margin-top: 50px;
-
-    }
-    .hiddenMobile{
-        display: none;
-    }
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px) {
+  .hiddenMobile {
+    display: none;
+  }
 }

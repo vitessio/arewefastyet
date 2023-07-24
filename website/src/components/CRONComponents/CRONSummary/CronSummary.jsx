@@ -50,7 +50,7 @@ const CronSummary = ({data, setBenchmarktype, setIsLoadingChart, benchmarkType})
             <figure className='cronSummary__line'></figure>
             <div className='cronSummary__text'>
                 <h3>{data.Name}</h3>
-                <i className="fa-solid fa-arrow-right"></i>
+                <i className="fa-solid fa-arrow-right cron--fa-arrow-right"></i>
             </div>
         </div>
     );

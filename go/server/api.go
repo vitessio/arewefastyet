@@ -80,10 +80,10 @@ func (s *Server) getExecutionsQueue(c *gin.Context) {
 			continue
 		}
 		recentExecs = append(recentExecs, RecentExecutions{
-			Source: e.Identifier.Source,
-			GitRef: e.Identifier.GitRef,
-			TypeOf: e.Identifier.BenchmarkType,
-			PullNb: e.Identifier.PullNb,
+			Source: e.identifier.Source,
+			GitRef: e.identifier.GitRef,
+			TypeOf: e.identifier.BenchmarkType,
+			PullNb: e.identifier.PullNb,
 		})
 	}
 	sort.Slice(recentExecs, func(i, j int) bool {
@@ -287,7 +287,6 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 
 }
 
-
 type cronSingleSummary struct {
 	Name string
 	Data []macrobench.CronSummary
@@ -328,4 +327,14 @@ func (s *Server) getCron(c *gin.Context) {
 		data[i].Metrics = m
 	}
 	c.JSON(http.StatusOK, data)
+}
+
+func (s *Server) getStatusStats(c *gin.Context) {
+	stats, err := exec.GetBenchmarkStats(s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, stats)
 }

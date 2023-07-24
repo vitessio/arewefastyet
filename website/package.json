@@ -17,6 +17,7 @@
     "dotenv": "^16.1.4",
     "moment": "^2.29.4",
     "react": "^18.2.0",
+    "react-countup": "^6.4.2",
     "react-dom": "^18.2.0",
     "react-json-pretty": "^2.2.0",
     "react-router-dom": "^6.11.2",
@@ -33,7 +34,7 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
-    "vite": "^4.3.9",
+    "vite": "^4.4.6",
     "vite-plugin-env-compatible": "^1.1.1"
   }
 }

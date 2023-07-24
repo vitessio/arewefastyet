@@ -14,22 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap");
 
-
-*, body {
+*,
+body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  
-  font-family: 'Rubik', sans-serif;
-  
-}
-body{
-  background-color: #1F1D1D;
-}
 
-
+  font-family: "Rubik", sans-serif;
+}
+body {
+  background-color: #1f1d1d;
+}
 
 /*Basic class*/
 
@@ -37,66 +34,85 @@ body{
 .flex--column,
 .justify--content,
 .align--center,
-.space--between{
+.space--between,
+.space--around {
   display: flex;
 }
 
-.justify--content{
+.justify--content {
   justify-content: center;
 }
-.space--between{
+.space--between {
   justify-content: space-between;
 }
-.flex--column{
+.space--around {
+  justify-content: space-around;
+}
+.flex--column {
   flex-direction: column;
 }
-.visible{
+.visible {
   visibility: visible;
 }
-.hidden{
+.hidden {
   visibility: hidden;
 }
-.align--center{
+.align--center {
   align-items: center;
 }
-.hidden--desktop{
+.hidden--desktop {
   display: none;
 }
 
 /*Section separation line*/
-.line{
-  border: 1px solid #B5ADAD;
+.line {
+  border: 1px solid #b5adad;
   margin-top: 50px;
   margin-bottom: 50px;
 }
 
-.width--5em{
+.width--5em {
   width: 5em;
 }
 
-.width--6em{
+.width--4em {
+  width: 4em;
+}
+
+.width--6em {
   width: 6em;
 }
 
-.width--11em{
+.width--11em {
   width: 11em;
 }
 
-.width--3em{
+.width--3em {
   width: 3em;
 }
 
-.width--15em{
+.width--15em {
   width: 15em;
 }
 
-.width--10em{
+.width--10em {
   width: 10em;
 }
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-  .hidden--desktop{
+  .hidden--desktop {
     display: block;
+  }
+  .width--40 {
+    width: 45%;
+  }
+
+  .width--20 {
+    width: 20%;
+  }
+
+  .width--25 {
+    width: 25%;
   }
 }
