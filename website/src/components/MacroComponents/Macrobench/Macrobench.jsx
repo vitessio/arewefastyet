@@ -24,8 +24,11 @@ const Macrobench = React.memo(({data, gitRefLeft, gitRefRight, showSpan, commitH
     console.log(data)
     return (
         <div className='macrobench__component'>
+            <div className='macrobench__component__header'>
             <h3>{data.type}</h3>
             <span className='linkQueryT'>Click <Link to="/macrobench/queries/compare" state={{data : data, commitHashLeft : commitHashLeft, commitHashRight : commitHashRight }}>here</Link> to see the query plans comparison for this benchmark.</span>
+            </div>
+            
             <table>
                 <thead>
                     <tr>
