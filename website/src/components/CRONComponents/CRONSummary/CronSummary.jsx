@@ -24,7 +24,7 @@ const CronSummary = ({ data, setBenchmarktype }) => {
 
   const transformedData = [];
 
-  if (data == null) {
+  if (data.Data !== null) {
     transformedData.push({
       id: "QPSTotal",
       data: data.Data.map((item) => ({
