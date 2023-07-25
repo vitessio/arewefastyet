@@ -71,7 +71,7 @@ limitations under the License.
   transition: max-height 1s ease;
   box-shadow: #e77002 2px 2px 10px;
   z-index: 200;
-  min-width: 100px;
+  width: 200px;
 }
 
 .micro__bottom__DropDownRight {
@@ -89,6 +89,7 @@ limitations under the License.
   transition: max-height 1s ease;
   box-shadow: #e77002 2px 2px 10px;
   z-index: 2000;
+  width: 200px;
 }
 
 .DropDown__BaseSpan {
@@ -173,6 +174,12 @@ limitations under the License.
     height: 300px;
     margin-top: 100px;
   }
+  .micro__bottom__DropDownLeft{
+    width: 170px;
+  }
+  .micro__bottom__DropDownRight{
+    width: 170px;
+  }
 }
 
 /* MEDIA QUERIES FOR MOBILE */
@@ -214,10 +221,12 @@ limitations under the License.
   .micro__bottom__DropDownLeft {
     left: 0%;
     font-size: 0.7rem;
+    width: 150px;
   }
 
   .micro__bottom__DropDownRight {
     right: 0%;
     font-size: 0.7rem;
+    width: 150px;
   }
 }
