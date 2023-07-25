@@ -145,7 +145,7 @@ const Macro = () => {
                
                 
                 {error ? (
-                    <div className='macrobench__apiError'>{error}</div> 
+                    <div className='apiError'>{error}</div> 
                 ) : (
                     isLoading ? (
                         <div className='loadingSpinner'>

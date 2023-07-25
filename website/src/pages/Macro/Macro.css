@@ -188,12 +188,6 @@ limitations under the License.
   max-height: 769px;
 }
 
-.macrobench__apiError {
-  color: #e77002;
-  text-align: center;
-  font-size: 3rem;
-}
-
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
   .macro__top__text h2 {

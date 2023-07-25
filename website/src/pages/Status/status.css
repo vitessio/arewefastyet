@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.status{
-    padding : 0px 50px 50px 50px;  
-    min-height: 100vh;
+.status {
+  padding: 0px 50px 50px 50px;
+  min-height: 100vh;
 }
 
 /*STATUS TOP*/
@@ -33,13 +33,13 @@ limitations under the License.
   height: 500px;
 }
 
-.status__top__text h2{
-    color: white;
-    font-size: 5rem;
-    font-weight:100;
-    margin-bottom: 50px;
-    margin-top: 20px;
-    width: 100%
+.status__top__text h2 {
+  color: white;
+  font-size: 5rem;
+  font-weight: 100;
+  margin-bottom: 50px;
+  margin-top: 20px;
+  width: 100%;
 }
 
 .status__top__text span {
@@ -53,11 +53,11 @@ limitations under the License.
   height: 500px;
 }
 
-.status h3{
-    font-size: 2rem;
-    font-weight: 200;
-    margin-bottom: 50px;
-    text-align: center;
+.status h3 {
+  font-size: 2rem;
+  font-weight: 200;
+  margin-bottom: 50px;
+  text-align: center;
 }
 .countUp__title {
   margin-bottom: 50px;
@@ -112,14 +112,6 @@ limitations under the License.
   margin: 100px 0px;
 }
 
-.apiError {
-  height: 50vh;
-  color: #e77002;
-  margin-top: 200px;
-  text-align: center;
-  font-size: 3rem;
-}
-
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
   .status {
@@ -139,32 +131,31 @@ limitations under the License.
   }
   .statusStats {
     text-align: center;
-    
-}
+  }
 
-.grey--background{
-    background-color: #343A40;
-}
+  .grey--background {
+    background-color: #343a40;
+  }
 
-     /* EXECUTION QUEUE */
+  /* EXECUTION QUEUE */
 
-.queue{
+  .queue {
     color: white;
     margin-bottom: 100px;
     text-align: center;
-}
-.queue__top__line{
-    border: #B5ADAD 1px solid;
+  }
+  .queue__top__line {
+    border: #b5adad 1px solid;
     margin-top: 10px;
-}
-.queue__top{
+  }
+  .queue__top {
     justify-content: space-around;
-}
+  }
 
-    /* SPINNER */
+  /* SPINNER */
 
-.loadingSpinner{
-    display:flex;
+  .loadingSpinner {
+    display: flex;
     justify-content: center;
   }
   .status__top__text {

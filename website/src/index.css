@@ -64,6 +64,28 @@ body {
   display: none;
 }
 
+.apiError {
+  height: 50vh;
+  color: #e77002;
+  margin-top: 200px;
+  text-align: center;
+  font-size: 2rem;
+  text-shadow: 0 0 10px #e77002;
+  animation: flashing 2s infinite;
+}
+
+@keyframes flashing {
+  0% {
+    text-shadow: 0 0 30px #e77002;
+  }
+  50% {
+    text-shadow: none;
+  }
+  100% {
+    text-shadow: 0 0 30px #e77002;
+  }
+}
+
 /*Section separation line*/
 .line {
   border: 1px solid #b5adad;
@@ -99,20 +121,22 @@ body {
   width: 10em;
 }
 
+.width--40 {
+  width: 45%;
+}
+
+.width--20 {
+  width: 20%;
+}
+
+.width--25 {
+  width: 25%;
+}
+
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
   .hidden--desktop {
     display: block;
   }
-  .width--40 {
-    width: 45%;
-  }
-
-  .width--20 {
-    width: 20%;
-  }
-
-  .width--25 {
-    width: 25%;
-  }
+  
 }

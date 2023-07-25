@@ -267,7 +267,7 @@ const CRON = () => {
       </div>
       <figure className="line"></figure>
       {error ? (
-        <div className="macrobench__apiError">{error}</div>
+        <div className="apiError">{error}</div>
       ) : isLoading ? (
         <div className="loadingSpinner">
           <RingLoader loading={isLoading} color="#E77002" size={300} />

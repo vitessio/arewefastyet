@@ -129,7 +129,7 @@ const Compare = () => {
         </div>
 
         {macrobenchError ? (
-          <div className="macrobench__apiError">{macrobenchError}</div>
+          <div className="apiError">{macrobenchError}</div>
         ) : isMacrobenchLoading ? (
           <div className="loadingSpinner">
             <RingLoader

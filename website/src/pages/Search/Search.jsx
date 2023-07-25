@@ -96,7 +96,7 @@ const Search = () => {
         </form>
       </div>
       {searchError ? (
-        <div className="macrobench__apiError">{searchError}</div>
+        <div className="apiError">{searchError}</div>
       ) : (
         <>
           {isSearchLoading ? (
