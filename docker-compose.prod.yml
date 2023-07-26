@@ -57,6 +57,7 @@ services:
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
+      - "traefik.http.services.api.loadbalancer.server.port=8181"
     network_mode: bridge
 
   frontend:
