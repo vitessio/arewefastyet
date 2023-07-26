@@ -20,10 +20,15 @@ package github
 
 import (
 	"context"
+	"net/http"
+	"os"
 	"time"
 
 	"github.com/google/go-github/v53/github"
+	"github.com/gregjones/httpcache"
 	"github.com/palantir/go-githubapp/githubapp"
+	"github.com/rcrowley/go-metrics"
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -76,7 +81,21 @@ func (a *App) Init() error {
 			PrivateKey:    a.secretKey,
 		},
 	}
-	clientCreator, err := githubapp.NewDefaultCachingClientCreator(config)
+
+	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
+	zerolog.DefaultContextLogger = &logger
+
+	metricsRegistry := metrics.DefaultRegistry
+
+	clientCreator, err := githubapp.NewDefaultCachingClientCreator(
+		config,
+		githubapp.WithClientUserAgent("arewefastyet-bot/1.0.0"),
+		githubapp.WithClientTimeout(5*time.Second),
+		githubapp.WithClientCaching(false, func() httpcache.Cache { return httpcache.NewMemoryCache() }),
+		githubapp.WithClientMiddleware(
+			githubapp.ClientMetrics(metricsRegistry),
+		),
+	)
 	if err != nil {
 		return err
 	}
@@ -87,13 +106,26 @@ func (a *App) Init() error {
 	}
 	a.client = client
 
-	// go func() {
-	// 	webhookHandler := githubapp.NewDefaultEventDispatcher(config)
-	//
-	// 	http.Handle(githubapp.DefaultWebhookRoute, webhookHandler)
-	//
-	// 	err = http.ListenAndServe("127.0.0.1:"+a.port, nil)
-	// }()
+	go func() {
+		prHandler := pullRequestHandler{
+			ClientCreator: clientCreator,
+		}
+
+		webhookHandler := githubapp.NewEventDispatcher(
+			[]githubapp.EventHandler{prHandler},
+			config.App.WebhookSecret,
+			githubapp.WithScheduler(
+				githubapp.AsyncScheduler(),
+			),
+		)
+
+		http.Handle(githubapp.DefaultWebhookRoute, webhookHandler)
+
+		err = http.ListenAndServe(":"+a.port, webhookHandler)
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to start server")
+		}
+	}()
 
 	return nil
 }
