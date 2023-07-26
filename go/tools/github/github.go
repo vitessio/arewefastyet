@@ -135,6 +135,8 @@ type PRInfo struct {
 	Author    string
 	Title     string
 	CreatedAt *time.Time
+	Base      string
+	Head      string
 }
 
 func (a *App) GetPullRequestInfo(prNumber int) (PRInfo, error) {
