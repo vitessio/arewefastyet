@@ -24,7 +24,10 @@ body {
 
   font-family: "Rubik", sans-serif;
 }
-
+body{
+  background-color: var(--background-color);
+  color: var(--font-color);
+}
 /*Basic class*/
 
 .flex,
@@ -134,6 +137,8 @@ body {
   --primary-color: #1f1d1d;
   --secondary-color: #b5adad;
   --accent-color: #e77002;
+  --background-color: #ffffff;
+  --font-color: #000000;
 }
 
 /* MEDIA QUERIES FOR TABLETS */

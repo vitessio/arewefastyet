@@ -79,7 +79,9 @@ const Status = () => {
             style={{ fontSize: "5rem", color: "#E77002" }}
             duration={3}
           />
-          <span className="countUp__title">Total Benchmarks (last 30 days)</span>
+          <span className="countUp__title">
+            Total Benchmarks (last 30 days)
+          </span>
         </div>
       </article>
       <figure className="line"></figure>
@@ -138,24 +140,16 @@ const Status = () => {
           <figure className="previousExe__top__line"></figure>
 
           {dataPreviousExe.map((previousExe, index) => {
-            const isEvenIndex = index % 2 === 0;
-            const backgroundGrey = isEvenIndex ? "grey--background" : "";
-
             return (
               <React.Fragment key={uuidv4()}>
-                <PreviousExe
-                  data={previousExe}
-                  key={index}
-                />
+                <PreviousExe data={previousExe} key={index} />
                 <PreviousExeResMobile
                   data={previousExe}
                   key={uuidv4()}
-                  className={backgroundGrey}
                 />
                 <PreviousExeResTablet
                   data={previousExe}
                   key={uuidv4()}
-                  className={backgroundGrey}
                 />
               </React.Fragment>
             );

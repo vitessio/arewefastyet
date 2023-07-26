@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 .search {
-  color: white;
   padding: 0px 20px 0px 20px;
   position: relative;
   height: 100%;
@@ -40,7 +39,6 @@ limitations under the License.
 }
 
 .search__top__text span {
-  color: #b5adad;
   width: 60%;
   line-height: 40px;
 }
@@ -62,9 +60,9 @@ limitations under the License.
   font-size: 1.5rem;
   border: #e77002 solid 2px;
   border-radius: 20px 0px 0px 20px;
-  background-color: #1f1d1d;
   box-shadow: #e77002 2px 2px 10px;
   color: white;
+  background-color: var(--background-color);
 }
 
 .research__input:focus {
@@ -74,7 +72,7 @@ limitations under the License.
 .research button {
   border: #e77002 solid 2px;
   border-left: 0px;
-  background-color: #343a40;
+  background-color: var(--primary-color);
   color: white;
   padding: 20px;
   border-radius: 0px 20px 20px 0px;

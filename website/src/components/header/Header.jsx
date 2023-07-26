@@ -75,12 +75,32 @@ const Header = () => {
         };
       }, []);
 
+
+      const [isColorChanged, setColorChanged] = useState(false);
+
+  const handleButtonClick = () => {
+    if (isColorChanged) {
+      document.documentElement.style.setProperty('--primary-color', '#1f1d1d');
+      document.documentElement.style.setProperty('--background-color', '#ffffff');
+      document.documentElement.style.setProperty('--font-color', '#000000');
+    } else {
+      document.documentElement.style.setProperty('--primary-color', '#343A40'); 
+      document.documentElement.style.setProperty('--background-color', '#1F1D1D');
+      document.documentElement.style.setProperty('--font-color', '#ffffff'); 
+    }
+
+    setColorChanged(!isColorChanged);
+  };
+
     return (
         <div className={`header flex ${visible ? 'visible' : 'hidden'}`}>
         
             <div className='logo__container'>
                 <img src={logo} alt='logo'/>
                 <span className='hiddenResponsiveMobile' >Benchmark</span>
+                <button className="button" onClick={handleButtonClick}>
+        Change Colors
+      </button>
             </div>
             {openMenu ? (
                 <>

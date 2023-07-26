@@ -34,7 +34,6 @@ limitations under the License.
 }
 
 .status__top__text h2 {
-  color: white;
   font-size: 5rem;
   font-weight: 100;
   margin-bottom: 50px;
@@ -43,12 +42,10 @@ limitations under the License.
 }
 
 .status__top__text span {
-  color: #b5adad;
   width: 60%;
   line-height: 40px;
 }
 .statusStats {
-  color: white;
   min-width: 300px;
   height: 500px;
 }
@@ -70,9 +67,6 @@ limitations under the License.
 
 /*PREVIOUS EXECUTIONS*/
 
-.previousExe {
-  color: white;
-}
 .previousExe__top {
   justify-content: space-between;
 }
@@ -82,16 +76,12 @@ limitations under the License.
 }
 .previousExe__top span {
   text-align: center;
-}
-
-.grey--background {
-  background-color: #343a40;
+  font-weight: bold;
 }
 
 /* EXECUTION QUEUE */
 
 .queue {
-  color: white;
   margin-bottom: 200px;
   text-align: center;
 }
@@ -140,7 +130,6 @@ limitations under the License.
   /* EXECUTION QUEUE */
 
   .queue {
-    color: white;
     margin-bottom: 100px;
     text-align: center;
   }

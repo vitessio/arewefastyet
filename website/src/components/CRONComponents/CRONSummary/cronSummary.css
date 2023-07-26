@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 .cronSummary {
-  border: solid 1px #b5adad;
+  border: solid 1px var(--primary-color);
   border-radius: 10px;
   width: 350px;
   height: 150px;
@@ -25,7 +25,7 @@ limitations under the License.
 }
 
 .cronSummary:hover {
-  background-color: #343a40;
+  background-color: var(--secondary-color);
 }
 .cronSummary h3 {
   font-weight: 200;
@@ -35,7 +35,7 @@ limitations under the License.
 }
 
 .cronSummary__line {
-  border-bottom: 1px #b5adad solid;
+  border-bottom: 1px var(--primary-color) solid;
   width: 100%;
 }
 
