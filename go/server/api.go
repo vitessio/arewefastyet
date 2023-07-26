@@ -277,13 +277,22 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 		slog.Error(err)
 		return
 	}
-	pullRequestInfo, err := exec.GetPullRequestInfo(s.dbClient, pullNb)
+	gitPRInfo, err := exec.GetPullRequestInfo(s.dbClient, pullNb)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-	c.JSON(http.StatusOK, pullRequestInfo)
+
+	prInfo, err := s.ghApp.GetPullRequestInfo(pullNb)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	prInfo.Base = gitPRInfo.Main
+	prInfo.Head = gitPRInfo.PR
+	c.JSON(http.StatusOK, prInfo)
 
 }
 
