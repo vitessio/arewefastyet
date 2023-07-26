@@ -15,7 +15,7 @@ limitations under the License.
 */
 .header{
     position: fixed;
-    width: 100%;
+    width: 100vw;
     height: 50px;
     background-color: #343A40;
     justify-content: space-between;

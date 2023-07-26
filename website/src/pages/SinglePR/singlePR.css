@@ -14,17 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.footer{
-    position: relative;
-    bottom: 0;
-    width: 100vw;
-    height: 160px;
-    background-color: #343A40;
-    margin-top: 100px;
-    align-items: center;   
+.singlePR{
+	min-height: 100vh;
+	border: 1px solid white;
+	border-radius: 20px;
+	max-width: 1000px;
+	color:white;
+	max-width: 1500px;
+	margin: auto;
+	margin: 100px 
 }
 
-.footer span{
-    background: none;
-    color: white;
+.singlePR__top{
+	padding: 20px;
+	border-bottom: 1px solid white;
+	justify-content: space-between;
+}
+
+.singlePR__top h2{
+	margin-bottom: 20px;
+}
+
+.singlePR__link{
+	border: 1px solid #E77002;
+	padding: 20px;
+	border-radius: 10px;
+	cursor: pointer;
+	align-items: center;
+	text-align: center;
 }

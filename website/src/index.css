@@ -24,8 +24,11 @@ body {
 
   font-family: "Rubik", sans-serif;
 }
-body {
+body, html {
   background-color: #1f1d1d;
+  display: flex;
+  justify-content: center;
+  
 }
 
 /*Basic class*/

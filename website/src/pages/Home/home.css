@@ -16,8 +16,9 @@ limitations under the License.
 
 .home{
     background-color: #1F1D1D;
-    
+    max-width: 1500px;
     padding: 0px 50px 50px 50px;
+    margin: auto;
 }
 
 
