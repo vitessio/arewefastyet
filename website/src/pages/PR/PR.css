@@ -26,7 +26,7 @@ limitations under the License.
 
 .pr__top h2 {
   color: white;
-  font-size: 6rem;
+  font-size: 5rem;
   font-weight: 100;
   margin: 20px 0px 50px 30px;
   width: 100%;
@@ -34,7 +34,7 @@ limitations under the License.
 
 .pr__top span {
   color: #b5adad;
-  width: 100%;
+  width: 50%;
   line-height: 40px;
   margin-left: 30px;
 }
@@ -57,7 +57,7 @@ limitations under the License.
   justify-content: space-around;
   text-align: center;
   border-bottom: 2px solid white;
-  border-top: 2px solid white;
+  
   margin-top: 100px;
 }
 

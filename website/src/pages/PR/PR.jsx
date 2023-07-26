@@ -71,8 +71,9 @@ const PR = () => {
           sagittis eros. Aliquam aliquam sem non tincidunt volutpat.
         </span>
       </div>
+      <figure className='line'></figure>
       {PRListError ? (
-        <div className="macrobench__apiError">{PRListError}</div>
+        <div className="apiError">{PRListError}</div>
       ) : (
         <>
           {isPRListLoading ? (

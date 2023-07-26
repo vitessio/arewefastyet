@@ -20,6 +20,7 @@ limitations under the License.
     border-bottom: #B5ADAD 1px solid;
     padding: 20px 3px;
     display: flex;
+    align-items: center;
 }
 
 

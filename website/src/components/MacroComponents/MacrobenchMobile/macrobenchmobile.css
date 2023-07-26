@@ -17,6 +17,7 @@ limitations under the License.
 .macrobench__mobile h3{
     font-size: 1.4rem;
     font-weight: 200;
+    text-align: start;
 }
 
 .macrobench__mobile h4{
@@ -26,6 +27,7 @@ limitations under the License.
 .macrobench__mobile{
     display: none;
     position: relative;
+    
 }
 
 .macrobench__mobile span:nth-child(2n) {
@@ -50,21 +52,28 @@ limitations under the License.
 
 .linkQuery{
     font-size: 14px;
-    position: absolute;
-    top: 3%;
-    left: 0%;
     background: none;
     width: 100%;
+}
+
+.macrobench__mobile__header{
+    position: absolute;
+}
+
+.macrobench__component__container{
+    margin-top: 31px;
 }
 
 
 @media only screen and (max-width: 767px){
     .macrobench__mobile{
         display: contents;
+        
     }
 
     .macrobench__mobile h3{
         padding: 0px;
+        margin-top: 5px;
         
     }
 
@@ -84,5 +93,9 @@ limitations under the License.
         border: #E77002 1px solid;
         border-radius: 10px 10px 0px 0px;
         font-size: 0.85rem;
+    }
+
+    .linkQuery{
+        top: 4%;
     }
 }

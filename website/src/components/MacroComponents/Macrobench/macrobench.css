@@ -18,9 +18,15 @@ limitations under the License.
     width: 100%;
     border: #E77002 1px solid;
     border-radius: 10px 10px 10px 0px;
-    border-bottom: #E77002 3px solid;
+    border-bottom: #E77002 1px solid;
     position: relative;
-    z-index: 2;
+    margin-top: 90px;
+}
+
+.macrobench__component__header{
+    position:absolute;
+    margin-top: -90px;
+    margin-left: 10%;
 }
 
 .macrobench__component h3{
@@ -33,7 +39,7 @@ limitations under the License.
 }
 
 .macrobench__component h4{
-    border-bottom: #E77002 2px solid;
+    border-bottom: #E77002 1px solid;
     padding: 10px 20px;
     font-size: 0.8rem;
 }
@@ -49,11 +55,11 @@ table{
     width: 33%;
 }
 
-.macrobench__component tr{
+.border--bottom{
     border-bottom: 1px solid #B5ADAD ;
-} 
+}
 
-.macrobench__component tr:hover{
+.macrobench__component tbody tr:hover{
     background-color: #B5ADAD;
 }
 
@@ -63,15 +69,12 @@ table{
 
 .macrobench__component td{
     padding: 15px 0px 5px 0px;
+    font-size: 1rem;
 }
 
 .macrobench__component h4{
     min-height: 37px;
 }
-
-tr:nth-child(2n) {
-    background-color: #343A40;
-  }
 
 @media only screen and (max-width: 1225px) {
     .macrobench__data h4{

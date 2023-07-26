@@ -33,8 +33,11 @@ const MacrobenchMobile = ({data, gitRefLeft, gitRefRight, setCurrentSlideIndexMo
       
     return (
         <div className='macrobench__mobile'>
+            <div className='macrobench__mobile__header'>
             <h3>{data.type}</h3>
-            {showSpan && <div className='linkQuery'>Click <Link to="/macrobench/queries/compare" state={{data : data, commitHashLeft : commitHashLeft, commitHashRight : commitHashRight }}>here</Link> to see the query plans</div>}
+            <div className='linkQuery'>Click <Link to="/macrobench/queries/compare" state={{data : data, commitHashLeft : commitHashLeft, commitHashRight : commitHashRight }}>here</Link> to see the query plans</div>
+            </div>
+            
             <div className='macrobench__component__container flex'>
                 <Swiper
                     effect={"cards"}

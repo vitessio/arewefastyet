@@ -154,6 +154,7 @@ limitations under the License.
 
     .header__nav li{
         padding: 20px 0px;
+        border-bottom: 1px #B5ADAD solid;
     }
 
     .header__link{

@@ -14,265 +14,268 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.macro{
-    color: white;
-    padding: 0px 20px 0px 20px;
-    position: relative;
-    height: 100%;
+.macro {
+  color: white;
+  padding: 0px 20px 0px 20px;
+  position: relative;
+  height: 100%;
 }
 
 /* MACRO TOP */
-.macro__top{
-    margin-top: 100px;
-    
+.macro__top {
+  margin-top: 100px;
+  position: relative;
+  z-index: 200;
 }
 
-.macro__top__text{
-    width: 50%;
-    margin-right: 200px;
+.macro__top__text {
+  width: 50%;
+  margin-right: 200px;
 }
 
-.macro__top__text h2{
-    font-size: 5rem;
-    font-weight:100;
-    margin-bottom: 50px;
-    margin-top: 20px;
-    width: 100%
+.macro__top__text h2 {
+  font-size: 5rem;
+  font-weight: 100;
+  margin-bottom: 50px;
+  margin-top: 20px;
+  width: 100%;
 }
 
-.macro__top__text span{
-    color: #B5ADAD;
-    width: 60%;
-    line-height: 40px;
-}
-
-.macroStats{
-    border: solid 2px white;
-    width: 400px;
+.macroStats {
+  border: solid 2px white;
+  width: 400px;
 }
 
 /* MACRO BOTTOM */
 
-.macro__bottom h3{
-    text-align: center;
-    font-size: 2rem;
-    padding: 0px 50px;
-    
+.macro__bottom {
+  margin-top: 100px;
+  z-index: 1;
+  position: relative;
 }
 
-.macro__bottom__DropDownContainer{
-    position: relative;
-    width: 100%;
-    height: 200px;
+.macro__bottom h3 {
+  text-align: center;
+  font-size: 2rem;
+  padding: 0px 50px;
 }
 
-.macro__bottom__DropDownLeft{
-    position: absolute;
-    background-color: #1F1D1D;
-    border: #E77002 solid 1px;
-    border-radius: 15px;
-    width: 200px;
-    padding:0px 15px;
-    text-align: center;
-    align-items: center;
-    overflow: hidden;
-    cursor: pointer;
-    transition: max-height 1s ease;
-    left: 20%;
-    top: 30px;
-    box-shadow: #E77002 2px 2px 10px;
-    z-index: 200;
+.macro__bottom__DropDownContainer {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  z-index: 1;
+  justify-content: space-between;
 }
 
-.DropDown__Base{
-    padding: 15px;
-    padding-bottom: 30px;
-    width: 100%;
-    font-size: 1rem;
+.macro__bottom__DropDownLeft {
+  position: absolute;
+  background-color: #1f1d1d;
+  border: #e77002 solid 1px;
+  border-radius: 15px;
+  width: 200px;
+  padding: 0px 15px;
+  text-align: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: max-height 1s ease;
+  left: 0%;
+  top: 30px;
+  box-shadow: #e77002 2px 2px 10px;
+  z-index: 200;
 }
 
-.fa-circle-arrow-down{
-    padding-right: -20px;
-    font-size: 1.3rem;
+.DropDown__Base {
+  padding: 15px;
+  padding-bottom: 30px;
+  width: 100%;
+  font-size: 1rem;
 }
 
-.dropDown--line{
-    border: #E77002 1px solid;
-    width: 90%;
+.fa-circle-arrow-down {
+  position: absolute;
+  right: 5%;
+  font-size: 1.3rem;
 }
 
-.dropDown__ref{
-    padding: 15px;
-    width: 90%;
+.dropDown--line {
+  border: #e77002 1px solid;
+  width: 90%;
 }
 
-.dropDown__ref:hover{
-    background-color: #343A40;
+.dropDown__ref {
+  padding: 15px;
+  width: 90%;
 }
 
-.macro__bottom__DropDownRight{
-    position: absolute;
-    border: #E77002 solid 1px;
-    background-color: #1F1D1D;
-    border-radius: 15px;
-    width: 200px;
-    padding:0px 15px;
-    text-align: center;
-    align-items: center;
-    overflow: hidden;
-    cursor: pointer;
-    transition: max-height 1s ease;
-    right: 20%;
-    top: 30px;
-    box-shadow: #E77002 2px 2px 10px;
-    z-index: 200;
+.dropDown__ref:hover {
+  background-color: #343a40;
+}
+
+.macro__bottom__DropDownRight {
+  position: absolute;
+  border: #e77002 solid 1px;
+  background-color: #1f1d1d;
+  border-radius: 15px;
+  width: 200px;
+  padding: 0px 15px;
+  text-align: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: max-height 1s ease;
+  right: 0%;
+  top: 30px;
+  box-shadow: #e77002 2px 2px 10px;
+  z-index: 200;
 }
 
 /* Benchmark table. */
 
-.macrobench__Container{
-    position: relative;
-    z-index: 2;
-    justify-content: center;
+.macrobench__Container {
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  justify-content: center;
+  max-width: 1200px;
 }
-.macrobench__Sidebar{
-    background-color: rgb(117, 58, 3);;
-    padding: 0px 20px 0px 20px;
-    font-style: italic;
-    border-top: #E77002 1px  solid;
-    border-left: #E77002 1px  solid;
-    border-bottom: #E77002 1px  solid;
-    border-radius: 10px 0px 0px 10px;
-    text-align: end;
-    width: 16%;
-    margin-top: 85px;
-
-}
-
-.macrobench__Sidebar__line{
-    border-top: #B5ADAD 1px solid;
+.macrobench__Sidebar {
+  background-color: #1f1d1d;
+  padding: 0px 0px 0px 20px;
+  font-style: italic;
+  border-top: #e77002 1px solid;
+  border-left: #e77002 1px solid;
+  border-bottom: #e77002 1px solid;
+  border-radius: 10px 0px 0px 10px;
+  text-align: end;
+  width: 16%;
+  margin-top: 126.5px;
 }
 
-.macrobench__Sidebar span{
-    padding: 13.25px 0px;
-    font-size: 0.8rem;
-    font-weight: bold;
+.macrobench__Sidebar__line {
+  border-top: #b5adad 1px solid;
 }
 
-.macrobench__Compare{
-    width: 100%;
+.macrobench__Sidebar span {
+  padding: 12px 10px 12px 0px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.macrobench__Compare {
+  width: 100%;
 }
 
 /* CAROUSEL */
 
 .swiper {
-    width: 100%;
-    height: 100%;
-  }
-  
-.swiper-slide {
-    text-align: center;
-    font-size: 18px;
-    /* Center slide text vertically */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-.carousel__container{
-    width: 70%;
-    max-height: 790px;
+  width: 100%;
+  height: 100%;
 }
 
-.macrobench__apiError{
-    color: #E77002;
-    text-align: center;
-    font-size: 3rem;
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel__container {
+  width: 70%;
+  max-height: 769px;
 }
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-    .macro__top__text h2{
-        font-size: 3rem;
-    }
+  .macro__top__text h2 {
+    font-size: 3rem;
+  }
 
-    .macro__top__text{
-        margin-right: 100px;
-    }
+  .macro__top__text {
+    margin-right: 100px;
+  }
 
-    .macroStats{
-        border: solid 2px white;
-        width: 300px;
-        height: 300px;
-        margin-top: 100px;
-    }
+  .macroStats {
+    border: solid 2px white;
+    width: 300px;
+    height: 300px;
+    margin-top: 100px;
+  }
 
-    .macrobench__Sidebar{
-        width: 24%;
-    }
+  .macrobench__Sidebar {
+    width: 24%;
+  }
+  .macro__bottom__DropDownLeft {
+    width: 180px;
+  }
+  .macro__bottom__DropDownRight {
+    width: 180px;
+  }
 }
 
- /* MEDIA QUERIES FOR MOBILE */
- @media only screen and (max-width: 767px){
-    .macro__top__text{
-        width: 100%;
-        text-align: center;
-    }
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px) {
+  .macro__top__text {
+    width: 100%;
+    text-align: center;
+  }
 
-    .macro__top__text h2{
-        font-size: 2rem;
-    }
+  .macro__top__text h2 {
+    font-size: 2rem;
+  }
 
-    .macro__top{
-        flex-direction: column;
-    }
+  .macro__top {
+    flex-direction: column;
+  }
 
-    .macroStats{
-        margin: auto;
-        margin-top: 30px;
-    }
+  .macroStats {
+    margin: auto;
+    margin-top: 30px;
+  }
 
-    .macro__bottom__DropDownRight{
-        width: 150px;
-        right: 3%;
-        padding: 0px;
-    }
+  .macro__bottom__DropDownRight {
+    width: 150px;
+    right: 3%;
+    padding: 0px;
+  }
 
-    .macro__bottom__DropDownLeft{
-        width: 150px;
-        left: 3%;
-        padding: 0px;
-    }
+  .macro__bottom__DropDownLeft {
+    width: 150px;
+    left: 3%;
+    padding: 0px;
+  }
 
-    .macrobench__Sidebar{
-        width: 35%;
-        border: #E77002 1px solid;
-        margin-top: 88px;
-        padding: 0px 7px;
-        border-radius: 10px;
-    }
+  .macrobench__Sidebar {
+    width: 35%;
+    border: #e77002 1px solid;
+    margin-top: 88px;
+    padding: 0px 7px;
+    border-radius: 10px;
+  }
 
-    .carousel__container{
-        width: 65%;
-        max-height: 770px;
-    }
+  .carousel__container {
+    width: 65%;
+    max-height: 770px;
+  }
 
-    .macro{
-        padding: 0px 5px;
-    }
+  .macro {
+    padding: 0px 5px;
+  }
 
-    .macrobench__Sidebar span{
-        font-size: 0.7rem;
-        min-height: 27px;
-        padding: 0px;
-        margin: 7px 0px;
-        display: flex;
-        justify-content: end;
-        align-items: center;
-    }
+  .macrobench__Sidebar span {
+    font-size: 0.7rem;
+    min-height: 27px;
+    padding: 0px;
+    margin: 7px 0px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+  }
 
-    .macro__bottom__DropDownContainer{
-        margin-bottom: 00px;
-    }
-  
+  .macro__bottom__DropDownContainer {
+    margin-bottom: 00px;
+  }
 }

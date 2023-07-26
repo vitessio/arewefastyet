@@ -16,7 +16,6 @@ limitations under the License.
 
 .status {
   padding: 0px 50px 50px 50px;
-  background-color: #1f1d1d;
   min-height: 100vh;
 }
 
@@ -36,9 +35,10 @@ limitations under the License.
 
 .status__top__text h2 {
   color: white;
-  font-size: 6rem;
+  font-size: 5rem;
   font-weight: 100;
   margin-bottom: 50px;
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -53,15 +53,15 @@ limitations under the License.
   height: 500px;
 }
 
+.status h3 {
+  font-size: 2rem;
+  font-weight: 200;
+  margin-bottom: 50px;
+  text-align: center;
+}
 .countUp__title {
   margin-bottom: 50px;
   font-size: 1.2rem;
-}
-.status h3 {
-  font-size: 3rem;
-  font-weight: 200;
-  margin-bottom: 100px;
-  text-align: center;
 }
 
 .hiddenDesktop {
@@ -112,14 +112,6 @@ limitations under the License.
   margin: 100px 0px;
 }
 
-.apiError {
-  height: 50vh;
-  color: #e77002;
-  margin-top: 200px;
-  text-align: center;
-  font-size: 3rem;
-}
-
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
   .status {
@@ -140,8 +132,30 @@ limitations under the License.
   .statusStats {
     text-align: center;
   }
-  .status__top {
-    flex-direction: column;
+
+  .grey--background {
+    background-color: #343a40;
+  }
+
+  /* EXECUTION QUEUE */
+
+  .queue {
+    color: white;
+    margin-bottom: 100px;
+    text-align: center;
+  }
+  .queue__top__line {
+    border: #b5adad 1px solid;
+    margin-top: 10px;
+  }
+  .queue__top {
+    justify-content: space-around;
+  }
+
+  /* SPINNER */
+
+  .loadingSpinner {
+    display: flex;
     justify-content: center;
   }
   .status__top__text {

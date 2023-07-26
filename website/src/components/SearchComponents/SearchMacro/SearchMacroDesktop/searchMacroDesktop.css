@@ -14,13 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.queue__data{
-    justify-content: space-around;
-    border-bottom: #B5ADAD 1px solid;
-    padding: 20px 3px;
-    align-items: center;
+.searchMAcro__desktop__data{
+    width: 100%;
+    text-align: center;
 }
 
-.sha{
-    min-width: 6em;
+.searchMAcro__desktop__data span{
+    height: 42.5px;
+    border-top: #B5ADAD 1px solid;
+    padding-top: 15px;
 }

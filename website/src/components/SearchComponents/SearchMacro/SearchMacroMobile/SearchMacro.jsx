@@ -16,7 +16,7 @@ limitations under the License.
 
 import React from 'react';
 
-import '../SearchMacro/searchMacro.css'
+import '../SearchMacroMobile/searchMacro.css'
 
 const SearchMacro = ({data}) => {
     const result = data[1] && Array.isArray(data[1]) && data[1].length > 0

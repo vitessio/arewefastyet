@@ -41,6 +41,7 @@ limitations under the License.
 
 .form__inputLeft{
     width: 40%;
+    max-width: 500px;
     padding: 20px 10px;
     font-size: 1.5rem;
     border: #E77002 solid 2px;
@@ -52,6 +53,7 @@ limitations under the License.
 
 .form__inputRight{
     width: 40%;
+    max-width: 500px;
     padding: 20px 10px;
     font-size: 1.5rem;
     border: #E77002 solid 2px;
@@ -76,9 +78,11 @@ limitations under the License.
 
 
 .compare__macrobench__Container{
+    margin: 0 auto;
     position: relative;
     z-index: 2;
     justify-content: center;
+    max-width: 1200px;
     
 }
 
@@ -89,8 +93,7 @@ limitations under the License.
 }
 
 .compare__macrobench__Sidebar{
-    background-color: rgb(117, 58, 3);;
-    padding: 0px 20px 0px 20px;
+    padding: 0px 0px 0px 20px;
     font-style: italic;
     border-top: #E77002 1px  solid;
     border-left: #E77002 1px  solid;
@@ -98,19 +101,19 @@ limitations under the License.
     border-radius: 10px 0px 0px 10px;
     text-align: end;
     width: 16%;
-    margin-top: 73px;
+    margin-top: 126.5px;
 
 }
 
 .compare__macrobench__Sidebar span{
-    padding: 13.25px 0px;
+    padding: 12px 10px 12px 0px;
     font-size: 0.8rem;
     font-weight: bold;
 }
 
 .compare__carousel__container{
     width: 70%;
-    max-height: 757px;
+    max-height: 768px;
 }
 
 .compare__micro__container{

@@ -24,10 +24,10 @@ import "../Search/search.css";
 import "swiper/css";
 import "swiper/css/pagination";
 
-import { errorApi } from "../../utils/Utils";
 import { Mousewheel, Pagination, Keyboard } from "swiper";
-import SearchMacro from "../../components/SearchComponents/SearchMacro/SearchMacro";
+import SearchMacro from "../../components/SearchComponents/SearchMacro/SearchMacroMobile/SearchMacro";
 import SearchMicro from "../../components/SearchComponents/SearchMicro/SearchMicro";
+import SearchMacroDesktop from "../../components/SearchComponents/SearchMacro/SearchMacroDesktop/SearchMacroDesktop";
 
 const Search = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -44,7 +44,7 @@ const Search = () => {
   } = useApiCall(`${import.meta.env.VITE_API_URL}search?git_ref=${gitRef}`, [
     isFormSubmitted,
   ]);
-
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +63,8 @@ const Search = () => {
   const handleSlideChange = (swiper) => {
     setCurrentSlideIndex(swiper.realIndex);
   };
+
+  const tableHeaders = dataSearch.Macros ? Object.keys(dataSearch.Macros) : [];
 
   return (
     <div className="search">
@@ -94,7 +96,7 @@ const Search = () => {
         </form>
       </div>
       {searchError ? (
-        <div className="macrobench__apiError">{searchError}</div>
+        <div className="apiError">{searchError}</div>
       ) : (
         <>
           {isSearchLoading ? (
@@ -141,7 +143,31 @@ const Search = () => {
                   <figure className="macrobench__Sidebar__line"></figure>
                   <span>Allocs bytes vttablet</span>
                 </div>
-                <div className="carousel__container">
+                <div className="searchMacro__desktop">
+                  
+                    <div className="searchMacro__desktop__header flex">
+                      {tableHeaders.map((header, index) => (
+                        <h3 key={index}>{header}</h3>
+                      ))}
+                    </div>
+                    <div className="flex searchMacro__desktop__tbody">
+                      {dataSearch.Macros &&
+                        typeof dataSearch.Macros === "object" &&
+                        Object.entries(dataSearch.Macros).map(function (
+                          searchMacro,
+                          index
+                        ) {
+                          return (
+                            <SearchMacroDesktop
+                              key={index}
+                              data={searchMacro}
+                            />
+                          );
+                        })}
+                    </div>
+                  
+                </div>
+                <div className="search__carousel__containerMobile hidden--desktop">
                   <Swiper
                     direction={"vertical"}
                     slidesPerView={1}
@@ -174,6 +200,8 @@ const Search = () => {
                 </div>
               </div>
               <div className="search__micro">
+              {dataSearch.Micro && typeof dataSearch.Micro === "object" && (
+                <>
                 <div className="micro__thead space--between">
                   <span className="width--12em">Package</span>
                   <span className="width--14em">Benchmark Name</span>
@@ -184,6 +212,8 @@ const Search = () => {
                   <span className="width--6em">More</span>
                 </div>
                 <figure className="micro__thead__line"></figure>
+                </>
+              )}
                 {dataSearch.Micro &&
                   typeof dataSearch.Micro === "object" &&
                   Object.entries(dataSearch.Micro).map(function (

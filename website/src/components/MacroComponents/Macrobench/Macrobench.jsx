@@ -20,11 +20,14 @@ import { formatByteForGB, fixed } from '../../../utils/Utils';
 
 import './macrobench.css'
 
-const Macrobench = ({data, gitRefLeft, gitRefRight, showSpan, commitHashLeft, commitHashRight}) => {
+const Macrobench = React.memo(({data, gitRefLeft, gitRefRight, showSpan, commitHashLeft, commitHashRight}) => {
     return (
         <div className='macrobench__component'>
+            <div className='macrobench__component__header'>
             <h3>{data.type}</h3>
-            {showSpan && <span className='linkQueryT'>Click <Link to="/macrobench/queries/compare" state={{data : data, commitHashLeft : commitHashLeft, commitHashRight : commitHashRight }}>here</Link> to see the query plans comparison for this benchmark.</span>}
+            <span className='linkQueryT'>Click <Link to="/macrobench/queries/compare" state={{data : data, commitHashLeft : commitHashLeft, commitHashRight : commitHashRight }}>here</Link> to see the query plans comparison for this benchmark.</span>
+            </div>
+            
             <table>
                 <thead>
                     <tr>
@@ -34,77 +37,77 @@ const Macrobench = ({data, gitRefLeft, gitRefRight, showSpan, commitHashLeft, co
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.qps.total}</span></td>
                         <td><span>{data.diff.Right.Result.qps.total}</span></td>
                         <td><span>{fixed(data.diff.Diff.qps.total, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.qps.reads}</span></td>
                         <td><span>{data.diff.Right.Result.qps.reads}</span></td>
                         <td><span>{fixed(data.diff.Diff.qps.reads, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.qps.writes}</span></td>
                         <td><span>{data.diff.Right.Result.qps.writes}</span></td>
                         <td><span>{fixed(data.diff.Diff.qps.writes, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.qps.other}</span></td>
                         <td><span>{data.diff.Right.Result.qps.other}</span></td>
                         <td><span>{fixed(data.diff.Diff.qps.other, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.tps}</span></td>
                         <td><span>{data.diff.Right.Result.tps}</span></td>
                         <td><span>{fixed(data.diff.Diff.tps, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.latency}</span></td>
                         <td><span>{data.diff.Right.Result.latency}</span></td>
                         <td><span>{fixed(data.diff.Diff.latency, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.errors}</span></td>
                         <td><span>{data.diff.Right.Result.errors}</span></td>
                         <td><span>{fixed(data.diff.Diff.errors, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.reconnects}</span></td>
                         <td><span>{data.diff.Right.Result.reconnects}</span></td>
                         <td><span>{fixed(data.diff.Diff.reconnects, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.time}</span></td>
                         <td><span>{data.diff.Right.Result.time}</span></td>
                         <td><span>{fixed(data.diff.Diff.time, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Result.threads}</span></td>
                         <td><span>{data.diff.Right.Result.threads}</span></td>
                         <td><span>{fixed(data.diff.Diff.threads, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0)}</span></td>
                         <td><span>{fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 0)}</span></td>
                         <td><span>{fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span></td>
                         <td><span>{data.diff.Right.Metrics.ComponentsCPUTime.vtgate}</span></td>
                         <td><span>{fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span></td>
                         <td><span>{data.diff.Right.Metrics.ComponentsCPUTime.vttablet}</span></td>
                         <td><span>{fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{formatByteForGB(data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes)}</span></td>
                         <td><span>{formatByteForGB(data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes)}</span></td>
                         <td><span>{fixed(data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes, 2)}</span></td>
                     </tr>
-                    <tr>
+                    <tr className='border--bottom'>
                         <td><span>{formatByteForGB(data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate)}</span></td>
                         <td><span>{formatByteForGB(data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate)}</span></td>
                         <td><span>{fixed(data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate, 2)}</span></td>
@@ -118,6 +121,6 @@ const Macrobench = ({data, gitRefLeft, gitRefRight, showSpan, commitHashLeft, co
             </table>
         </div>
     );
-};
+});
 
 export default Macrobench;

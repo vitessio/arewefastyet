@@ -49,12 +49,12 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
           </a>
         </span>
         <span className="width--40 hidden--tablet">{data.Title}</span>
-        <span className="width--20 hidden--tablet">{data.Author}</span>
+        <span className="width--20 hidden--tablet"><a target="blank" href={`https://github.com/${data.Author}`}>{data.Author}</a></span>
         <span className="width--10em hidden--mobile">
           {formatDate(data.CreatedAt)}
         </span>
         <span className="linkToCompare" onClick={() => handlePrInfo(data.ID)}>
-          Click to compare with main
+          Compare with base commit
         </span>
         <span className="hidden--desktop">
           <i className="fa-solid fa-circle-info" onClick={handleClick}></i>

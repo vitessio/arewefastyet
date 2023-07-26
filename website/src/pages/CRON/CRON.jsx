@@ -22,6 +22,7 @@ import { ResponsiveLine } from "@nivo/line";
 import "../CRON/cron.css";
 
 import { errorApi, formatByteForGB } from "../../utils/Utils";
+import ResponsiveChart from "../../components/CRONComponents/Chart/Chart";
 import CronSummary from "../../components/CRONComponents/CRONSummary/CronSummary";
 
 const CRON = () => {
@@ -106,6 +107,11 @@ const CRON = () => {
       id: "Writes",
       data: [],
     },
+
+    {
+      id: "Other",
+      data: [],
+    },
   ];
 
   const latencyData = [
@@ -172,6 +178,11 @@ const CRON = () => {
       y: item.Result.qps.writes,
     });
 
+    QPSData[3].data.push({
+      x: xValue,
+      y: item.Result.qps.other,
+    });
+
     // Latency Data
 
     latencyData[0].data.push({
@@ -214,6 +225,34 @@ const CRON = () => {
     });
   }
 
+  const allChartData = [
+    {
+      data: QPSData,
+      title: "QPS (Queries per second)",
+      colors: ["Yellow", "orange", "brown", "purple"],
+    },
+    {
+      data: TPSData,
+      title: "TPS (Transactions per second)",
+      colors: ["Yellow"],
+    },
+    {
+      data: latencyData,
+      title: "Latency (Milliseconds)",
+      colors: ["Yellow"],
+    },
+    {
+      data: CPUTimeData,
+      title: "CPU Time",
+      colors: ["Yellow", "orange", "brown"],
+    },
+    {
+      data: MemBytesData,
+      title: "Allocated Bytes",
+      colors: ["Yellow", "orange", "brown"],
+    },
+  ];
+
   return (
     <div className="cron">
       <div className="cron__top">
@@ -228,7 +267,7 @@ const CRON = () => {
       </div>
       <figure className="line"></figure>
       {error ? (
-        <div className="macrobench__apiError">{error}</div>
+        <div className="apiError">{error}</div>
       ) : isLoading ? (
         <div className="loadingSpinner">
           <RingLoader loading={isLoading} color="#E77002" size={300} />
@@ -242,8 +281,6 @@ const CRON = () => {
                   key={index}
                   data={cronSummary}
                   setBenchmarktype={setBenchmarktype}
-                  setIsLoading2={setIsLoadingChart}
-                  benchmarkType={benchmarkType}
                 />
               );
             })}
@@ -253,426 +290,19 @@ const CRON = () => {
             <div className="loadingSpinner">
               <RingLoader loading={isLoadingChart} color="#E77002" size={300} />
             </div>
-          ) : (
+          ) : benchmarkType !== "" ? (
             <div className="cron__container">
-              {QPSData[0].data.length > 0 && (
-                <>
-                  <h3>QPS (Queries per second)</h3>
-                  <div className="chart">
-                    <ResponsiveLine
-                      data={QPSData}
-                      height={450}
-                      colors={["Yellow", "orange", "brown"]}
-                      theme={{
-                        axis: {
-                          ticks: {
-                            text: {
-                              fontSize: "13px",
-                              fill: "white",
-                            },
-                          },
-                        },
-                        legends: {
-                          text: {
-                            fontSize: "14px",
-                            fill: "white",
-                          },
-                        },
-                      }}
-                      tooltip={({ point }) => (
-                        <div className="tooltip flex">
-                          <figure
-                            style={{ backgroundColor: point.serieColor }}
-                          ></figure>
-                          <div>x : {point.data.x}</div>
-                          <div>y : {point.data.y}</div>
-                        </div>
-                      )}
-                      areaBaselineValue={50}
-                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                      xScale={{ type: "point" }}
-                      yScale={{
-                        type: "linear",
-                        min: "0",
-                        max: "auto",
-                        reverse: false,
-                      }}
-                      yFormat=" >-.2f"
-                      axisTop={null}
-                      axisRight={null}
-                      pointSize={10}
-                      isInteractive={true}
-                      pointBorderWidth={2}
-                      pointBorderColor={{ from: "serieColor" }}
-                      pointLabelYOffset={-12}
-                      areaOpacity={0.1}
-                      useMesh={true}
-                      legends={[
-                        {
-                          anchor: "bottom-right",
-                          direction: "column",
-                          justify: false,
-                          translateX: 100,
-                          translateY: 0,
-                          itemsSpacing: 0,
-                          itemDirection: "left-to-right",
-                          itemWidth: 80,
-                          itemHeight: 20,
-                          itemOpacity: 0.75,
-                          symbolSize: 12,
-                          symbolShape: "circle",
-                          symbolBorderColor: "rgba(0, 0, 0, .5)",
-                          effects: [
-                            {
-                              on: "hover",
-                              style: {
-                                itemBackground: "rgba(0, 0, 0, .03)",
-                                itemOpacity: 1,
-                              },
-                            },
-                          ],
-                        },
-                      ]}
-                    />
-                  </div>
-                </>
-              )}
-              {TPSData[0].data.length > 0 && (
-                <>
-                  <h3 className="chart__title">
-                    TPS (Transactions per second)
-                  </h3>
-                  <div className="chart">
-                    <ResponsiveLine
-                      data={TPSData}
-                      height={400}
-                      colors={["#E77002"]}
-                      theme={{
-                        axis: {
-                          ticks: {
-                            text: {
-                              fontSize: "13px",
-                              fill: "white",
-                            },
-                          },
-                        },
-                        legends: {
-                          text: {
-                            fontSize: "14px",
-                            fill: "white",
-                          },
-                        },
-                      }}
-                      tooltip={({ point }) => (
-                        <div className="tooltip flex">
-                          <figure
-                            style={{ backgroundColor: point.serieColor }}
-                          ></figure>
-                          <div>x : {point.data.x}</div>
-                          <div>y : {point.data.y}</div>
-                        </div>
-                      )}
-                      areaBaselineValue={50}
-                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                      xScale={{ type: "point" }}
-                      yScale={{
-                        type: "linear",
-                        min: "0",
-                        max: "auto",
-                        stacked: true,
-                        reverse: false,
-                      }}
-                      yFormat=" >-.2f"
-                      axisTop={null}
-                      axisRight={null}
-                      pointSize={10}
-                      isInteractive={true}
-                      pointBorderWidth={2}
-                      pointBorderColor={{ from: "serieColor" }}
-                      pointLabelYOffset={-12}
-                      areaOpacity={0.1}
-                      useMesh={true}
-                      legends={[
-                        {
-                          anchor: "bottom-right",
-                          direction: "column",
-                          justify: false,
-                          translateX: 100,
-                          translateY: 0,
-                          itemsSpacing: 0,
-                          itemDirection: "left-to-right",
-                          itemWidth: 80,
-                          itemHeight: 20,
-                          itemOpacity: 0.75,
-                          symbolSize: 12,
-                          symbolShape: "circle",
-                          symbolBorderColor: "rgba(0, 0, 0, .5)",
-                          effects: [
-                            {
-                              on: "hover",
-                              style: {
-                                itemBackground: "rgba(0, 0, 0, .03)",
-                                itemOpacity: 1,
-                              },
-                            },
-                          ],
-                        },
-                      ]}
-                    />
-                  </div>
-                </>
-              )}
-
-              {latencyData[0].data.length > 0 && (
-                <>
-                  <h3 className="chart__title">Latency (Milliseconds)</h3>
-                  <div className="chart">
-                    <ResponsiveLine
-                      data={latencyData}
-                      height={400}
-                      theme={{
-                        axis: {
-                          ticks: {
-                            text: {
-                              fontSize: "13px",
-                              fill: "white",
-                            },
-                          },
-                        },
-                        legends: {
-                          text: {
-                            fontSize: "14px",
-                            fill: "white",
-                          },
-                        },
-                      }}
-                      tooltip={({ point }) => (
-                        <div className="tooltip flex">
-                          <figure
-                            style={{ backgroundColor: point.serieColor }}
-                          ></figure>
-                          <div>x : {point.data.x}</div>
-                          <div>y : {point.data.y}</div>
-                        </div>
-                      )}
-                      colors={["#E77002"]}
-                      areaBaselineValue={50}
-                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                      xScale={{ type: "point" }}
-                      yScale={{
-                        type: "linear",
-                        min: "0",
-                        max: "auto",
-                        stacked: true,
-                        reverse: false,
-                      }}
-                      yFormat=" >-.2f"
-                      axisTop={null}
-                      axisRight={null}
-                      pointSize={10}
-                      isInteractive={true}
-                      pointBorderWidth={2}
-                      pointBorderColor={{ from: "serieColor" }}
-                      pointLabelYOffset={-12}
-                      areaOpacity={0.1}
-                      useMesh={true}
-                      legends={[
-                        {
-                          anchor: "bottom-right",
-                          direction: "column",
-                          justify: false,
-                          translateX: 100,
-                          translateY: 0,
-                          itemsSpacing: 0,
-                          itemDirection: "left-to-right",
-                          itemWidth: 80,
-                          itemHeight: 20,
-                          itemOpacity: 0.75,
-                          symbolSize: 12,
-                          symbolShape: "circle",
-                          symbolBorderColor: "rgba(0, 0, 0, .5)",
-                          effects: [
-                            {
-                              on: "hover",
-                              style: {
-                                itemBackground: "rgba(0, 0, 0, .03)",
-                                itemOpacity: 1,
-                              },
-                            },
-                          ],
-                        },
-                      ]}
-                    />
-                  </div>
-                </>
-              )}
-
-              {CPUTimeData[0].data.length > 0 && (
-                <>
-                  <h3 className="chart__title">CPU Time</h3>
-                  <div className="chart">
-                    <ResponsiveLine
-                      data={CPUTimeData}
-                      height={400}
-                      colors={["Yellow", "orange", "brown"]}
-                      theme={{
-                        axis: {
-                          ticks: {
-                            text: {
-                              fontSize: "13px",
-                              fill: "white",
-                            },
-                          },
-                        },
-                        legends: {
-                          text: {
-                            fontSize: "14px",
-                            fill: "white",
-                          },
-                        },
-                      }}
-                      tooltip={({ point }) => (
-                        <div className="tooltip flex">
-                          <figure
-                            style={{ backgroundColor: point.serieColor }}
-                          ></figure>
-                          <div>x : {point.data.x}</div>
-                          <div>y : {point.data.y}</div>
-                        </div>
-                      )}
-                      areaBaselineValue={50}
-                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                      xScale={{ type: "point" }}
-                      yScale={{
-                        type: "linear",
-                        min: "0",
-                        max: "auto",
-                        reverse: false,
-                      }}
-                      yFormat=" >-.2f"
-                      axisTop={null}
-                      axisRight={null}
-                      pointSize={10}
-                      isInteractive={true}
-                      pointBorderWidth={2}
-                      pointBorderColor={{ from: "serieColor" }}
-                      pointLabelYOffset={-12}
-                      areaOpacity={0.1}
-                      useMesh={true}
-                      legends={[
-                        {
-                          anchor: "bottom-right",
-                          direction: "column",
-                          justify: false,
-                          translateX: 100,
-                          translateY: 0,
-                          itemsSpacing: 0,
-                          itemDirection: "left-to-right",
-                          itemWidth: 80,
-                          itemHeight: 20,
-                          itemOpacity: 0.75,
-                          symbolSize: 12,
-                          symbolShape: "circle",
-                          symbolBorderColor: "rgba(0, 0, 0, .5)",
-                          effects: [
-                            {
-                              on: "hover",
-                              style: {
-                                itemBackground: "rgba(0, 0, 0, .03)",
-                                itemOpacity: 1,
-                              },
-                            },
-                          ],
-                        },
-                      ]}
-                    />
-                  </div>
-                </>
-              )}
-              {MemBytesData[0].data.length > 0 && (
-                <>
-                  <h3 className="chart__title">Allocated Bytes</h3>
-                  <div className="chart">
-                    <ResponsiveLine
-                      data={MemBytesData}
-                      height={400}
-                      colors={["Yellow", "orange", "brown"]}
-                      theme={{
-                        axis: {
-                          ticks: {
-                            text: {
-                              fontSize: "13px",
-                              fill: "white",
-                            },
-                          },
-                        },
-                        legends: {
-                          text: {
-                            fontSize: "14px",
-                            fill: "white",
-                          },
-                        },
-                      }}
-                      tooltip={({ point }) => (
-                        <div className="tooltip flex">
-                          <figure
-                            style={{ backgroundColor: point.serieColor }}
-                          ></figure>
-                          <div>x : {point.data.x}</div>
-                          <div>y : {point.data.y}</div>
-                        </div>
-                      )}
-                      areaBaselineValue={50}
-                      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-                      xScale={{ type: "point" }}
-                      yScale={{
-                        type: "linear",
-                        min: "0",
-                        max: "auto",
-                        reverse: false,
-                      }}
-                      yFormat=" >-.2f"
-                      axisTop={null}
-                      axisRight={null}
-                      pointSize={10}
-                      isInteractive={true}
-                      pointBorderWidth={2}
-                      pointBorderColor={{ from: "serieColor" }}
-                      pointLabelYOffset={-12}
-                      areaOpacity={0.1}
-                      useMesh={true}
-                      legends={[
-                        {
-                          anchor: "bottom-right",
-                          direction: "column",
-                          justify: false,
-                          translateX: 100,
-                          translateY: 0,
-                          itemsSpacing: 0,
-                          itemDirection: "left-to-right",
-                          itemWidth: 80,
-                          itemHeight: 20,
-                          itemOpacity: 0.75,
-                          symbolSize: 12,
-                          symbolShape: "circle",
-                          symbolBorderColor: "rgba(0, 0, 0, .5)",
-                          effects: [
-                            {
-                              on: "hover",
-                              style: {
-                                itemBackground: "rgba(0, 0, 0, .03)",
-                                itemOpacity: 1,
-                              },
-                            },
-                          ],
-                        },
-                      ]}
-                    />
-                  </div>
-                </>
-              )}
+              {allChartData.map((chartData, index) => (
+                <ResponsiveChart
+                  key={index}
+                  data={chartData.data}
+                  title={chartData.title}
+                  colors={chartData.colors}
+                  isFirstChart={index === 0}
+                />
+              ))}
             </div>
-          )}
+          ) : null}
         </>
       )}
     </div>
