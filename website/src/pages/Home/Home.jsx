@@ -40,7 +40,7 @@ const Home = () => {
           </span>
         </div>
         <img
-          src={isColorChanged ? homeLogoDark : homeLogoLight}
+          src={isColorChanged ? homeLogoLight : homeLogoDark }
           alt="logo"
           className="home__top__logo"
         />

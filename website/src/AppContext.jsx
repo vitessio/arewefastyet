@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// AppProvider.js
-
 import React, { createContext, useState, useEffect } from "react";
 
 const AppContext = createContext();
@@ -51,9 +49,10 @@ const AppProvider = ({ children }) => {
   const handleButtonClick = () => {
     if (isColorChanged) {
       applyLightTheme();
-      localStorage.setItem("theme", "light");
+      localStorage.setItem("theme", "light"); 
+    } else {
       applyDarkTheme();
-      localStorage.setItem("theme", "dark");
+      localStorage.setItem("theme", "dark"); 
     }
   };
 
@@ -65,3 +64,4 @@ const AppProvider = ({ children }) => {
 };
 
 export { AppContext, AppProvider };
+

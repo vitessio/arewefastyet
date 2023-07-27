@@ -55,12 +55,6 @@ limitations under the License.
   position: relative;
 }
 
-.macro__bottom h3 {
-  text-align: center;
-  font-size: 2rem;
-  padding: 0px 50px;
-}
-
 .macro__bottom__DropDownContainer {
   position: relative;
   width: 100%;
@@ -77,7 +71,6 @@ limitations under the License.
   border: var(--accent-color) solid 1px;
   border-radius: 15px;
   width: 200px;
-  padding: 0px 15px;
   text-align: center;
   align-items: center;
   overflow: hidden;
@@ -90,7 +83,7 @@ limitations under the License.
 }
 
 .DropDown__Base {
-  padding: 15px;
+  padding: 19px 0px 0px 0px;
   padding-bottom: 30px;
   width: 100%;
   font-size: 1rem;
@@ -113,7 +106,7 @@ limitations under the License.
 }
 
 .dropDown__ref:hover {
-  background-color: var(--background-color);;
+  background-color: var(--primary-color);;
 }
 
 .macro__bottom__DropDownRight {
@@ -123,7 +116,6 @@ limitations under the License.
   background-color: var(--dropDown-color);
   border-radius: 15px;
   width: 200px;
-  padding: 0px 15px;
   text-align: center;
   align-items: center;
   overflow: hidden;
@@ -188,8 +180,8 @@ limitations under the License.
 }
 
 .carousel__container {
-  width: 70%;
-  max-height: 769px;
+  width: 90%;
+
 }
 
 /* MEDIA QUERIES FOR TABLETS */

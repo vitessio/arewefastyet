@@ -22,35 +22,9 @@ limitations under the License.
   margin: auto;
 }
 
-/* SEARCH TOP */
-.search__top {
-  margin-top: 100px;
+.research{
+  margin-top: 200px;
 }
-
-.search__top__text {
-  width: 50%;
-  margin-right: 200px;
-}
-
-.search__top__text h2 {
-  font-size: 5rem;
-  font-weight: 100;
-  margin-bottom: 50px;
-  margin-top: 20px;
-  width: 100%;
-}
-
-.search__top__text span {
-  width: 60%;
-  line-height: 40px;
-}
-
-.searchStats {
-  border: solid 2px white;
-  width: 400px;
-}
-
-/*SEARCH BOTTOM*/
 
 .research form {
   width: 100%;
@@ -65,6 +39,7 @@ limitations under the License.
   box-shadow: #e77002 2px 2px 10px;
   color: white;
   background-color: var(--background-color);
+  max-width: 1000px;
 }
 
 .research__input:focus {
