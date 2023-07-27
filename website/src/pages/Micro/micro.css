@@ -63,7 +63,7 @@ limitations under the License.
   left: 0%;
   top: 60%;
   margin: -20px 10px 0px 10px;
-  background-color: var(--accent-color);
+  background-color: var(--dropDown-color);
   border: var(--accent-color) solid 1px;
   border-radius: 15px;
   text-align: center;
@@ -77,12 +77,13 @@ limitations under the License.
 }
 
 .micro__bottom__DropDownRight {
+  color: white;
   position: absolute;
   right: 0%;
   top: 60%;
   margin: -20px 10px 0px 10px;
   border: var(--accent-color) solid 1px;
-  background-color: white;
+  background-color: var(--dropDown-color);
   border-radius: 15px;
   text-align: center;
   align-items: center;

@@ -25,7 +25,6 @@ limitations under the License.
 }
 
 .pr__top h2 {
-  color: white;
   font-size: 5rem;
   font-weight: 100;
   margin: 20px 0px 50px 30px;
@@ -33,7 +32,6 @@ limitations under the License.
 }
 
 .pr__top span {
-  color: #b5adad;
   width: 50%;
   line-height: 40px;
   margin-left: 30px;
@@ -41,22 +39,16 @@ limitations under the License.
 
 .pr__container {
   flex-direction: column;
-  color: white;
-}
-
-.gray-background {
-  background-color: #343a40;
 }
 
 .pr__sidebar {
-  color: white;
   width: 100%;
   padding: 30px 0px;
   font-size: 1.1rem;
   display: flex;
   justify-content: space-around;
   text-align: center;
-  border-bottom: 2px solid white;
+  border-bottom: 2px solid #B5ADAD;
   
   margin-top: 100px;
 }
@@ -89,6 +81,8 @@ limitations under the License.
 
   .pr__top {
     text-align: center;
+    justify-content: center;
+    align-items: center;
   }
 
   .pr__top span {

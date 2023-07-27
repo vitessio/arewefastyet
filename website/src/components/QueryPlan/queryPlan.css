@@ -109,7 +109,7 @@ limitations under the License.
     background-color: red;
     margin: 20px 0px;
     font-size: 1.2rem;
-    color: var(--background-color);
+    color: var(--font-color);
 }
 
 /* BADGE */
@@ -124,7 +124,7 @@ limitations under the License.
     padding: 5px 10px;
     width: 25%;
     border-radius: 20px;
-    color: var(--background-color);
+    color: var(--font-color);
 }
 
 .badge--danger{

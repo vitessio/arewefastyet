@@ -14,14 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import React, { useContext } from "react";
+import { AppContext } from "../../AppContext";
 
-import logo from "../../assets/logo.png";
-import homeLogo from "../../assets/homeLogoLarge2.png";
+import homeLogoDark from "../../assets/homeLogoLarge.png";
+import homeLogoLight from "../../assets/homeLogoLarge2.png";
 
 import "./home.css";
 
 const Home = () => {
+  const { isColorChanged } = useContext(AppContext);
+
   return (
     <div className="home">
       <article className="home__top justify--content">
@@ -36,7 +39,11 @@ const Home = () => {
             volutpat.
           </span>
         </div>
-        <img src={homeLogo} alt="logo" className="home__top__logo" />
+        <img
+          src={isColorChanged ? homeLogoDark : homeLogoLight}
+          alt="logo"
+          className="home__top__logo"
+        />
       </article>
       <figure className="line"></figure>
       <article className="home__bottom">

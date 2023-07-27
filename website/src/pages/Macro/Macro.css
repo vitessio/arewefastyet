@@ -68,9 +68,9 @@ limitations under the License.
 }
 
 .macro__bottom__DropDownLeft {
-  color: var(--background-color);
+  color: white;
   position: absolute;
-  background-color: var(--accent-color);
+  background-color: var(--dropDown-color);
   border: var(--accent-color) solid 1px;
   border-radius: 15px;
   width: 200px;
@@ -100,7 +100,7 @@ limitations under the License.
 }
 
 .dropDown--line {
-  border:var(--background-color) 1px solid;
+  border:white 1px solid;
   width: 90%;
 }
 
@@ -114,10 +114,10 @@ limitations under the License.
 }
 
 .macro__bottom__DropDownRight {
-  color: var(--background-color);
+  color: white;
   position: absolute;
   border: var(--accent-color) solid 1px;
-  background-color: var(--accent-color);
+  background-color: var(--dropDown-color);
   border-radius: 15px;
   width: 200px;
   padding: 0px 15px;
@@ -200,7 +200,6 @@ limitations under the License.
   }
 
   .macroStats {
-    border: solid 2px white;
     width: 300px;
     height: 300px;
     margin-top: 100px;

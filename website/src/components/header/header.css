@@ -111,6 +111,30 @@ limitations under the License.
   visibility: hidden;
 }
 
+.buttonMode{
+  margin-left: 10px;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 5px;
+  cursor: pointer;
+  min-width: 30px;
+  min-height: 30px;
+  background-color: var(--background-color);
+  color: var(--font-color);
+}
+
+.buttonModeDark{
+  color: white;
+  background-color: 1F1D1D;
+}
+
+.buttonModeLight{
+  color: black;
+  background-color: 1F1D1D;
+}
+
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
   .header nav {

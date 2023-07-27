@@ -107,6 +107,12 @@ limitations under the License.
   .status {
     padding: 0px 20px 50px 20px;
   }
+  .status__top{
+    flex-direction: column;
+  }
+  .status__top__text{
+    height: 300px;
+  }
   .status__top__text h2 {
     font-size: 4rem;
   }
@@ -161,5 +167,8 @@ limitations under the License.
 @media only screen and (max-width: 767px) {
   .hiddenMobile {
     display: none;
+  }
+  .status__top__text{
+    height: 500px;
   }
 }
