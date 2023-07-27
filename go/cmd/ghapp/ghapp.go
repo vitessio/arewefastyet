@@ -19,6 +19,8 @@
 package ghapp
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/tools/github"
 )
@@ -31,6 +33,7 @@ func GHAppCmd() *cobra.Command {
 		Short: "Starts the arewefastyet GitHub bot",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := ghApp.Init(); err != nil {
+				log.Println("Error:", err.Error())
 				return err
 			}
 			return ghApp.Run()
