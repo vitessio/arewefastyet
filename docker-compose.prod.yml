@@ -54,7 +54,6 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
-      - "traefik.http.routers.ghapp.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
