@@ -54,10 +54,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.ghapp.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-      - "traefik.http.services.api.loadbalancer.server.port=8181"
     network_mode: bridge
 
   ghapp:
@@ -74,7 +74,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ghapp.rule=Host(`benchmark.vitess.io`)"
       - "traefik.http.routers.ghapp.rule=PathPrefix(`/ghapp`)"
-      - "traefik.http.routers.ghapp.entrypoints=http"
+      - "traefik.http.routers.api.entrypoints=https"
+      - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
     network_mode: bridge
 
