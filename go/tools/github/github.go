@@ -41,6 +41,8 @@ type App struct {
 	installationID int
 
 	client *github.Client
+	cc     githubapp.ClientCreator
+	logger zerolog.Logger
 }
 
 const (
@@ -51,19 +53,42 @@ const (
 	flagInstallationID = "gh-installation-id"
 )
 
-// AddToCommand ...
+// AddToCommand adds the GitHub App flags to Cobra
 func (a *App) AddToCommand(cmd *cobra.Command) {
-	cmd.Flags().IntVar(&a.appID, flagAppID, 0, "xxx")
-	cmd.Flags().StringVar(&a.webHookSecret, flagWebHookSecret, "", "xxx")
-	cmd.Flags().StringVar(&a.secretKey, flagSecretKey, "", "xxx")
-	cmd.Flags().StringVar(&a.port, flagPort, "8181", "xxx")
-	cmd.Flags().IntVar(&a.installationID, flagInstallationID, 0, "xxx")
+	cmd.Flags().IntVar(&a.appID, flagAppID, 0, "ID of the GitHub App")
+	cmd.Flags().StringVar(&a.webHookSecret, flagWebHookSecret, "", "Secrets used to verify the webhooks")
+	cmd.Flags().StringVar(&a.secretKey, flagSecretKey, "", "Secret key used to authenticate")
+	cmd.Flags().StringVar(&a.port, flagPort, "8181", "Port on which to run the github app")
+	cmd.Flags().IntVar(&a.installationID, flagInstallationID, 0, "GitHub installation ID of this app")
 
 	_ = viper.BindPFlag(flagAppID, cmd.Flags().Lookup(flagAppID))
 	_ = viper.BindPFlag(flagWebHookSecret, cmd.Flags().Lookup(flagWebHookSecret))
 	_ = viper.BindPFlag(flagSecretKey, cmd.Flags().Lookup(flagSecretKey))
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagInstallationID, cmd.Flags().Lookup(flagInstallationID))
+}
+
+func (a *App) Run() error {
+	prHandler := pullRequestHandler{
+		ClientCreator: a.cc,
+	}
+
+	webhookHandler := githubapp.NewEventDispatcher(
+		[]githubapp.EventHandler{prHandler},
+		a.webHookSecret,
+		githubapp.WithScheduler(
+			githubapp.AsyncScheduler(),
+		),
+	)
+
+	http.Handle("/ghapp"+githubapp.DefaultWebhookRoute, webhookHandler)
+
+	a.logger.Info().Msg("server running")
+	err := http.ListenAndServe(":"+a.port, webhookHandler)
+	if err != nil {
+		a.logger.Error().Err(err).Msg("failed to start server")
+	}
+	return err
 }
 
 func (a *App) Init() error {
@@ -85,6 +110,8 @@ func (a *App) Init() error {
 	logger := zerolog.New(os.Stdout).With().Timestamp().Logger()
 	zerolog.DefaultContextLogger = &logger
 
+	a.logger = logger
+
 	metricsRegistry := metrics.DefaultRegistry
 
 	clientCreator, err := githubapp.NewDefaultCachingClientCreator(
@@ -99,34 +126,13 @@ func (a *App) Init() error {
 	if err != nil {
 		return err
 	}
+	a.cc = clientCreator
 
 	client, err := clientCreator.NewInstallationClient(int64(a.installationID))
 	if err != nil {
 		return err
 	}
 	a.client = client
-
-	go func() {
-		prHandler := pullRequestHandler{
-			ClientCreator: clientCreator,
-		}
-
-		webhookHandler := githubapp.NewEventDispatcher(
-			[]githubapp.EventHandler{prHandler},
-			config.App.WebhookSecret,
-			githubapp.WithScheduler(
-				githubapp.AsyncScheduler(),
-			),
-		)
-
-		http.Handle(githubapp.DefaultWebhookRoute, webhookHandler)
-
-		err = http.ListenAndServe(":"+a.port, webhookHandler)
-		if err != nil {
-			logger.Error().Err(err).Msg("failed to start server")
-		}
-	}()
-
 	return nil
 }
 
