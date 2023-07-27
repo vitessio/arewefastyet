@@ -24,12 +24,14 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.https.address=:443"
       - "--entrypoints.https-frontend.address=:8000"
+      - "--entrypoints.https-frontend.address=:8181"
       - "--certificatesresolvers.tlsresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.tlsresolver.acme.email=cncf-vitess-project@cncf.io"
       - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
       - "8000:8000"
+      - "8181:8181"
     volumes:
       - "/var/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -73,7 +75,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ghapp.rule=Host(`benchmark.vitess.io`)"
       - "traefik.http.routers.ghapp.rule=PathPrefix(`/ghapp`)"
-      - "traefik.http.routers.ghapp.entrypoints=https"
+      - "traefik.http.routers.ghapp.entrypoints=https-ghapp"
       - "traefik.http.routers.ghapp.tls.certresolver=tlsresolver"
       - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
     network_mode: bridge
