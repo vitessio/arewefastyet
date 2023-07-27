@@ -76,6 +76,7 @@ const Header = () => {
 
   return (
     <div className={`header flex ${visible ? "visible" : "hidden"}`}>
+      <div className="header__container flex">
       <div className="logo__container">
         <img src={logo} alt="logo" />
         <span className="hiddenResponsiveMobile">Benchmark</span>
@@ -128,6 +129,7 @@ const Header = () => {
           <figure className="lineMenuBottom"></figure>
         </figure>
       )}
+      </div>
     </div>
   );
 };

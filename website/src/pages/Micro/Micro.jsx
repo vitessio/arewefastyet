@@ -108,7 +108,7 @@ const Micro = () => {
       <div className="micro__top justify--content">
         <div className="micro__top__text">
           <h2>Compare Microbenchmarks</h2>
-          <div className="micro__bottom__title justify--content">
+          <div className="micro__bottom__DropDownCointainer justify--content">
             <figure
               className="micro__bottom__DropDownLeft flex--column"
               style={{ maxHeight: `${openDropDownLeft}px` }}

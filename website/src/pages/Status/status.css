@@ -17,6 +17,9 @@ limitations under the License.
 .status {
   padding: 0px 50px 50px 50px;
   min-height: 100vh;
+  max-width: 1500px;
+  min-height: 100vh;
+  margin: auto;
 }
 
 /*STATUS TOP*/

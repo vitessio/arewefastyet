@@ -18,6 +18,7 @@ limitations under the License.
   padding: 0px 20px 0px 20px;
   position: relative;
   min-height: 100vh;
+  margin: auto;
 }
 
 /* MICRO TOP */
@@ -27,9 +28,8 @@ limitations under the License.
 
 .micro__top__text {
   width: 50%;
-  margin-right: 20px;
+  margin-right: 200px;
   position: relative;
-  max-width: 550px;
 }
 
 .micro__top__text h2 {
@@ -51,17 +51,20 @@ limitations under the License.
   position: relative;
 }
 
-.micro__bottom__title {
-  flex-wrap: wrap;
-  margin-bottom: 200px;
-  max-width: 50px;
+.micro__bottom__DropDownCointainer{
+  position: relative;
+  width: 100%;
+  height: 200px;
+  z-index: 1;
+  justify-content: space-between;
+  max-width: 550px;
 }
 
 .micro__bottom__DropDownLeft {
   color: white;
   position: absolute;
   left: 0%;
-  top: 60%;
+  top: 30px;
   margin: -20px 10px 0px 10px;
   background-color: var(--dropDown-color);
   border: var(--accent-color) solid 1px;
@@ -80,7 +83,7 @@ limitations under the License.
   color: white;
   position: absolute;
   right: 0%;
-  top: 60%;
+  top: 30px;
   margin: -20px 10px 0px 10px;
   border: var(--accent-color) solid 1px;
   background-color: var(--dropDown-color);

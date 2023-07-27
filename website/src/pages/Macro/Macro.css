@@ -17,7 +17,9 @@ limitations under the License.
 .macro {
   padding: 0px 20px 0px 20px;
   position: relative;
-  height: 100%;
+  min-height: 100vh;
+  max-width: 1500px;
+  margin: auto;
 }
 
 /* MACRO TOP */
@@ -33,7 +35,7 @@ limitations under the License.
 }
 
 .macro__top__text h2 {
-  font-size: 5rem;
+  font-size: 4rem;
   font-weight: 100;
   margin-bottom: 50px;
   margin-top: 20px;
@@ -65,6 +67,7 @@ limitations under the License.
   height: 200px;
   z-index: 1;
   justify-content: space-between;
+  max-width: 550px;
 }
 
 .macro__bottom__DropDownLeft {

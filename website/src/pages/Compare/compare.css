@@ -18,6 +18,8 @@ limitations under the License.
     padding: 0px 20px 0px 20px;
     position: relative;
     min-height: 100vh;
+    max-width: 1500px;
+    margin: auto;
 }
 
 .compare__top{

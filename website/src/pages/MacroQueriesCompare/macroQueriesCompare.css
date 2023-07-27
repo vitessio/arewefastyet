@@ -17,7 +17,9 @@ limitations under the License.
 .query{
     padding: 0px 20px 0px 20px;
     position: relative;
-    height: 100%;
+    max-width: 1500px;
+    min-height: 100vh;
+    margin: auto;
 }
 
 .query__top{
