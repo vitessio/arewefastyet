@@ -128,6 +128,8 @@ limitations under the License.
   min-height: 30px;
   background-color: var(--background-color);
   color: var(--font-color);
+  max-height: 30px;
+  max-width: 30px;
 }
 
 .buttonModeDark{

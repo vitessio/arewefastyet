@@ -96,7 +96,7 @@ limitations under the License.
 }
 
 .dropDown--line {
-  border:white 1px solid;
+  border: white 1px solid;
   width: 90%;
 }
 
@@ -106,7 +106,7 @@ limitations under the License.
 }
 
 .dropDown__ref:hover {
-  background-color: var(--primary-color);;
+  background-color: var(--primary-color);
 }
 
 .macro__bottom__DropDownRight {
@@ -137,7 +137,7 @@ limitations under the License.
   max-width: 1200px;
 }
 .macrobench__Sidebar {
-  background-color: var(--background-color);;
+  background-color: var(--background-color);
   padding: 0px 0px 0px 20px;
   font-style: italic;
   border-top: #e77002 1px solid;
@@ -181,7 +181,6 @@ limitations under the License.
 
 .carousel__container {
   width: 90%;
-
 }
 
 /* MEDIA QUERIES FOR TABLETS */
@@ -246,14 +245,15 @@ limitations under the License.
   .macrobench__Sidebar {
     width: 35%;
     border: #e77002 1px solid;
+    border-left: 0px;
+    border-bottom: 0px;
     margin-top: 88px;
     padding: 0px 7px;
-    border-radius: 10px;
+    border-radius: 0px 10px 10px 10px;
   }
 
   .carousel__container {
-    width: 65%;
-    max-height: 770px;
+    width: 100%;
   }
 
   .macro {

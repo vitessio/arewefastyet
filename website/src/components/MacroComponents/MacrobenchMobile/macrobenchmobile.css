@@ -14,84 +14,95 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.macrobench__mobile h3{
-    font-size: 1.4rem;
-    font-weight: 200;
-    text-align: start;
+.macrobench__mobile h3 {
+  font-size: 1.4rem;
+  font-weight: 200;
+  text-align: start;
 }
 
-.macrobench__mobile h4{
-    padding: 10px 0px;
+.macrobench__mobile h4 {
+  padding: 10px 0px;
 }
 
-.macrobench__mobile{
-    display: none;
-    position: relative;
-    
+.macrobench__mobile {
+  display: none;
+  position: relative;
 }
 
-.macrobench__data{
-    width: 33%;
-    text-align: center;
-    
+.macrobench__data {
+  width: 33%;
+  text-align: center;
 }
 
-.macrobench__data span{
-    position: relative;
-    font-size: 1.1rem;
-    font-weight: 400;
-    padding: 15px 0px 5px 0px;
-    border-bottom: solid 1px #B5ADAD;
+.macrobench__mobile__header {
+  border: #e77002 1px solid;
+  border-radius: 10px 10px 0px 0px;
+  padding: 10px;
+}
+
+.macrobench__data span {
+  position: relative;
+  font-size: 1.1rem;
+  font-weight: 400;
+  padding: 15px 0px 5px 0px;
+  border-bottom: solid 1px #b5adad;
+  background-color: var(--background-color);
+  z-index: 1;
+  min-height: 42px;
+}
+
+#borderNone {
+  border-bottom: none;
+}
+
+.linkQuery {
+  font-size: 14px;
+  background: none;
+  width: 100%;
+}
+
+.macrobench__component__container {
+  margin-top: 31px;
+  width: 70%;
+  overflow: hidden;
+}
+
+.macrobenchMobile__container {
+  width: 100%;
+  border: #e77002 1px solid;
+  border-radius: 0px 0px 10px 10px;
+  margin-bottom: 50px;
+}
+
+@media only screen and (max-width: 767px) {
+  .macrobench__mobile {
+    display: contents;
+    border: #e77002 1px solid;
+  }
+
+  .macrobench__mobile h3 {
+    padding: 0px;
+    margin-top: 5px;
+  }
+
+  .macrobench__data {
+    border-radius: 10px;
+  }
+
+  .macrobench__data {
+    width: 60%;
+    margin-left: 20px;
+    margin-top: 20px;
+  }
+
+  .macrobench__data h4 {
     background-color: var(--background-color);
-    z-index: 1;
-}
+    border: #e77002 1px solid;
+    border-radius: 10px 10px 0px 0px;
+    font-size: 0.85rem;
+  }
 
-.linkQuery{
-    font-size: 14px;
-    background: none;
-    width: 100%;
-}
-
-.macrobench__mobile__header{
-    position: absolute;
-}
-
-.macrobench__component__container{
-    margin-top: 31px;
-}
-
-
-@media only screen and (max-width: 767px){
-    .macrobench__mobile{
-        display: contents;
-        
-    }
-
-    .macrobench__mobile h3{
-        padding: 0px;
-        margin-top: 5px;
-        
-    }
-
-    .macrobench__data{
-        border-radius: 10px;
-    }
-
-    .macrobench__data{
-        width: 60%;
-        margin-left: 20px;
-        margin-top: 20px;
-        
-    }
-
-    .macrobench__data h4{
-        background-color: var(--background-color);
-        border: #E77002 1px solid;
-        border-radius: 10px 10px 0px 0px;
-        font-size: 0.85rem;
-    }
-
-    .linkQuery{
-        top: 4%;
-    }
+  .linkQuery {
+    top: 4%;
+  }
 }

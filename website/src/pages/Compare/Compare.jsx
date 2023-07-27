@@ -142,80 +142,28 @@ const Compare = () => {
           <>
             <h3 className="compare__macrobench__title">Macro Benchmarks</h3>
             <div className="compare__macrobench__Container flex">
-              <div className="compare__macrobench__Sidebar flex--column">
-                <span>QPS Total</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>QPS Reads</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>QPS Writes</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>QPS Other</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>TPS</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Latency</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Errors</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Reconnects</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Time</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Threads</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Total CPU time</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>CPU time vtgate</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>CPU time vttablet</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Total Allocs bytes</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Allocs bytes vtgate</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Allocs bytes vttablet</span>
-              </div>
               <div className="compare__carousel__container">
-                <Swiper
-                  direction={"vertical"}
-                  slidesPerView={1}
-                  spaceBetween={30}
-                  mousewheel={true}
-                  keyboard={{
-                    enabled: true,
-                  }}
-                  pagination={{
-                    clickable: true,
-                  }}
-                  modules={[Mousewheel, Pagination, Keyboard]}
-                  onSlideChange={handleSlideChange}
-                  initialSlide={currentSlideIndex}
-                  className="mySwiper"
-                >
-                  {dataMacrobench.map((macro, index) => {
-                    return (
-                      <SwiperSlide key={index}>
-                        <Macrobench
-                          data={macro}
-                          gitRefLeft={gitRefLeft.slice(0, 8)}
-                          gitRefRight={gitRefRight.slice(0, 8)}
-                          swiperSlide={SwiperSlide}
-                        />
-                        <MacrobenchMobile
-                          data={macro}
-                          gitRefLeft={gitRefLeft}
-                          gitRefRight={gitRefRight}
-                          swiperSlide={SwiperSlide}
-                          handleSlideChange={handleSlideChange}
-                          setCurrentSlideIndexMobile={
-                            setCurrentSlideIndexMobile
-                          }
-                          currentSlideIndexMobile={currentSlideIndexMobile}
-                        />
-                      </SwiperSlide>
-                    );
-                  })}
-                </Swiper>
+                {dataMacrobench.map((macro, index) => {
+                  return (
+                    <div key={index}>
+                      <Macrobench
+                        data={macro}
+                        gitRefLeft={gitRefLeft.slice(0, 8)}
+                        gitRefRight={gitRefRight.slice(0, 8)}
+                        swiperSlide={SwiperSlide}
+                      />
+                      <MacrobenchMobile
+                        data={macro}
+                        gitRefLeft={gitRefLeft}
+                        gitRefRight={gitRefRight}
+                        swiperSlide={SwiperSlide}
+                        handleSlideChange={handleSlideChange}
+                        setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
+                        currentSlideIndexMobile={currentSlideIndexMobile}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
