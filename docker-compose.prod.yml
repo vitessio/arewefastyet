@@ -74,8 +74,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.ghapp.rule=Host(`benchmark.vitess.io`)"
       - "traefik.http.routers.ghapp.rule=PathPrefix(`/ghapp`)"
-      - "traefik.http.routers.api.entrypoints=https"
-      - "traefik.http.routers.api.tls.certresolver=tlsresolver"
+      - "traefik.http.routers.ghapp.entrypoints=https"
+      - "traefik.http.routers.ghapp.tls.certresolver=tlsresolver"
       - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
     network_mode: bridge
 
