@@ -68,8 +68,8 @@ services:
     image: "arewefastyet-ghapp"
     container_name: "ghapp"
     volumes:
-      - "./config/dev/config.yaml:/config/config.yaml"
-      - "./config/dev/secrets.yaml:/config/secrets.yaml"
+      - "./config/prod/config.yaml:/config/config.yaml"
+      - "./config/prod/secrets.yaml:/config/secrets.yaml"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.ghapp.rule=Host(`benchmark.vitess.io`)"
