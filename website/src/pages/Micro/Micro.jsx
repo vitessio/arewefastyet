@@ -220,13 +220,10 @@ const Micro = () => {
               dataMicrobench[0].Name !== "" &&
               dataMicrobench[0].SubBenchmarkName !== "" &&
               dataMicrobench.map((micro, index) => {
-                const isEvenIndex = index % 2 === 0;
-                const backgroundGrey = isEvenIndex ? "grey--background" : "";
                 return (
                   <Microbench
                     data={micro}
                     key={index}
-                    className={backgroundGrey}
                     gitRefLeft={gitRefLeft}
                     gitRefRight={gitRefRight}
                   />

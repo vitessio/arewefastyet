@@ -89,6 +89,7 @@ limitations under the License.
   margin-top: 100px;
   margin-bottom: 100px;
   font-size: 2rem;
+  text-align: center;
 }
 
 .compare__macrobench__Sidebar {
@@ -121,6 +122,7 @@ limitations under the License.
 .compare__micro__container h3 {
   margin-bottom: 100px;
   font-size: 2rem;
+  text-align: center;
 }
 
 /* MEDIA QUERIES FOR TABLETS */
@@ -153,7 +155,6 @@ limitations under the License.
 @media only screen and (max-width: 767px) {
   .compare__top__text {
     width: 100%;
-    text-align: center;
   }
 
   .compare__top__text h2 {

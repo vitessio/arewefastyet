@@ -16,6 +16,7 @@ limitations under the License.
 
 import React from "react";
 import { Link } from "react-router-dom";
+import PulseLoader from "react-spinners/PulseLoader";
 import { formatByteForGB, fixed } from "../../../utils/Utils";
 
 import "./macrobench.css";
@@ -27,7 +28,20 @@ const Macrobench = React.memo(
     gitRefRight,
     commitHashLeft,
     commitHashRight,
+    textLoading,
   }) => {
+    const renderDataOrLoader = (data, loading) => {
+      if (loading) {
+        return (
+          <span>
+            <PulseLoader loading={true} size={5} color="#ffffff" />
+          </span>
+        );
+      } else {
+        return <span>{data}</span>;
+      }
+    };
+
     return (
       <div className="macrobench__component">
         <div className="macrobench__component__header">
@@ -69,13 +83,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">QPS Total</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.qps.total}</span>
+                {renderDataOrLoader(
+                  data.diff.Left.Result.qps.total,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{data.diff.Right.Result.qps.total}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Result.qps.total,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.qps.total, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.qps.total, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -83,13 +106,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">QPS Reads</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.qps.reads}</span>
+                {renderDataOrLoader(
+                  data.diff.Left.Result.qps.reads,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{data.diff.Right.Result.qps.reads}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Result.qps.reads,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.qps.reads, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.qps.reads, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -97,13 +129,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">QPS Writes</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.qps.writes}</span>
+                {renderDataOrLoader(
+                  data.diff.Left.Result.qps.writes,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{data.diff.Right.Result.qps.writes}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Result.qps.writes,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.qps.writes, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.qps.writes, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -111,13 +152,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">QPS Other</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.qps.other}</span>
+                {renderDataOrLoader(
+                  data.diff.Left.Result.qps.other,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{data.diff.Right.Result.qps.other}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Result.qps.other,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.qps.other, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.qps.other, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -125,13 +175,13 @@ const Macrobench = React.memo(
                 <span className="sidebar">TPS</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.tps}</span>
+                {renderDataOrLoader(data.diff.Left.Result.tps, textLoading)}
               </td>
               <td>
-                <span>{data.diff.Right.Result.tps}</span>
+                {renderDataOrLoader(data.diff.Right.Result.tps, textLoading)}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.tps, 2)}</span>
+                {renderDataOrLoader(fixed(data.diff.Diff.tps, 2), textLoading)}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -139,13 +189,19 @@ const Macrobench = React.memo(
                 <span className="sidebar">Latency</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.latency}</span>
+                {renderDataOrLoader(data.diff.Left.Result.latency, textLoading)}
               </td>
               <td>
-                <span>{data.diff.Right.Result.latency}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Result.latency,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.latency, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.latency, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -153,13 +209,16 @@ const Macrobench = React.memo(
                 <span className="sidebar">Errors</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.errors}</span>
+                {renderDataOrLoader(data.diff.Left.Result.errors, textLoading)}
               </td>
               <td>
-                <span>{data.diff.Right.Result.errors}</span>
+                {renderDataOrLoader(data.diff.Right.Result.errors, textLoading)}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.errors, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.errors, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -167,13 +226,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">Reconnects</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.reconnects}</span>
+                {renderDataOrLoader(
+                  data.diff.Left.Result.reconnects,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{data.diff.Right.Result.reconnects}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Result.reconnects,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.reconnects, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.reconnects, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -181,13 +249,13 @@ const Macrobench = React.memo(
                 <span className="sidebar">Time</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.time}</span>
+                {renderDataOrLoader(data.diff.Left.Result.time, textLoading)}
               </td>
               <td>
-                <span>{data.diff.Right.Result.time}</span>
+                {renderDataOrLoader(data.diff.Right.Result.time, textLoading)}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.time, 2)}</span>
+                {renderDataOrLoader(fixed(data.diff.Diff.time, 2), textLoading)}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -195,13 +263,19 @@ const Macrobench = React.memo(
                 <span className="sidebar">Threads</span>
               </td>
               <td>
-                <span>{data.diff.Left.Result.threads}</span>
+                {renderDataOrLoader(data.diff.Left.Result.threads, textLoading)}
               </td>
               <td>
-                <span>{data.diff.Right.Result.threads}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Result.threads,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{fixed(data.diff.Diff.threads, 2)}</span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Diff.threads, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -209,19 +283,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">Total CPU time</span>
               </td>
               <td>
-                <span>
-                  {fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0)}
-                </span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 0)}
-                </span>
+                {renderDataOrLoader(
+                  fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 0),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}
-                </span>
+                {renderDataOrLoader(
+                  fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -229,15 +306,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">CPU time vtgate</span>
               </td>
               <td>
-                <span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span>
+                {renderDataOrLoader(
+                  data.diff.Left.Metrics.ComponentsCPUTime.vtgate,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>{data.diff.Right.Metrics.ComponentsCPUTime.vtgate}</span>
+                {renderDataOrLoader(
+                  data.diff.Right.Metrics.ComponentsCPUTime.vtgate,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 2)}
-                </span>
+                {renderDataOrLoader(
+                  fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -245,17 +329,22 @@ const Macrobench = React.memo(
                 <span className="sidebar">CPU time vttablet</span>
               </td>
               <td>
-                <span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span>
+                {renderDataOrLoader(
+                  data.diff.Left.Metrics.ComponentsCPUTime.vttablet,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {data.diff.Right.Metrics.ComponentsCPUTime.vttablet}
-                </span>
+                {renderDataOrLoader(
+                  data.diff.Right.Metrics.ComponentsCPUTime.vttablet,
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 2)}
-                </span>
+                {renderDataOrLoader(
+                  fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 2),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -263,26 +352,29 @@ const Macrobench = React.memo(
                 <span className="sidebar">Total Allocs bytes</span>
               </td>
               <td>
-                <span>
-                  {formatByteForGB(
+                {renderDataOrLoader(
+                  formatByteForGB(
                     data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {formatByteForGB(
+                {renderDataOrLoader(
+                  formatByteForGB(
                     data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {fixed(
+                {renderDataOrLoader(
+                  fixed(
                     data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes,
                     2
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr className="border--bottom">
@@ -290,26 +382,29 @@ const Macrobench = React.memo(
                 <span className="sidebar">Allocs bytes vtgate</span>
               </td>
               <td>
-                <span>
-                  {formatByteForGB(
+                {renderDataOrLoader(
+                  formatByteForGB(
                     data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {formatByteForGB(
+                {renderDataOrLoader(
+                  formatByteForGB(
                     data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {fixed(
+                {renderDataOrLoader(
+                  fixed(
                     data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate,
                     2
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
             </tr>
             <tr>
@@ -317,27 +412,30 @@ const Macrobench = React.memo(
                 <span className="sidebar">Allocs bytes vttablet</span>
               </td>
               <td>
-                <span>
-                  {formatByteForGB(
+                {renderDataOrLoader(
+                  formatByteForGB(
                     data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {formatByteForGB(
+                {renderDataOrLoader(
+                  formatByteForGB(
                     data.diff.Right.Metrics.ComponentsMemStatsAllocBytes
                       .vttablet
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
               <td>
-                <span>
-                  {fixed(
+                {renderDataOrLoader(
+                  fixed(
                     data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet,
                     2
-                  )}
-                </span>
+                  ),
+                  textLoading
+                )}
               </td>
             </tr>
           </tbody>

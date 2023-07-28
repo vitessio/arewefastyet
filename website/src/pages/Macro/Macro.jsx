@@ -48,6 +48,7 @@ const Macro = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
     const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(urlParams.get('ptagM') == null ? '0' : urlParams.get('ptagM'))
+    const [textLoading, setTextLoading] = useState(true)
     
     useEffect(() => {
         const fetchData = async () => {
@@ -76,6 +77,7 @@ const Macro = () => {
 
     useEffect(() => {
         if (isFirstCallFinished) {
+            setTextLoading(true)
             const fetchData = async () => {
                 try {
                     const responseMacrobench = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`)
@@ -83,10 +85,12 @@ const Macro = () => {
                     const jsonDataMacrobench = await responseMacrobench.json();
                     setDataMacrobench(jsonDataMacrobench)
                     setIsLoading(false)
+                    setTextLoading(false)
                 } catch (error) {
                     console.log('Error while retrieving data from the API', error);
                     setError(errorApi);
                     setIsLoading(false);
+                    setTextLoading(false)
                 }
             };
             fetchData();
@@ -166,6 +170,7 @@ const Macro = () => {
                                                         swiperSlide={SwiperSlide} 
                                                         commitHashLeft={commitHashLeft}
                                                         commitHashRight={commitHashRight}
+                                                        textLoading={textLoading}
                                                     />
                                                     <MacrobenchMobile 
                                                     data={macro} 
