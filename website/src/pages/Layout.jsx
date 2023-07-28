@@ -14,20 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-
-import Header from '../components/header/Header';
-import Footer from '../components/footer/Footer';
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { AppProvider } from "../AppContext";
+import Header from "../components/header/Header";
+import Footer from "../components/footer/Footer";
 
 const Layout = () => {
-    return (
-        <div>
-            <Header/>
-            <Outlet/>
-            <Footer/>
-        </div>
-    );
+  return (
+    <AppProvider>
+      <Header />
+      <Outlet />
+      <Footer />
+    </AppProvider>
+  );
 };
 
 export default Layout;

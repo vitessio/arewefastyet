@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 .compare{
-    color: white;
     padding: 0px 20px 0px 20px;
     position: relative;
     min-height: 100vh;
@@ -46,18 +45,18 @@ limitations under the License.
     font-size: 1.5rem;
     border: #E77002 solid 2px;
     border-radius: 20px 0px 0px 20px;
-    background-color: #1F1D1D;
     box-shadow: #E77002 2px 2px 10px;
+    background-color: var(--background-color);
     color: white;
 }
 
 .form__inputRight{
     width: 40%;
+    background-color: var(--background-color);
     max-width: 500px;
     padding: 20px 10px;
     font-size: 1.5rem;
     border: #E77002 solid 2px;
-    background-color: #1F1D1D;
     box-shadow: #E77002 2px 2px 10px;
     border-radius: 0px 20px 20px 0px;
     color: white;

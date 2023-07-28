@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 .cron {
-  color: white;
   padding: 0px 20px 0px 20px;
   position: relative;
   min-height: 100vh;
@@ -35,7 +34,6 @@ limitations under the License.
 }
 
 .cron__top span {
-  color: #b5adad;
   width: 60%;
   line-height: 40px;
 }
@@ -66,8 +64,8 @@ limitations under the License.
 }
 
 .tooltip {
-  color: black;
-  background-color: white;
+  color: white;
+  background-color: black;
   padding: 5px;
   gap: 10px;
 }

@@ -14,120 +14,122 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, {useState, useEffect} from 'react';
-import {NavLink} from 'react-router-dom';
-// import Hamburger from 'hamburger-react'
-import './header.css'
+import React, { useState, useEffect, useContext } from "react";
+import { NavLink } from "react-router-dom";
 
-//import image
+import "./header.css";
 
-import logo from '../../assets/logo.png'
+import { AppContext } from "../../AppContext";
+import logo from "../../assets/logo.png";
 
 const Header = () => {
+  const { isColorChanged, handleButtonClick } = useContext(AppContext);
 
-    const [openMenu, setOpenMenu] = useState(false)
-    const handleMenuClick = () => {
-        window.scrollTo(0, 0);
-        if (window.innerWidth <= 768) {
-            setOpenMenu(false);
-          } else {
-            setOpenMenu(true);
-          }
-      };
-    
-      const [visible, setVisible] = useState(true);
-      const [lastScrollTop, setLastScrollTop] = useState(0);
+  const [openMenu, setOpenMenu] = useState(false);
+  const handleMenuClick = () => {
+    window.scrollTo(0, 0);
+    if (window.innerWidth <= 768) {
+      setOpenMenu(false);
+    } else {
+      setOpenMenu(true);
+    }
+  };
 
-      useEffect(() => {
-        const handleScroll = () => {
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-          if (scrollTop > lastScrollTop && scrollTop > 55) {
-            // If we scroll down more than 50px, we hide the div.
-            setVisible(false);
-            
-          } else {
-            // Otherwise, we display the div again.
-            setVisible(true);
-        
-          }
-          setLastScrollTop(scrollTop);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => {
-          window.removeEventListener('scroll', handleScroll);
-        };
-      }, [lastScrollTop]);
+  const [visible, setVisible] = useState(true);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
 
-      useEffect(() => {
-        const handleResize = () => {
-          if (window.innerWidth <= 768) {
-            setOpenMenu(false);
-          } else {
-            setOpenMenu(true);
-          }
-        };
-    
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Check initial window size
-    
-        return () => {
-          window.removeEventListener('resize', handleResize);
-        };
-      }, []);
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > lastScrollTop && scrollTop > 55) {
+        // If we scroll down more than 50px, we hide the div.
+        setVisible(false);
+      } else {
+        // Otherwise, we display the div again.
+        setVisible(true);
+      }
+      setLastScrollTop(scrollTop);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollTop]);
 
-    return (
-        <div className={`header flex ${visible ? 'visible' : 'hidden'}`}>
-        
-            <div className='logo__container'>
-                <img src={logo} alt='logo'/>
-                <span className='hiddenResponsiveMobile' >Benchmark</span>
-            </div>
-            {openMenu ? (
-                <>
-                    <nav>
-                    <ul className='header__nav flex'>
-                        {[
-                            { to: '/home', label: 'Home' },
-                            { to: '/status', label: 'Status' },
-                            { to: '/cron', label: 'CRON' },
-                            { to: '/compare', label: 'Compare' },
-                            { to: '/search', label: 'Search' },
-                            { to: '/micro', label: 'Micro' },
-                            { to: '/macro', label: 'Macro' },
-                            { to: '/pr', label: 'PR' }
-                            ].map((link, index) => (
-                              <div key={index}>
-                                  <li>
-                                  <NavLink className='header__link' activeclassname='active' onClick={handleMenuClick} to={link.to}>
-                                  {link.label}
-                                  </NavLink>
-                              </li>
-                            </div>
-                            ))}
-                    </ul>
-                </nav>
-                
-                <figure className='hamburgerMenu' onClick={() => setOpenMenu(false)}>
-                    <figure className='lineMenuTop'></figure>
-                    <figure className='lineMenuBottom'></figure>
-                </figure> 
-                
-                
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setOpenMenu(false);
+      } else {
+        setOpenMenu(true);
+      }
+    };
 
-            </>
-            ) :
-            <figure className='hamburgerMenu' onClick={() => setOpenMenu(true)}>
-                <figure className='lineMenuTop'></figure>
-                <figure className='lineMenuBottom'></figure>
-            </figure> 
-            
-            
-            }
-             
-            
-            
-        </div>
-    );
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Check initial window size
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return (
+    <div className={`header flex ${visible ? "visible" : "hidden"}`}>
+      <div className="logo__container">
+        <img src={logo} alt="logo" />
+        <span className="hiddenResponsiveMobile">Benchmark</span>
+        <button className="buttonMode" onClick={handleButtonClick}>
+          {isColorChanged ? (
+            <i className="far fa-moon"></i>
+          ) : (
+            <i className="far fa-sun"></i>
+          )}
+        </button>
+      </div>
+      {openMenu ? (
+        <>
+          <nav>
+            <ul className="header__nav flex">
+              {[
+                { to: "/home", label: "Home" },
+                { to: "/status", label: "Status" },
+                { to: "/cron", label: "CRON" },
+                { to: "/compare", label: "Compare" },
+                { to: "/search", label: "Search" },
+                { to: "/micro", label: "Micro" },
+                { to: "/macro", label: "Macro" },
+                { to: "/pr", label: "PR" },
+              ].map((link, index) => (
+                <div key={index}>
+                  <li>
+                    <NavLink
+                      className="header__link"
+                      activeclassname="active"
+                      onClick={handleMenuClick}
+                      to={link.to}
+                    >
+                      {link.label}
+                    </NavLink>
+                  </li>
+                </div>
+              ))}
+            </ul>
+          </nav>
+
+          <figure className="hamburgerMenu" onClick={() => setOpenMenu(false)}>
+            <figure className="lineMenuTop"></figure>
+            <figure className="lineMenuBottom"></figure>
+          </figure>
+        </>
+      ) : (
+        <figure className="hamburgerMenu" onClick={() => setOpenMenu(true)}>
+          <figure className="lineMenuTop"></figure>
+          <figure className="lineMenuBottom"></figure>
+        </figure>
+      )}
+    </div>
+  );
 };
 
 export default Header;

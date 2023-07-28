@@ -27,6 +27,7 @@ const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
           <h3 className="chart__title">{title}</h3>
         )}
         <ResponsiveLine
+          background={"#f0f0f0"}
           data={data}
           height={400}
           colors={colors}
