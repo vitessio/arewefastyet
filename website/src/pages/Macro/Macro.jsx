@@ -17,13 +17,12 @@ limitations under the License.
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RingLoader from "react-spinners/RingLoader";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
 
 import '../Macro/Macro.css'
 import "swiper/css";
 import "swiper/css/pagination";
 
-import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from '../../components/MacroComponents/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile';
 import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/Utils';
@@ -46,7 +45,6 @@ const Macro = () => {
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
     const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(urlParams.get('ptagM') == null ? '0' : urlParams.get('ptagM'))
     const [textLoading, setTextLoading] = useState(true)
     
@@ -103,8 +101,8 @@ const Macro = () => {
     const navigate = useNavigate();
     
     useEffect(() => {
-        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`)
-    }, [gitRefLeft, gitRefRight, currentSlideIndex, currentSlideIndexMobile]) 
+        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptagM=${currentSlideIndexMobile}`)
+    }, [gitRefLeft, gitRefRight, currentSlideIndexMobile]) 
     
 
     const handleSlideChange = (swiper) => {

@@ -20,7 +20,7 @@ limitations under the License.
   border-radius: 10px 10px 10px 0px;
   border-bottom: #e77002 1px solid;
   position: relative;
-  margin-top: 90px;
+  margin-bottom: 90px;
 }
 
 .macrobench__component__header {
@@ -40,7 +40,6 @@ limitations under the License.
 
 .macrobench__component h4 {
   padding: 10px 20px;
-  font-size: 0.8rem;
 }
 
 /* Array */
@@ -77,6 +76,7 @@ table {
   display: flex;
   justify-content: end;
   border-right: #e77002 1px solid;
+  font-weight: bold;
 }
 
 .sidebar {

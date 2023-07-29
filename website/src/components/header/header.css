@@ -28,9 +28,10 @@ limitations under the License.
   width: 100%;
   justify-content: space-between;
   max-width: 1500px;
+  padding: 0px 50px;
 }
 .logo__container {
-  width: 200px;
+  width: 250px;
   height: 100%;
   background: none;
   padding: 10px;
@@ -149,6 +150,9 @@ limitations under the License.
   }
   .logo__container {
     justify-content: start;
+  }
+  .header__container{
+    padding: 0px;
   }
 }
 

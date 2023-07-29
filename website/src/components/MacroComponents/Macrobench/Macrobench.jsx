@@ -34,7 +34,7 @@ const Macrobench = React.memo(
       if (loading) {
         return (
           <span>
-            <PulseLoader loading={true} size={5} color="#ffffff" />
+            <PulseLoader loading={true} size={5} color="var(--font-color)" />
           </span>
         );
       } else {

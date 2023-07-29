@@ -17,14 +17,13 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
 import useApiCall from "../../utils/Hook";
 
 import "../Compare/compare.css";
 import "swiper/css";
 import "swiper/css/pagination";
 
-import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from "../../components/MacroComponents/Macrobench/Macrobench";
 import MacrobenchMobile from "../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile";
 import Microbench from "../../components/Microbench/Microbench";
@@ -41,9 +40,6 @@ const Compare = () => {
   );
   const [gitRefRight, setGitRefRight] = useState(
     urlParams.get("rtag") == null ? "Right" : urlParams.get("rtag")
-  );
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(
-    urlParams.get("ptag") == null ? "0" : urlParams.get("ptag")
   );
   const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(
     urlParams.get("ptagM") == null ? "0" : urlParams.get("ptagM")
@@ -77,9 +73,9 @@ const Compare = () => {
 
   useEffect(() => {
     navigate(
-      `?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`
+      `?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptagM=${currentSlideIndexMobile}`
     );
-  }, [gitRefLeft, gitRefRight, currentSlideIndex, currentSlideIndexMobile]);
+  }, [gitRefLeft, gitRefRight, currentSlideIndexMobile]);
 
   const handleInputChangeLeft = (e) => {
     setGitRefLeft(e.target.value);

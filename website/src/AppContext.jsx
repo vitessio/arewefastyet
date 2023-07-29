@@ -35,6 +35,7 @@ const AppProvider = ({ children }) => {
     document.documentElement.style.setProperty("--background-color", "#ffffff");
     document.documentElement.style.setProperty("--font-color", "#000000");
     document.documentElement.style.setProperty("--dropDown-color", "#e77002");
+    document.documentElement.style.setProperty("--accent-color", "#e77002");
     setColorChanged(true);
   };
 
@@ -43,6 +44,7 @@ const AppProvider = ({ children }) => {
     document.documentElement.style.setProperty("--background-color", "#1F1D1D");
     document.documentElement.style.setProperty("--font-color", "#ffffff");
     document.documentElement.style.setProperty("--dropDown-color", "#1f1d1d");
+    document.documentElement.style.setProperty("--accent-color", "#343A40");
     setColorChanged(false);
   };
 
