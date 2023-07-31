@@ -80,7 +80,7 @@ const Status = () => {
             duration={3}
           />
           <span className="countUp__title">
-            Total Benchmarks (last 30 days)
+            Total Benchmark (last 30 days)
           </span>
         </div>
       </article>
@@ -143,14 +143,8 @@ const Status = () => {
             return (
               <React.Fragment key={uuidv4()}>
                 <PreviousExe data={previousExe} key={index} />
-                <PreviousExeResMobile
-                  data={previousExe}
-                  key={uuidv4()}
-                />
-                <PreviousExeResTablet
-                  data={previousExe}
-                  key={uuidv4()}
-                />
+                <PreviousExeResMobile data={previousExe} key={uuidv4()} />
+                <PreviousExeResTablet data={previousExe} key={uuidv4()} />
               </React.Fragment>
             );
           })}

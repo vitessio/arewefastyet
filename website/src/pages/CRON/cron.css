@@ -66,8 +66,8 @@ limitations under the License.
 }
 
 .tooltip {
-  color: white;
-  background-color: black;
+  color: #fad900;
+  background-color: rgb(125, 104, 104);
   padding: 5px;
   gap: 10px;
 }

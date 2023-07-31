@@ -17,8 +17,8 @@ limitations under the License.
 import React, { useContext } from "react";
 import { AppContext } from "../../AppContext";
 
-import homeLogoDark from "../../assets/homeLogoLarge.png";
-import homeLogoLight from "../../assets/homeLogoLarge2.png";
+import homeLogoDark from "../../assets/homeLogoDarkLarge.png";
+import homeLogoLight from "../../assets/homeLogoWhiteLarge.png";
 
 import "./home.css";
 

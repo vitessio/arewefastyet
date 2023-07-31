@@ -130,13 +130,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Result.qps.writes,
+                  fixed(data.diff.Left.Result.qps.writes, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.qps.writes,
+                  fixed(data.diff.Right.Result.qps.writes, 2),
                   textLoading
                 )}
               </td>

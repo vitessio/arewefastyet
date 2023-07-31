@@ -66,3 +66,7 @@ limitations under the License.
   right: 0%;
   top: 50%;
 }
+
+.cronSummary--selected{
+  background-color: var(--secondary-color);
+}
