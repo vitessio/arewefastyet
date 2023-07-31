@@ -36,7 +36,6 @@ limitations under the License.
 }
 
 .status__top__text h2 {
-  color: white;
   font-size: 5rem;
   font-weight: 100;
   margin-bottom: 50px;
@@ -45,12 +44,10 @@ limitations under the License.
 }
 
 .status__top__text span {
-  color: #b5adad;
   width: 60%;
   line-height: 40px;
 }
 .statusStats {
-  color: white;
   min-width: 300px;
   height: 500px;
 }
@@ -72,9 +69,6 @@ limitations under the License.
 
 /*PREVIOUS EXECUTIONS*/
 
-.previousExe {
-  color: white;
-}
 .previousExe__top {
   justify-content: space-between;
 }
@@ -84,16 +78,12 @@ limitations under the License.
 }
 .previousExe__top span {
   text-align: center;
-}
-
-.grey--background {
-  background-color: #343a40;
+  font-weight: bold;
 }
 
 /* EXECUTION QUEUE */
 
 .queue {
-  color: white;
   margin-bottom: 200px;
   text-align: center;
 }
@@ -119,6 +109,12 @@ limitations under the License.
   .status {
     padding: 0px 20px 50px 20px;
   }
+  .status__top{
+    flex-direction: column;
+  }
+  .status__top__text{
+    height: 300px;
+  }
   .status__top__text h2 {
     font-size: 4rem;
   }
@@ -142,7 +138,6 @@ limitations under the License.
   /* EXECUTION QUEUE */
 
   .queue {
-    color: white;
     margin-bottom: 100px;
     text-align: center;
   }
@@ -174,5 +169,8 @@ limitations under the License.
 @media only screen and (max-width: 767px) {
   .hiddenMobile {
     display: none;
+  }
+  .status__top__text{
+    height: 500px;
   }
 }

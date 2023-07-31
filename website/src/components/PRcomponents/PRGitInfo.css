@@ -16,8 +16,8 @@ limitations under the License.
 
 .prGit {
   width: 100%;
-  border-top: 1px solid white;
-  border-bottom: 1px solid white;
+  border-top: 1px solid #B5ADAD;
+  border-bottom: 1px solid #B5ADAD;
   font-size: 1.2rem;
   min-height: 50px;
   padding: 20px 0px;
@@ -46,7 +46,7 @@ limitations under the License.
 
 .prGit table {
   margin-top: 30px;
-  border: 1px solid white;
+  border: 1px solid var(--font-color);
   width: 60%;
   padding: 10px;
 }
@@ -57,7 +57,7 @@ limitations under the License.
   text-align: center;
 }
 .prGit thead tr {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--font-color);
   padding: 10px;
 }
 

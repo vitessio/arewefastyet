@@ -102,7 +102,6 @@ const PR = () => {
                       key={index}
                       data={PRList}
                       setPrNumber={setPrNumber}
-                      className={index % 2 === 0 ? "gray-background" : ""}
                     />
                   );
                 })}

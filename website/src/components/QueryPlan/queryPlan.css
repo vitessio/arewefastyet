@@ -46,16 +46,12 @@ limitations under the License.
 }
 
 .statistics h3{
-    background-color: #343A40;
+    background-color: var(--secondary-color);
     padding: 10px;
 }
 
 .statistics__key__title{
     margin-right: 20px;
-}
-
-.statistics__key{
-    color: #B5ADAD;
 }
 
 .statistics__top{
@@ -88,13 +84,13 @@ limitations under the License.
 }
 
 .plan__queryPlan h3{
-    background-color: #343A40;
+    background-color: var(--secondary-color);
     padding: 10px;
 }
 
 .json{
     padding: 20px;
-    background-color: #272822;
+    background-color: var(--background-color);
 }
 
 .planEquivalent{
@@ -113,6 +109,7 @@ limitations under the License.
     background-color: red;
     margin: 20px 0px;
     font-size: 1.2rem;
+    color: var(--font-color);
 }
 
 /* BADGE */
@@ -127,6 +124,7 @@ limitations under the License.
     padding: 5px 10px;
     width: 25%;
     border-radius: 20px;
+    color: var(--font-color);
 }
 
 .badge--danger{

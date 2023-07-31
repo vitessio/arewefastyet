@@ -23,7 +23,6 @@ limitations under the License.
     background-image: url('../assets/homeLogoLarge.png');
     background-position: center;
     background-repeat: no-repeat;
-    background-color: rgba(0, 0, 0, 0);
     background-size: 700px;
     margin-bottom: 100px;
   }
@@ -33,7 +32,6 @@ limitations under the License.
 
 .error h2 {
     font-size: 8em;
-    color: white;
     margin-top: 400px;
    
 }

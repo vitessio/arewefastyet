@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 .micro {
-  color: white;
   padding: 0px 20px 0px 20px;
   position: relative;
   min-height: 100vh;
@@ -30,6 +29,7 @@ limitations under the License.
   width: 50%;
   margin-right: 20px;
   position: relative;
+  max-width: 550px;
 }
 
 .micro__top__text h2 {
@@ -41,7 +41,7 @@ limitations under the License.
 }
 
 .microStats {
-  border: solid 2px white;
+  border: solid 2px var(--font-color);
   width: 400px;
 }
 
@@ -54,40 +54,43 @@ limitations under the License.
 .micro__bottom__title {
   flex-wrap: wrap;
   margin-bottom: 200px;
+  max-width: 50px;
 }
 
 .micro__bottom__DropDownLeft {
+  color: white;
   position: absolute;
   left: 0%;
   top: 60%;
   margin: -20px 10px 0px 10px;
-  background-color: #1f1d1d;
-  border: #e77002 solid 1px;
+  background-color: var(--dropDown-color);
+  border: var(--accent-color) solid 1px;
   border-radius: 15px;
   text-align: center;
   align-items: center;
   overflow: hidden;
   cursor: pointer;
   transition: max-height 1s ease;
-  box-shadow: #e77002 2px 2px 10px;
+  box-shadow: var(--accent-color) 2px 2px 10px;
   z-index: 200;
   width: 200px;
 }
 
 .micro__bottom__DropDownRight {
+  color: white;
   position: absolute;
   right: 0%;
   top: 60%;
   margin: -20px 10px 0px 10px;
-  border: #e77002 solid 1px;
-  background-color: #1f1d1d;
+  border: var(--accent-color) solid 1px;
+  background-color: var(--dropDown-color);
   border-radius: 15px;
   text-align: center;
   align-items: center;
   overflow: hidden;
   cursor: pointer;
   transition: max-height 1s ease;
-  box-shadow: #e77002 2px 2px 10px;
+  box-shadow: var(--accent-color) 2px 2px 10px;
   z-index: 2000;
   width: 200px;
 }
@@ -95,7 +98,6 @@ limitations under the License.
 .DropDown__BaseSpan {
   padding: 15px 0px;
   padding-bottom: 30px;
-
   font-size: 1rem;
 }
 

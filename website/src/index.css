@@ -24,13 +24,10 @@ body {
 
   font-family: "Rubik", sans-serif;
 }
-body, html {
-  background-color: #1f1d1d;
-  display: flex;
-  justify-content: center;
-  
+body{
+  background-color: var(--background-color);
+  color: var(--font-color);
 }
-
 /*Basic class*/
 
 .flex,
@@ -136,10 +133,18 @@ body, html {
   width: 25%;
 }
 
+:root {
+  --primary-color: #1f1d1d;
+  --secondary-color: #b5adad;
+  --accent-color: #e77002;
+  --background-color: #ffffff;
+  --font-color: #000000;
+  --dropDown-color: #e77002;
+}
+
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
   .hidden--desktop {
     display: block;
   }
-  
 }

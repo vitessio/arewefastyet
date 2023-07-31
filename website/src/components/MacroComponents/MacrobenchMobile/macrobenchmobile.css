@@ -30,10 +30,6 @@ limitations under the License.
     
 }
 
-.macrobench__mobile span:nth-child(2n) {
-    background-color: #343A40;
-}
-
 .macrobench__data{
     width: 33%;
     text-align: center;
@@ -46,7 +42,7 @@ limitations under the License.
     font-weight: 400;
     padding: 15px 0px 5px 0px;
     border-bottom: solid 1px #B5ADAD;
-    background-color: #1F1D1D;
+    background-color: var(--background-color);
     z-index: 1;
 }
 
@@ -89,7 +85,7 @@ limitations under the License.
     }
 
     .macrobench__data h4{
-        background-color: #1F1D1D;
+        background-color: var(--background-color);
         border: #E77002 1px solid;
         border-radius: 10px 10px 0px 0px;
         font-size: 0.85rem;

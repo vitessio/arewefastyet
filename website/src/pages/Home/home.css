@@ -14,110 +14,90 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.home{
-    background-color: #1F1D1D;
-    max-width: 1500px;
-    padding: 0px 50px 50px 50px;
-    margin: auto;
+.home {
+  padding: 0px 50px 50px 50px;
 }
-
-
 
 /* HOME__TOP */
 
-
-.home__top{
-    margin-top: 80px;
-    
-    
+.home__top {
+  margin-top: 80px;
 }
 
-.home__top__text{
-    width: 50%;
-    
+.home__top__text {
+  width: 50%;
 }
 
-.home__top__text h1{
-    color: white;
-    font-size: 6rem;
-    font-weight:100;
-    margin-bottom: 50px;
-    margin-top: 20px;
-    width: 100%
+.home__top__text h1 {
+  font-size: 6rem;
+  font-weight: 100;
+  margin-bottom: 50px;
+  margin-top: 20px;
+  width: 100%;
 }
 
-.home__top__text span{
-    color: #B5ADAD;
-    width: 60%;
-    line-height: 40px;
-}
- 
-.home__top__logo{
-    width: 600px;
-    margin-left: 30px;
-    object-fit:contain;
+.home__top__text span {
+  width: 60%;
+  line-height: 40px;
 }
 
+.home__top__logo {
+  width: 600px;
+  margin-left: 30px;
+  object-fit: contain;
+}
 
 /* HOME BOTTOM*/
 
-
-.home__bottom{
-    margin-top: 150px;
-    color: white;
-      
+.home__bottom {
+  margin-top: 150px;
 }
 
-.home__bottom span{
-    line-height: 40px;
+.home__bottom span {
+  line-height: 40px;
 }
 
-
-    /* MEDIA QUERIES FOR TABLETS */
+/* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-    .home{
-        padding: 0px 20px 50px 20px;
-    }
-
-    .home__top__logo{
-        width: 300px;
-        margin-left: 70px;
-        
-    }
-
-    .home__top__text h1{
-        font-size: 4rem;
-    }
-    
+  .home {
+    padding: 0px 20px 50px 20px;
   }
 
+  .home__top__logo {
+    width: 300px;
+    margin-left: 70px;
+  }
 
-        /* MEDIA QUERIES FOR MOBILE */
-@media only screen and (max-width: 767px){
-    .home__top{
-        flex-direction: column;
-        justify-content: center;
-    }
+  .home__top__text h1 {
+    font-size: 4rem;
+  }
+}
 
-    .home__top__text{
-        width: 100%;
-        text-align: center;
-    }
-    .home__top__text h1{
-        width: 100%;
-        font-size: 3rem;
-    }
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px) {
+  .home__top {
+    flex-direction: column;
+    justify-content: center;
+  }
 
-    .home__top__logo{
-        width: 200px;
-        margin: auto;
-        margin-top: 60px;
-        padding: 20px;
-        border: #E77002 2px solid;
-        border-radius: 20px;
-    }
-    .home__bottom{
-        text-align: center;
-    }
-    
+  .home__top__text {
+    width: 100%;
+    text-align: center;
+  }
+  .home__top__text h1 {
+    width: 100%;
+    font-size: 3rem;
+  }
+
+  .home__top__logo {
+    width: 200px;
+    margin: auto;
+    margin-top: 60px;
+    padding: 20px;
+    border: #e77002 2px solid;
+    border-radius: 20px;
+  }
+  .home__bottom {
+    text-align: center;
+  }
 }

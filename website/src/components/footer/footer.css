@@ -19,7 +19,7 @@ limitations under the License.
     bottom: 0;
     width: 100vw;
     height: 160px;
-    background-color: #343A40;
+    background-color: var(--primary-color);;
     margin-top: 100px;
     align-items: center;   
 }

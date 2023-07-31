@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 .macro {
-  color: white;
   padding: 0px 20px 0px 20px;
   position: relative;
   height: 100%;
@@ -42,7 +41,7 @@ limitations under the License.
 }
 
 .macroStats {
-  border: solid 2px white;
+  border: solid 2px var(--font-color);
   width: 400px;
 }
 
@@ -69,9 +68,10 @@ limitations under the License.
 }
 
 .macro__bottom__DropDownLeft {
+  color: white;
   position: absolute;
-  background-color: #1f1d1d;
-  border: #e77002 solid 1px;
+  background-color: var(--dropDown-color);
+  border: var(--accent-color) solid 1px;
   border-radius: 15px;
   width: 200px;
   padding: 0px 15px;
@@ -82,7 +82,7 @@ limitations under the License.
   transition: max-height 1s ease;
   left: 0%;
   top: 30px;
-  box-shadow: #e77002 2px 2px 10px;
+  box-shadow: var(--accent-color) 2px 2px 10px;
   z-index: 200;
 }
 
@@ -100,7 +100,7 @@ limitations under the License.
 }
 
 .dropDown--line {
-  border: #e77002 1px solid;
+  border:white 1px solid;
   width: 90%;
 }
 
@@ -110,13 +110,14 @@ limitations under the License.
 }
 
 .dropDown__ref:hover {
-  background-color: #343a40;
+  background-color: var(--background-color);;
 }
 
 .macro__bottom__DropDownRight {
+  color: white;
   position: absolute;
-  border: #e77002 solid 1px;
-  background-color: #1f1d1d;
+  border: var(--accent-color) solid 1px;
+  background-color: var(--dropDown-color);
   border-radius: 15px;
   width: 200px;
   padding: 0px 15px;
@@ -127,7 +128,7 @@ limitations under the License.
   transition: max-height 1s ease;
   right: 0%;
   top: 30px;
-  box-shadow: #e77002 2px 2px 10px;
+  box-shadow: var(--accent-color) 2px 2px 10px;
   z-index: 200;
 }
 
@@ -141,7 +142,7 @@ limitations under the License.
   max-width: 1200px;
 }
 .macrobench__Sidebar {
-  background-color: #1f1d1d;
+  background-color: var(--background-color);;
   padding: 0px 0px 0px 20px;
   font-style: italic;
   border-top: #e77002 1px solid;
@@ -199,7 +200,6 @@ limitations under the License.
   }
 
   .macroStats {
-    border: solid 2px white;
     width: 300px;
     height: 300px;
     margin-top: 100px;
