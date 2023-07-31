@@ -16,17 +16,17 @@ limitations under the License.
 
 .singlePR {
   min-height: 100vh;
-  border: 1px solid white;
+  border: 1px solid var(--font-color);
   border-radius: 20px;
   max-width: 1500px;
-  color: white;
+  color: var(--font-color);
   margin: auto;
   margin-top: 100px;
 }
 
 .singlePR__top {
   padding: 20px;
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--font-color);
   justify-content: space-between;
 }
 
