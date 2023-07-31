@@ -110,7 +110,7 @@ const Micro = () => {
           <h2>Compare Microbenchmarks</h2>
           <div className="micro__bottom__DropDownCointainer justify--content">
             <figure
-              className="micro__bottom__DropDownLeft flex--column"
+              className="micro__bottom__DropDownLeft dropDown flex--column"
               style={{ maxHeight: `${openDropDownLeft}px` }}
             >
               <span
@@ -144,7 +144,7 @@ const Micro = () => {
             </figure>
 
             <figure
-              className="micro__bottom__DropDownRight flex--column"
+              className="micro__bottom__DropDownRight dropDown flex--column"
               style={{ maxHeight: `${openDropDownRight}px` }}
             >
               <span

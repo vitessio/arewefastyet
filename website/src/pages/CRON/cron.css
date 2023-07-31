@@ -24,7 +24,7 @@ limitations under the License.
 
 .cron__top {
   margin-top: 100px;
-  text-align: center;
+  padding: 50px;
 }
 
 .cron__top h2 {
@@ -36,7 +36,8 @@ limitations under the License.
 }
 
 .cron__top span {
-  width: 60%;
+  display: block;
+  width: 50%;
   line-height: 40px;
 }
 
