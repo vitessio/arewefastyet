@@ -31,41 +31,68 @@ const SinglePR = () => {
     isLoading: singlePrLoading,
     error: singlePrError,
   } = useApiCall(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`, []);
+  console.log(dataSinglePr);
+
+  const isComparisonAvailable =
+    dataSinglePr.Base !== "" && dataSinglePr.Head !== "";
+
+  if (
+    dataSinglePr.error ==
+    "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
+  ) {
+    return (
+      <div className="errorPullRequest">Pull request {pull_nb} not found</div>
+    );
+  }
 
   return (
-    <div className="singlePR flex--column">
-      {singlePrError ? (
-        <div className="apiError">{errorApi}</div>
-      ) : singlePrLoading ? (
-        <div className="loadingSpinner">
-          <RingLoader loading={singlePrLoading} color="#E77002" size={300} />
-        </div>
-      ) : (
-        <>
-          <div className="singlePR__top flex">
-            <div>
-              <h2>
-                [#{pull_nb}]{dataSinglePr.Title}
-              </h2>
-              <span>
-                By {dataSinglePr.Author} at {formatDate(dataSinglePr.CreateAt)}{" "}
-              </span>
-            </div>
-
-            <div className="singlePR__link justify--content">
-              <a
-                href={`/compare?ltag=${dataSinglePr.Base}&rtag=${dataSinglePr.Head}`}
-              >
-                Compare with base commit
-              </a>
-            </div>
+    <div className="singlePR">
+      <div className="singlePR__container flex--column">
+        {singlePrError ? (
+          <div className="apiError">{errorApi}</div>
+        ) : singlePrLoading ? (
+          <div className="loadingSpinner">
+            <RingLoader loading={singlePrLoading} color="#E77002" size={300} />
           </div>
-          <div className="singlePR__bottom flex--column">
-            <span>Base: {dataSinglePr.Base}</span>
-            <span>Head: {dataSinglePr.Head}</span>
-          </div>
-        </>
-      )}
+        ) : (
+          <>
+            <div className="singlePR__top flex">
+              <div>
+                <h2>
+                  [#{pull_nb}]{dataSinglePr.Title}
+                </h2>
+                <span>
+                  By {dataSinglePr.Author} at{" "}
+                  {formatDate(dataSinglePr.CreateAt)}{" "}
+                </span>
+              </div>
+              {isComparisonAvailable && (
+                <div className="singlePR__link justify--content">
+                  <a
+                    href={`/compare?ltag=${dataSinglePr.Base}&rtag=${dataSinglePr.Head}`}
+                  >
+                    Compare with base commit
+                  </a>
+                </div>
+              )}
+            </div>
+            <div className="singlePR__bottom flex--column">
+              {isComparisonAvailable ? (
+                <>
+                  <span>Base: {dataSinglePr.Base}</span>
+                  <span>Head: {dataSinglePr.Head}</span>
+                </>
+              ) : (
+                <div>
+                  The Base and Head commit information is not available for this
+                  pull request.
+                </div>
+              )}
+              <span>{dataSinglePr.error}</span>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
