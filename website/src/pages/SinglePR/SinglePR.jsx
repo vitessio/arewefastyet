@@ -15,29 +15,47 @@ limitations under the License.
 */
 
 import React from "react";
+import { useParams } from "react-router-dom";
+import useApiCall from "../../utils/Hook";
 
 import "../SinglePR/singlePR.css";
 
+import { formatDate } from "../../utils/Utils";
+
 const SinglePR = () => {
+  const { pull_nb } = useParams();
+
+  const {
+    data: dataSinglePr,
+    isLoading: singlePrLoading,
+    error: singlePrError,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`, []);
+
   return (
     <div className="singlePR flex--column">
       <div className="singlePR__top flex">
         <div>
           <h2>
-			[#46546]
-            Enhancing VTGate buffering for MoveTables and Shard by Shard
-            Migration
+            [#{pull_nb}]{dataSinglePr.Title}
           </h2>
-          <span>By Frouioui at 07/15/2023 00:19 </span>
+          <span>
+            By {dataSinglePr.Author} at {formatDate(dataSinglePr.CreateAt)}{" "}
+          </span>
         </div>
 
         <div className="singlePR__link justify--content">
-          <a>Compare with base commit</a>
+          <a
+            href={`/compare?ltag=${dataSinglePr.Base}&rtag=${dataSinglePr.Head}`}
+          >
+            Compare with base commit
+          </a>
         </div>
       </div>
-	  <div>
-		
-	  </div>
+      <div className="singlePR__bottom flex--column">
+        <span>Base: {dataSinglePr.Base}</span>
+        <span>Head: {dataSinglePr.Head}</span>
+      </div>
+      <div></div>
     </div>
   );
 };

@@ -14,32 +14,60 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.singlePR{
-	min-height: 100vh;
-	border: 1px solid white;
-	border-radius: 20px;
-	max-width: 1000px;
-	color:white;
-	max-width: 1500px;
-	margin: auto;
-	margin: 100px 
+.singlePR {
+  min-height: 100vh;
+  border: 1px solid white;
+  border-radius: 20px;
+  max-width: 1500px;
+  color: white;
+  margin: auto;
+  margin-top: 100px;
 }
 
-.singlePR__top{
-	padding: 20px;
-	border-bottom: 1px solid white;
-	justify-content: space-between;
+.singlePR__top {
+  padding: 20px;
+  border-bottom: 1px solid white;
+  justify-content: space-between;
 }
 
-.singlePR__top h2{
-	margin-bottom: 20px;
+.singlePR__top h2 {
+  margin-bottom: 20px;
 }
 
-.singlePR__link{
-	border: 1px solid #E77002;
-	padding: 20px;
-	border-radius: 10px;
-	cursor: pointer;
-	align-items: center;
-	text-align: center;
+.singlePR__link {
+  border: 1px solid #e77002;
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: center;
+  text-align: center;
+}
+
+.singlePR__bottom {
+  padding: 20px;
+  gap: 20px;
+}
+
+@media only screen and (max-width: 1500px) {
+  .singlePR {
+    margin: 100px;
+  }
+}
+
+@media only screen and (max-width: 1225px) {
+  .singlePR {
+    margin: 100px 0px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .singlePR {
+    font-size: 0.9rem;
+  }
+  .singlePR__top h2 {
+    font-size: 0.8rem;
+  }
+  .singlePR__link {
+    padding: 10px;
+  }
 }
