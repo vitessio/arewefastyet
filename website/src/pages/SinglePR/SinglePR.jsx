@@ -31,14 +31,12 @@ const SinglePR = () => {
     isLoading: singlePrLoading,
     error: singlePrError,
   } = useApiCall(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`, []);
-  console.log(dataSinglePr);
 
   const isComparisonAvailable =
     dataSinglePr.Base !== "" && dataSinglePr.Head !== "";
 
   if (
-    dataSinglePr.error ==
-    "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
+    dataSinglePr.error == "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
   ) {
     return (
       <div className="errorPullRequest">Pull request {pull_nb} not found</div>
