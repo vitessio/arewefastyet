@@ -18,6 +18,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { formatByteForGB, fixed } from "../../../utils/Utils";
 import { Swiper, SwiperSlide } from "swiper/react";
+import PulseLoader from "react-spinners/PulseLoader";
 
 import "./macrobenchmobile.css";
 import "swiper/css";
@@ -31,13 +32,24 @@ const MacrobenchMobile = ({
   gitRefRight,
   setCurrentSlideIndexMobile,
   currentSlideIndexMobile,
-  showSpan,
   commitHashLeft,
   commitHashRight,
 }) => {
   const handleSlideChange = (swiper) => {
     setCurrentSlideIndexMobile(swiper.realIndex);
   };
+
+  const renderDataOrLoader = (data, loading) => {
+      if (loading) {
+        return (
+          <span>
+            <PulseLoader loading={true} size={5} color="var(--font-color)" />
+          </span>
+        );
+      } else {
+        return <span>{data}</span>;
+      }
+    };
 
   return (
     <div className="macrobench__mobile">
@@ -105,24 +117,24 @@ const MacrobenchMobile = ({
             <SwiperSlide>
               <div className="macrobench__data flex--column">
                 <h4>Impoved by %</h4>
-                <span>{fixed(data.diff.Diff.qps.total, 0)}</span>
-                <span>{fixed(data.diff.Diff.qps.reads, 0)}</span>
-                <span>{fixed(data.diff.Diff.qps.writes, 0)}</span>
-                <span>{fixed(data.diff.Diff.qps.other, 0)}</span>
-                <span>{fixed(data.diff.Diff.tps, 0)}</span>
-                <span>{fixed(data.diff.Diff.latency, 0)}</span>
-                <span>{fixed(data.diff.Diff.errors, 0)}</span>
-                <span>{fixed(data.diff.Diff.reconnects, 0)}</span>
-                <span>{fixed(data.diff.Diff.time, 0)}</span>
-                <span>{fixed(data.diff.Diff.threads, 0)}</span>
+                <span>{fixed(data.diff.Diff.qps.total, 2)}</span>
+                <span>{fixed(data.diff.Diff.qps.reads, 2)}</span>
+                <span>{fixed(data.diff.Diff.qps.writes, 2)}</span>
+                <span>{fixed(data.diff.Diff.qps.other, 2)}</span>
+                <span>{fixed(data.diff.Diff.tps, 2)}</span>
+                <span>{fixed(data.diff.Diff.latency, 2)}</span>
+                <span>{fixed(data.diff.Diff.errors, 2)}</span>
+                <span>{fixed(data.diff.Diff.reconnects, 2)}</span>
+                <span>{fixed(data.diff.Diff.time, 2)}</span>
+                <span>{fixed(data.diff.Diff.threads, 2)}</span>
                 <span>
-                  {fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 0)}
+                  {fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}
                 </span>
                 <span>
-                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 0)}
+                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 2)}
                 </span>
                 <span>
-                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 0)}
+                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 2)}
                 </span>
                 <span>
                   {formatByteForGB(
@@ -132,7 +144,7 @@ const MacrobenchMobile = ({
                 <span>
                   {fixed(
                     data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate,
-                    0
+                    2
                   )}
                 </span>
                 <span id="borderNone">
@@ -145,22 +157,35 @@ const MacrobenchMobile = ({
             </SwiperSlide>
             <SwiperSlide>
               <div className="macrobench__data flex--column">
-                <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
-                <span>{data.diff.Left.Result.qps.total}</span>
-                <span>{data.diff.Left.Result.qps.reads}</span>
-                <span>{data.diff.Left.Result.qps.writes}</span>
-                <span>{data.diff.Left.Result.qps.other}</span>
-                <span>{data.diff.Left.Result.tps}</span>
-                <span>{data.diff.Left.Result.latency}</span>
-                <span>{data.diff.Left.Result.errors}</span>
-                <span>{data.diff.Left.Result.reconnects}</span>
-                <span>{data.diff.Left.Result.time}</span>
-                <span>{data.diff.Left.Result.threads}</span>
+                {gitRefLeft == "" || gitRefLeft == "Left" ? (
+                  <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
+                ) : (
+                  <a
+                    target="blank"
+                    href={`https://github.com/vitessio/vitess/commit/${commitHashLeft}`}
+                  >
+                    <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
+                  </a>
+                )}
+                <span>{fixed(data.diff.Left.Result.qps.total, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.qps.reads, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.qps.writes, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.qps.other, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.tps, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.latency, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.errors, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.reconnects, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.time, 2)}</span>
+                <span>{fixed(data.diff.Left.Result.threads, 2)}</span>
                 <span>
                   {fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0)}
                 </span>
-                <span>{data.diff.Left.Metrics.ComponentsCPUTime.vtgate}</span>
-                <span>{data.diff.Left.Metrics.ComponentsCPUTime.vttablet}</span>
+                <span>
+                  {fixed(data.diff.Left.Metrics.ComponentsCPUTime.vtgate, 2)}
+                </span>
+                <span>
+                  {fixed(data.diff.Left.Metrics.ComponentsCPUTime.vttablet, 2)}
+                </span>
                 <span>
                   {formatByteForGB(
                     data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
@@ -180,23 +205,34 @@ const MacrobenchMobile = ({
             </SwiperSlide>
             <SwiperSlide>
               <div className="macrobench__data flex--column">
-                <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
-                <span>{data.diff.Right.Result.qps.total}</span>
-                <span>{data.diff.Right.Result.qps.reads}</span>
-                <span>{data.diff.Right.Result.qps.writes}</span>
-                <span>{data.diff.Right.Result.qps.other}</span>
-                <span>{data.diff.Right.Result.tps}</span>
-                <span>{data.diff.Right.Result.latency}</span>
-                <span>{data.diff.Right.Result.errors}</span>
-                <span>{data.diff.Right.Result.reconnects}</span>
-                <span>{data.diff.Right.Result.time}</span>
-                <span>{data.diff.Right.Result.threads}</span>
+                {gitRefRight == "" || gitRefRight == "Right" ? (
+                  <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
+                ) : (
+                  <a
+                    target="blank"
+                    href={`https://github.com/vitessio/vitess/commit/${commitHashRight}`}
+                  >
+                    <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
+                  </a>
+                )}
+                <span>{fixed(data.diff.Right.Result.qps.total, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.qps.reads, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.qps.writes, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.qps.other, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.tps, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.latency, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.errors, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.reconnects, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.time, 2)}</span>
+                <span>{fixed(data.diff.Right.Result.threads, 2)}</span>
                 <span>
-                  {data.diff.Right.Metrics.TotalComponentsCPUTime.toFixed(0)}
+                  {fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 0)}
                 </span>
-                <span>{data.diff.Right.Metrics.ComponentsCPUTime.vtgate}</span>
                 <span>
-                  {data.diff.Right.Metrics.ComponentsCPUTime.vttablet}
+                  {fixed(data.diff.Right.Metrics.ComponentsCPUTime.vtgate, 2)}
+                </span>
+                <span>
+                  {fixed(data.diff.Right.Metrics.ComponentsCPUTime.vttablet, 2)}
                 </span>
                 <span>
                   {formatByteForGB(

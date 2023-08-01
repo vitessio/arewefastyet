@@ -22,6 +22,7 @@ limitations under the License.
 
 .macrobench__mobile h4 {
   padding: 10px 0px;
+  font-weight: bold;
 }
 
 .macrobench__mobile {
@@ -74,6 +75,10 @@ limitations under the License.
   margin-bottom: 50px;
 }
 
+.swiper-slide-shadow .swiper-3d{
+  background: none;
+}
+
 @media only screen and (max-width: 767px) {
   .macrobench__mobile {
     display: contents;
@@ -99,7 +104,7 @@ limitations under the License.
     background-color: var(--background-color);
     border: #e77002 1px solid;
     border-radius: 10px 10px 0px 0px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
   .linkQuery {

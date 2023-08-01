@@ -32,6 +32,7 @@ limitations under the License.
 }
 
 .linkToCompare {
+  position: relative;
   align-self: center;
   color: #e77002;
   cursor: pointer;
@@ -59,6 +60,23 @@ limitations under the License.
 .prGit thead tr {
   border-bottom: 1px solid var(--font-color);
   padding: 10px;
+}
+
+#compareMessage {
+  position: absolute;
+  left: 65%; 
+  font-size: 0.8rem;
+  transform: translateX(-50%);
+  background-color: #B5ADAD;
+  color: var(--font-color);
+  padding: 5px;
+  border-radius: 5px;
+  opacity: 0; 
+  pointer-events: none; 
+}
+
+.linkToCompare:hover #compareMessage {
+  opacity: 1; 
 }
 
 @media only screen and (max-width: 1225px) {
