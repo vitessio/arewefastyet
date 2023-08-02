@@ -34,22 +34,23 @@ const MacrobenchMobile = ({
   currentSlideIndexMobile,
   commitHashLeft,
   commitHashRight,
+  textLoading,
 }) => {
   const handleSlideChange = (swiper) => {
     setCurrentSlideIndexMobile(swiper.realIndex);
   };
 
   const renderDataOrLoader = (data, loading) => {
-      if (loading) {
-        return (
-          <span>
-            <PulseLoader loading={true} size={5} color="var(--font-color)" />
-          </span>
-        );
-      } else {
-        return <span>{data}</span>;
-      }
-    };
+    if (loading) {
+      return (
+        <span id="textloader">
+          <PulseLoader loading={true} size={5} color="var(--font-color)" />
+        </span>
+      );
+    } else {
+      return <span>{data}</span>;
+    }
+  };
 
   return (
     <div className="macrobench__mobile">
@@ -58,12 +59,7 @@ const MacrobenchMobile = ({
         <div className="linkQuery">
           Click{" "}
           <Link
-            to="/macrobench/queries/compare"
-            state={{
-              data: data,
-              commitHashLeft: commitHashLeft,
-              commitHashRight: commitHashRight,
-            }}
+            to={`/macrobench/queries/compare?ltag=${commitHashLeft}&rtag=${commitHashRight}&type=${data.type}`}
           >
             here
           </Link>{" "}
@@ -117,40 +113,109 @@ const MacrobenchMobile = ({
             <SwiperSlide>
               <div className="macrobench__data flex--column">
                 <h4>Impoved by %</h4>
-                <span>{fixed(data.diff.Diff.qps.total, 2)}</span>
-                <span>{fixed(data.diff.Diff.qps.reads, 2)}</span>
-                <span>{fixed(data.diff.Diff.qps.writes, 2)}</span>
-                <span>{fixed(data.diff.Diff.qps.other, 2)}</span>
-                <span>{fixed(data.diff.Diff.tps, 2)}</span>
-                <span>{fixed(data.diff.Diff.latency, 2)}</span>
-                <span>{fixed(data.diff.Diff.errors, 2)}</span>
-                <span>{fixed(data.diff.Diff.reconnects, 2)}</span>
-                <span>{fixed(data.diff.Diff.time, 2)}</span>
-                <span>{fixed(data.diff.Diff.threads, 2)}</span>
-                <span>
-                  {fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}
-                </span>
-                <span>
-                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 2)}
-                </span>
-                <span>
-                  {fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 2)}
-                </span>
-                <span>
-                  {formatByteForGB(
-                    data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.qps.total, 2),
+                    textLoading
                   )}
                 </span>
-                <span>
-                  {fixed(
-                    data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate,
-                    2
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.qps.reads, 2),
+                    textLoading
                   )}
                 </span>
-                <span id="borderNone">
-                  {fixed(
-                    data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet,
-                    0
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.qps.writes, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.qps.other, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.tps, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.latency, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.errors, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.reconnects, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.time, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Diff.threads, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.DiffMetrics.ComponentsCPUTime.vtgate, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.DiffMetrics.ComponentsCPUTime.vttablet, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    formatByteForGB(
+                      data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes
+                    ),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(
+                      data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate,
+                      2
+                    ),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span" id="borderNone">
+                  {renderDataOrLoader(
+                    fixed(
+                      data.diff.DiffMetrics.ComponentsMemStatsAllocBytes
+                        .vttablet,
+                      0
+                    ),
+                    textLoading
                   )}
                 </span>
               </div>
@@ -167,38 +232,107 @@ const MacrobenchMobile = ({
                     <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
                   </a>
                 )}
-                <span>{fixed(data.diff.Left.Result.qps.total, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.qps.reads, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.qps.writes, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.qps.other, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.tps, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.latency, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.errors, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.reconnects, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.time, 2)}</span>
-                <span>{fixed(data.diff.Left.Result.threads, 2)}</span>
-                <span>
-                  {fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0)}
-                </span>
-                <span>
-                  {fixed(data.diff.Left.Metrics.ComponentsCPUTime.vtgate, 2)}
-                </span>
-                <span>
-                  {fixed(data.diff.Left.Metrics.ComponentsCPUTime.vttablet, 2)}
-                </span>
-                <span>
-                  {formatByteForGB(
-                    data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.qps.total, 2),
+                    textLoading
                   )}
                 </span>
-                <span>
-                  {formatByteForGB(
-                    data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.qps.reads, 2),
+                    textLoading
                   )}
                 </span>
-                <span id="borderNone">
-                  {formatByteForGB(
-                    data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.qps.writes, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.qps.other, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.tps, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.latency, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.errors, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.reconnects, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.time, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Result.threads, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Metrics.ComponentsCPUTime.vtgate, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Left.Metrics.ComponentsCPUTime.vttablet, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    formatByteForGB(
+                      data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
+                    ),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    formatByteForGB(
+                      data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate
+                    ),
+                    textLoading
+                  )}
+                </span>
+                <span id="borderNone" className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    formatByteForGB(
+                      data.diff.Left.Metrics.ComponentsMemStatsAllocBytes
+                        .vttablet
+                    ),
+                    textLoading
                   )}
                 </span>
               </div>
@@ -215,39 +349,111 @@ const MacrobenchMobile = ({
                     <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
                   </a>
                 )}
-                <span>{fixed(data.diff.Right.Result.qps.total, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.qps.reads, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.qps.writes, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.qps.other, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.tps, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.latency, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.errors, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.reconnects, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.time, 2)}</span>
-                <span>{fixed(data.diff.Right.Result.threads, 2)}</span>
-                <span>
-                  {fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 0)}
-                </span>
-                <span>
-                  {fixed(data.diff.Right.Metrics.ComponentsCPUTime.vtgate, 2)}
-                </span>
-                <span>
-                  {fixed(data.diff.Right.Metrics.ComponentsCPUTime.vttablet, 2)}
-                </span>
-                <span>
-                  {formatByteForGB(
-                    data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.qps.total, 2),
+                    textLoading
                   )}
                 </span>
-                <span>
-                  {formatByteForGB(
-                    data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.qps.reads, 2),
+                    textLoading
                   )}
                 </span>
-                <span id="borderNone">
-                  {formatByteForGB(
-                    data.diff.Right.Metrics.ComponentsMemStatsAllocBytes
-                      .vttablet
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.qps.writes, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.qps.other, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.tps, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.latency, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.errors, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.reconnects, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.time, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Result.threads, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 0),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(data.diff.Right.Metrics.ComponentsCPUTime.vtgate, 2),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    fixed(
+                      data.diff.Right.Metrics.ComponentsCPUTime.vttablet,
+                      2
+                    ),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    formatByteForGB(
+                      data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes
+                    ),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span">
+                  {renderDataOrLoader(
+                    formatByteForGB(
+                      data.diff.Right.Metrics.ComponentsMemStatsAllocBytes
+                        .vtgate
+                    ),
+                    textLoading
+                  )}
+                </span>
+                <span className="macrobench__data__span" id="borderNone">
+                  {renderDataOrLoader(
+                    formatByteForGB(
+                      data.diff.Right.Metrics.ComponentsMemStatsAllocBytes
+                        .vttablet
+                    ),
+                    textLoading
                   )}
                 </span>
               </div>

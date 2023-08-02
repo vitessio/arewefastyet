@@ -67,7 +67,7 @@ const Compare = () => {
     }microbench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
     [isFormSubmitted]
   );
-
+    
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
   const navigate = useNavigate();
@@ -143,6 +143,8 @@ const Compare = () => {
                         gitRefLeft={gitRefLeft.slice(0, 8)}
                         gitRefRight={gitRefRight.slice(0, 8)}
                         swiperSlide={SwiperSlide}
+                        commitHashLeft={gitRefLeft}
+                        commitHashRight={gitRefRight}
                       />
                       <MacrobenchMobile
                         data={macro}
@@ -153,6 +155,8 @@ const Compare = () => {
                         handleSlideChange={handleSlideChange}
                         setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                         currentSlideIndexMobile={currentSlideIndexMobile}
+                        commitHashLeft={gitRefLeft}
+                        commitHashRight={gitRefRight}
                       />
                     </div>
                   );

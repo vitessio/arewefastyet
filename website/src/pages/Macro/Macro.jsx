@@ -178,6 +178,7 @@ const Macro = () => {
                                                     handleSlideChange={handleSlideChange} 
                                                     setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                                                     currentSlideIndexMobile={currentSlideIndexMobile}
+                                                    textLoading={textLoading}
                                                     />
                                                 </div>
                                             )
