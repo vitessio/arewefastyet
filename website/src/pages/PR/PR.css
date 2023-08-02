@@ -17,6 +17,8 @@ limitations under the License.
 .pr {
   min-height: 100vh;
   padding: 20px;
+  max-width: 1500px;
+  margin: auto;
 }
 
 .pr__top {

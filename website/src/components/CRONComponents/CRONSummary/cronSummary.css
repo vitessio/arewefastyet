@@ -22,6 +22,7 @@ limitations under the License.
   margin-right: 20px;
   margin-top: 20px;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .cronSummary:hover {
@@ -64,4 +65,8 @@ limitations under the License.
   position: absolute;
   right: 0%;
   top: 50%;
+}
+
+.cronSummary--selected{
+  background-color: var(--secondary-color);
 }

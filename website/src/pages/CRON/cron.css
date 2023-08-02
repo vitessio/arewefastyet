@@ -18,6 +18,8 @@ limitations under the License.
   padding: 0px 20px 0px 20px;
   position: relative;
   min-height: 100vh;
+  max-width: 1500px;
+  margin: auto;
 }
 
 .cron__top {
@@ -64,8 +66,8 @@ limitations under the License.
 }
 
 .tooltip {
-  color: white;
-  background-color: black;
+  color: #fad900;
+  background-color: rgb(125, 104, 104);
   padding: 5px;
   gap: 10px;
 }

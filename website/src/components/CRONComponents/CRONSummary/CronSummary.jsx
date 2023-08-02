@@ -19,9 +19,9 @@ import { ResponsiveLine } from "@nivo/line";
 
 import "../CRONSummary/cronSummary.css";
 
-const CronSummary = ({ data, setBenchmarktype }) => {
+const CronSummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
   const orange = "#E77002";
-
+  
   const transformedData = [];
 
   if (data.Data !== null) {
@@ -39,7 +39,10 @@ const CronSummary = ({ data, setBenchmarktype }) => {
   };
 
   return (
-    <div className="cronSummary flex--column" onClick={getBenchmarkType}>
+    <div className={`cronSummary flex--column ${isSelected ? "cronSummary--selected" : ""}`}  onClick={() => {
+      handleClick();
+      getBenchmarkType();
+    }}>
       {data ? (
         <div className="cronSummary__chart">
           <ResponsiveLine

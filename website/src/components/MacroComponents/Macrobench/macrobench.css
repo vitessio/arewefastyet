@@ -14,83 +14,93 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.macrobench__component{
-    width: 100%;
-    border: #E77002 1px solid;
-    border-radius: 10px 10px 10px 0px;
-    border-bottom: #E77002 1px solid;
-    position: relative;
-    margin-top: 90px;
+.macrobench__component {
+  width: 100%;
+  border: #e77002 1px solid;
+  border-radius: 10px 10px 10px 0px;
+  border-bottom: #e77002 1px solid;
+  position: relative;
+  margin-bottom: 90px;
 }
 
-.macrobench__component__header{
-    position:absolute;
-    margin-top: -90px;
-    margin-left: 10%;
+.macrobench__component__header {
+  padding: 20px;
 }
 
-.macrobench__component h3{
-    font-weight: 300;
-    margin-bottom: 10px;
+.macrobench__component h3 {
+  text-align: start;
+  font-weight: 300;
+  margin-bottom: 10px;
+  font-size: 2rem;
 }
 
-.macrobench__component__container{
-    justify-content: center;
+.macrobench__component__container {
+  justify-content: center;
 }
 
-.macrobench__component h4{
-    border-bottom: #E77002 1px solid;
-    padding: 10px 20px;
-    font-size: 0.8rem;
+.macrobench__component h4 {
+  padding: 10px 20px;
 }
 
 /* Array */
 
-table{
-    width: 100%;
-    border-collapse: collapse;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.macrobench__component th{
-    width: 33%;
+.macrobench__component th {
+  border-bottom: #e77002 1px solid;
+  width: 25%;
 }
 
-.border--bottom{
-    border-bottom: 1px solid #B5ADAD ;
+.border--bottom {
+  border-bottom: 1px solid #b5adad;
 }
 
-.macrobench__component tbody tr:hover{
-    background-color: #B5ADAD;
+.macrobench__component tbody tr:hover {
+  background-color: #b5adad;
 }
 
-.macrobench__component thead{
-    width: 100%;
+.macrobench__component thead {
+  width: 100%;
 }
 
-.macrobench__component td{
-    padding: 15px 0px 5px 0px;
-    font-size: 1rem;
+.macrobench__component td {
+  padding: 15px 0px 5px 0px;
+  font-size: 1rem;
+  text-align: center;
 }
 
-.macrobench__component h4{
-    min-height: 37px;
+.sidebar--border {
+  display: flex;
+  justify-content: end;
+  border-right: #e77002 1px solid;
+  font-weight: bold;
+}
+
+.sidebar {
+  margin-right: 20px;
+}
+
+.macrobench__component h4 {
+  min-height: 37px;
 }
 
 @media only screen and (max-width: 1225px) {
-    .macrobench__data h4{
-        font-weight: 200;
-    }
+  .macrobench__data h4 {
+    font-weight: 200;
+  }
 
-    .linkQueryT{
-        font-size: 16px;
-    }
+  .linkQueryT {
+    font-size: 16px;
+  }
 }
 
 /* MEDIA QUERIES FOR MOBILE */
-@media only screen and (max-width: 767px){
-    .macrobench__component{
-        display: none;
-        border-radius: 10px;
-    }
-
+@media only screen and (max-width: 767px) {
+  .macrobench__component {
+    display: none;
+    border-radius: 10px;
+  }
 }

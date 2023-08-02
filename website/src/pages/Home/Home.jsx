@@ -17,8 +17,8 @@ limitations under the License.
 import React, { useContext } from "react";
 import { AppContext } from "../../AppContext";
 
-import homeLogoDark from "../../assets/homeLogoLarge.png";
-import homeLogoLight from "../../assets/homeLogoLarge2.png";
+import homeLogoDark from "../../assets/homeLogoDarkLarge.png";
+import homeLogoLight from "../../assets/homeLogoWhiteLarge.png";
 
 import "./home.css";
 
@@ -29,7 +29,7 @@ const Home = () => {
     <div className="home">
       <article className="home__top justify--content">
         <div className="home__top__text">
-          <h1>AreWeFastYet</h1>
+          <h1>arewefastyet</h1>
           <span>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
             augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
@@ -40,7 +40,7 @@ const Home = () => {
           </span>
         </div>
         <img
-          src={isColorChanged ? homeLogoDark : homeLogoLight}
+          src={isColorChanged ? homeLogoLight : homeLogoDark }
           alt="logo"
           className="home__top__logo"
         />

@@ -17,13 +17,12 @@ limitations under the License.
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RingLoader from "react-spinners/RingLoader";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
 
 import '../Macro/Macro.css'
-import "swiper/css";
-import "swiper/css/pagination";
+// import "swiper/css";
 
-import { Mousewheel, Pagination, Keyboard } from "swiper";
+
 import Macrobench from '../../components/MacroComponents/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile';
 import { errorApi, closeDropDownValue, updateCommitHash, openDropDown, valueDropDown } from '../../utils/Utils';
@@ -46,8 +45,8 @@ const Macro = () => {
     const [commitHashRight, setCommitHashRight] = useState('')
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(urlParams.get('ptag') == null ? '0' : urlParams.get('ptag'));
     const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(urlParams.get('ptagM') == null ? '0' : urlParams.get('ptagM'))
+    const [textLoading, setTextLoading] = useState(true)
     
     useEffect(() => {
         const fetchData = async () => {
@@ -76,6 +75,7 @@ const Macro = () => {
 
     useEffect(() => {
         if (isFirstCallFinished) {
+            setTextLoading(true)
             const fetchData = async () => {
                 try {
                     const responseMacrobench = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`)
@@ -83,10 +83,12 @@ const Macro = () => {
                     const jsonDataMacrobench = await responseMacrobench.json();
                     setDataMacrobench(jsonDataMacrobench)
                     setIsLoading(false)
+                    setTextLoading(false)
                 } catch (error) {
                     console.log('Error while retrieving data from the API', error);
                     setError(errorApi);
                     setIsLoading(false);
+                    setTextLoading(false)
                 }
             };
             fetchData();
@@ -99,12 +101,12 @@ const Macro = () => {
     const navigate = useNavigate();
     
     useEffect(() => {
-        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`)
-    }, [gitRefLeft, gitRefRight, currentSlideIndex, currentSlideIndexMobile]) 
+        navigate(`?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptagM=${currentSlideIndexMobile}`)
+    }, [gitRefLeft, gitRefRight, currentSlideIndexMobile]) 
     
 
     const handleSlideChange = (swiper) => {
-        setCurrentSlideIndex(swiper.realIndex);
+        setCurrentSlideIndexMobile(swiper.realIndex);
     };
         
     return (
@@ -153,59 +155,12 @@ const Macro = () => {
                             </div>
                         ): ( 
                             <div className='macrobench__Container flex'>
-                                <div className='macrobench__Sidebar flex--column'>
-                                    <span >QPS Total</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>QPS Reads</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>QPS Writes</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>QPS Other</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>TPS</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Latency</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Errors</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Reconnects</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Time</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Threads</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Total CPU time</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>CPU time vtgate</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>CPU time vttablet</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Total Allocs bytes</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Allocs bytes vtgate</span>
-                                    <figure className='macrobench__Sidebar__line'></figure>
-                                    <span>Allocs bytes vttablet</span>
-                                </div>
+                                
                                 <div className='carousel__container'>
-                                    <Swiper
-                                        direction={"vertical"}
-                                        slidesPerView={1}
-                                        spaceBetween={30}
-                                        mousewheel={true}
-                                        keyboard={{
-                                            enabled: true,
-                                        }}
-                                        pagination={{
-                                        clickable: true,
-                                        }}
-                                        modules={[Mousewheel, Pagination, Keyboard]}
-                                        onSlideChange={handleSlideChange}
-                                        initialSlide={currentSlideIndex}
-                                        className="mySwiper"
-                                        >
+                                    
                                         {dataMacrobench.map((macro, index) => {
                                             return (
-                                                <SwiperSlide key={index}>
+                                                <div key={index}>
                                                     <Macrobench
                                                         data={macro} 
                                                         gitRefLeft={gitRefLeft} 
@@ -213,6 +168,7 @@ const Macro = () => {
                                                         swiperSlide={SwiperSlide} 
                                                         commitHashLeft={commitHashLeft}
                                                         commitHashRight={commitHashRight}
+                                                        textLoading={textLoading}
                                                     />
                                                     <MacrobenchMobile 
                                                     data={macro} 
@@ -222,12 +178,13 @@ const Macro = () => {
                                                     handleSlideChange={handleSlideChange} 
                                                     setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                                                     currentSlideIndexMobile={currentSlideIndexMobile}
+                                                    textLoading={textLoading}
                                                     />
-                                                </SwiperSlide>
+                                                </div>
                                             )
                                         })}
                                         
-                                    </Swiper>
+                                    
                                 </div>                
                             </div>
                     ))}

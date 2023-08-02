@@ -65,7 +65,7 @@ const Status = () => {
             style={{ fontSize: "5rem", color: "#E77002" }}
             duration={3}
           />
-          <span className="countUp__title">Total Benchmark</span>
+          <span className="countUp__title">Total Benchmarks</span>
           <CountUp
             start={0}
             end={dataStatusStats.Finished}
@@ -143,14 +143,8 @@ const Status = () => {
             return (
               <React.Fragment key={uuidv4()}>
                 <PreviousExe data={previousExe} key={index} />
-                <PreviousExeResMobile
-                  data={previousExe}
-                  key={uuidv4()}
-                />
-                <PreviousExeResTablet
-                  data={previousExe}
-                  key={uuidv4()}
-                />
+                <PreviousExeResMobile data={previousExe} key={uuidv4()} />
+                <PreviousExeResTablet data={previousExe} key={uuidv4()} />
               </React.Fragment>
             );
           })}

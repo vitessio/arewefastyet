@@ -17,7 +17,9 @@ limitations under the License.
 .query{
     padding: 0px 20px 0px 20px;
     position: relative;
-    height: 100%;
+    max-width: 1500px;
+    min-height: 100vh;
+    margin: auto;
 }
 
 .query__top{
@@ -43,6 +45,13 @@ limitations under the License.
 
 .queryPlan__container{
     margin-bottom: 900px;
+}
+
+.query__error{
+    margin-top: 100px;
+    text-align: center;
+    font-size:2rem;
+    gap: 50px;
 }
 
 /* MEDIA QUERIES FOR MOBILE */

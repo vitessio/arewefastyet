@@ -53,8 +53,9 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
         <span className="width--10em hidden--mobile">
           {formatDate(data.CreatedAt)}
         </span>
-        <span className="linkToCompare" onClick={() => handlePrInfo(data.ID)}>
-          Compare with base commit
+        <span className="linkToCompare" >
+        <i className="fa-solid fa-arrow-right" onClick={() => handlePrInfo(data.ID)}></i>
+        <span id="compareMessage">compare</span>
         </span>
         <span className="hidden--desktop">
           <i className="fa-solid fa-circle-info" onClick={handleClick}></i>

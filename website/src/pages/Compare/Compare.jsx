@@ -17,14 +17,13 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { SwiperSlide } from "swiper/react";
 import useApiCall from "../../utils/Hook";
 
 import "../Compare/compare.css";
 import "swiper/css";
 import "swiper/css/pagination";
 
-import { Mousewheel, Pagination, Keyboard } from "swiper";
 import Macrobench from "../../components/MacroComponents/Macrobench/Macrobench";
 import MacrobenchMobile from "../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile";
 import Microbench from "../../components/Microbench/Microbench";
@@ -42,24 +41,23 @@ const Compare = () => {
   const [gitRefRight, setGitRefRight] = useState(
     urlParams.get("rtag") == null ? "Right" : urlParams.get("rtag")
   );
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(
-    urlParams.get("ptag") == null ? "0" : urlParams.get("ptag")
-  );
   const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(
     urlParams.get("ptagM") == null ? "0" : urlParams.get("ptagM")
   );
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const {
     data: dataMacrobench,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
+    textLoading: macroTextLoading
   } = useApiCall(
     `${
       import.meta.env.VITE_API_URL
     }macrobench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
-    [gitRefLeft, gitRefRight]
+    [isFormSubmitted]
   );
-
+    
   const {
     data: dataMicrobench,
     isLoading: isMicrobenchLoading,
@@ -68,18 +66,18 @@ const Compare = () => {
     `${
       import.meta.env.VITE_API_URL
     }microbench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
-    [gitRefLeft, gitRefRight]
+    [isFormSubmitted]
   );
-
+    
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
   const navigate = useNavigate();
 
   useEffect(() => {
     navigate(
-      `?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptag=${currentSlideIndex}&ptagM=${currentSlideIndexMobile}`
+      `?ltag=${gitRefLeft}&rtag=${gitRefRight}&ptagM=${currentSlideIndexMobile}`
     );
-  }, [gitRefLeft, gitRefRight, currentSlideIndex, currentSlideIndexMobile]);
+  }, [gitRefLeft, gitRefRight, currentSlideIndexMobile]);
 
   const handleInputChangeLeft = (e) => {
     setGitRefLeft(e.target.value);
@@ -90,27 +88,20 @@ const Compare = () => {
   };
 
   const handleSlideChange = (swiper) => {
-    setCurrentSlideIndex(swiper.realIndex);
+    setCurrentSlideIndexMobile(swiper.realIndex);
   };
 
-  const slicedRef = gitRefLeft.slice(0, 8);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsFormSubmitted((prevState) => !prevState);
+  };
+
+
   return (
     <div className="compare">
       <div className="compare__top">
         <div className="justify--content form__container">
-          <h3>
-            Comparing{" "}
-            <a href={`https://github.com/vitessio/vitess/commit/${gitRefLeft}`}>
-              {gitRefLeft ? gitRefLeft.slice(0, 8) : "Left"}
-            </a>{" "}
-            with{" "}
-            <a
-              href={`https://github.com/vitessio/vitess/commit/${gitRefRight}`}
-            >
-              {gitRefRight ? gitRefRight.slice(0, 8) : "Right"}
-            </a>
-          </h3>
-          <form className="justify--content">
+          <form className="justify--content" onSubmit={handleSubmit}>
             <input
               type="text"
               value={gitRefLeft === "Left" ? "" : gitRefLeft}
@@ -125,6 +116,7 @@ const Compare = () => {
               placeholder="Right commit SHA"
               className="form__inputRight"
             ></input>
+            <button type="submit">Search</button>
           </form>
         </div>
 
@@ -142,80 +134,34 @@ const Compare = () => {
           <>
             <h3 className="compare__macrobench__title">Macro Benchmarks</h3>
             <div className="compare__macrobench__Container flex">
-              <div className="compare__macrobench__Sidebar flex--column">
-                <span>QPS Total</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>QPS Reads</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>QPS Writes</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>QPS Other</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>TPS</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Latency</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Errors</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Reconnects</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Time</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Threads</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Total CPU time</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>CPU time vtgate</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>CPU time vttablet</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Total Allocs bytes</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Allocs bytes vtgate</span>
-                <figure className="macrobench__Sidebar__line"></figure>
-                <span>Allocs bytes vttablet</span>
-              </div>
               <div className="compare__carousel__container">
-                <Swiper
-                  direction={"vertical"}
-                  slidesPerView={1}
-                  spaceBetween={30}
-                  mousewheel={true}
-                  keyboard={{
-                    enabled: true,
-                  }}
-                  pagination={{
-                    clickable: true,
-                  }}
-                  modules={[Mousewheel, Pagination, Keyboard]}
-                  onSlideChange={handleSlideChange}
-                  initialSlide={currentSlideIndex}
-                  className="mySwiper"
-                >
-                  {dataMacrobench.map((macro, index) => {
-                    return (
-                      <SwiperSlide key={index}>
-                        <Macrobench
-                          data={macro}
-                          gitRefLeft={gitRefLeft.slice(0, 8)}
-                          gitRefRight={gitRefRight.slice(0, 8)}
-                          swiperSlide={SwiperSlide}
-                        />
-                        <MacrobenchMobile
-                          data={macro}
-                          gitRefLeft={gitRefLeft}
-                          gitRefRight={gitRefRight}
-                          swiperSlide={SwiperSlide}
-                          handleSlideChange={handleSlideChange}
-                          setCurrentSlideIndexMobile={
-                            setCurrentSlideIndexMobile
-                          }
-                          currentSlideIndexMobile={currentSlideIndexMobile}
-                        />
-                      </SwiperSlide>
-                    );
-                  })}
-                </Swiper>
+                {dataMacrobench.map((macro, index) => {
+                  return (
+                    <div key={index}>
+                      <Macrobench
+                        data={macro}
+                        textLoading={macroTextLoading}
+                        gitRefLeft={gitRefLeft.slice(0, 8)}
+                        gitRefRight={gitRefRight.slice(0, 8)}
+                        swiperSlide={SwiperSlide}
+                        commitHashLeft={gitRefLeft}
+                        commitHashRight={gitRefRight}
+                      />
+                      <MacrobenchMobile
+                        data={macro}
+                        gitRefLeft={gitRefLeft.slice(0, 8)}
+                        gitRefRight={gitRefRight.slice(0, 8)}
+                        swiperSlide={SwiperSlide}
+                        textLoading={macroTextLoading}
+                        handleSlideChange={handleSlideChange}
+                        setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
+                        currentSlideIndexMobile={currentSlideIndexMobile}
+                        commitHashLeft={gitRefLeft}
+                        commitHashRight={gitRefRight}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

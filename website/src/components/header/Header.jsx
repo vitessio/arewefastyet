@@ -74,60 +74,68 @@ const Header = () => {
     };
   }, []);
 
+  const links = [
+    { to: "/status", label: "Status" },
+    { to: "/cron", label: "CRON" },
+    { to: "/compare", label: "Compare" },
+    { to: "/search", label: "Search" },
+    { to: "/micro", label: "Micro" },
+    { to: "/macro", label: "Macro" },
+    { to: "/pr", label: "PR" },
+  ]
+
   return (
     <div className={`header flex ${visible ? "visible" : "hidden"}`}>
-      <div className="logo__container">
-        <img src={logo} alt="logo" />
-        <span className="hiddenResponsiveMobile">Benchmark</span>
-        <button className="buttonMode" onClick={handleButtonClick}>
-          {isColorChanged ? (
-            <i className="far fa-moon"></i>
-          ) : (
-            <i className="far fa-sun"></i>
-          )}
-        </button>
-      </div>
-      {openMenu ? (
-        <>
-          <nav>
-            <ul className="header__nav flex">
-              {[
-                { to: "/home", label: "Home" },
-                { to: "/status", label: "Status" },
-                { to: "/cron", label: "CRON" },
-                { to: "/compare", label: "Compare" },
-                { to: "/search", label: "Search" },
-                { to: "/micro", label: "Micro" },
-                { to: "/macro", label: "Macro" },
-                { to: "/pr", label: "PR" },
-              ].map((link, index) => (
-                <div key={index}>
-                  <li>
-                    <NavLink
-                      className="header__link"
-                      activeclassname="active"
-                      onClick={handleMenuClick}
-                      to={link.to}
-                    >
-                      {link.label}
-                    </NavLink>
-                  </li>
-                </div>
-              ))}
-            </ul>
-          </nav>
+      <div className="header__container flex">
+        <div className="logo__container">
+          <a href="/home" className="flex">
+            <img src={logo} alt="logo" />
+            <span className="hiddenResponsiveMobile">arewefastyet</span>
+          </a>
+          <button className="buttonMode" onClick={handleButtonClick}>
+            {isColorChanged ? (
+              <i className="far fa-moon"></i>
+            ) : (
+              <i className="far fa-sun"></i>
+            )}
+          </button>
+        </div>
+        {openMenu ? (
+          <>
+            <nav>
+              <ul className="header__nav flex">
+                {links.map((link, index) => (
+                  <div key={index}>
+                    <li className={index === links.length - 1 ? "" : "liborder--bottom"}>
+                      <NavLink
+                        className="header__link"
+                        activeclassname="active"
+                        onClick={handleMenuClick}
+                        to={link.to}
+                      >
+                        {link.label}
+                      </NavLink>
+                    </li>
+                  </div>
+                ))}
+              </ul>
+            </nav>
 
-          <figure className="hamburgerMenu" onClick={() => setOpenMenu(false)}>
+            <figure
+              className="hamburgerMenu"
+              onClick={() => setOpenMenu(false)}
+            >
+              <figure className="lineMenuTop"></figure>
+              <figure className="lineMenuBottom"></figure>
+            </figure>
+          </>
+        ) : (
+          <figure className="hamburgerMenu" onClick={() => setOpenMenu(true)}>
             <figure className="lineMenuTop"></figure>
             <figure className="lineMenuBottom"></figure>
           </figure>
-        </>
-      ) : (
-        <figure className="hamburgerMenu" onClick={() => setOpenMenu(true)}>
-          <figure className="lineMenuTop"></figure>
-          <figure className="lineMenuBottom"></figure>
-        </figure>
-      )}
+        )}
+      </div>
     </div>
   );
 };

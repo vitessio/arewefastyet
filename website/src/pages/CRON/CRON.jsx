@@ -35,7 +35,7 @@ const CRON = () => {
   const [benchmarkType, setBenchmarktype] = useState(
     urlParams.get("type") == null ? "" : urlParams.get("type")
   );
-
+    
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -229,30 +229,33 @@ const CRON = () => {
     {
       data: QPSData,
       title: "QPS (Queries per second)",
-      colors: ["Yellow", "orange", "brown", "purple"],
+      colors: ["#fad900", "orange", "brown", "purple"],
     },
     {
       data: TPSData,
       title: "TPS (Transactions per second)",
-      colors: ["Yellow"],
+      colors: ["#fad900"],
     },
     {
       data: latencyData,
       title: "Latency (Milliseconds)",
-      colors: ["Yellow"],
+      colors: ["#fad900"],
     },
     {
       data: CPUTimeData,
       title: "CPU Time",
-      colors: ["Yellow", "orange", "brown"],
+      colors: ["#fad900", "orange", "brown"],
     },
     {
       data: MemBytesData,
       title: "Allocated Bytes",
-      colors: ["Yellow", "orange", "brown"],
+      colors: ["#fad900", "orange", "brown"],
     },
   ];
-
+  const [selectedBenchmarkIndex, setSelectedBenchmarkIndex] = useState(null);
+  const handleComponentClick = (index) => {
+    setSelectedBenchmarkIndex(index);
+  };
   return (
     <div className="cron">
       <div className="cron__top">
@@ -281,6 +284,8 @@ const CRON = () => {
                   key={index}
                   data={cronSummary}
                   setBenchmarktype={setBenchmarktype}
+                  isSelected={index === selectedBenchmarkIndex}
+                  handleClick={() => handleComponentClick(index)}
                 />
               );
             })}
