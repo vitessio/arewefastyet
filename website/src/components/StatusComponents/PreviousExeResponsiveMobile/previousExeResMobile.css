@@ -14,43 +14,51 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.previousExe__data__mobile{
-    display: none;
-    text-align: center;
-    padding: 20px 0px;
-    border-bottom: #B5ADAD 1px solid;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
+.previousExe__data__mobile {
+  display: none;
+  text-align: center;
+  padding: 20px 0px;
+  border-bottom: #b5adad 1px solid;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
 }
-.previousExe__data__mobile__top{
-    justify-content: space-between;
-    padding-bottom: 20px;
-}
-
-.fa-circle-info{
-    font-size: 1.5em;
-    cursor: pointer;
+.previousExe__data__mobile__top {
+  justify-content: space-between;
+  padding-bottom: 20px;
 }
 
-.previousExe__data__mobile__bottom{
-    flex-direction: column;
-    
+.fa-circle-info {
+  font-size: 1.5em;
+  cursor: pointer;
 }
 
-.previousExe__data__mobile__bottom__more{
-    flex-direction: row;
-    padding: 10px;
+.previousExe__data__mobile__bottom {
+  flex-direction: column;
 }
 
-.fa-arrow-right{
-    padding: 0px 10px;
+.previousExe__data__mobile__bottom__more {
+  flex-direction: row;
+  padding: 10px;
 }
 
+.fa-arrow-right {
+  padding: 0px 10px;
+}
 
-
+.previousExe__data__mobile__bottom table {
+  margin: auto;
+  border: 1px solid var(--font-color);
+  margin-top: 20px;
+}
+.previousExe__data__mobile__bottom table td {
+  padding: 10px;
+}
+.previousExe__data__mobile__bottom thead th {
+  padding: 10px;
+}
 
 @media only screen and (max-width: 767px) {
-    .previousExe__data__mobile{
-        display: block;
-    }
+  .previousExe__data__mobile {
+    display: block;
+  }
 }

@@ -40,43 +40,31 @@ const PreviousExeRes = ({data, className}) => {
                 <span className='width--3em'><i className="fa-solid fa-circle-info" onClick={handleClick}></i></span>
             </div>
             <div className='previousExe__data__mobile__bottom flex'>
-                <div className='previousExe__data__mobile__bottom__more flex'>
-                    <span>UUID</span>
-                    <i className="fa-solid fa-arrow-right"></i>
-                    <span >{data.uuid.slice(0, 8)}</span>
-                </div>
-                <div className='previousExe__data__mobile__bottom__more flex'>
-                    <span>SHA</span>
-                    <i className="fa-solid fa-arrow-right"></i>
-                    <span ><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
-                </div>
-                <div className='previousExe__data__mobile__bottom__more flex'>
-                    <span>Type</span>
-                    <i className="fa-solid fa-arrow-right"></i>
-                    <span>{data.type_of}</span>
-                </div>
-                <div className='previousExe__data__mobile__bottom__more flex'>
-                    <span>Started</span>
-                    <i className="fa-solid fa-arrow-right"></i>
-                    <span>{formatDate(data.started_at)}</span>
-                </div>
-                <div className='previousExe__data__mobile__bottom__more flex'>
-                    <span>Finished</span>
-                    <i className="fa-solid fa-arrow-right"></i>
-                    <span>{formatDate(data.finished_at)}</span>
-                </div>
-                <div className='previousExe__data__mobile__bottom__more flex'>
-                    <span>PR</span>
-                    <i className="fa-solid fa-arrow-right"></i>
-                    <span>{data.pull_nb}</span>
-                </div>
-                <div className='previousExe__data__mobile__bottom__more flex'>
-                    <span>Go version</span>
-                    <i className="fa-solid fa-arrow-right"></i>
-                    <span>{data.golang_version}</span>
-                </div>
+                <table className='justify--content'>
+                    <thead >
+                        <tr className='flex--column'>
+                            <th>UUID</th>
+                            <th>SHA</th>
+                            <th>Type</th>
+                            <th>Started</th>
+                            <th>Finished</th>
+                            <th>PR</th>
+                            <th>Go version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr className='flex--column'>
+                            <td><span >{data.uuid.slice(0, 8)}</span></td>
+                            <td><span ><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span></td>
+                            <td> <span>{data.type_of}</span></td>
+                            <td><span>{formatDate(data.started_at)}</span></td>
+                            <td><span>{formatDate(data.finished_at)}</span></td>
+                            <td> <span>{data.pull_nb}</span></td>
+                            <td><span>{data.golang_version}</span></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-         
         </div>
     );
 };
