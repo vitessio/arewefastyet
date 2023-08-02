@@ -22,17 +22,20 @@ const useApiCall = (url) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [textLoading, setTextLoading] = useState(true)
 
   useEffect(() => {
+    setTextLoading(true)
     const fetchData = async () => {
       try {
         const response = await fetch(url);
         const jsonData = await response.json();
-
+        setTextLoading(false)
         setData(jsonData);
         setIsLoading(false);
       } catch (error) {
         console.log('Error while retrieving data from the API', error);
+        setTextLoading(false)
         setError(errorApi);
         setIsLoading(false);
       }
@@ -41,7 +44,7 @@ const useApiCall = (url) => {
     fetchData();
   }, [url]);
 
-  return { data, isLoading, error };
+  return { data, isLoading, error, textLoading };
 };
 
 export default useApiCall;

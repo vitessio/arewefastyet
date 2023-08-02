@@ -41,7 +41,7 @@ const Macrobench = React.memo(
         return <span>{data}</span>;
       }
     };
-
+    
     return (
       <div className="macrobench__component">
         <div className="macrobench__component__header">

@@ -50,13 +50,14 @@ const Compare = () => {
     data: dataMacrobench,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
+    textLoading: macroTextLoading
   } = useApiCall(
     `${
       import.meta.env.VITE_API_URL
     }macrobench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
     [isFormSubmitted]
   );
-
+    
   const {
     data: dataMicrobench,
     isLoading: isMicrobenchLoading,
@@ -139,7 +140,7 @@ const Compare = () => {
                     <div key={index}>
                       <Macrobench
                         data={macro}
-                        textLoading={isMacrobenchLoading}
+                        textLoading={macroTextLoading}
                         gitRefLeft={gitRefLeft.slice(0, 8)}
                         gitRefRight={gitRefRight.slice(0, 8)}
                         swiperSlide={SwiperSlide}
@@ -151,7 +152,7 @@ const Compare = () => {
                         gitRefLeft={gitRefLeft.slice(0, 8)}
                         gitRefRight={gitRefRight.slice(0, 8)}
                         swiperSlide={SwiperSlide}
-                        textLoading={isMacrobenchLoading}
+                        textLoading={macroTextLoading}
                         handleSlideChange={handleSlideChange}
                         setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                         currentSlideIndexMobile={currentSlideIndexMobile}

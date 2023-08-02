@@ -65,7 +65,7 @@ const Status = () => {
             style={{ fontSize: "5rem", color: "#E77002" }}
             duration={3}
           />
-          <span className="countUp__title">Total Benchmark</span>
+          <span className="countUp__title">Total Benchmarks</span>
           <CountUp
             start={0}
             end={dataStatusStats.Finished}
@@ -80,7 +80,7 @@ const Status = () => {
             duration={3}
           />
           <span className="countUp__title">
-            Total Benchmark (last 30 days)
+            Total Benchmarks (last 30 days)
           </span>
         </div>
       </article>

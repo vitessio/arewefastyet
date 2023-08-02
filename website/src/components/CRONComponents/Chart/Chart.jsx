@@ -46,7 +46,7 @@ const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
             legends: {
               text: {
                 fontSize: "14px",
-                fill: "var(--font-color",
+                fill: "var(--font-color)",
               },
             },
             grid: {
