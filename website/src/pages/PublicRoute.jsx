@@ -29,6 +29,7 @@ import CRON from './CRON/CRON';
 import MacroQueriesCompare from './MacroQueriesCompare/MacroQueriesCompare';
 import Compare from './Compare/Compare';
 import PR from './PR/PR';
+import SinglePR from './SinglePR/SinglePR';
 
 const PublicRoute = () => {
     return (
@@ -45,6 +46,7 @@ const PublicRoute = () => {
             <Route path='/macrobench/queries/compare' element={<MacroQueriesCompare/>}/>
             <Route path='/micro' element={<Micro/>}/>
             <Route path='/pr' element={<PR/>}/>
+            <Route path='/pr/:pull_nb' element={<SinglePR/>}/>
 
 
             <Route path='*' element={<Error/>}/>
