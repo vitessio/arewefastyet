@@ -49,12 +49,7 @@ const Macrobench = React.memo(
           <span className="linkQueryT">
             Click{" "}
             <Link
-              to="/macrobench/queries/compare"
-              state={{
-                data: data,
-                commitHashLeft: commitHashLeft,
-                commitHashRight: commitHashRight,
-              }}
+              to={`/macrobench/queries/compare?ltag=${commitHashLeft}&rtag=${commitHashRight}&type=${data.type}`}
             >
               here
             </Link>{" "}

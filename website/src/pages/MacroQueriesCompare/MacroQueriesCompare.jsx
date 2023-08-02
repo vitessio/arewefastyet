@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import '../MacroQueriesCompare/macroQueriesCompare.css'
 
@@ -26,18 +26,22 @@ const MacroQueriesCompare = () => {
 
     const [error, setError] = useState(null);
 
-    const { state } = useLocation()
-    const commitA = state.commitHashLeft
-    const commitB = state.commitHashRight
-    const type = state.data.type
+    const urlParams = new URLSearchParams(window.location.search);
+    const [commitLeft, setcommitLeft] = useState(urlParams.get('ltag') == null ? '' : urlParams.get('ltag'));
+    const [commitRight, setcommitRight] = useState(urlParams.get('rtag') == null ? '' : urlParams.get('rtag'));
+    const [type, settype] = useState(urlParams.get('type') == null ? '' : urlParams.get('type'));
+    const navigate = useNavigate();
     
-
+    useEffect(() => {
+            navigate(`?ltag=${commitLeft}&rtag=${commitRight}&type=${type}`);
+    }, []);
+    
     const [dataQueryPlan, setDataQueryPlan] = useState([])
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const responseQueryPlan = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${commitA}&rtag=${commitB}&type=${type}`);
+                const responseQueryPlan = await fetch(`${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${commitLeft}&rtag=${commitRight}&type=${type}`);
 
                 const jsonDataQueryPlan = await responseQueryPlan.json()
                 
@@ -61,8 +65,8 @@ const MacroQueriesCompare = () => {
             <div className='query__top flex--column'>
                 <h2>Compare Query Plans</h2>
                 <span>Comparing the query plans of two OLTP benchmarks: A and B.</span>
-                <span><b>A</b> benchmarked commit <a href={`https://github.com/vitessio/vitess/commit/${commitA}`}>{commitA.slice(0, 8)}</a> using the Gen4 query planner.</span>
-                <span><b>B</b> benchmarked commit <a href={`https://github.com/vitessio/vitess/commit/${commitB}`}>{commitB.slice(0, 8)}</a> using the Gen4 query planner.</span>
+                <span><b>A</b> benchmarked commit <a href={`https://github.com/vitessio/vitess/commit/${commitLeft}`}>{commitLeft.slice(0, 8)}</a> using the Gen4 query planner.</span>
+                <span><b>B</b> benchmarked commit <a href={`https://github.com/vitessio/vitess/commit/${commitRight}`}>{commitRight.slice(0, 8)}</a> using the Gen4 query planner.</span>
                 <span>Queries are ordered from the worst regression in execution time to the best. All executed queries are shown below.</span>
             </div>
             <figure className='line'></figure>
