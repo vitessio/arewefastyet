@@ -57,7 +57,7 @@ const SinglePR = () => {
             <div className="singlePR__top flex">
               <div>
                 <h2>
-                  [#{pull_nb}]{dataSinglePr.Title}
+                  <a target="blank" href={`https://github.com/vitessio/vitess/pull/${pull_nb}`}>[#{pull_nb}]</a> {dataSinglePr.Title}
                 </h2>
                 <span>
                   By {dataSinglePr.Author} at{" "}

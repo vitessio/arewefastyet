@@ -48,7 +48,7 @@ const PreviousExeRes = ({data, className}) => {
                 <div className='previousExe__data__mobile__bottom__more flex'>
                     <span>SHA</span>
                     <i className="fa-solid fa-arrow-right"></i>
-                    <span ><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
+                    <span ><a target='blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
                 </div>
                 <div className='previousExe__data__mobile__bottom__more flex'>
                     <span>Type</span>
