@@ -54,7 +54,7 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
           {formatDate(data.CreatedAt)}
         </span>
         <span className="linkToCompare" >
-        <i className="fa-solid fa-arrow-right" onClick={() => handlePrInfo(data.ID)}></i>
+        <a href={`/pr/${data.ID}`}><i className="fa-solid fa-arrow-right"></i></a>
         <span id="compareMessage">compare</span>
         </span>
         <span className="hidden--desktop">
