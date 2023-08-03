@@ -19,16 +19,16 @@ import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
 import { ResponsiveLine } from "@nivo/line";
 
-import "../CRON/cron.css";
+import "../Daily/daily.css";
 
 import { errorApi, formatByteForGB } from "../../utils/Utils";
-import ResponsiveChart from "../../components/CRONComponents/Chart/Chart";
-import CronSummary from "../../components/CRONComponents/CRONSummary/CronSummary";
+import ResponsiveChart from "../../components/DailyComponents/Chart/Chart";
+import DailySummary from "../../components/DailyComponents/DailySummary/DailySummary";
 
-const CRON = () => {
+const Daily = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const [dataCronSummary, setDataCronSummary] = useState([]);
-  const [dataCron, setDataCron] = useState([]);
+  const [dataDailySummary, setDataDailySummary] = useState([]);
+  const [dataDaily, setDataDaily] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingChart, setIsLoadingChart] = useState(true);
@@ -39,13 +39,13 @@ const CRON = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseCronSummary = await fetch(
+        const responseDailySummary = await fetch(
           `${import.meta.env.VITE_API_URL}cron/summary`
         );
 
-        const jsonDataCronSummary = await responseCronSummary.json();
+        const jsonDataDailySummary = await responseDailySummary.json();
 
-        setDataCronSummary(jsonDataCronSummary);
+        setDataDailySummary(jsonDataDailySummary);
         setIsLoading(false);
       } catch (error) {
         console.log("Error while retrieving data from the API", error);
@@ -60,13 +60,13 @@ const CRON = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseCron = await fetch(
+        const responseDaily = await fetch(
           `${import.meta.env.VITE_API_URL}cron?type=${benchmarkType}`
         );
 
-        const jsonDataCron = await responseCron.json();
+        const jsonDataDaily = await responseDaily.json();
 
-        setDataCron(jsonDataCron);
+        setDataDaily(jsonDataDaily);
         setIsLoadingChart(false);
       } catch (error) {
         console.log("Error while retrieving data from the API", error);
@@ -151,7 +151,7 @@ const CRON = () => {
     },
   ];
 
-  for (const item of dataCron) {
+  for (const item of dataDaily) {
     const xValue = item.GitRef.slice(0, 8);
 
     // TPS Data
@@ -257,9 +257,9 @@ const CRON = () => {
     setSelectedBenchmarkIndex(index);
   };
   return (
-    <div className="cron">
-      <div className="cron__top">
-        <h2>CRON</h2>
+    <div className="daily">
+      <div className="daily__top">
+        <h2>Daily</h2>
         <span>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
           augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
@@ -277,12 +277,12 @@ const CRON = () => {
         </div>
       ) : (
         <>
-          <div className="cron__summary__container justify--content">
-            {dataCronSummary.map((cronSummary, index) => {
+          <div className="daily__summary__container justify--content">
+            {dataDailySummary.map((dailySummary, index) => {
               return (
-                <CronSummary
+                <DailySummary
                   key={index}
-                  data={cronSummary}
+                  data={dailySummary}
                   setBenchmarktype={setBenchmarktype}
                   isSelected={index === selectedBenchmarkIndex}
                   handleClick={() => handleComponentClick(index)}
@@ -296,7 +296,7 @@ const CRON = () => {
               <RingLoader loading={isLoadingChart} color="#E77002" size={300} />
             </div>
           ) : benchmarkType !== "" ? (
-            <div className="cron__container">
+            <div className="daily__container">
               {allChartData.map((chartData, index) => (
                 <ResponsiveChart
                   key={index}
@@ -314,4 +314,4 @@ const CRON = () => {
   );
 };
 
-export default CRON;
+export default Daily;

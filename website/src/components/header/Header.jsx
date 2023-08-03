@@ -76,7 +76,7 @@ const Header = () => {
 
   const links = [
     { to: "/status", label: "Status" },
-    { to: "/cron", label: "CRON" },
+    { to: "/daily", label: "Daily" },
     { to: "/compare", label: "Compare" },
     { to: "/search", label: "Search" },
     { to: "/micro", label: "Micro" },
