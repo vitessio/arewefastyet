@@ -17,66 +17,33 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
-import { ResponsiveLine } from "@nivo/line";
+import useApiCall from "../../utils/Hook";
 
 import "../CRON/cron.css";
 
-import { errorApi, formatByteForGB } from "../../utils/Utils";
+import { formatByteForGB } from "../../utils/Utils";
 import ResponsiveChart from "../../components/CRONComponents/Chart/Chart";
 import CronSummary from "../../components/CRONComponents/CRONSummary/CronSummary";
 
 const CRON = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const [dataCronSummary, setDataCronSummary] = useState([]);
-  const [dataCron, setDataCron] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingChart, setIsLoadingChart] = useState(true);
   const [benchmarkType, setBenchmarktype] = useState(
     urlParams.get("type") == null ? "" : urlParams.get("type")
   );
-    
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseCronSummary = await fetch(
-          `${import.meta.env.VITE_API_URL}cron/summary`
-        );
 
-        const jsonDataCronSummary = await responseCronSummary.json();
+  const {
+    data: dataCronSummary,
+    isLoading: isLoadingCronSummary,
+    error: errorCronSummary,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}cron/summary`);
 
-        setDataCronSummary(jsonDataCronSummary);
-        setIsLoading(false);
-      } catch (error) {
-        console.log("Error while retrieving data from the API", error);
-        setError(errorApi);
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseCron = await fetch(
-          `${import.meta.env.VITE_API_URL}cron?type=${benchmarkType}`
-        );
-
-        const jsonDataCron = await responseCron.json();
-
-        setDataCron(jsonDataCron);
-        setIsLoadingChart(false);
-      } catch (error) {
-        console.log("Error while retrieving data from the API", error);
-        setError(errorApi);
-        setIsLoadingChart(false);
-      }
-    };
-
-    fetchData();
-  }, [benchmarkType]);
+  const {
+    data: dataCron,
+    error: cronError,
+    textLoading: cronTextLoading,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}cron?type=${benchmarkType}`, [
+    benchmarkType,
+  ]);
 
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
@@ -269,11 +236,15 @@ const CRON = () => {
         </span>
       </div>
       <figure className="line"></figure>
-      {error ? (
+      {errorCronSummary || cronError ? (
         <div className="apiError">{error}</div>
-      ) : isLoading ? (
+      ) : isLoadingCronSummary ? (
         <div className="loadingSpinner">
-          <RingLoader loading={isLoading} color="#E77002" size={300} />
+          <RingLoader
+            loading={isLoadingCronSummary}
+            color="#E77002"
+            size={300}
+          />
         </div>
       ) : (
         <>
@@ -291,9 +262,13 @@ const CRON = () => {
             })}
           </div>
           <figure className="line"></figure>
-          {isLoadingChart ? (
+          {cronTextLoading ? (
             <div className="loadingSpinner">
-              <RingLoader loading={isLoadingChart} color="#E77002" size={300} />
+              <RingLoader
+                loading={cronTextLoading}
+                color="#E77002"
+                size={300}
+              />
             </div>
           ) : benchmarkType !== "" ? (
             <div className="cron__container">
