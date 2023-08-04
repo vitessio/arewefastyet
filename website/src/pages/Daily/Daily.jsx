@@ -40,7 +40,7 @@ const Daily = () => {
     const fetchData = async () => {
       try {
         const responseDailySummary = await fetch(
-          `${import.meta.env.VITE_API_URL}cron/summary`
+          `${import.meta.env.VITE_API_URL}daily/summary`
         );
 
         const jsonDataDailySummary = await responseDailySummary.json();
@@ -61,7 +61,7 @@ const Daily = () => {
     const fetchData = async () => {
       try {
         const responseDaily = await fetch(
-          `${import.meta.env.VITE_API_URL}cron?type=${benchmarkType}`
+          `${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`
         );
 
         const jsonDataDaily = await responseDaily.json();
