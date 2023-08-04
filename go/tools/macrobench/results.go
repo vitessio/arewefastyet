@@ -94,7 +94,7 @@ type (
 
 	ComparisonArray []Comparison
 
-	CronSummary struct {
+	DailySummary struct {
 		CreatedAt *time.Time
 		QPSTotal  float64
 	}
@@ -324,7 +324,7 @@ func GetResultsForLastDays(macroType string, source string, planner PlannerVersi
 	return macrodetails, nil
 }
 
-func GetSummaryForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (cronSummary []CronSummary, err error) {
+func GetSummaryForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (dailySummary []DailySummary, err error) {
 	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT e.finished_at, results.total_qps " +
 		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
@@ -338,12 +338,12 @@ func GetSummaryForLastDays(macroType string, source string, planner PlannerVersi
 	}
 	defer result.Close()
 	for result.Next() {
-		var res CronSummary
+		var res DailySummary
 		err = result.Scan(&res.CreatedAt, &res.QPSTotal)
 		if err != nil {
 			return nil, err
 		}
-		cronSummary = append(cronSummary, res)
+		dailySummary = append(dailySummary, res)
 	}
 	return
 }

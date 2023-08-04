@@ -21,11 +21,7 @@ import "../PRcomponents/PRGitInfo.css";
 
 import { closeTables, openTables, formatDate } from "../../utils/Utils";
 
-const PRGitInfo = ({ data, setPrNumber, className }) => {
-  const handlePrInfo = (e) => {
-    const number = e.toString();
-    setPrNumber(number);
-  };
+const PRGitInfo = ({ data, className }) => {
 
   const [maxHeight, setMaxHeight] = useState(closeTables);
 
@@ -36,7 +32,7 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
       setMaxHeight(closeTables);
     }
   };
-
+  
   return (
     <div
       className={`prGit flex--column ${className}`}
@@ -54,7 +50,7 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
           {formatDate(data.CreatedAt)}
         </span>
         <span className="linkToCompare" >
-        <i className="fa-solid fa-arrow-right" onClick={() => handlePrInfo(data.ID)}></i>
+        <a href={`/pr/${data.ID}`}><i className="fa-solid fa-arrow-right"></i></a>
         <span id="compareMessage">compare</span>
         </span>
         <span className="hidden--desktop">

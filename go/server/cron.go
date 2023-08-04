@@ -57,7 +57,7 @@ var (
 	queue            executionQueue
 )
 
-func createIndividualCron(schedule string, job func()) error {
+func createIndividualDaily(schedule string, job func()) error {
 	if schedule == "" {
 		return nil
 	}
@@ -88,12 +88,12 @@ func (s *Server) createCrons() error {
 			continue
 		}
 		slog.Info("Starting the CRON ", c.name, " with schedule: ", c.schedule)
-		err := createIndividualCron(c.schedule, c.f)
+		err := createIndividualDaily(c.schedule, c.f)
 		if err != nil {
 			return err
 		}
 	}
-	go s.cronExecutionQueueWatcher()
+	go s.dailyExecutionQueueWatcher()
 	return nil
 }
 

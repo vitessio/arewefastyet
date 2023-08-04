@@ -19,7 +19,7 @@ import React, { createContext, useState, useEffect } from "react";
 const AppContext = createContext();
 
 const AppProvider = ({ children }) => {
-  const [isColorChanged, setColorChanged] = useState(false);
+  const [isColorChanged, setColorChanged] = useState(true);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
@@ -29,8 +29,8 @@ const AppProvider = ({ children }) => {
       applyLightTheme();
     }
   }, []);
-
-  const applyDarkTheme = () => {
+  
+  const applyLightTheme = () => {
     document.documentElement.style.setProperty("--primary-color", "#1f1d1d");
     document.documentElement.style.setProperty("--background-color", "#ffffff");
     document.documentElement.style.setProperty("--font-color", "#000000");
@@ -39,7 +39,7 @@ const AppProvider = ({ children }) => {
     setColorChanged(true);
   };
 
-  const applyLightTheme = () => {
+  const applyDarkTheme = () => {
     document.documentElement.style.setProperty("--primary-color", "#343A40");
     document.documentElement.style.setProperty("--background-color", "#1F1D1D");
     document.documentElement.style.setProperty("--font-color", "#ffffff");
@@ -50,11 +50,11 @@ const AppProvider = ({ children }) => {
 
   const handleButtonClick = () => {
     if (isColorChanged) {
-      applyLightTheme();
-      localStorage.setItem("theme", "light"); 
-    } else {
       applyDarkTheme();
       localStorage.setItem("theme", "dark"); 
+    } else {
+      applyLightTheme();
+      localStorage.setItem("theme", "light"); 
     }
   };
 
