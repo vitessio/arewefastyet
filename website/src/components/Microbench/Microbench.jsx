@@ -31,7 +31,7 @@ const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
             setMaxHeight(closeTables);
         }
     };
-    console.log(data)
+   
     return (
         <div className={`microbench  ${className}`} style={{ maxHeight: `${maxHeight}px` }}>
             <div className='space--between justify--content align--center'>

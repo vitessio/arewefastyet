@@ -25,7 +25,7 @@ import Layout from '../pages/Layout'
 import Macro from './Macro/Macro';
 import Micro from './Micro/Micro';
 import Search from './Search/Search';
-import Daily from './DAILY/Daily'
+import Daily from './Daily/Daily'
 import MacroQueriesCompare from './MacroQueriesCompare/MacroQueriesCompare';
 import Compare from './Compare/Compare';
 import PR from './PR/PR';
