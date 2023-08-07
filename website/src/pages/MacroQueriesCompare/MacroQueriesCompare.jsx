@@ -44,7 +44,7 @@ const MacroQueriesCompare = () => {
   const [dataQueryPlan, setDataQueryPlan] = useState([]);
 
   useEffect(() => {
-    if (!commitLeft || !commitRight || !type) {
+    if (!commitLeft || !commitRight || !type || commitLeft === "null" || commitRight === "null" || type === "null") {
       setError(
         "Error: Some URL parameters are missing. Please provide both 'ltag', 'rtag' and type parameters."
       );
