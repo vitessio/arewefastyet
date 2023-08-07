@@ -15,10 +15,11 @@ limitations under the License.
 */
 
 import React from "react";
+import PropTypes from "prop-types";
 
 import "../SearchMacroDesktop/searchMacroDesktop.css";
 
-import { formatByteForGB, fixed } from "../../../../utils/Utils";
+import { fixed } from "../../../../utils/Utils";
 
 const SearchMacroDesktop = ({ data }) => {
   const renderZeroSpans = Array(16)
@@ -55,6 +56,41 @@ const SearchMacroDesktop = ({ data }) => {
       )}
     </div>
   );
+};
+
+SearchMacroDesktop.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        Result: PropTypes.shape({
+          qps: PropTypes.shape({
+            total: PropTypes.number.isRequired,
+            reads: PropTypes.number.isRequired,
+            writes: PropTypes.number.isRequired,
+            other: PropTypes.number.isRequired,
+          }).isRequired,
+          tps: PropTypes.number.isRequired,
+          latency: PropTypes.number.isRequired,
+          errors: PropTypes.number.isRequired,
+          reconnects: PropTypes.number.isRequired,
+          time: PropTypes.number.isRequired,
+          threads: PropTypes.number.isRequired,
+        }).isRequired,
+        Metrics: PropTypes.shape({
+          TotalComponentsCPUTime: PropTypes.number.isRequired,
+          ComponentsCPUTime: PropTypes.shape({
+            vtgate: PropTypes.number.isRequired,
+            vttablet: PropTypes.number.isRequired,
+          }).isRequired,
+          TotalComponentsMemStatsAllocBytes: PropTypes.number.isRequired,
+          ComponentsMemStatsAllocBytes: PropTypes.shape({
+            vtgate: PropTypes.number.isRequired,
+            vttablet: PropTypes.number.isRequired,
+          }).isRequired,
+        }).isRequired,
+      })
+    )
+  ).isRequired,
 };
 
 export default SearchMacroDesktop;

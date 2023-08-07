@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
 import { useParams } from "react-router-dom";
 import useApiCall from "../../utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
@@ -57,7 +56,7 @@ const SinglePR = () => {
             <div className="singlePR__top flex">
               <div>
                 <h2>
-                  <a target="blank" href={`https://github.com/vitessio/vitess/pull/${pull_nb}`}>[#{pull_nb}]</a> {dataSinglePr.Title}
+                  <a target="_blank" rel="noopener noreferrer" href={`https://github.com/vitessio/vitess/pull/${pull_nb}`}>[#{pull_nb}]</a> {dataSinglePr.Title}
                 </h2>
                 <span>
                   By {dataSinglePr.Author} at{" "}

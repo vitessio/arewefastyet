@@ -17,7 +17,6 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
-import { ResponsiveLine } from "@nivo/line";
 
 import "../CRON/cron.css";
 

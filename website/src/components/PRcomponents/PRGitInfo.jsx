@@ -14,14 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState } from "react";
-import useApiCall from "../../utils/Hook";
+import{ useState } from "react";
+import PropTypes from 'prop-types';
 
 import "../PRcomponents/PRGitInfo.css";
 
 import { closeTables, openTables, formatDate } from "../../utils/Utils";
 
 const PRGitInfo = ({ data, setPrNumber, className }) => {
+
   const handlePrInfo = (e) => {
     const number = e.toString();
     setPrNumber(number);
@@ -49,7 +50,7 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
           </a>
         </span>
         <span className="width--40 hidden--tablet">{data.Title}</span>
-        <span className="width--20 hidden--tablet"><a target="blank" href={`https://github.com/${data.Author}`}>{data.Author}</a></span>
+        <span className="width--20 hidden--tablet"><a target="_blank" rel="noopener noreferrer" href={`https://github.com/${data.Author}`}>{data.Author}</a></span>
         <span className="width--10em hidden--mobile">
           {formatDate(data.CreatedAt)}
         </span>
@@ -81,6 +82,17 @@ const PRGitInfo = ({ data, setPrNumber, className }) => {
       </div>
     </div>
   );
+};
+
+PRGitInfo.propTypes = {
+  data: PropTypes.shape({
+    ID: PropTypes.number.isRequired,
+    Title: PropTypes.string.isRequired,
+    Author: PropTypes.string.isRequired,
+    CreatedAt: PropTypes.string.isRequired,
+  }).isRequired,
+  setPrNumber: PropTypes.func.isRequired,
+  className: PropTypes.string,
 };
 
 export default PRGitInfo;

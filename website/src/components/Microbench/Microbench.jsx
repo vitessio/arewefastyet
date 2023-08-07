@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, {useState} from 'react';
+import {useState} from 'react';
+import PropTypes from 'prop-types';
 
 import '../Microbench/microbench.css'
 
@@ -91,5 +92,12 @@ const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
         </div>
     );
 };
+
+Microbench.propTypes = {
+    data: PropTypes.object.isRequired,
+    className: PropTypes.string,
+    gitRefLeft: PropTypes.string.isRequired,
+    gitRefRight: PropTypes.string.isRequired,
+  };
 
 export default Microbench;
