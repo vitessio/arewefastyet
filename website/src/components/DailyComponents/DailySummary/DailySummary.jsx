@@ -67,7 +67,7 @@ const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
   );
 };
 
-CronSummary.propTypes = {
+DailySummary.propTypes = {
   data: PropTypes.shape({
     Name: PropTypes.string.isRequired,
     Data: PropTypes.array,
