@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.cronSummary {
+.dailySummary {
   border: solid 1px var(--primary-color);
   border-radius: 10px;
   width: 350px;
@@ -25,22 +25,22 @@ limitations under the License.
   overflow: hidden;
 }
 
-.cronSummary:hover {
+.dailySummary:hover {
   background-color: var(--secondary-color);
 }
-.cronSummary h3 {
+.dailySummary h3 {
   font-weight: 200;
   padding: 10px;
   align-self: flex-start;
   margin-top: 20px;
 }
 
-.cronSummary__line {
+.dailySummary__line {
   border-bottom: 1px var(--primary-color) solid;
   width: 100%;
 }
 
-.cronSummary__chart {
+.dailySummary__chart {
   width: 100%;
   height: 50%;
   padding: 10px;
@@ -51,18 +51,22 @@ limitations under the License.
   justify-content: center;
 }
 
-.cronSummary span {
+.dailySummary span {
   padding: 10px;
   font-size: 0.8rem;
 }
 
-.cronSummary__text {
+.dailySummary__text {
   width: 100%;
   position: relative;
 }
 
-.cron--fa-arrow-right {
+.daily--fa-arrow-right {
   position: absolute;
   right: 0%;
   top: 50%;
+}
+
+.dailySummary--selected{
+  background-color: var(--secondary-color);
 }

@@ -17,11 +17,11 @@ limitations under the License.
 import React from "react";
 import { ResponsiveLine } from "@nivo/line";
 
-import "../CRONSummary/cronSummary.css";
+import "./dailySummary.css";
 
-const CronSummary = ({ data, setBenchmarktype }) => {
+const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
   const orange = "#E77002";
-
+  
   const transformedData = [];
 
   if (data.Data !== null) {
@@ -39,9 +39,12 @@ const CronSummary = ({ data, setBenchmarktype }) => {
   };
 
   return (
-    <div className="cronSummary flex--column" onClick={getBenchmarkType}>
+    <div className={`dailySummary flex--column ${isSelected ? "dailySummary--selected" : ""}`}  onClick={() => {
+      handleClick();
+      getBenchmarkType();
+    }}>
       {data ? (
-        <div className="cronSummary__chart">
+        <div className="dailySummary__chart">
           <ResponsiveLine
             data={transformedData}
             margin={{ top: 20, right: 30, bottom: 50, left: 10 }}
@@ -54,13 +57,13 @@ const CronSummary = ({ data, setBenchmarktype }) => {
           />
         </div>
       ) : null}
-      <figure className="cronSummary__line"></figure>
-      <div className="cronSummary__text">
+      <figure className="dailySummary__line"></figure>
+      <div className="dailySummary__text">
         <h3>{data.Name}</h3>
-        <i className="fa-solid fa-arrow-right cron--fa-arrow-right"></i>
+        <i className="fa-solid fa-arrow-right daily--fa-arrow-right"></i>
       </div>
     </div>
   );
 };
 
-export default CronSummary;
+export default DailySummary;

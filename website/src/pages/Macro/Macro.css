@@ -92,7 +92,7 @@ limitations under the License.
 }
 
 .dropDown__ref:hover {
-  background-color: var(--primary-color);
+  background-color: #B5ADAD;
 }
 
 .macro__bottom__DropDownRight {
@@ -113,7 +113,6 @@ limitations under the License.
 .macrobench__Sidebar {
   background-color: var(--background-color);
   padding: 0px 0px 0px 20px;
-  font-style: italic;
   border-top: #e77002 1px solid;
   border-left: #e77002 1px solid;
   border-bottom: #e77002 1px solid;
@@ -129,7 +128,7 @@ limitations under the License.
 
 .macrobench__Sidebar span {
   padding: 12px 10px 12px 0px;
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: bold;
 }
 
@@ -235,7 +234,7 @@ limitations under the License.
   }
 
   .macrobench__Sidebar span {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     min-height: 27px;
     padding: 0px;
     margin: 7px 0px;
@@ -246,5 +245,6 @@ limitations under the License.
 
   .macro__bottom__DropDownContainer {
     margin-bottom: 00px;
+    margin: auto;
   }
 }

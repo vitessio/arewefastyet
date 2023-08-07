@@ -111,7 +111,7 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 		slog.Error(err)
 		return
 	}
-	lastrunCronSHA, err := exec.GetLatestCronJobForMacrobenchmarks(s.dbClient)
+	lastrunDailySHA, err := exec.GetLatestDailyJobForMacrobenchmarks(s.dbClient)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
@@ -119,7 +119,7 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 	}
 	mainRelease := []*git.Release{{
 		Name:       "main",
-		CommitHash: lastrunCronSHA,
+		CommitHash: lastrunDailySHA,
 	}}
 	allReleases = append(mainRelease, allReleases...)
 	// get all the latest release branches as well
@@ -277,23 +277,32 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 		slog.Error(err)
 		return
 	}
-	pullRequestInfo, err := exec.GetPullRequestInfo(s.dbClient, pullNb)
+	gitPRInfo, err := exec.GetPullRequestInfo(s.dbClient, pullNb)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-	c.JSON(http.StatusOK, pullRequestInfo)
+
+	prInfo, err := s.ghApp.GetPullRequestInfo(pullNb)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	prInfo.Base = gitPRInfo.Main
+	prInfo.Head = gitPRInfo.PR
+	c.JSON(http.StatusOK, prInfo)
 
 }
 
-type cronSingleSummary struct {
+type dailySingleSummary struct {
 	Name string
-	Data []macrobench.CronSummary
+	Data []macrobench.DailySummary
 }
 
-func (s *Server) getCronSummary(c *gin.Context) {
-	var cronSummary []cronSingleSummary
+func (s *Server) getDailySummary(c *gin.Context) {
+	var dailySummary []dailySingleSummary
 	for _, benchmarkType := range s.benchmarkTypes {
 		data, err := macrobench.GetSummaryForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
 		if err != nil {
@@ -301,15 +310,15 @@ func (s *Server) getCronSummary(c *gin.Context) {
 			slog.Error(err)
 			return
 		}
-		cronSummary = append(cronSummary, cronSingleSummary{
+		dailySummary = append(dailySummary, dailySingleSummary{
 			Name: benchmarkType,
 			Data: data,
 		})
 	}
-	c.JSON(http.StatusOK, cronSummary)
+	c.JSON(http.StatusOK, dailySummary)
 }
 
-func (s *Server) getCron(c *gin.Context) {
+func (s *Server) getDaily(c *gin.Context) {
 	benchmarkType := c.Query("type")
 	data, err := macrobench.GetResultsForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
 	if err != nil {

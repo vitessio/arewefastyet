@@ -20,8 +20,8 @@ import RingLoader from "react-spinners/RingLoader";
 import { SwiperSlide } from "swiper/react";
 
 import '../Macro/Macro.css'
-import "swiper/css";
-import "swiper/css/pagination";
+// import "swiper/css";
+
 
 import Macrobench from '../../components/MacroComponents/Macrobench/Macrobench';
 import MacrobenchMobile from '../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile';
@@ -106,7 +106,7 @@ const Macro = () => {
     
 
     const handleSlideChange = (swiper) => {
-        setCurrentSlideIndex(swiper.realIndex);
+        setCurrentSlideIndexMobile(swiper.realIndex);
     };
         
     return (
@@ -178,6 +178,7 @@ const Macro = () => {
                                                     handleSlideChange={handleSlideChange} 
                                                     setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                                                     currentSlideIndexMobile={currentSlideIndexMobile}
+                                                    textLoading={textLoading}
                                                     />
                                                 </div>
                                             )

@@ -60,19 +60,19 @@ limitations under the License.
   font-size: 1.5rem;
   border: #e77002 solid 2px;
   box-shadow: #e77002 2px 2px 10px;
-  border-radius: 0px 20px 20px 0px;
   color: var(--font-color);
 }
 
 .form__container button {
   border: #e77002 solid 2px;
   border-left: 0px;
-  background-color: #343a40;
+  background-color: var(--accent-color);
   color: white;
   padding: 20px;
   border-radius: 0px 20px 20px 0px;
   box-shadow: #e77002 2px 2px 10px;
   font-size: 1.5rem;
+  cursor: pointer;
 }
 
 /*Macrobench*/

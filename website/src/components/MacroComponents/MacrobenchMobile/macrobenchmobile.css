@@ -22,6 +22,7 @@ limitations under the License.
 
 .macrobench__mobile h4 {
   padding: 10px 0px;
+  font-weight: bold;
 }
 
 .macrobench__mobile {
@@ -32,6 +33,7 @@ limitations under the License.
 .macrobench__data {
   width: 33%;
   text-align: center;
+  box-shadow: 2px 2px 5px grey;
 }
 
 .macrobench__mobile__header {
@@ -40,7 +42,7 @@ limitations under the License.
   padding: 10px;
 }
 
-.macrobench__data span {
+.macrobench__data__span {
   position: relative;
   font-size: 1.1rem;
   font-weight: 400;
@@ -49,6 +51,7 @@ limitations under the License.
   background-color: var(--background-color);
   z-index: 1;
   min-height: 42px;
+  max-height: 42px;
 }
 
 #borderNone {
@@ -72,6 +75,10 @@ limitations under the License.
   border: #e77002 1px solid;
   border-radius: 0px 0px 10px 10px;
   margin-bottom: 50px;
+}
+
+.swiper-slide-shadow{
+  display: none;
 }
 
 @media only screen and (max-width: 767px) {
@@ -99,7 +106,7 @@ limitations under the License.
     background-color: var(--background-color);
     border: #e77002 1px solid;
     border-radius: 10px 10px 0px 0px;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
   .linkQuery {

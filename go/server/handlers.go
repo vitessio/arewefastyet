@@ -42,7 +42,7 @@ func handleRenderErrors(c *gin.Context, err error) {
 	})
 }
 
-func (s *Server) cronHandler(c *gin.Context) {
+func (s *Server) dailyHandler(c *gin.Context) {
 	planner := getPlannerVersion()
 
 	oltpData, err := macrobench.GetResultsForLastDays("OLTP", "cron", planner, 31, s.dbClient)
@@ -193,20 +193,20 @@ func (s *Server) requestBenchmarkHandler(c *gin.Context) {
 func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	var err error
 
-	// get all the latest releases and the last cron job for main
+	// get all the latest releases and the last daily job for main
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
-	lastrunCronSHA, err := exec.GetLatestCronJobForMicrobenchmarks(s.dbClient)
+	lastrunDailySHA, err := exec.GetLatestDailyJobForMicrobenchmarks(s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
 	mainRelease := []*git.Release{{
 		Name:       "main",
-		CommitHash: lastrunCronSHA,
+		CommitHash: lastrunDailySHA,
 	}}
 	allReleases = append(mainRelease, allReleases...)
 	// get all the latest release branches as well
@@ -241,9 +241,9 @@ func (s *Server) microbenchmarkResultsHandler(c *gin.Context) {
 	rightTag := c.Query("rtag")
 	rightSHA := ""
 	if rightTag == "" {
-		// get the latest cron job if leftTag is not specified
+		// get the latest daily job if leftTag is not specified
 		rightTag = "main"
-		rightSHA = lastrunCronSHA
+		rightSHA = lastrunDailySHA
 	} else {
 		rightSHA, err = findSHA(allReleases, rightTag)
 		if err != nil {
@@ -309,20 +309,20 @@ func (s *Server) microbenchmarkSingleResultsHandler(c *gin.Context) {
 func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	var err error
 	planner := getPlannerVersion()
-	// get all the latest releases and the last cron job for main
+	// get all the latest releases and the last daily job for main
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
-	lastrunCronSHA, err := exec.GetLatestCronJobForMacrobenchmarks(s.dbClient)
+	lastrunDailySHA, err := exec.GetLatestDailyJobForMacrobenchmarks(s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
 	mainRelease := []*git.Release{{
 		Name:       "main",
-		CommitHash: lastrunCronSHA,
+		CommitHash: lastrunDailySHA,
 	}}
 	allReleases = append(mainRelease, allReleases...)
 	// get all the latest release branches as well
@@ -357,9 +357,9 @@ func (s *Server) macrobenchmarkResultsHandler(c *gin.Context) {
 	rightTag := c.Query("rtag")
 	rightSHA := ""
 	if rightTag == "" {
-		// get the latest cron job if leftTag is not specified
+		// get the latest daily job if leftTag is not specified
 		rightTag = "main"
-		rightSHA = lastrunCronSHA
+		rightSHA = lastrunDailySHA
 	} else {
 		rightSHA, err = findSHA(allReleases, rightTag)
 		if err != nil {
@@ -469,20 +469,20 @@ func (s *Server) macrobenchmarkCompareQueriesDetails(c *gin.Context) {
 func (s *Server) v3VsGen4Handler(c *gin.Context) {
 	var err error
 
-	// get all the latest releases and the last cron job for main
+	// get all the latest releases and the last daily job for main
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
-	lastrunCronSHA, err := exec.GetLatestCronJobForMacrobenchmarks(s.dbClient)
+	lastrunDailySHA, err := exec.GetLatestDailyJobForMacrobenchmarks(s.dbClient)
 	if err != nil {
 		handleRenderErrors(c, err)
 		return
 	}
 	mainRelease := []*git.Release{{
 		Name:       "main",
-		CommitHash: lastrunCronSHA,
+		CommitHash: lastrunDailySHA,
 	}}
 	allReleases = append(mainRelease, allReleases...)
 	// get all the latest release branches as well
@@ -497,9 +497,9 @@ func (s *Server) v3VsGen4Handler(c *gin.Context) {
 	tag := c.Query("tag")
 	sha := ""
 	if tag == "" {
-		// get the latest cron job if tag is not specified
+		// get the latest daily job if tag is not specified
 		tag = "main"
-		sha = lastrunCronSHA
+		sha = lastrunDailySHA
 	} else {
 		sha, err = findSHA(allReleases, tag)
 		if err != nil {

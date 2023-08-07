@@ -101,7 +101,6 @@ const PR = () => {
                     <PRGitInfo
                       key={index}
                       data={PRList}
-                      setPrNumber={setPrNumber}
                     />
                   );
                 })}

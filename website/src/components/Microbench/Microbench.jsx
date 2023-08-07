@@ -31,12 +31,12 @@ const Microbench = ({data, className, gitRefLeft, gitRefRight}) => {
             setMaxHeight(closeTables);
         }
     };
-
+   
     return (
         <div className={`microbench  ${className}`} style={{ maxHeight: `${maxHeight}px` }}>
             <div className='space--between justify--content align--center'>
                 <span className='width--12em'>{data.PkgName}</span>
-                <span className='width--14em name'>{data.Name}</span>
+                <span className='name'>{data.SubBenchmarkName}</span>
                 <div className='width--18em space--between--flex hiddenMobile'>
                     <span className='width--100'>{fixed(data.Right.Ops, 0)}</span>
                     <span className='width--100'>{fixed(data.Left.Ops, 0)}</span>

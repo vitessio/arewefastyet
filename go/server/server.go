@@ -258,7 +258,7 @@ func (s *Server) Run() error {
 	s.router.LoadHTMLGlob(s.templatePath + "/*")
 
 	// Information page
-	s.router.GET("/cron", s.cronHandler)
+	s.router.GET("/daily", s.dailyHandler)
 
 	s.router.GET("/analytics", s.analyticsHandler)
 
@@ -303,8 +303,8 @@ func (s *Server) Run() error {
 	s.router.GET("/api/macrobench/compare/queries", s.queriesCompareMacrobenchmarks)
 	s.router.GET("/api/pr/list", s.getPullRequest)
 	s.router.GET("/api/pr/info/:nb", s.getPullRequestInfo)
-	s.router.GET("/api/cron/summary", s.getCronSummary)
-	s.router.GET("/api/cron", s.getCron)
+	s.router.GET("/api/daily/summary", s.getDailySummary)
+	s.router.GET("/api/daily", s.getDaily)
 	s.router.GET("/api/status/stats", s.getStatusStats)
 
 	return s.router.Run(":" + s.port)

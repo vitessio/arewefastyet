@@ -25,10 +25,11 @@ import Layout from '../pages/Layout'
 import Macro from './Macro/Macro';
 import Micro from './Micro/Micro';
 import Search from './Search/Search';
-import CRON from './CRON/CRON';
+import Daily from './Daily/Daily'
 import MacroQueriesCompare from './MacroQueriesCompare/MacroQueriesCompare';
 import Compare from './Compare/Compare';
 import PR from './PR/PR';
+import SinglePR from './SinglePR/SinglePR';
 
 const PublicRoute = () => {
     return (
@@ -38,13 +39,14 @@ const PublicRoute = () => {
 
             <Route path='/home' element={<Home/>}/>
             <Route path='/status' element={<Status/>}/>
-            <Route path='/cron' element={<CRON/>}/>
+            <Route path='/Daily' element={<Daily/>}/>
             <Route path='/search' element={<Search/>}/>
             <Route path='/compare' element={<Compare/>}/>
             <Route path='/macro' element={<Macro/>}/>
             <Route path='/macrobench/queries/compare' element={<MacroQueriesCompare/>}/>
             <Route path='/micro' element={<Micro/>}/>
             <Route path='/pr' element={<PR/>}/>
+            <Route path='/pr/:pull_nb' element={<SinglePR/>}/>
 
 
             <Route path='*' element={<Error/>}/>

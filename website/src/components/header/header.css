@@ -171,15 +171,18 @@ limitations under the License.
   .header__nav {
     flex-direction: column;
     padding: 10px 20px 20px 10px;
-    background-color: #343a40;
+    background-color: var(--primary-color);
     animation: scale-in-ver-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
-
+  .last-li{
+    border-bottom: none;
+  }
   .header__nav li {
     padding: 20px 0px;
+  }
+  .liborder--bottom{
     border-bottom: 1px #b5adad solid;
   }
-
   .header__link {
     display: block;
     width: 100%;
@@ -198,6 +201,7 @@ limitations under the License.
   .lineMenu {
     visibility: visible;
   }
+  
 }
 
 @keyframes scale-in-ver-top {

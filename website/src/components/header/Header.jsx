@@ -74,6 +74,16 @@ const Header = () => {
     };
   }, []);
 
+  const links = [
+    { to: "/status", label: "Status" },
+    { to: "/daily", label: "Daily" },
+    { to: "/compare", label: "Compare" },
+    { to: "/search", label: "Search" },
+    { to: "/micro", label: "Micro" },
+    { to: "/macro", label: "Macro" },
+    { to: "/pr", label: "PR" },
+  ]
+
   return (
     <div className={`header flex ${visible ? "visible" : "hidden"}`}>
       <div className="header__container flex">
@@ -94,17 +104,9 @@ const Header = () => {
           <>
             <nav>
               <ul className="header__nav flex">
-                {[
-                  { to: "/status", label: "Status" },
-                  { to: "/cron", label: "CRON" },
-                  { to: "/compare", label: "Compare" },
-                  { to: "/search", label: "Search" },
-                  { to: "/micro", label: "Micro" },
-                  { to: "/macro", label: "Macro" },
-                  { to: "/pr", label: "PR" },
-                ].map((link, index) => (
+                {links.map((link, index) => (
                   <div key={index}>
-                    <li>
+                    <li className={index === links.length - 1 ? "" : "liborder--bottom"}>
                       <NavLink
                         className="header__link"
                         activeclassname="active"

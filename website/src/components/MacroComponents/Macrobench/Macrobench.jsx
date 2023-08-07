@@ -41,7 +41,7 @@ const Macrobench = React.memo(
         return <span>{data}</span>;
       }
     };
-
+    
     return (
       <div className="macrobench__component">
         <div className="macrobench__component__header">
@@ -49,12 +49,7 @@ const Macrobench = React.memo(
           <span className="linkQueryT">
             Click{" "}
             <Link
-              to="/macrobench/queries/compare"
-              state={{
-                data: data,
-                commitHashLeft: commitHashLeft,
-                commitHashRight: commitHashRight,
-              }}
+              to={`/macrobench/queries/compare?ltag=${commitHashLeft}&rtag=${commitHashRight}&type=${data.type}`}
             >
               here
             </Link>{" "}
@@ -67,10 +62,28 @@ const Macrobench = React.memo(
             <tr>
               <th></th>
               <th>
-                <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
+                {gitRefLeft == "" || gitRefLeft == "Left" ? (
+                  <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
+                ) : (
+                  <a
+                    target="blank"
+                    href={`https://github.com/vitessio/vitess/commit/${commitHashLeft}`}
+                  >
+                    <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
+                  </a>
+                )}
               </th>
               <th>
-                <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
+                {gitRefRight == "" || gitRefRight == "Right" ? (
+                  <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
+                ) : (
+                  <a
+                    target="blank"
+                    href={`https://github.com/vitessio/vitess/commit/${commitHashRight}`}
+                  >
+                    <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
+                  </a>
+                )}
               </th>
               <th>
                 <h4>Impoved by %</h4>
@@ -84,13 +97,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Result.qps.total,
+                  fixed(data.diff.Left.Result.qps.total, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.qps.total,
+                  fixed(data.diff.Right.Result.qps.total, 2),
                   textLoading
                 )}
               </td>
@@ -107,13 +120,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Result.qps.reads,
+                  fixed(data.diff.Left.Result.qps.reads, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.qps.reads,
+                  fixed(data.diff.Right.Result.qps.reads, 2),
                   textLoading
                 )}
               </td>
@@ -130,13 +143,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Result.qps.writes,
+                  fixed(data.diff.Left.Result.qps.writes, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.qps.writes,
+                  fixed(data.diff.Right.Result.qps.writes, 2),
                   textLoading
                 )}
               </td>
@@ -153,13 +166,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Result.qps.other,
+                  fixed(data.diff.Left.Result.qps.other, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.qps.other,
+                  fixed(data.diff.Right.Result.qps.other, 2),
                   textLoading
                 )}
               </td>
@@ -175,10 +188,16 @@ const Macrobench = React.memo(
                 <span className="sidebar">TPS</span>
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Left.Result.tps, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Left.Result.tps, 2),
+                  textLoading
+                )}
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Right.Result.tps, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Right.Result.tps, 2),
+                  textLoading
+                )}
               </td>
               <td>
                 {renderDataOrLoader(fixed(data.diff.Diff.tps, 2), textLoading)}
@@ -189,11 +208,14 @@ const Macrobench = React.memo(
                 <span className="sidebar">Latency</span>
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Left.Result.latency, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Left.Result.latency, 2),
+                  textLoading
+                )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.latency,
+                  fixed(data.diff.Right.Result.latency, 2),
                   textLoading
                 )}
               </td>
@@ -209,10 +231,16 @@ const Macrobench = React.memo(
                 <span className="sidebar">Errors</span>
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Left.Result.errors, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Left.Result.errors, 2),
+                  textLoading
+                )}
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Right.Result.errors, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Right.Result.errors, 2),
+                  textLoading
+                )}
               </td>
               <td>
                 {renderDataOrLoader(
@@ -227,13 +255,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Result.reconnects,
+                  fixed(data.diff.Left.Result.reconnects, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.reconnects,
+                  fixed(data.diff.Right.Result.reconnects, 2),
                   textLoading
                 )}
               </td>
@@ -249,10 +277,16 @@ const Macrobench = React.memo(
                 <span className="sidebar">Time</span>
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Left.Result.time, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Left.Result.time, 2),
+                  textLoading
+                )}
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Right.Result.time, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Right.Result.time, 2),
+                  textLoading
+                )}
               </td>
               <td>
                 {renderDataOrLoader(fixed(data.diff.Diff.time, 2), textLoading)}
@@ -263,11 +297,14 @@ const Macrobench = React.memo(
                 <span className="sidebar">Threads</span>
               </td>
               <td>
-                {renderDataOrLoader(data.diff.Left.Result.threads, textLoading)}
+                {renderDataOrLoader(
+                  fixed(data.diff.Left.Result.threads, 2),
+                  textLoading
+                )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Result.threads,
+                  fixed(data.diff.Right.Result.threads, 2),
                   textLoading
                 )}
               </td>
@@ -284,13 +321,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 0),
+                  fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 0),
+                  fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 2),
                   textLoading
                 )}
               </td>
@@ -307,13 +344,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Metrics.ComponentsCPUTime.vtgate,
+                  fixed(data.diff.Left.Metrics.ComponentsCPUTime.vtgate, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Metrics.ComponentsCPUTime.vtgate,
+                  fixed(data.diff.Right.Metrics.ComponentsCPUTime.vtgate, 2),
                   textLoading
                 )}
               </td>
@@ -330,13 +367,13 @@ const Macrobench = React.memo(
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Left.Metrics.ComponentsCPUTime.vttablet,
+                  fixed(data.diff.Left.Metrics.ComponentsCPUTime.vttablet, 2),
                   textLoading
                 )}
               </td>
               <td>
                 {renderDataOrLoader(
-                  data.diff.Right.Metrics.ComponentsCPUTime.vttablet,
+                  fixed(data.diff.Right.Metrics.ComponentsCPUTime.vttablet, 2),
                   textLoading
                 )}
               </td>

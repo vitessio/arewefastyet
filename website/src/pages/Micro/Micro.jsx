@@ -94,7 +94,6 @@ const Micro = () => {
       fetchData();
     }
   }, [commitHashLeft, commitHashRight]);
-
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
   const navigate = useNavigate();
@@ -192,7 +191,7 @@ const Micro = () => {
           <div className="micro__container">
             <div className="micro__thead space--between">
               <span className="width--12em">Package</span>
-              <span className="width--14em">Benchmark Name</span>
+              <span className="benchmarkName">Benchmark Name</span>
               <span className="width--18em hiddenMobile">
                 Number of Iterations
               </span>
@@ -202,7 +201,7 @@ const Micro = () => {
             <figure className="micro__thead__line"></figure>
             <div className="space--between--flex data__top hiddenMobile">
               <div className="width--12em"></div>
-              <div className="width--14em"></div>
+              <div className="benchmarkName"></div>
               <div className="width--18em space--between--flex">
                 <span className="width--100">{gitRefLeft}</span>
                 <span className="width--100">{gitRefRight}</span>

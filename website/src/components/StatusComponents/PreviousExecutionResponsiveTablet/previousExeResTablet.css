@@ -14,30 +14,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.previousExe__data__tablet{
-    display: none;
-    text-align: center;
-    padding: 20px 0px;
-    border-bottom: #B5ADAD 1px solid;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
+.previousExe__data__tablet {
+  display: none;
+  text-align: center;
+  padding: 20px 0px;
+  border-bottom: #b5adad 1px solid;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
 }
-.previousExe__data__tablet__top{
-    justify-content: space-between;
-    padding-bottom: 20px;
+.previousExe__data__tablet__top {
+  justify-content: space-between;
+  padding-bottom: 20px;
 }
-.previousExe__data__tablet__bottom{
-    flex-direction: column;
-    
-}
-
-.previousExe__data__tablet__bottom__more{
-    flex-direction: row;
-    padding: 10px;
+.previousExe__data__tablet__bottom {
+  flex-direction: column;
 }
 
-@media only screen and (max-width: 1225px)  and (min-width: 768px) {
-    .previousExe__data__tablet{
-        display: block;
-    }
+.previousExe__data__tablet__bottom table {
+  margin: auto;
+  width: 60%;
+  border: 1px solid var(--font-color);
+  margin-top: 20px;
+}
+.previousExe__data__tablet__bottom table td {
+  padding: 10px;
+}
+.previousExe__data__tablet__bottom thead tr {
+  border-bottom: 1px solid var(--font-color);
+  padding: 10px;
+}
+@media only screen and (max-width: 1225px) and (min-width: 768px) {
+  .previousExe__data__tablet {
+    display: block;
+  }
 }

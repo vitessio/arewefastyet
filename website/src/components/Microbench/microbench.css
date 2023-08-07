@@ -27,6 +27,7 @@ limitations under the License.
 
 .name{
     word-wrap: break-word;
+    width: 30%;
 }
 
 .microbench__bottom{
@@ -65,5 +66,8 @@ limitations under the License.
 @media only screen and (max-width: 767px) {
     .microbench__bottom{
         width: 98%;
+    }
+    .name{
+        width: 50%;
     }
 }

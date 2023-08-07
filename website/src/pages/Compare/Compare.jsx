@@ -44,18 +44,20 @@ const Compare = () => {
   const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(
     urlParams.get("ptagM") == null ? "0" : urlParams.get("ptagM")
   );
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const {
     data: dataMacrobench,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
+    textLoading: macroTextLoading
   } = useApiCall(
     `${
       import.meta.env.VITE_API_URL
     }macrobench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
-    [gitRefLeft, gitRefRight]
+    [isFormSubmitted]
   );
-
+    
   const {
     data: dataMicrobench,
     isLoading: isMicrobenchLoading,
@@ -64,9 +66,9 @@ const Compare = () => {
     `${
       import.meta.env.VITE_API_URL
     }microbench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
-    [gitRefLeft, gitRefRight]
+    [isFormSubmitted]
   );
-
+    
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
   const navigate = useNavigate();
@@ -86,27 +88,20 @@ const Compare = () => {
   };
 
   const handleSlideChange = (swiper) => {
-    setCurrentSlideIndex(swiper.realIndex);
+    setCurrentSlideIndexMobile(swiper.realIndex);
   };
 
-  const slicedRef = gitRefLeft.slice(0, 8);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsFormSubmitted((prevState) => !prevState);
+  };
+
+
   return (
     <div className="compare">
       <div className="compare__top">
         <div className="justify--content form__container">
-          <h3>
-            Comparing{" "}
-            <a href={`https://github.com/vitessio/vitess/commit/${gitRefLeft}`}>
-              {gitRefLeft ? gitRefLeft.slice(0, 8) : "Left"}
-            </a>{" "}
-            with{" "}
-            <a
-              href={`https://github.com/vitessio/vitess/commit/${gitRefRight}`}
-            >
-              {gitRefRight ? gitRefRight.slice(0, 8) : "Right"}
-            </a>
-          </h3>
-          <form className="justify--content">
+          <form className="justify--content" onSubmit={handleSubmit}>
             <input
               type="text"
               value={gitRefLeft === "Left" ? "" : gitRefLeft}
@@ -121,6 +116,7 @@ const Compare = () => {
               placeholder="Right commit SHA"
               className="form__inputRight"
             ></input>
+            <button type="submit">Search</button>
           </form>
         </div>
 
@@ -144,18 +140,24 @@ const Compare = () => {
                     <div key={index}>
                       <Macrobench
                         data={macro}
+                        textLoading={macroTextLoading}
                         gitRefLeft={gitRefLeft.slice(0, 8)}
                         gitRefRight={gitRefRight.slice(0, 8)}
                         swiperSlide={SwiperSlide}
+                        commitHashLeft={gitRefLeft}
+                        commitHashRight={gitRefRight}
                       />
                       <MacrobenchMobile
                         data={macro}
-                        gitRefLeft={gitRefLeft}
-                        gitRefRight={gitRefRight}
+                        gitRefLeft={gitRefLeft.slice(0, 8)}
+                        gitRefRight={gitRefRight.slice(0, 8)}
                         swiperSlide={SwiperSlide}
+                        textLoading={macroTextLoading}
                         handleSlideChange={handleSlideChange}
                         setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                         currentSlideIndexMobile={currentSlideIndexMobile}
+                        commitHashLeft={gitRefLeft}
+                        commitHashRight={gitRefRight}
                       />
                     </div>
                   );

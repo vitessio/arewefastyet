@@ -77,6 +77,7 @@ limitations under the License.
   padding: 19px 0px 0px 0px;
   padding-bottom: 30px;
   font-size: 1rem;
+  width: 100%;
 }
 
 /*Compare array*/
@@ -130,6 +131,10 @@ limitations under the License.
 
 .hiddenDesktop {
   display: none;
+}
+
+.benchmarkName{
+  width: 30%;
 }
 
 /* MEDIA QUERIES FOR TABLETS */
@@ -208,5 +213,11 @@ limitations under the License.
     right: 0%;
     font-size: 0.7rem;
     width: 150px;
+  }
+  .micro__bottom__DropDownCointainer{
+    margin: auto;
+  }
+  .benchmarkName{
+    width: 50%;
   }
 }

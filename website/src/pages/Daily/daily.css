@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.cron {
+.daily {
   padding: 0px 20px 0px 20px;
   position: relative;
   min-height: 100vh;
@@ -22,12 +22,12 @@ limitations under the License.
   margin: auto;
 }
 
-.cron__top {
+.daily__top {
   margin-top: 100px;
   padding: 50px;
 }
 
-.cron__top h2 {
+.daily__top h2 {
   font-size: 5rem;
   font-weight: 100;
   margin-bottom: 50px;
@@ -35,24 +35,23 @@ limitations under the License.
   width: 100%;
 }
 
-.cron__top span {
-  display: block;
-  width: 50%;
+.daily__top span {
+  width: 60%;
   line-height: 40px;
 }
 
-.cron__summary__container {
+.daily__summary__container {
   flex-wrap: wrap;
 }
 
 /*CHART*/
 
-.cron__container {
+.daily__container {
   width: 100%;
   margin-bottom: 300px;
 }
 
-.cron__container h3 {
+.daily__container h3 {
   font-size: 1.5rem;
   margin-left: 30px;
 }
@@ -67,8 +66,8 @@ limitations under the License.
 }
 
 .tooltip {
-  color: white;
-  background-color: black;
+  color: #fad900;
+  background-color: rgb(125, 104, 104);
   padding: 5px;
   gap: 10px;
 }
@@ -80,7 +79,7 @@ limitations under the License.
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-  .cron {
+  .daily {
     overflow-x: scroll;
   }
   .chart {

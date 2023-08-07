@@ -14,10 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import React, { useContext } from "react";
+import { AppContext } from "../../../AppContext";
 import { ResponsiveLine } from "@nivo/line";
 
 const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
+  const { isColorChanged } = useContext(AppContext);
+
   return (
     data[0].data.length > 0 && (
       <div className="chart">
@@ -27,23 +30,28 @@ const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
           <h3 className="chart__title">{title}</h3>
         )}
         <ResponsiveLine
-          background={"#f0f0f0"}
           data={data}
           height={400}
           colors={colors}
           theme={{
+            background: isColorChanged ? "#f7f7f7" : "#1F1D1D",
             axis: {
               ticks: {
                 text: {
                   fontSize: "13px",
-                  fill: "white",
+                  fill: "var(--font-color)",
                 },
               },
             },
             legends: {
               text: {
                 fontSize: "14px",
-                fill: "white",
+                fill: "var(--font-color)",
+              },
+            },
+            grid: {
+              line: {
+                stroke: "var(--font-color)",
               },
             },
           }}
