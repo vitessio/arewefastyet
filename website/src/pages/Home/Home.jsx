@@ -17,13 +17,11 @@ limitations under the License.
 import React, { useContext } from "react";
 import { AppContext } from "../../AppContext";
 
-import homeLogoDark from "../../assets/homeLogoDarkLarge.png";
-import homeLogoLight from "../../assets/homeLogoWhiteLarge.png";
+import logo from "../../assets/logo.png";
 
 import "./home.css";
 
 const Home = () => {
-  const { isColorChanged } = useContext(AppContext);
 
   return (
     <div className="home">
@@ -40,7 +38,7 @@ const Home = () => {
           </span>
         </div>
         <img
-          src={isColorChanged ? homeLogoLight : homeLogoDark }
+          src={logo}
           alt="logo"
           className="home__top__logo"
         />
