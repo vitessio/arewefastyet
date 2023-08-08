@@ -26,13 +26,6 @@ limitations under the License.
   flex-direction: column;
 }
 
-.pr__top h2 {
-  font-size: 5rem;
-  font-weight: 100;
-  margin: 20px 0px 50px 30px;
-  width: 100%;
-}
-
 .pr__top span {
   width: 50%;
   line-height: 40px;

@@ -106,6 +106,14 @@ body{
   z-index: 200;
 }
 
+.header--title{
+  font-size: 5rem;
+  font-weight: 100;
+  margin-bottom: 50px;
+  margin-top: 20px;
+  width: 100%;
+}
+
 /*size class*/
 
 .width--5em {

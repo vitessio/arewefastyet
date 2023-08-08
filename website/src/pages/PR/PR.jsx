@@ -62,7 +62,7 @@ const PR = () => {
   return (
     <div className="pr">
       <div className="pr__top justify--content">
-        <h2>Pull Request</h2>
+        <h2 className="header--title">Pull Request</h2>
         <span>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
           augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus

@@ -83,7 +83,6 @@ const Micro = () => {
               import.meta.env.VITE_API_URL
             }microbench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`
           );
-          console.log(commitHashLeft);
           const jsonDataMicrobench = await responseMicrobench.json();
           setDataMicrobench(jsonDataMicrobench);
         } catch (error) {
@@ -106,7 +105,7 @@ const Micro = () => {
     <div className="micro">
       <div className="micro__top justify--content">
         <div className="micro__top__text">
-          <h2>Compare Microbenchmarks</h2>
+          <h2 className="header--title">Compare Microbenchmarks</h2>
           <div className="micro__bottom__DropDownCointainer justify--content">
             <figure
               className="micro__bottom__DropDownLeft dropDown flex--column"

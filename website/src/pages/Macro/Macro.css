@@ -34,14 +34,6 @@ limitations under the License.
   margin-right: 200px;
 }
 
-.macro__top__text h2 {
-  font-size: 5rem;
-  font-weight: 100;
-  margin-bottom: 50px;
-  margin-top: 20px;
-  width: 100%;
-}
-
 .macroStats {
   border: solid 2px var(--font-color);
   width: 400px;

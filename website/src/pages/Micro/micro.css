@@ -33,14 +33,6 @@ limitations under the License.
   position: relative;
 }
 
-.micro__top__text h2 {
-  font-size: 5rem;
-  font-weight: 100;
-  margin-bottom: 50px;
-  margin-top: 20px;
-  width: 100%;
-}
-
 .microStats {
   border: solid 2px var(--font-color);
   width: 400px;

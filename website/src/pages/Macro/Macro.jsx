@@ -113,7 +113,7 @@ const Macro = () => {
         <div className='macro'>
             <div className='macro__top justify--content'>
                 <div className='macro__top__text'>
-                    <h2>Compare Macrobenchmarks</h2>
+                    <h2 className='header--title'>Compare Macrobenchmarks</h2>
                     <div className='macro__bottom__DropDownContainer flex'>
                     <figure className='macro__bottom__DropDownLeft dropDown flex--column' style={{ maxHeight: `${openDropDownLeft}px` }}>
                         <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownLeft, setOpenDropDownLeft)}>{gitRefLeft} <i className="fa-solid fa-circle-arrow-down"></i></span>
