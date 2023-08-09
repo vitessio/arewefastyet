@@ -24,20 +24,11 @@ limitations under the License.
 
 .daily__top {
   margin-top: 100px;
-  text-align: center;
-}
-
-.daily__top h2 {
-  font-size: 5rem;
-  font-weight: 100;
-  margin-bottom: 50px;
-  margin-top: 20px;
-  width: 100%;
+  padding: 50px;
 }
 
 .daily__top span {
-  width: 60%;
-  line-height: 40px;
+  display: block;
 }
 
 .daily__summary__container {
@@ -85,5 +76,13 @@ limitations under the License.
   .chart {
     width: 1200px;
     height: 200px;
+  }
+  .daily__top {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .daily__top span{
+    margin: auto;
   }
 }

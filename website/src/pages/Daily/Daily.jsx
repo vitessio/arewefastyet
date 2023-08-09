@@ -259,8 +259,8 @@ const Daily = () => {
   return (
     <div className="daily">
       <div className="daily__top">
-        <h2>Daily</h2>
-        <span>
+        <h2 className="header--title">Daily</h2>
+        <span className="header--text">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
           augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
           sodales felis eu condimentum convallis. Suspendisse sodales malesuada

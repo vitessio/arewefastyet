@@ -36,7 +36,7 @@ limitations under the License.
   align-self: center;
   color: #e77002;
   cursor: pointer;
-  width: 25%;
+  width: 10%;
 }
 
 .prGit span {
@@ -48,7 +48,7 @@ limitations under the License.
 .prGit table {
   margin-top: 30px;
   border: 1px solid var(--font-color);
-  width: 60%;
+  max-width: 60%;
   padding: 10px;
 }
 
@@ -92,7 +92,7 @@ limitations under the License.
   }
 
   .linkToCompare {
-    width: 40%;
+    width: 15%;
   }
 }
 

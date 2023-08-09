@@ -34,14 +34,6 @@ limitations under the License.
   margin-right: 200px;
 }
 
-.macro__top__text h2 {
-  font-size: 4rem;
-  font-weight: 100;
-  margin-bottom: 50px;
-  margin-top: 20px;
-  width: 100%;
-}
-
 .macroStats {
   border: solid 2px var(--font-color);
   width: 400px;
@@ -64,28 +56,15 @@ limitations under the License.
 }
 
 .macro__bottom__DropDownLeft {
-  color: white;
   position: absolute;
-  background-color: var(--dropDown-color);
-  border: var(--accent-color) solid 1px;
-  border-radius: 15px;
-  width: 200px;
-  text-align: center;
-  align-items: center;
-  overflow: hidden;
-  cursor: pointer;
-  transition: max-height 1s ease;
   left: 0%;
   top: 30px;
-  box-shadow: #e77002 2px 2px 10px;
-  z-index: 200;
 }
 
 .DropDown__Base {
   padding: 19px 0px 0px 0px;
   padding-bottom: 30px;
   width: 100%;
-  font-size: 1rem;
 }
 
 .fa-circle-arrow-down {
@@ -109,21 +88,9 @@ limitations under the License.
 }
 
 .macro__bottom__DropDownRight {
-  color: white;
   position: absolute;
-  border: var(--accent-color) solid 1px;
-  background-color: var(--dropDown-color);
-  border-radius: 15px;
-  width: 200px;
-  text-align: center;
-  align-items: center;
-  overflow: hidden;
-  cursor: pointer;
-  transition: max-height 1s ease;
   right: 0%;
   top: 30px;
-  box-shadow: #e77002 2px 2px 10px;
-  z-index: 200;
 }
 
 /* Benchmark table. */
