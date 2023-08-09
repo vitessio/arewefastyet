@@ -29,12 +29,9 @@ const Home = () => {
         <div className="home__top__text">
           <h1 className="header--title">arewefastyet</h1>
           <span className="header--text">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-            augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-            sodales felis eu condimentum convallis. Suspendisse sodales
-            malesuada iaculis. Mauris molestie placerat ex non malesuada.
-            Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt
-            volutpat.
+            Arewefastyet is all about precise performance measurement.
+            We test Vitess in various scenarios, assessing query latency, transaction speed, and CPU/Memory usage.
+            These insights drive our continuous improvement efforts to ensure Vitess remains at the forefront of performance.
           </span>
         </div>
         <img
@@ -42,51 +39,6 @@ const Home = () => {
           alt="logo"
           className="home__top__logo"
         />
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
       </article>
     </div>
   );
