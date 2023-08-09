@@ -62,4 +62,4 @@ RUN mkdir -p /config /exec
 # Configuration files MUST be attached to the container using a volume.
 # The configuration files are not mounted on the Docker image for obvious
 # security reasons.
-CMD ["/arewefastyetcli", "web", "--config", "/config/config.yaml", "--secrets", "/config/secrets.yaml"]
+CMD ["/arewefastyetcli", "api", "--config", "/config/config.yaml", "--secrets", "/config/secrets.yaml"]
