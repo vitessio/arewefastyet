@@ -260,7 +260,7 @@ const Daily = () => {
     <div className="daily">
       <div className="daily__top">
         <h2 className="header--title">Daily</h2>
-        <span>
+        <span className="header--text">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
           augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
           sodales felis eu condimentum convallis. Suspendisse sodales malesuada

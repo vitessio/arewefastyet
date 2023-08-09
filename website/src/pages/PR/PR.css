@@ -24,12 +24,7 @@ limitations under the License.
 .pr__top {
   margin-top: 100px;
   flex-direction: column;
-}
-
-.pr__top span {
-  width: 50%;
-  line-height: 40px;
-  margin-left: 30px;
+  padding: 50px;
 }
 
 .pr__container {
@@ -44,7 +39,6 @@ limitations under the License.
   justify-content: space-around;
   text-align: center;
   border-bottom: 2px solid #B5ADAD;
-  
   margin-top: 100px;
 }
 
@@ -57,7 +51,7 @@ limitations under the License.
 }
 
 .linkSidebar {
-  width: 25%;
+  width: 10%;
 }
 
 @media only screen and (max-width: 1225px) {
@@ -85,7 +79,7 @@ limitations under the License.
     margin-left: 0px;
   }
   .linkSidebar {
-    width: 40%;
+    width: 15%;
   }
 }
 

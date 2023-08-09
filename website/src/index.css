@@ -114,6 +114,11 @@ body{
   width: 100%;
 }
 
+.header--text{
+  width: 50%;
+  line-height: 40px;
+}
+
 /*size class*/
 
 .width--5em {
