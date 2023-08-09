@@ -113,9 +113,9 @@ const Macro = () => {
         <div className='macro'>
             <div className='macro__top justify--content'>
                 <div className='macro__top__text'>
-                    <h2>Compare Macrobenchmarks</h2>
+                    <h2 className='header--title'>Compare Macrobenchmarks</h2>
                     <div className='macro__bottom__DropDownContainer flex'>
-                    <figure className='macro__bottom__DropDownLeft flex--column' style={{ maxHeight: `${openDropDownLeft}px` }}>
+                    <figure className='macro__bottom__DropDownLeft dropDown flex--column' style={{ maxHeight: `${openDropDownLeft}px` }}>
                         <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownLeft, setOpenDropDownLeft)}>{gitRefLeft} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {
                             return (
@@ -126,7 +126,7 @@ const Macro = () => {
                             )
                         })}
                     </figure>
-                    <figure className='macro__bottom__DropDownRight flex--column' style={{ maxHeight: `${openDropDownRight}px` }}>
+                    <figure className='macro__bottom__DropDownRight dropDown flex--column' style={{ maxHeight: `${openDropDownRight}px` }}>
                         <span className='DropDown__Base'  onClick={() => openDropDown(openDropDownRight, setOpenDropDownRight)}>{gitRefRight} <i className="fa-solid fa-circle-arrow-down"></i></span>
                         {dataRefs.map((ref, index) => {
                             return (
