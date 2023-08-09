@@ -5,8 +5,6 @@ web-cron-schedule-pull-requests: "*/5 * * * *"
 web-cron-schedule-tags: "*/1 * * * *"
 
 web-port: 8080
-web-template-path: ./go/server/templates
-web-static-path: ./go/server/static
 web-benchmark-config-path: ./config/benchmarks/
 web-source-exclude-filter: "cron_tags_14.0.0-rc1,cron_tags_14.0.4"
 web-mode: "production"
