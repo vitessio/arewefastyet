@@ -15,35 +15,39 @@ limitations under the License.
 */
 
 import React, { useContext } from "react";
-import { AppContext } from "../../AppContext";
 
 import logo from "../../assets/logo.png";
 
 import "./home.css";
 
 const Home = () => {
-
   return (
     <div className="home">
-      <article className="home__top justify--content">
-        <div className="home__top__text">
-          <h1>arewefastyet</h1>
-          <span>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-            augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-            sodales felis eu condimentum convallis. Suspendisse sodales
-            malesuada iaculis. Mauris molestie placerat ex non malesuada.
-            Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt
-            volutpat.
-          </span>
+      <article className="home__top">
+        <div className="home__top__gradient" />
+        <div className="home__top__content">
+          <div className="home__top__content__text">
+            <div className="home__top__content__text__heading">
+              <h3>Vitess Introduces</h3>
+              <h1>arewefastyet</h1>
+            </div>
+            <p>
+              A Cutting-Edge Benchmarking Approach for Unparalleled Database
+              Speed
+            </p>
+          </div>
+          <div className="home__top__content__button">
+            <button onClick={() =>window.open("https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet","__blank")}>
+              Check Out the Blog post <i class="fa-solid fa-bookmark"></i>
+            </button >
+            <button onClick={() =>window.open("https://github.com/vitessio/arewefastyet","__blank")}>
+              Contirbute on Github
+              <i className="fa-brands fa-github"></i>
+            </button>
+          </div>
         </div>
-        <img
-          src={logo}
-          alt="logo"
-          className="home__top__logo"
-        />
+        <img src={logo} alt="logo" className="home__top__logo" />
       </article>
-      <figure className="line"></figure>
       <article className="home__bottom">
         <span>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
