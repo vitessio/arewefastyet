@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 .footer__main {
+    justify-content: center;
     background-color: var(--primary-color);
     max-width: 100vw;
     margin-top: 100px;
@@ -23,9 +24,9 @@ limitations under the License.
 
 .footer{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 200px;
+    padding: 0px 80px;
     position: relative;
     bottom: 0; 
     padding-top: 30px; 
@@ -68,7 +69,7 @@ limitations under the License.
 }
 
 .copyrightText__footer {
-    padding-top: 10px;
+    padding-top: 15px;
     font-size: 18px;
 }
 
@@ -79,14 +80,13 @@ limitations under the License.
     .footer{
         flex-direction: column;
         align-items: flex-start;
-        gap: 40px;
         padding-left: 40px;
         }
 
     .links{
     flex-direction: column;
     align-items: flex-start;
-    gap: 40px;
+    padding-top: 20px;
     }
 
     .footer__one {
@@ -98,9 +98,8 @@ limitations under the License.
 
 @media only screen and (max-width: 979px) {
     .footer {
-        padding-left: 30px;
-        padding-right: 30px;
-        gap: 30px;
+        padding-left: 15px;
+        padding-right: 15px;
     }
     .links {
         gap: 40px;

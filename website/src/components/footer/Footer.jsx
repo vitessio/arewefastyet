@@ -80,7 +80,6 @@ const Footer = () => {
         </div>
       </div>
       <div>
-        <div className="footer__line"></div>
         <p className="copyrightText__footer justify--content">
           Copyright © 2023
         </p>
