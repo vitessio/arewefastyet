@@ -30,10 +30,7 @@ const Footer = () => {
     { url: "https://github.com/vitessio/arewefastyet", icon: AiFillGithub },
     { url: "https://vitess.io/slack", icon: AiFillSlackCircle },
     { url: "https://twitter.com/vitessio", icon: AiFillTwitterCircle },
-    {
-      url: "https://stackoverflow.com/search?q=vitess",
-      icon: BsStackOverflow,
-    },
+    { url: "https://stackoverflow.com/search?q=vitess", icon: BsStackOverflow },
   ];
 
   return (

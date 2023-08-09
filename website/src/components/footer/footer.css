@@ -16,6 +16,7 @@ limitations under the License.
 
 .footer__main {
     background-color: var(--primary-color);
+    max-width: 100vw;
     margin-top: 100px;
     padding-bottom: 15px;
 }
@@ -26,8 +27,7 @@ limitations under the License.
     align-items: center;
     gap: 200px;
     position: relative;
-    bottom: 0;
-    width: 100%; 
+    bottom: 0; 
     padding-top: 30px; 
 }
 
