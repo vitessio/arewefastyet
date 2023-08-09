@@ -19,31 +19,32 @@ import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
 import useApiCall from "../../utils/Hook";
 
-import "../CRON/cron.css";
+import "../Daily/daily.css";
 
 import { formatByteForGB } from "../../utils/Utils";
-import ResponsiveChart from "../../components/CRONComponents/Chart/Chart";
-import CronSummary from "../../components/CRONComponents/CRONSummary/CronSummary";
+import ResponsiveChart from "../../components/DailyComponents/Chart/Chart";
+import DailySummary from "../../components/DailyComponents/DailySummary/DailySummary";
 
-const CRON = () => {
+const Daily = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState(
     urlParams.get("type") == null ? "" : urlParams.get("type")
   );
 
   const {
-    data: dataCronSummary,
-    isLoading: isLoadingCronSummary,
-    error: errorCronSummary,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}cron/summary`);
+    data: dataDailySummary,
+    isLoading: isLoadingDailySummary,
+    error: errorDailySummary,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}daily/summary`);
 
   const {
-    data: dataCron,
-    error: cronError,
-    textLoading: cronTextLoading,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}cron?type=${benchmarkType}`, [
+    data: dataDaily,
+    error: dailyError,
+    textLoading: dailyTextLoading,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`, [
     benchmarkType,
   ]);
+
 
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
@@ -118,7 +119,7 @@ const CRON = () => {
     },
   ];
 
-  for (const item of dataCron) {
+  for (const item of dataDaily) {
     const xValue = item.GitRef.slice(0, 8);
 
     // TPS Data
@@ -224,9 +225,9 @@ const CRON = () => {
     setSelectedBenchmarkIndex(index);
   };
   return (
-    <div className="cron">
-      <div className="cron__top">
-        <h2>CRON</h2>
+    <div className="daily">
+      <div className="daily__top">
+        <h2>Daily</h2>
         <span>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
           augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
@@ -236,24 +237,24 @@ const CRON = () => {
         </span>
       </div>
       <figure className="line"></figure>
-      {errorCronSummary || cronError ? (
+      {errorDailySummary || dailyError ? (
         <div className="apiError">{error}</div>
-      ) : isLoadingCronSummary ? (
+      ) : isLoadingDailySummary ? (
         <div className="loadingSpinner">
           <RingLoader
-            loading={isLoadingCronSummary}
+            loading={isLoadingDailySummary}
             color="#E77002"
             size={300}
           />
         </div>
       ) : (
         <>
-          <div className="cron__summary__container justify--content">
-            {dataCronSummary.map((cronSummary, index) => {
+          <div className="daily__summary__container justify--content">
+            {dataDailySummary.map((dailySummary, index) => {
               return (
-                <CronSummary
+                <DailySummary
                   key={index}
-                  data={cronSummary}
+                  data={dailySummary}
                   setBenchmarktype={setBenchmarktype}
                   isSelected={index === selectedBenchmarkIndex}
                   handleClick={() => handleComponentClick(index)}
@@ -262,16 +263,16 @@ const CRON = () => {
             })}
           </div>
           <figure className="line"></figure>
-          {cronTextLoading ? (
+          {dailyTextLoading ? (
             <div className="loadingSpinner">
               <RingLoader
-                loading={cronTextLoading}
+                loading={dailyTextLoading}
                 color="#E77002"
                 size={300}
               />
             </div>
           ) : benchmarkType !== "" ? (
-            <div className="cron__container">
+            <div className="daily__container">
               {allChartData.map((chartData, index) => (
                 <ResponsiveChart
                   key={index}
@@ -289,4 +290,4 @@ const CRON = () => {
   );
 };
 
-export default CRON;
+export default Daily;
