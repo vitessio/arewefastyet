@@ -17,13 +17,14 @@ limitations under the License.
 .footer__main {
     justify-content: center;
     background-color: var(--primary-color);
-    max-width: 100vw;
     margin-top: 100px;
     padding-bottom: 15px;
 }
 
 .footer{
     display: flex;
+    max-width: 1500px;
+    margin: auto;
     justify-content: space-between;
     align-items: center;
     padding: 0px 80px;
@@ -80,7 +81,7 @@ limitations under the License.
     .footer{
         flex-direction: column;
         align-items: flex-start;
-        padding-left: 40px;
+        margin-left: 20px;
         }
 
     .links{
