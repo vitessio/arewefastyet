@@ -44,8 +44,6 @@ services:
       - "./config/dev/config.yaml:/config/config.yaml"
       - "./config/dev/secrets.yaml:/config/secrets.yaml"
       - "./config/benchmarks:/config/benchmarks"
-      - "./go/server/templates/:/go/server/templates"
-      - "./go/server/static/:/go/server/static"
       - "./ansible:/ansible"
     labels:
       - "traefik.enable=true"

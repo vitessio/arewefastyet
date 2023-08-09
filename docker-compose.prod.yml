@@ -23,14 +23,12 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.https.address=:443"
-      - "--entrypoints.https-frontend.address=:8000"
       - "--entrypoints.https-ghapp.address=:8181"
       - "--certificatesresolvers.tlsresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.tlsresolver.acme.email=cncf-vitess-project@cncf.io"
       - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
-      - "8000:8000"
       - "8181:8181"
     volumes:
       - "/var/letsencrypt:/letsencrypt"
@@ -50,12 +48,11 @@ services:
       - "./config/prod/config.yaml:/config/config.yaml"
       - "./config/prod/secrets.yaml:/config/secrets.yaml"
       - "./config/benchmarks:/config/benchmarks"
-      - "./go/server/templates/:/go/server/templates"
-      - "./go/server/static/:/go/server/static"
       - "./ansible:/ansible"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
@@ -89,7 +86,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
-      - "traefik.http.routers.frontend.entrypoints=https-frontend"
+      - "traefik.http.routers.frontend.entrypoints=https"
       - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     network_mode: bridge
