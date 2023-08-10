@@ -220,10 +220,7 @@ const Daily = () => {
       colors: ["#fad900", "orange", "brown"],
     },
   ];
-  const [selectedBenchmarkIndex, setSelectedBenchmarkIndex] = useState(null);
-  const handleComponentClick = (index) => {
-    setSelectedBenchmarkIndex(index);
-  };
+
   return (
     <div className="daily">
       <div className="daily__top">
@@ -256,8 +253,7 @@ const Daily = () => {
                   key={index}
                   data={dailySummary}
                   setBenchmarktype={setBenchmarktype}
-                  isSelected={index === selectedBenchmarkIndex}
-                  handleClick={() => handleComponentClick(index)}
+                  benchmarkType={benchmarkType}
                 />
               );
             })}

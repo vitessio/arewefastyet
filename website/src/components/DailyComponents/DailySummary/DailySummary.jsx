@@ -19,7 +19,7 @@ import { ResponsiveLine } from "@nivo/line";
 
 import "./dailySummary.css";
 
-const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
+const DailySummary = ({ data, setBenchmarktype, benchmarkType  }) => {
   const orange = "#E77002";
   
   const transformedData = [];
@@ -39,8 +39,7 @@ const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
   };
 
   return (
-    <div className={`dailySummary flex--column ${isSelected ? "dailySummary--selected" : ""}`}  onClick={() => {
-      handleClick();
+    <div className={`dailySummary flex--column ${benchmarkType === data.Name ? "dailySummary--selected" : ""}`}  onClick={() => {
       getBenchmarkType();
     }}>
       {data ? (
