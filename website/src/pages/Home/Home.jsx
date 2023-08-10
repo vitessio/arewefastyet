@@ -37,7 +37,7 @@ const Home = () => {
           </div>
           <div className="home__top__content__button">
             <button onClick={() =>window.open("https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet","__blank")}>
-              Check Out the Blog post <i class="fa-solid fa-bookmark"></i>
+              Read our blog post <i class="fa-solid fa-bookmark"></i>
             </button >
             <button onClick={() =>window.open("https://github.com/vitessio/arewefastyet","__blank")}>
               Contribute on GitHub
