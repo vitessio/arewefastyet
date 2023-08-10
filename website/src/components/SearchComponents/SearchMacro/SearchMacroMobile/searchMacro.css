@@ -25,7 +25,7 @@ limitations under the License.
 
 .search__macro__data h3{
     border-bottom: #B5ADAD 1px solid;
-    padding: 15px 15px 44px 15px;
+    padding: 15px 15px 41px 15px;
 }
 
 table{
@@ -50,7 +50,7 @@ table{
 }
 
 .search__macro__data td{
-    padding: 15px 0px 5px 0px;
+    padding: 14px 0px 5px 0px;
 }
 
 .dataNull{
@@ -62,10 +62,16 @@ table{
 @media only screen and (max-width: 767px){
     .search__macro__data h3{
         font-size: 1rem;
-        padding-bottom: 53px;
+        padding-bottom: 51px;
+    }
+    .search__macro__data{
+        border-bottom: none;
     }
 
     #marginTr{
         padding: 15.5px 0px 5px 0px;
+    }
+    .search__macro__data td{
+        padding: 12px 0px 5px 0px;
     }
 }
