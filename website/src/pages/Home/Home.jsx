@@ -40,7 +40,7 @@ const Home = () => {
               Check Out the Blog post <i class="fa-solid fa-bookmark"></i>
             </button >
             <button onClick={() =>window.open("https://github.com/vitessio/arewefastyet","__blank")}>
-              Contirbute on Github
+              Contribute on GitHub
               <i className="fa-brands fa-github"></i>
             </button>
           </div>
