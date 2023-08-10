@@ -178,3 +178,10 @@ body{
     display: block;
   }
 }
+
+@media only screen and (max-width: 767px) {
+  .dropDown{
+    width: 150px;
+    padding: 0px;
+  }
+}
