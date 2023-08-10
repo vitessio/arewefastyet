@@ -32,8 +32,7 @@ const Home = () => {
               <h1>arewefastyet</h1>
             </div>
             <p>
-              A Cutting-Edge Benchmarking Approach for Unparalleled Database
-              Speed
+            It is all about precise performance measurement. We test Vitess in various scenarios, assessing query latency, transaction speed, and CPU/Memory usage. These insights drive our continuous improvement efforts to ensure Vitess remains at the forefront of performance.
             </p>
           </div>
           <div className="home__top__content__button">
@@ -47,50 +46,6 @@ const Home = () => {
           </div>
         </div>
         <img src={logo} alt="logo" className="home__top__logo" />
-      </article>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
       </article>
     </div>
   );
