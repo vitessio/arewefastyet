@@ -15,8 +15,8 @@ limitations under the License.
 */
 
 .pr {
+  padding: 0px 50px 50px 50px;
   min-height: 100vh;
-  padding: 20px;
   max-width: 1500px;
   margin: auto;
 }
@@ -24,7 +24,7 @@ limitations under the License.
 .pr__top {
   margin-top: 100px;
   flex-direction: column;
-  padding: 50px;
+  padding: 10px 50px 50px 50px;
 }
 
 .pr__container {

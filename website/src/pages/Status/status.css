@@ -43,8 +43,10 @@ limitations under the License.
 }
 
 .status__top__text span {
-  width: 60%;
+  width: 100%;
   line-height: 40px;
+  text-align: justify;
+  display: block;
 }
 .statusStats {
   min-width: 300px;

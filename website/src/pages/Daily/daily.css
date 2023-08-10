@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 .daily {
-  padding: 0px 20px 0px 20px;
+  padding: 0px 50px 50px 50px;
   position: relative;
   min-height: 100vh;
   max-width: 1500px;
@@ -24,7 +24,7 @@ limitations under the License.
 
 .daily__top {
   margin-top: 100px;
-  padding: 50px;
+  padding: 10px 50px 50px 50px;
 }
 
 .daily__top span {
