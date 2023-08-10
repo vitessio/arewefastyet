@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version: "3.3"
+version: "3.8"
 
 services:
   traefik:
@@ -43,7 +43,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: "arewefastyet-api"
-    container_name: "api"
+    container_name: "api-server"
     volumes:
       - "~/.ssh:/root/.ssh"
       - "./exec/:/exec"
@@ -68,7 +68,7 @@ services:
       context: .
       dockerfile: Dockerfile.ghapp
     image: "arewefastyet-ghapp"
-    container_name: "ghapp"
+    container_name: "ghapp-server"
     volumes:
       - "./config/prod/config.yaml:/config/config.yaml"
       - "./config/prod/secrets.yaml:/config/secrets.yaml"
