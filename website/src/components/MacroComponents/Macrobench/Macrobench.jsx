@@ -577,8 +577,8 @@ Macrobench.propTypes = {
   }).isRequired,
   gitRefLeft: PropTypes.string.isRequired,
   gitRefRight: PropTypes.string.isRequired,
-  commitHashLeft: PropTypes.string.isRequired,
-  commitHashRight: PropTypes.string.isRequired,
+  commitHashLeft: PropTypes.string,
+  commitHashRight: PropTypes.string,
   textLoading: PropTypes.bool.isRequired,
 };
 

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import{ useState } from "react";
+import React,{ useState } from "react";
 import PropTypes from 'prop-types';
 
 import "../PRcomponents/PRGitInfo.css";
@@ -86,7 +86,6 @@ PRGitInfo.propTypes = {
     Author: PropTypes.string.isRequired,
     CreatedAt: PropTypes.string.isRequired,
   }).isRequired,
-  setPrNumber: PropTypes.func.isRequired,
   className: PropTypes.string,
 };
 

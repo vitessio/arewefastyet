@@ -77,7 +77,9 @@ const SearchMacro = ({data}) => {
 
 
 SearchMacro.propTypes = {
-    data: PropTypes.arrayOf(
+  data: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string, 
       PropTypes.arrayOf(
         PropTypes.shape({
           Result: PropTypes.shape({
@@ -107,8 +109,9 @@ SearchMacro.propTypes = {
             }).isRequired,
           }).isRequired,
         })
-      )
-    ).isRequired,
-  };
+      ),
+    ])
+  ).isRequired,
+};
 
 export default SearchMacro;
