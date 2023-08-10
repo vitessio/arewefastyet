@@ -33,7 +33,6 @@ const QueryPlan = ({ data, isOpen, togglePlan }) => {
   const queryTitleStyle = {
     background: isOpen && window.innerWidth < 1225 ? "orange" : "initial",
   };
-
   return (
     <div className="queryPlan">
       <div

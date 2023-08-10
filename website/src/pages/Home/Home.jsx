@@ -17,78 +17,28 @@ limitations under the License.
 import React, { useContext } from "react";
 import { AppContext } from "../../AppContext";
 
-import homeLogoDark from "../../assets/homeLogoDarkLarge.png";
-import homeLogoLight from "../../assets/homeLogoWhiteLarge.png";
+import logo from "../../assets/logo.png";
 
 import "./home.css";
 
 const Home = () => {
-  const { isColorChanged } = useContext(AppContext);
 
   return (
     <div className="home">
       <article className="home__top justify--content">
         <div className="home__top__text">
-          <h1>arewefastyet</h1>
-          <span>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-            augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-            sodales felis eu condimentum convallis. Suspendisse sodales
-            malesuada iaculis. Mauris molestie placerat ex non malesuada.
-            Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt
-            volutpat.
+          <h1 className="header--title">arewefastyet</h1>
+          <span className="header--text">
+            Arewefastyet is all about precise performance measurement.
+            We test Vitess in various scenarios, assessing query latency, transaction speed, and CPU/Memory usage.
+            These insights drive our continuous improvement efforts to ensure Vitess remains at the forefront of performance.
           </span>
         </div>
         <img
-          src={isColorChanged ? homeLogoLight : homeLogoDark }
+          src={logo}
           alt="logo"
           className="home__top__logo"
         />
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
-      </article>
-      <figure className="line"></figure>
-      <article className="home__bottom">
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat. Ut sodales
-          ut justo a rutrum. Proin ac nunc sem. Aenean varius vestibulum tortor,
-          eget lacinia massa malesuada ut. Vivamus dolor justo, rhoncus eget
-          risus eu, lobortis convallis justo. Nunc imperdiet imperdiet ante vel
-          pharetra. Fusce ut arcu sollicitudin, posuere odio eget, lobortis leo.
-          Nulla eget libero nisi.
-        </span>
       </article>
     </div>
   );

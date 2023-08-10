@@ -17,65 +17,34 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
+import useApiCall from "../../utils/Hook";
 
 import "../Daily/daily.css";
 
-import { errorApi, formatByteForGB } from "../../utils/Utils";
+import { formatByteForGB } from "../../utils/Utils";
 import ResponsiveChart from "../../components/DailyComponents/Chart/Chart";
 import DailySummary from "../../components/DailyComponents/DailySummary/DailySummary";
 
 const Daily = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const [dataDailySummary, setDataDailySummary] = useState([]);
-  const [dataDaily, setDataDaily] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingChart, setIsLoadingChart] = useState(true);
   const [benchmarkType, setBenchmarktype] = useState(
     urlParams.get("type") == null ? "" : urlParams.get("type")
   );
-    
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseDailySummary = await fetch(
-          `${import.meta.env.VITE_API_URL}daily/summary`
-        );
 
-        const jsonDataDailySummary = await responseDailySummary.json();
+  const {
+    data: dataDailySummary,
+    isLoading: isLoadingDailySummary,
+    error: errorDailySummary,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}daily/summary`);
 
-        setDataDailySummary(jsonDataDailySummary);
-        setIsLoading(false);
-      } catch (error) {
-        console.log("Error while retrieving data from the API", error);
-        setError(errorApi);
-        setIsLoading(false);
-      }
-    };
+  const {
+    data: dataDaily,
+    error: dailyError,
+    textLoading: dailyTextLoading,
+  } = useApiCall(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`, [
+    benchmarkType,
+  ]);
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const responseDaily = await fetch(
-          `${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`
-        );
-
-        const jsonDataDaily = await responseDaily.json();
-
-        setDataDaily(jsonDataDaily);
-        setIsLoadingChart(false);
-      } catch (error) {
-        console.log("Error while retrieving data from the API", error);
-        setError(errorApi);
-        setIsLoadingChart(false);
-      }
-    };
-
-    fetchData();
-  }, [benchmarkType]);
 
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
@@ -258,21 +227,28 @@ const Daily = () => {
   return (
     <div className="daily">
       <div className="daily__top">
-        <h2>Daily</h2>
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat.
+        <h2 className="header--title">Daily</h2>
+        <span className="header--text">
+          We run all macro benchmark workloads against the <i>main</i> branch every day.
+          This is done to ensure the consistency of the results over time on <i>main</i>.
+          On this page, you can find graphs that show you the results of all five macro
+          benchmark workload over the last 30 days.
+        </span>
+        <br></br>
+        <span className="header--text">
+          Click on a macro benchmark workload to see all the results for that workload.
         </span>
       </div>
       <figure className="line"></figure>
-      {error ? (
+      {errorDailySummary || dailyError ? (
         <div className="apiError">{error}</div>
-      ) : isLoading ? (
+      ) : isLoadingDailySummary ? (
         <div className="loadingSpinner">
-          <RingLoader loading={isLoading} color="#E77002" size={300} />
+          <RingLoader
+            loading={isLoadingDailySummary}
+            color="#E77002"
+            size={300}
+          />
         </div>
       ) : (
         <>
@@ -290,9 +266,13 @@ const Daily = () => {
             })}
           </div>
           <figure className="line"></figure>
-          {isLoadingChart ? (
+          {dailyTextLoading ? (
             <div className="loadingSpinner">
-              <RingLoader loading={isLoadingChart} color="#E77002" size={300} />
+              <RingLoader
+                loading={dailyTextLoading}
+                color="#E77002"
+                size={300}
+              />
             </div>
           ) : benchmarkType !== "" ? (
             <div className="daily__container">
