@@ -60,8 +60,6 @@ const Compare = () => {
     
   const {
     data: dataMicrobench,
-    isLoading: isMicrobenchLoading,
-    error: microbenchError,
   } = useApiCall(
     `${
       import.meta.env.VITE_API_URL
