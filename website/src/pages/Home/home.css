@@ -30,6 +30,12 @@ limitations under the License.
 .home__top__text {
   width: 50%;
 }
+.home__top__text span{
+  width: 100%;
+  text-align: justify;
+  line-height: 40px;
+  display: block;
+}
 
 .home__top__logo {
   width: 500px;

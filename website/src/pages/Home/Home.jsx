@@ -28,7 +28,7 @@ const Home = () => {
       <article className="home__top justify--content">
         <div className="home__top__text">
           <h1 className="header--title">arewefastyet</h1>
-          <span className="header--text">
+          <span>
             Arewefastyet is all about precise performance measurement.
             We test Vitess in various scenarios, assessing query latency, transaction speed, and CPU/Memory usage.
             These insights drive our continuous improvement efforts to ensure Vitess remains at the forefront of performance.
