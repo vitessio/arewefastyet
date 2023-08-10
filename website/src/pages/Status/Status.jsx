@@ -49,12 +49,10 @@ const Status = () => {
         <div className="status__top__text">
           <h2>Status</h2>
           <span>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-            augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-            sodales felis eu condimentum convallis. Suspendisse sodales
-            malesuada iaculis. Mauris molestie placerat ex non malesuada.
-            Curabitur eget sagittis eros. Aliquam aliquam sem non tincidunt
-            volutpat.
+            Arewefastyet has a single execution queue, each element in the queue is executed one after the other.
+            In the status page, we can see the content of the execution queue, along with the 50 last executions.
+            Each execution has a status that can be either: <b>started</b>, <b>failed</b> or <b>finished</b>.
+            When a benchmark is marked as <b>finished</b> it means that it successfully finished.
           </span>
         </div>
 
