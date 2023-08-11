@@ -51,8 +51,7 @@ services:
       - "./ansible:/ansible"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
-      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
@@ -85,7 +84,7 @@ services:
     command: "./entrypoint.sh"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`) && PathPrefix(`/`) && Not(PathPrefix(`/api`))"
       - "traefik.http.routers.frontend.entrypoints=https"
       - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
