@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState } from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { formatByteForGB, fixed } from "../../../utils/Utils";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -226,7 +227,8 @@ const MacrobenchMobile = ({
                   <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
                 ) : (
                   <a
-                    target="blank"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     href={`https://github.com/vitessio/vitess/commit/${commitHashLeft}`}
                   >
                     <h4>{gitRefLeft ? gitRefLeft : "Left"}</h4>
@@ -343,7 +345,8 @@ const MacrobenchMobile = ({
                   <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
                 ) : (
                   <a
-                    target="blank"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     href={`https://github.com/vitessio/vitess/commit/${commitHashRight}`}
                   >
                     <h4>{gitRefRight ? gitRefRight : "Right"}</h4>
@@ -463,6 +466,103 @@ const MacrobenchMobile = ({
       </div>
     </div>
   );
+};
+
+MacrobenchMobile.propTypes = {
+  data: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    diff: PropTypes.shape({
+      Left: PropTypes.shape({
+        Result: PropTypes.shape({
+          qps: PropTypes.shape({
+            total: PropTypes.number.isRequired,
+            reads: PropTypes.number.isRequired,
+            writes: PropTypes.number.isRequired,
+            other: PropTypes.number.isRequired,
+          }).isRequired,
+          tps: PropTypes.number.isRequired,
+          latency: PropTypes.number.isRequired,
+          errors: PropTypes.number.isRequired,
+          reconnects: PropTypes.number.isRequired,
+          time: PropTypes.number.isRequired,
+          threads: PropTypes.number.isRequired,
+        }).isRequired,
+        Metrics: PropTypes.shape({
+          TotalComponentsCPUTime: PropTypes.number.isRequired,
+          ComponentsCPUTime: PropTypes.shape({
+            vtgate: PropTypes.number.isRequired,
+            vttablet: PropTypes.number.isRequired,
+          }).isRequired,
+          TotalComponentsMemStatsAllocBytes: PropTypes.number.isRequired,
+          ComponentsMemStatsAllocBytes: PropTypes.shape({
+            vtgate: PropTypes.number.isRequired,
+            vttablet: PropTypes.number.isRequired,
+          }).isRequired,
+        }).isRequired,
+      }).isRequired,
+      Right: PropTypes.shape({
+        Result: PropTypes.shape({
+          qps: PropTypes.shape({
+            total: PropTypes.number.isRequired,
+            reads: PropTypes.number.isRequired,
+            writes: PropTypes.number.isRequired,
+            other: PropTypes.number.isRequired,
+          }).isRequired,
+          tps: PropTypes.number.isRequired,
+          latency: PropTypes.number.isRequired,
+          errors: PropTypes.number.isRequired,
+          reconnects: PropTypes.number.isRequired,
+          time: PropTypes.number.isRequired,
+          threads: PropTypes.number.isRequired,
+        }).isRequired,
+        Metrics: PropTypes.shape({
+          TotalComponentsCPUTime: PropTypes.number.isRequired,
+          ComponentsCPUTime: PropTypes.shape({
+            vtgate: PropTypes.number.isRequired,
+            vttablet: PropTypes.number.isRequired,
+          }).isRequired,
+          TotalComponentsMemStatsAllocBytes: PropTypes.number.isRequired,
+          ComponentsMemStatsAllocBytes: PropTypes.shape({
+            vtgate: PropTypes.number.isRequired,
+            vttablet: PropTypes.number.isRequired,
+          }).isRequired,
+        }).isRequired,
+      }).isRequired,
+      Diff: PropTypes.shape({
+        qps: PropTypes.shape({
+          total: PropTypes.number.isRequired,
+          reads: PropTypes.number.isRequired,
+          writes: PropTypes.number.isRequired,
+          other: PropTypes.number.isRequired,
+        }).isRequired,
+        tps: PropTypes.number.isRequired,
+        latency: PropTypes.number.isRequired,
+        errors: PropTypes.number.isRequired,
+        reconnects: PropTypes.number.isRequired,
+        time: PropTypes.number.isRequired,
+        threads: PropTypes.number.isRequired,
+      }).isRequired,
+      DiffMetrics: PropTypes.shape({
+        TotalComponentsCPUTime: PropTypes.number.isRequired,
+        ComponentsCPUTime: PropTypes.shape({
+          vtgate: PropTypes.number.isRequired,
+          vttablet: PropTypes.number.isRequired,
+        }).isRequired,
+        TotalComponentsMemStatsAllocBytes: PropTypes.number.isRequired,
+        ComponentsMemStatsAllocBytes: PropTypes.shape({
+          vtgate: PropTypes.number.isRequired,
+          vttablet: PropTypes.number.isRequired,
+        }).isRequired,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+  gitRefLeft: PropTypes.string.isRequired,
+  gitRefRight: PropTypes.string.isRequired,
+  commitHashLeft: PropTypes.string,
+  commitHashRight: PropTypes.string,
+  textLoading: PropTypes.bool.isRequired,
+  setCurrentSlideIndexMobile: PropTypes.func.isRequired,
+  currentSlideIndexMobile: PropTypes.string.isRequired,
 };
 
 export default MacrobenchMobile;

@@ -15,6 +15,8 @@ limitations under the License.
 */
 
 import React, { useState } from "react";
+import PropTypes from 'prop-types';
+
 
 import "./previousExeResTablet.css";
 import {
@@ -44,6 +46,7 @@ const PreviousExeResTablet = ({ data, className }) => {
         <span className="width--6em">
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}
           >
             {data.git_ref.slice(0, 6)}
@@ -85,6 +88,21 @@ const PreviousExeResTablet = ({ data, className }) => {
       </div>
     </div>
   );
+};
+
+PreviousExeResTablet.propTypes = {
+  data: PropTypes.shape({
+    git_ref: PropTypes.string.isRequired,
+    source: PropTypes.string.isRequired,
+    started_at: PropTypes.string.isRequired,
+    finished_at: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    uuid: PropTypes.string.isRequired,
+    type_of: PropTypes.string.isRequired,
+    pull_nb: PropTypes.number.isRequired,
+    golang_version: PropTypes.string.isRequired,
+  }).isRequired,
+  className: PropTypes.string,
 };
 
 export default PreviousExeResTablet;

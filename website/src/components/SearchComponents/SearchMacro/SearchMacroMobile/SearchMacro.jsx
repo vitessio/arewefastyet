@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import React from 'react';
+import PropTypes from "prop-types";
 
 import '../SearchMacroMobile/searchMacro.css'
 
@@ -72,6 +73,45 @@ const SearchMacro = ({data}) => {
         </div>
     );
     
+};
+
+
+SearchMacro.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string, 
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          Result: PropTypes.shape({
+            qps: PropTypes.shape({
+              total: PropTypes.number.isRequired,
+              reads: PropTypes.number.isRequired,
+              writes: PropTypes.number.isRequired,
+              other: PropTypes.number.isRequired,
+            }).isRequired,
+            tps: PropTypes.number.isRequired,
+            latency: PropTypes.number.isRequired,
+            errors: PropTypes.number.isRequired,
+            reconnects: PropTypes.number.isRequired,
+            time: PropTypes.number.isRequired,
+            threads: PropTypes.number.isRequired,
+          }).isRequired,
+          Metrics: PropTypes.shape({
+            TotalComponentsCPUTime: PropTypes.number.isRequired,
+            ComponentsCPUTime: PropTypes.shape({
+              vtgate: PropTypes.number.isRequired,
+              vttablet: PropTypes.number.isRequired,
+            }).isRequired,
+            TotalComponentsMemStatsAllocBytes: PropTypes.number.isRequired,
+            ComponentsMemStatsAllocBytes: PropTypes.shape({
+              vtgate: PropTypes.number.isRequired,
+              vttablet: PropTypes.number.isRequired,
+            }).isRequired,
+          }).isRequired,
+        })
+      ),
+    ])
+  ).isRequired,
 };
 
 export default SearchMacro;

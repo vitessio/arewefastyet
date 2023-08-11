@@ -14,31 +14,38 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useContext } from "react";
-import { AppContext } from "../../AppContext";
+import React from "react";
 
 import logo from "../../assets/logo.png";
 
 import "./home.css";
 
 const Home = () => {
-
   return (
     <div className="home">
-      <article className="home__top justify--content">
-        <div className="home__top__text">
-          <h1 className="header--title">arewefastyet</h1>
-          <span>
-            Arewefastyet is all about precise performance measurement.
-            We test Vitess in various scenarios, assessing query latency, transaction speed, and CPU/Memory usage.
-            These insights drive our continuous improvement efforts to ensure Vitess remains at the forefront of performance.
-          </span>
+      <article className="home__top">
+        <div className="home__top__gradient" />
+        <div className="home__top__content">
+          <div className="home__top__content__text">
+            <div className="home__top__content__text__heading">
+              <h3>Vitess Introduces</h3>
+              <h1>arewefastyet</h1>
+            </div>
+            <p>
+              A Cutting-Edge Benchmarking Approach for Unparalleled Database Speed
+            </p>
+          </div>
+          <div className="home__top__content__button">
+            <button onClick={() =>window.open("https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet","__blank")}>
+              Read our blog post <i class="fa-solid fa-bookmark"></i>
+            </button >
+            <button onClick={() =>window.open("https://github.com/vitessio/arewefastyet","__blank")}>
+              Contribute on GitHub
+              <i className="fa-brands fa-github"></i>
+            </button>
+          </div>
         </div>
-        <img
-          src={logo}
-          alt="logo"
-          className="home__top__logo"
-        />
+        <img src={logo} alt="logo" className="home__top__logo" />
       </article>
     </div>
   );

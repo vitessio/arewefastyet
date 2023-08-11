@@ -15,6 +15,8 @@ limitations under the License.
 */
 
 import React, { useContext } from "react";
+import PropTypes from 'prop-types';
+
 import { AppContext } from "../../../AppContext";
 import { ResponsiveLine } from "@nivo/line";
 
@@ -111,6 +113,19 @@ const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
       </div>
     )
   );
+};
+
+ResponsiveChart.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    data: PropTypes.arrayOf(PropTypes.shape({
+      x: PropTypes.string.isRequired,
+      y: PropTypes.number.isRequired,
+    })).isRequired,
+  })).isRequired,
+  title: PropTypes.string.isRequired,
+  colors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isFirstChart: PropTypes.bool.isRequired,
 };
 
 export default ResponsiveChart;

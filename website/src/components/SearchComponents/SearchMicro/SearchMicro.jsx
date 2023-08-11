@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import React, {useState} from 'react';
+import PropTypes from "prop-types";
 
 import './searchMicro.css'
 
@@ -65,5 +66,22 @@ const SearchMicro = ({data, className}) => {
         </div>
     );
 };
+
+SearchMicro.propTypes = {
+    data: PropTypes.arrayOf(
+      PropTypes.shape({
+        PkgName: PropTypes.string.isRequired,
+        Name: PropTypes.string.isRequired,
+        Result: PropTypes.shape({
+          Ops: PropTypes.number.isRequired,
+          NSPerOp: PropTypes.number.isRequired,
+          BytesPerOp: PropTypes.number.isRequired,
+          MBPerSec: PropTypes.number.isRequired,
+          AllocsPerOp: PropTypes.number.isRequired,
+        }).isRequired,
+      })
+    ).isRequired,
+    className: PropTypes.string,
+  };
 
 export default SearchMicro;

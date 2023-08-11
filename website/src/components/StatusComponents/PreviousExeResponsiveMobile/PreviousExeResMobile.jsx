@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import React, {useState} from 'react';
+import PropTypes from 'prop-types';
 
 
 import './previousExeResMobile.css'
@@ -55,7 +56,7 @@ const PreviousExeRes = ({data, className}) => {
                     <tbody>
                         <tr className='flex--column'>
                             <td><span >{data.uuid.slice(0, 8)}</span></td>
-                            <td><span ><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span></td>
+                            <td><span ><a target='_blank' rel="noopener noreferrer" href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span></td>
                             <td> <span>{data.type_of}</span></td>
                             <td><span>{formatDate(data.started_at)}</span></td>
                             <td><span>{formatDate(data.finished_at)}</span></td>
@@ -67,6 +68,21 @@ const PreviousExeRes = ({data, className}) => {
             </div>
         </div>
     );
+};
+
+PreviousExeRes.propTypes = {
+    data: PropTypes.shape({
+        uuid: PropTypes.string.isRequired,
+        git_ref: PropTypes.string.isRequired,
+        source: PropTypes.string.isRequired,
+        started_at: PropTypes.string.isRequired,
+        finished_at: PropTypes.string.isRequired,
+        status: PropTypes.string.isRequired,
+        type_of: PropTypes.string.isRequired,
+        pull_nb: PropTypes.number.isRequired,
+        golang_version: PropTypes.string.isRequired,
+    }).isRequired,
+    className: PropTypes.string,
 };
 
 export default PreviousExeRes;

@@ -14,17 +14,99 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.footer{
-    position: relative;
-    bottom: 0;
-    width: 100%;
-    height: 160px;
-    background-color: var(--primary-color);;
+.footer__main {
+    justify-content: center;
+    background-color: var(--primary-color);
     margin-top: 100px;
-    align-items: center;   
+    padding-bottom: 15px;
 }
 
-.footer span{
+.footer{
+    display: flex;
+    max-width: 1500px;
+    margin: auto;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 80px;
+    position: relative;
+    bottom: 0; 
+    padding-top: 30px; 
+}
+
+
+.footer h1,
+.footer h2,
+.footer h3,
+.footer p {
     background: none;
     color: white;
+}
+
+.footer__company {
+    display: flex;
+    gap: 4px;
+}
+
+.footer__logo {
+    width: 50px;
+}
+
+.footer__icons {
+    display: flex;
+    padding-top: 12px;
+    gap: 6px; 
+    padding-left: 15px; 
+}
+
+.footer__usefulLinks span {
+    color: white;
+    font-size: 18px;
+}
+
+.links {
+    display: flex;
+    gap: 200px;
+}
+
+.footer__line {
+    border: 1px solid #b5adad;
+    margin-top: 30px;
+}
+
+.copyrightText__footer {
+    padding-top: 15px;
+    font-size: 18px;
+}
+
+/* MEDIA QUERIES FOR MOBILE */
+
+@media only screen and (max-width: 767px) {
+
+    .footer{
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 20px;
+        }
+
+    .links{
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 20px;
+    }
+
+    .footer__one {
+        margin-left: -12px;
+    }
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+
+@media only screen and (max-width: 979px) {
+    .footer {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .links {
+        gap: 40px;
+    }
 }
