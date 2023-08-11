@@ -37,7 +37,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: "arewefastyet-api"
-    container_name: "api-server"
+    container_name: "api"
     volumes:
       - "~/.ssh:/root/.ssh"
       - "./exec/:/exec"
@@ -59,7 +59,7 @@ services:
       context: .
       dockerfile: Dockerfile.ghapp
     image: "arewefastyet-ghapp"
-    container_name: "ghapp-server"
+    container_name: "ghapp"
     volumes:
       - "./config/dev/config.yaml:/config/config.yaml"
       - "./config/dev/secrets.yaml:/config/secrets.yaml"
