@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import React from "react";
+import PropTypes from 'prop-types';
 import { ResponsiveLine } from "@nivo/line";
 
 import "./dailySummary.css";
@@ -64,6 +65,16 @@ const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
       </div>
     </div>
   );
+};
+
+DailySummary.propTypes = {
+  data: PropTypes.shape({
+    Name: PropTypes.string.isRequired,
+    Data: PropTypes.array,
+  }),
+  setBenchmarktype: PropTypes.func.isRequired,
+  isSelected: PropTypes.bool,
+  handleClick: PropTypes.func.isRequired,
 };
 
 export default DailySummary;

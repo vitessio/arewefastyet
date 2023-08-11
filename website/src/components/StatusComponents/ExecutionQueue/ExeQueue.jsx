@@ -18,15 +18,27 @@ import React from 'react';
 
 import './exeQueue.css'
 
+import PropTypes from 'prop-types';
+
 const ExeQueue = ({data}) => {
+
     return (
         <div className='queue__data flex'>
-            <span className='sha'><a target='_blank' href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
+            <span className='sha'><a target='_blank' rel="noopener noreferrer" href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}>{data.git_ref.slice(0,6)}</a></span>
             <span className='width--11em'>{data.source}</span>
             <span className='width--11em'>{data.type_of}</span>
             <span className='width--5em'>{data.pull_nb}</span>
         </div>
     );
+};
+
+ExeQueue.propTypes = {
+    data: PropTypes.shape({
+        git_ref: PropTypes.string.isRequired,
+        source: PropTypes.string.isRequired,
+        type_of: PropTypes.string.isRequired,
+        pull_nb: PropTypes.number.isRequired,
+    }).isRequired,
 };
 
 export default ExeQueue;

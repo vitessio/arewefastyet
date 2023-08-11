@@ -64,11 +64,13 @@ const PR = () => {
       <div className="pr__top justify--content">
         <h2 className="header--title">Pull Request</h2>
         <span className="header--text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat.
+          If a given Pull Request on <b>vitessio/vitess</b> is labelled with the <b>Benchmark me</b> label
+          the Pull Request will be handled and benchmark by arewefastyet. For each commit on the Pull Request
+          there will be two benchmarks: one on the Pull Request's HEAD and another on the base of the Pull Request.
+        </span>
+        <br></br>
+        <span className="header--text">
+          On this page you can find all benchmarked Pull Requests.
         </span>
       </div>
       <figure className='line'></figure>

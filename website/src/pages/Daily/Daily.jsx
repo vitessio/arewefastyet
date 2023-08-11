@@ -229,11 +229,14 @@ const Daily = () => {
       <div className="daily__top">
         <h2 className="header--title">Daily</h2>
         <span className="header--text">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer a
-          augue mi. Etiam sed imperdiet ligula, vel elementum velit. Phasellus
-          sodales felis eu condimentum convallis. Suspendisse sodales malesuada
-          iaculis. Mauris molestie placerat ex non malesuada. Curabitur eget
-          sagittis eros. Aliquam aliquam sem non tincidunt volutpat.
+          We run all macro benchmark workloads against the <i>main</i> branch every day.
+          This is done to ensure the consistency of the results over time on <i>main</i>.
+          On this page, you can find graphs that show you the results of all five macro
+          benchmark workload over the last 30 days.
+        </span>
+        <br></br>
+        <span className="header--text">
+          Click on a macro benchmark workload to see all the results for that workload.
         </span>
       </div>
       <figure className="line"></figure>
