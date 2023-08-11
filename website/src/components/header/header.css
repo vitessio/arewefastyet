@@ -82,7 +82,6 @@ limitations under the License.
   width: 40%;
   align-items: center;
   display: flex;
-  margin-right: 20px;
 }
 
 .active {
@@ -118,7 +117,8 @@ limitations under the License.
 }
 
 .buttonMode{
-  margin-left: 18px;
+  margin: 10px;
+  margin-right: 15px;
   border-radius: 50px;
   border: none;
   display: flex;
@@ -201,7 +201,9 @@ limitations under the License.
   .lineMenu {
     visibility: visible;
   }
-  
+  .buttonMode{
+    margin-top: 15px;
+  }
 }
 
 @keyframes scale-in-ver-top {
