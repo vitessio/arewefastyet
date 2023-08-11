@@ -32,7 +32,7 @@ const Home = () => {
               <h1>arewefastyet</h1>
             </div>
             <p>
-            It is all about precise performance measurement. We test Vitess in various scenarios, assessing query latency, transaction speed, and CPU/Memory usage. These insights drive our continuous improvement efforts to ensure Vitess remains at the forefront of performance.
+              A Cutting-Edge Benchmarking Approach for Unparalleled Database Speed
             </p>
           </div>
           <div className="home__top__content__button">
