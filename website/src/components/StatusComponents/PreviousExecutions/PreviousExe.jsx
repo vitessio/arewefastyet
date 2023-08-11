@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
+
 
 import "./previousexe.css";
 import { getStatusClass, formatDate } from "../../../utils/Utils";
@@ -26,6 +28,7 @@ const PreviousExe = ({ data }) => {
       <span className="width--6em">
         <a
           target="_blank"
+          rel="noopener noreferrer"
           href={`https://github.com/vitessio/vitess/commit/${data.git_ref}`}
         >
           {data.git_ref.slice(0, 6)}
@@ -45,6 +48,7 @@ const PreviousExe = ({ data }) => {
         ) : (
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={`https://github.com/vitessio/vitess/pull/${data.pull_nb}`}
           >
             {data.pull_nb}
@@ -60,5 +64,20 @@ const PreviousExe = ({ data }) => {
     </div>
   );
 };
+
+PreviousExe.propTypes = {
+  data: PropTypes.shape({
+    uuid: PropTypes.string.isRequired,
+    git_ref: PropTypes.string.isRequired,
+    source: PropTypes.string.isRequired,
+    started_at: PropTypes.string.isRequired,
+    finished_at: PropTypes.string.isRequired,
+    type_of: PropTypes.string.isRequired,
+    pull_nb: PropTypes.number.isRequired,
+    golang_version: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
 
 export default PreviousExe;

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useRef } from "react";
+import React from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { v4 as uuidv4 } from "uuid";
 import useApiCall from "../../utils/Hook";
@@ -35,12 +35,9 @@ const Status = () => {
   const {
     data: dataPreviousExe,
     isLoading: isLoadingPreviousExe,
-    error: errorPreviousExe,
   } = useApiCall(`${import.meta.env.VITE_API_URL}recent`);
   const {
     data: dataStatusStats,
-    isLoading: isLoadingStatusStats,
-    error: errorStatusStats,
   } = useApiCall(`${import.meta.env.VITE_API_URL}status/stats`);
 
   return (

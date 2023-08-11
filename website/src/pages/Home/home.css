@@ -14,81 +14,174 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.home {
-  padding: 0px 50px 50px 50px;
-  min-height: 100vh;
-  max-width: 1500px;
-  margin: auto;
-}
 
 /* HOME__TOP */
 
 .home__top {
-  margin-top: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  padding: 50px 50px 0px 50px;
 }
 
-.home__top__text {
-  width: 50%;
+.home__top__gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+.home__top__gradient::before {
+  position: absolute;
+  top: 0;
+  content: " ";
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(0% 0%, 35% 0%, 62% 100%, 0% 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(231, 113, 2) 0%,
+    rgba(255, 205, 2) 100%
+  );
+  background-size: 200% 200%;
+  animation: home__top__gradient__move 4000ms linear infinite;
+}
+
+.home__top__content {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.home__top__content__text {
+  padding: 30px 40px;
+  border-radius: 2rem;
+  background-color: var(--background-color);
+  font-size: 3.8vw;
+}
+
+.home__top__content__text__heading {
+  margin-bottom: 20px;
+}
+
+.home__top__content__text__heading h3 {
+  font-size: 0.6em;
+  font-weight: 600;
+}
+
+.home__top__content__text__heading h1 {
+  line-height: 1;
+  font-size: 1em;
+  font-weight: 700;
+  color: #e77002;
+}
+
+.home__top__content__text p {
+  font-size: 0.3em;
+  font-weight: 400;
+}
+
+.home__top__content__button {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+}
+
+.home__top__content__button button{
+  padding: 20px;
+  font-size: 1rem;
+  border-radius: 1rem;
+  background-color: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 300ms ease-in;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.home__top__content__button i{
+  font-size: 1.5rem;
+}
+
+.home__top__content__button button:hover {
+  transform: translateY(-5px);
+}
+.home__top__text span{
+  width: 100%;
+  text-align: justify;
+  line-height: 40px;
+  display: block;
 }
 
 .home__top__logo {
-  width: 500px;
+  width: 30vw;
+  aspect-ratio: 1;
   margin-left: 30px;
   object-fit: contain;
-  filter: drop-shadow(0px 0px 20px #e77002)
-}
-
-/* HOME BOTTOM*/
-
-.home__bottom {
-  margin-top: 150px;
-}
-
-.home__bottom span {
-  line-height: 40px;
+  filter: drop-shadow(10px 10px 20px #b74002);
 }
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-  .home {
-    padding: 0px 20px 50px 20px;
+
+  .home__top__logo{
+    width: 40vw;
   }
 
-  .home__top__logo {
-    width: 300px;
-    margin-left: 70px;
-  }
-
-  .home__top__text h1 {
-    font-size: 4rem;
+  .home__top__gradient::before {
+    clip-path: polygon(0% 0%, 30% 0%, 64% 100%, 0% 100%);
   }
 }
 
 /* MEDIA QUERIES FOR MOBILE */
 @media only screen and (max-width: 767px) {
+
   .home__top {
-    flex-direction: column;
-    justify-content: center;
-  }
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
 
-  .home__top__text {
-    width: 100%;
-    text-align: center;
-  }
-  .home__top__text h1 {
-    width: 100%;
-    font-size: 3rem;
-  }
+.home__top__gradient::before {
+  clip-path: polygon(0% 0%, 64% 100%, 0% 100%);
+}
 
-  .home__top__logo {
-    width: 200px;
-    margin: auto;
-    margin-top: 60px;
-    padding: 20px;
-    border: #e77002 2px solid;
-    border-radius: 20px;
+.home__top__content {
+  align-items: center;
+  text-align: center;
+}
+
+.home__top__content__text {
+  font-size: 8vw;
+}
+
+.home__top__content__button button{
+  font-size: 0.8rem;
+}
+
+.home__top__content__button i{
+  font-size: 1rem;
+}
+}
+
+
+@keyframes home__top__gradient__move {
+  from {
+    background-position: 0% 0%;
   }
-  .home__bottom {
-    text-align: center;
+  50% {
+    background-position: 100% 100%;
+  }
+  to {
+    background-position: 0% 0%;
   }
 }

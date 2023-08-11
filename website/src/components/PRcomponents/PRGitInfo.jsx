@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState } from "react";
-import useApiCall from "../../utils/Hook";
+import React,{ useState } from "react";
+import PropTypes from 'prop-types';
 
 import "../PRcomponents/PRGitInfo.css";
 
@@ -45,7 +45,7 @@ const PRGitInfo = ({ data, className }) => {
           </a>
         </span>
         <span className="width--40 hidden--tablet">{data.Title}</span>
-        <span className="width--20 hidden--tablet"><a target="blank" href={`https://github.com/${data.Author}`}>{data.Author}</a></span>
+        <span className="width--20 hidden--tablet"><a target="_blank" rel="noopener noreferrer" href={`https://github.com/${data.Author}`}>{data.Author}</a></span>
         <span className="width--10em hidden--mobile">
           {formatDate(data.CreatedAt)}
         </span>
@@ -77,6 +77,16 @@ const PRGitInfo = ({ data, className }) => {
       </div>
     </div>
   );
+};
+
+PRGitInfo.propTypes = {
+  data: PropTypes.shape({
+    ID: PropTypes.number.isRequired,
+    Title: PropTypes.string.isRequired,
+    Author: PropTypes.string.isRequired,
+    CreatedAt: PropTypes.string.isRequired,
+  }).isRequired,
+  className: PropTypes.string,
 };
 
 export default PRGitInfo;

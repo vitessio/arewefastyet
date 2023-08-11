@@ -15,11 +15,12 @@ limitations under the License.
 */
 
 import React from "react";
+import PropTypes from 'prop-types';
 import { ResponsiveLine } from "@nivo/line";
 
 import "./dailySummary.css";
 
-const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
+const DailySummary = ({ data, setBenchmarktype, benchmarkType  }) => {
   const orange = "#E77002";
   
   const transformedData = [];
@@ -39,8 +40,7 @@ const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
   };
 
   return (
-    <div className={`dailySummary flex--column ${isSelected ? "dailySummary--selected" : ""}`}  onClick={() => {
-      handleClick();
+    <div className={`dailySummary flex--column ${benchmarkType === data.Name ? "dailySummary--selected" : ""}`}  onClick={() => {
       getBenchmarkType();
     }}>
       {data ? (
@@ -64,6 +64,16 @@ const DailySummary = ({ data, setBenchmarktype, isSelected, handleClick  }) => {
       </div>
     </div>
   );
+};
+
+DailySummary.propTypes = {
+  data: PropTypes.shape({
+    Name: PropTypes.string.isRequired,
+    Data: PropTypes.array,
+  }),
+  setBenchmarktype: PropTypes.func.isRequired,
+  isSelected: PropTypes.bool,
+  handleClick: PropTypes.func.isRequired,
 };
 
 export default DailySummary;
