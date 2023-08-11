@@ -35,6 +35,21 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     network_mode: bridge
 
+  frontend:
+    build:
+      context: ./website
+    image: "arewefastyet-frontend"
+    restart: always
+    container_name: "frontend"
+    command: "./entrypoint.sh"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`) && Not(PathPrefix(`/api`))"
+      - "traefik.http.routers.frontend.entrypoints=https"
+      - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    network_mode: bridge
+
   api:
     restart: always
     build:
@@ -73,19 +88,4 @@ services:
       - "traefik.http.routers.ghapp.entrypoints=https-ghapp"
       - "traefik.http.routers.ghapp.tls.certresolver=tlsresolver"
       - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
-    network_mode: bridge
-
-  frontend:
-    build:
-      context: ./website
-    image: "arewefastyet-frontend"
-    restart: always
-    container_name: "frontend"
-    command: "./entrypoint.sh"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`) && PathPrefix(`/`) && Not(PathPrefix(`/api`))"
-      - "traefik.http.routers.frontend.entrypoints=https"
-      - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     network_mode: bridge
