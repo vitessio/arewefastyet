@@ -70,3 +70,9 @@ limitations under the License.
 .dailySummary--selected{
   background-color: var(--secondary-color);
 }
+
+@media only screen and (max-width: 767px) {
+  .dailySummary {
+    margin-right: 0px;
+  }
+}
