@@ -76,13 +76,14 @@ limitations under the License.
   border-radius: 10px 0px 0px 10px;
   text-align: end;
   width: 15%;
-  margin-top: 39px;
+  margin-top: 40px;
 }
 
 .searchSidebar span {
   padding: 13px 10px;
   font-size: 0.8rem;
   font-weight: bold;
+  min-height: 44px;
 }
 
 .search__carousel__containerMobile {
@@ -131,7 +132,10 @@ limitations under the License.
 
   .searchSidebar {
     width: 24%;
-    margin-top: 85px;
+    margin-top: 86px;
+  }
+  .search__carousel__containerMobile {
+    max-height: 807px;
   }
 }
 
@@ -163,26 +167,17 @@ limitations under the License.
   }
 
   .searchSidebar {
-    border-radius: 10px 0px 0px 10px;
-    width: 35%;
-    border: #e77002 1px solid;
-    border-right: none;
-    margin-top: 88px;
-    padding: 0px 7px;
+    margin-top: 89px;
   }
 
   .searchSidebar span {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     min-height: 27px;
-    padding: 0px;
-    margin: 7.25px 0px;
-    display: flex;
-    justify-content: end;
-    align-items: center;
+    padding-left: 0px;
   }
   .search__carousel__containerMobile {
     width: 70%;
-    max-height: 770px;
+    max-height: 714px;
   }
   .research__input{
     font-size: 1rem;
