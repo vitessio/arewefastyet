@@ -39,7 +39,7 @@ const Footer = () => {
         <div className="footer__one">
           <div className="footer__company">
             <img src={logo} alt="logo" className="footer__logo" />
-            <h1>Arewefastyet</h1>
+            <h1>arewefastyet</h1>
           </div>
           <div className="footer__icons">
             {icons.map((item, index) => (
@@ -66,7 +66,7 @@ const Footer = () => {
           </div>
           <div className="footer__usefulLinks">
             <a href="https://github.com/vitessio/arewefastyet" target="_blank">
-              <h2>Arewefastyet</h2>
+              <h2>arewefastyet</h2>
             </a>
             <div className="">
               <a
