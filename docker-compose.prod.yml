@@ -36,15 +36,12 @@ services:
     network_mode: bridge
 
   api:
-    tty: true
-    stdin_open: true
     restart: always
     build:
       context: .
       dockerfile: Dockerfile
     image: "arewefastyet-api"
-    container_name: "api-server"
-    command: "/arewefastyetcli api --config /config/config.yaml --secrets /config/secrets.yaml"
+    container_name: "api"
     volumes:
       - "~/.ssh:/root/.ssh"
       - "./exec/:/exec"
@@ -62,15 +59,12 @@ services:
     network_mode: bridge
 
   ghapp:
-    tty: true
-    stdin_open: true
     restart: always
     build:
       context: .
       dockerfile: Dockerfile.ghapp
     image: "arewefastyet-ghapp"
-    container_name: "ghapp-server"
-    command: "/arewefastyetcli ghapp --config /config/config.yaml --secrets /config/secrets.yaml"
+    container_name: "ghapp"
     volumes:
       - "./config/prod/config.yaml:/config/config.yaml"
       - "./config/prod/secrets.yaml:/config/secrets.yaml"
