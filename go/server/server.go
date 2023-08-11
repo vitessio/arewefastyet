@@ -234,7 +234,12 @@ func (s *Server) Run() error {
 	s.router.GET("/api/daily", s.getDaily)
 	s.router.GET("/api/status/stats", s.getStatusStats)
 
-	return s.router.Run(":" + s.port)
+	err = s.router.Run(":" + s.port)
+	if err != nil {
+		slog.Error(err)
+		return err
+	}
+	return nil
 }
 
 func (s *Server) prepareGin() {
