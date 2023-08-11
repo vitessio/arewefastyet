@@ -184,4 +184,14 @@ limitations under the License.
     width: 70%;
     max-height: 770px;
   }
+  .research__input{
+    font-size: 1rem;
+    padding: 10px;
+    height: 70px;
+  }
+  .research button{
+    font-size: 1rem;
+    padding: 15px;
+    height: 70px;
+  }
 }
