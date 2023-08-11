@@ -32,16 +32,15 @@ const Home = () => {
               <h1>arewefastyet</h1>
             </div>
             <p>
-              A Cutting-Edge Benchmarking Approach for Unparalleled Database
-              Speed
+            It is all about precise performance measurement. We test Vitess in various scenarios, assessing query latency, transaction speed, and CPU/Memory usage. These insights drive our continuous improvement efforts to ensure Vitess remains at the forefront of performance.
             </p>
           </div>
           <div className="home__top__content__button">
             <button onClick={() =>window.open("https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet","__blank")}>
-              Check Out the Blog post <i class="fa-solid fa-bookmark"></i>
+              Read our blog post <i class="fa-solid fa-bookmark"></i>
             </button >
             <button onClick={() =>window.open("https://github.com/vitessio/arewefastyet","__blank")}>
-              Contirbute on Github
+              Contribute on GitHub
               <i className="fa-brands fa-github"></i>
             </button>
           </div>

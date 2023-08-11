@@ -14,11 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.home {
-  min-height: 100vh;
-  max-width: 1500px;
-  margin: auto;
-}
 
 /* HOME__TOP */
 
@@ -29,6 +24,7 @@ limitations under the License.
   justify-content: space-around;
   position: relative;
   height: 100vh;
+  width: 100%;
   padding: 50px 50px 0px 50px;
 }
 
@@ -67,6 +63,7 @@ limitations under the License.
   padding: 30px 40px;
   border-radius: 2rem;
   background-color: var(--background-color);
+  font-size: 3.8vw;
 }
 
 .home__top__content__text__heading {
@@ -74,19 +71,19 @@ limitations under the License.
 }
 
 .home__top__content__text__heading h3 {
-  font-size: 2.5rem;
+  font-size: 0.6em;
   font-weight: 600;
 }
 
 .home__top__content__text__heading h1 {
-  font-size: 4.5rem;
   line-height: 1;
+  font-size: 1em;
   font-weight: 700;
   color: #e77002;
 }
 
 .home__top__content__text p {
-  font-size: 1.2rem;
+  font-size: 0.3em;
   font-weight: 400;
 }
 
@@ -120,67 +117,56 @@ limitations under the License.
 }
 
 .home__top__logo {
-  width: 550px;
+  width: 30vw;
+  aspect-ratio: 1;
   margin-left: 30px;
   object-fit: contain;
   filter: drop-shadow(10px 10px 20px #b74002);
 }
 
-
-/* HOME BOTTOM*/
-
-.home__bottom {
-  margin-top: 150px;
-}
-
-.home__bottom span {
-  line-height: 40px;
-}
-
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-  .home {
-    padding: 0px 20px 50px 20px;
+
+  .home__top__logo{
+    width: 40vw;
   }
 
-  .home__top__logo {
-    width: 300px;
-    margin-left: 70px;
-  }
-
-  .home__top__text h1 {
-    font-size: 4rem;
+  .home__top__gradient::before {
+    clip-path: polygon(0% 0%, 30% 0%, 64% 100%, 0% 100%);
   }
 }
 
 /* MEDIA QUERIES FOR MOBILE */
 @media only screen and (max-width: 767px) {
+
   .home__top {
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .home__top__text {
-    width: 100%;
-    text-align: center;
-  }
-  .home__top__text h1 {
-    width: 100%;
-    font-size: 3rem;
-  }
-
-  .home__top__logo {
-    width: 200px;
-    margin: auto;
-    margin-top: 60px;
-    padding: 20px;
-    border: #e77002 2px solid;
-    border-radius: 20px;
-  }
-  .home__bottom {
-    text-align: center;
-  }
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
 }
+
+.home__top__gradient::before {
+  clip-path: polygon(0% 0%, 64% 100%, 0% 100%);
+}
+
+.home__top__content {
+  align-items: center;
+  text-align: center;
+}
+
+.home__top__content__text {
+  font-size: 8vw;
+}
+
+.home__top__content__button button{
+  font-size: 0.8rem;
+}
+
+.home__top__content__button i{
+  font-size: 1rem;
+}
+}
+
 
 @keyframes home__top__gradient__move {
   from {
