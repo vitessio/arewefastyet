@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version: "3.3"
+version: "3.8"
 
 services:
   traefik:
@@ -23,18 +23,31 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.https.address=:443"
-      - "--entrypoints.https-frontend.address=:8000"
       - "--entrypoints.https-ghapp.address=:8181"
       - "--certificatesresolvers.tlsresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.tlsresolver.acme.email=cncf-vitess-project@cncf.io"
       - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
-      - "8000:8000"
       - "8181:8181"
     volumes:
       - "/var/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    network_mode: bridge
+
+  frontend:
+    build:
+      context: ./website
+    image: "arewefastyet-frontend"
+    restart: always
+    container_name: "frontend"
+    command: "./entrypoint.sh"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.frontend.entrypoints=https"
+      - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     network_mode: bridge
 
   api:
@@ -50,12 +63,10 @@ services:
       - "./config/prod/config.yaml:/config/config.yaml"
       - "./config/prod/secrets.yaml:/config/secrets.yaml"
       - "./config/benchmarks:/config/benchmarks"
-      - "./go/server/templates/:/go/server/templates"
-      - "./go/server/static/:/go/server/static"
       - "./ansible:/ansible"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
+      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
@@ -77,19 +88,4 @@ services:
       - "traefik.http.routers.ghapp.entrypoints=https-ghapp"
       - "traefik.http.routers.ghapp.tls.certresolver=tlsresolver"
       - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
-    network_mode: bridge
-
-  frontend:
-    build:
-      context: ./website
-    image: "arewefastyet-frontend"
-    restart: always
-    container_name: "frontend"
-    command: "./entrypoint.sh"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
-      - "traefik.http.routers.frontend.entrypoints=https-frontend"
-      - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     network_mode: bridge
