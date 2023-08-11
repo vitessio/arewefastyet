@@ -92,13 +92,6 @@ const Header = () => {
             <img src={logo} alt="logo" />
             <span className="hiddenResponsiveMobile">arewefastyet</span>
           </a>
-          <button className="buttonMode" onClick={handleButtonClick}>
-            {isColorChanged ? (
-              <i className="far fa-moon"></i>
-            ) : (
-              <i className="far fa-sun"></i>
-            )}
-          </button>
         </div>
         {openMenu ? (
           <>
@@ -119,6 +112,13 @@ const Header = () => {
                   </div>
                 ))}
               </ul>
+              <button className="buttonMode" onClick={handleButtonClick}>
+                {isColorChanged ? (
+                  <i className="fa-solid fa-moon fa-2x " style={{ "color": "#e77002" }}></i>
+                ) : (
+                  <i className="far fa-sun fa-xl" style={{ "color": "#ffffffdc" }}></i>
+                )}
+              </button>
             </nav>
 
             <figure

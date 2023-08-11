@@ -118,16 +118,16 @@ limitations under the License.
 }
 
 .buttonMode{
-  margin-left: 10px;
+  margin-left: 18px;
   border-radius: 50px;
+  border: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 5px;
   cursor: pointer;
   min-width: 30px;
   min-height: 30px;
-  background-color: var(--background-color);
+  background-color: transparent; 
   color: var(--font-color);
   max-height: 30px;
   max-width: 30px;
