@@ -204,6 +204,8 @@ func (s *Server) Run() error {
 		return err
 	}
 
+	slog.Info("Preparing Gin server")
+
 	s.prepareGin()
 	s.router = gin.Default()
 
@@ -213,8 +215,10 @@ func (s *Server) Run() error {
 		AllowHeaders:     []string{"Origin"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		MaxAge:           1 * time.Hour,
 	}))
+
+	slog.Info("Setting up routes")
 
 	// API
 	s.router.GET("/api/recent", s.getRecentExecutions)
