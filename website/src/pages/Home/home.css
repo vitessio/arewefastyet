@@ -61,7 +61,7 @@ limitations under the License.
 
 .home__top__content__text {
   padding: 30px 40px;
-  border-radius: 2rem;
+  border-radius: 2rem 0 0 2rem;
   background-color: var(--background-color);
   font-size: 3.8vw;
 }
@@ -128,6 +128,46 @@ limitations under the License.
   margin-left: 30px;
   object-fit: contain;
   filter: drop-shadow(10px 10px 20px #b74002);
+}
+
+.home__body__how__it__works h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.home__body__how__it__works {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 7vh 0;
+}
+
+.how__it__works__cards__container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 7vh 8vw 4vh 8vw;
+  gap: 2.5rem;
+}
+
+.how__it__works__card {
+  padding: 1rem;
+  width: calc(50% - 1.25rem);
+  border-radius: 0.5rem;
+  border: 1px solid #ffffff25;
+  background-color: #ffffff12;
+}
+
+.how__it__works__card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  text-align: center;  
+  font-weight: 600;
+}
+
+.how__it__works__card p {
+  text-align: justify;
+  font-size: 0.93rem;
+  color: #ffffff99;
 }
 
 /* MEDIA QUERIES FOR TABLETS */
