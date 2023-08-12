@@ -211,6 +211,14 @@ limitations under the License.
 .home__top__content__button i{
   font-size: 1rem;
 }
+
+.how__it__works__cards__container {
+  flex-direction: column;
+}
+
+.how__it__works__card {
+  width: 100%;
+}
 }
 
 
