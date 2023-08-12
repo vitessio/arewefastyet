@@ -117,6 +117,8 @@ body{
 .header--text{
   width: 50%;
   line-height: 40px;
+  text-align: justify;
+  display: block;
 }
 
 /*size class*/
@@ -176,5 +178,12 @@ body{
 @media only screen and (max-width: 1225px) {
   .hidden--desktop {
     display: block;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .dropDown{
+    width: 150px;
+    padding: 0px;
   }
 }

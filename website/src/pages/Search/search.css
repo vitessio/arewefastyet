@@ -76,18 +76,18 @@ limitations under the License.
   border-radius: 10px 0px 0px 10px;
   text-align: end;
   width: 15%;
-  margin-top: 37px;
+  margin-top: 39px;
 }
 
 .searchSidebar span {
-  padding: 13.25px 10px;
+  padding: 13px 10px;
   font-size: 0.8rem;
   font-weight: bold;
 }
 
 .search__carousel__containerMobile {
   width: 70%;
-  max-height: 767px;
+  max-height: 798px;
 }
 
 .searchMacro__desktop {
@@ -166,17 +166,22 @@ limitations under the License.
     border-radius: 10px 0px 0px 10px;
     width: 35%;
     border: #e77002 1px solid;
+    border-right: none;
     margin-top: 88px;
     padding: 0px 7px;
   }
 
   .searchSidebar span {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     min-height: 27px;
     padding: 0px;
     margin: 7.25px 0px;
     display: flex;
     justify-content: end;
     align-items: center;
+  }
+  .search__carousel__containerMobile {
+    width: 70%;
+    max-height: 770px;
   }
 }

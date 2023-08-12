@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.20.5 AS build-stage
+FROM golang:1.20.7-bookworm AS build-stage
 
 WORKDIR /build
 
@@ -25,7 +25,7 @@ COPY . .
 # Build arewefastyet
 RUN CGO_ENABLED=0 GOOS=linux go build -o /arewefastyetcli ./go/main.go
 
-FROM debian:buster AS run-stage
+FROM debian:bookworm AS run-stage
 
 # Install Git, Golang, and Python
 RUN apt-get update && apt-get install -y \
@@ -62,4 +62,4 @@ RUN mkdir -p /config /exec
 # Configuration files MUST be attached to the container using a volume.
 # The configuration files are not mounted on the Docker image for obvious
 # security reasons.
-CMD ["/arewefastyetcli", "web", "--config", "/config/config.yaml", "--secrets", "/config/secrets.yaml"]
+CMD ["/arewefastyetcli", "api", "--config", "/config/config.yaml", "--secrets", "/config/secrets.yaml"]
