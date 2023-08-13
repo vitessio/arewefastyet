@@ -43,14 +43,77 @@ const howItWorksItems = [
   },
 ];
 
+const microMacroContent = [
+  {
+    title: "Gaining Functional Insights",
+    points: [
+      {
+        title: "Focused Evaluation",
+        content:
+          "Micro benchmarks dissect specific functional units within Vitess, allowing precise assessment of individual components.",
+      },
+      {
+        title : "Golang Advantage",
+        content : "Vitess leverages the Go standard library's testing framework and micro-benchmarking tools, ensuring accurate measurements and consistent results. Relying on native go features produces better accuracy."
+      },
+      {
+        title : "Execution Efficiency",
+        content : "Micro-benchmarks are effortlessly executed using the default go test runner and arewefastyet's microbench command, facilitating streamlined testing processes."
+      },
+      {
+        title : "Critical Metrics",
+        content : "Key performance indicators, such as iteration time measured in nanoseconds and memory allocation in bytes, are derived from micro-benchmark results. Multiple metrics allow better understanding for various audiences."
+      },
+      {
+        title : "Structured Analysis",
+        content : "Extracted metrics are meticulously analyzed and stored in a MySQL database, forming a valuable repository for future reference and comparison. Basically analogous to unit tests"
+      },
+      {
+        title : "Granular Performance Assessment",
+        content : "Micro benchmarks provide an unparalleled level of granularity, enabling a meticulous examination of individual code units, ensuring that even the smallest performance nuances are captured."
+      }
+    ],
+  },
+  {
+    title: "Real-World Performance Insights",
+    points: [
+      {
+        title: "Comprehensive Overview",
+        content:
+          "Macro benchmarks provide a comprehensive view of Vitess' performance, simulating real-world production conditions for accurate evaluations.",
+      },
+      {
+        title : "Cluster Configuration",
+        content : "Benchmark Vitess clusters are thoughtfully assembled, encompassing vtgates, vttablets, etcd clusters, and vtctld servers, creating an environment closely resembling real deployments."
+      },
+      {
+        title : "Multi-Step Process",
+        content : "Macro benchmarks comprise three sequential stages: preparation, warm-up, and the actual run, systematically capturing the performance trajectory."
+      },
+      {
+        title : "Custom Benchmarking",
+        content : "Sysbench, tailored to benchmark various data stores, is utilized for the main benchmarking process, capturing critical metrics such as latency, transactions per second (TPS), and queries per second (QPS)."
+      },
+      {
+        title : "Incorporating Insights",
+        content : "Internal cluster metrics and operating system metrics are integrated and processed through a Prometheus backend, enriching the assessment with deeper performance context."
+      },
+      {
+        title : "Informed Optimization",
+        content : "The combined insights from macro and micro benchmarks empower users to optimize Vitess effectively for their specific production environments, making well-informed decisions based on both granular functional details and broader performance trends."
+      }
+    ],
+  },
+];
+
 const Home = () => {
   return (
     <div className="home">
       <article className="home__top">
-        <div className="home__top__gradient" />
-        <div className="home__top__content">
-          <div className="home__top__content__text">
-            <div className="home__top__content__text__heading">
+        <div className="home_top_gradient" />
+        <div className="home_top_content">
+          <div className="home_topcontent_text">
+            <div className="home_topcontenttext_heading">
               <h3>Vitess Introduces</h3>
               <h1>arewefastyet</h1>
             </div>
@@ -59,7 +122,7 @@ const Home = () => {
               Speed
             </p>
           </div>
-          <div className="home__top__content__button">
+          <div className="home_topcontent_button">
             <button
               onClick={() =>
                 window.open(
@@ -83,17 +146,36 @@ const Home = () => {
             </button>
           </div>
         </div>
-        <img src={logo} alt="logo" className="home__top__logo" />
+        <img src={logo} alt="logo" className="home_top_logo" />
       </article>
 
       <article className="home__body">
-        <section className="home__body__how__it__works">
+        <section className="home_bodyhowit_works">
           <h1>How it works</h1>
-          <div className="how__it__works__cards__container">
+          <div className="how_itworkscards_container">
             {howItWorksItems.map((item, key) => (
-              <div className="how__it__works__card" key={key}>
+              <div className="how_itworks_card" key={key}>
                 <h3>{item.title}</h3>
                 <p>{item.content}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="micro_and_macro">
+          <h1 className="home_bodysection_title">
+            Micro and Macro Benchmarks
+          </h1>
+
+          <div className="micro_andmacro_cards">
+            {microMacroContent.map((item, key) => (
+              <div key={key} className="micro_andmacro_card">
+                <h3>{item.title}</h3>
+                <ul>
+                  {microMacroContent[key].points.map((point, i) => (
+                    <li><h5>{point.title}</h5> <p>{point.content}</p></li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
