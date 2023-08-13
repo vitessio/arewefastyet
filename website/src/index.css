@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap");
 *,
 body {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
-body{
+body {
   background-color: var(--background-color);
   color: var(--font-color);
 }
@@ -91,7 +91,7 @@ body{
   margin-bottom: 50px;
 }
 
-.dropDown{
+.dropDown {
   color: white;
   background-color: var(--dropDown-color);
   border: var(--accent-color) solid 1px;
@@ -106,7 +106,7 @@ body{
   z-index: 200;
 }
 
-.header--title{
+.header--title {
   font-size: 5rem;
   font-weight: 100;
   margin-bottom: 50px;
@@ -114,7 +114,7 @@ body{
   width: 100%;
 }
 
-.header--text{
+.header--text {
   width: 50%;
   line-height: 40px;
   text-align: justify;
@@ -179,10 +179,14 @@ body{
   .hidden--desktop {
     display: block;
   }
+  .header--text {
+    width: 100%;
+    line-height: 25px;
+  }
 }
 
 @media only screen and (max-width: 767px) {
-  .dropDown{
+  .dropDown {
     width: 150px;
     padding: 0px;
   }
