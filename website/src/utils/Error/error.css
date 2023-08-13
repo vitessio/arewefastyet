@@ -15,64 +15,61 @@ limitations under the License.
 */
 
 .error {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-image: url('../assets/homeLogoLarge.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 700px;
-    margin-bottom: 100px;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3rem;
+}
 
- 
+.error div {
+  margin: 1rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
 
+.goHome {
+  padding: 10px 22px 10px 22px;
+  margin: 20px;
+  font-size: 1rem;
+  border-radius: 1rem;
+  background-color: #e77002;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: 300ms ease-in;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 10px;
+}
+
+.error div img {
+  padding: 10px;
+  width: 350px;
+  height: 270px;
+  animation: translateUpDown 2s infinite alternate;
+}
+
+.error h1 {
+  font-size: 3rem;
+  font-weight: 700;
+}
 
 .error h2 {
-    font-size: 8em;
-    margin-top: 400px;
-   
+  font-weight: 500;
+  text-align: center;
 }
 
-.error a{
-    font-size: 2em;
-    margin-top: 100px;
-    text-decoration: underline;
+@keyframes translateUpDown {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-0.7cm);
+  }
 }
-
-
-
-@media only screen and (max-width: 1224px) {
-    .error h2 {
-      font-size: 6em; 
-      margin-top: 400px;
-    }
-    .error {
-        background-size: 700px;
-        
-      }
-    .error a{
-        font-size: 2em;
-        
-    }
-  }
-  
-  
-  @media only screen and (max-width: 768px) {
-    .error h2 {
-      font-size: 4em; 
-      margin-top: 250px;
-
-    }
-    .error {
-        background-size: 400px;
-        
-        
-      }
-    .error a{
-        font-size: 1.5em;
-        
-    }
-  }
