@@ -67,40 +67,6 @@ limitations under the License.
   padding: 0px 100px;
 }
 
-.searchSidebar {
-  padding: 0px 0px 0px 20px;
-  font-style: italic;
-  border-top: #e77002 1px solid;
-  border-left: #e77002 1px solid;
-  border-bottom: #e77002 1px solid;
-  border-radius: 10px 0px 0px 10px;
-  text-align: end;
-  width: 15%;
-  margin-top: 39px;
-}
-
-.searchSidebar span {
-  padding: 13px 10px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.search__carousel__containerMobile {
-  width: 70%;
-  max-height: 798px;
-}
-
-.searchMacro__desktop {
-  border: #e77002 1px solid;
-  border-radius: 10px 10px 10px 0px;
-}
-.searchMacro__desktop__header h3 {
-  padding: 10px 20px;
-  width: 200px;
-  font-size: 0.85rem;
-  text-align: center;
-}
-
 .searchMacro__desktop__tbody {
   width: 100%;
 }
@@ -108,10 +74,6 @@ limitations under the License.
 @media only screen and (max-width: 1225px) {
   .search__micro {
     padding: 0px 10px;
-  }
-
-  .searchMacro__desktop {
-    display: none;
   }
 
   .search__top__text h2 {
@@ -127,11 +89,6 @@ limitations under the License.
     width: 300px;
     height: 300px;
     margin-top: 100px;
-  }
-
-  .searchSidebar {
-    width: 24%;
-    margin-top: 85px;
   }
 }
 
@@ -160,28 +117,5 @@ limitations under the License.
   .searchStats {
     margin: auto;
     margin-top: 30px;
-  }
-
-  .searchSidebar {
-    border-radius: 10px 0px 0px 10px;
-    width: 35%;
-    border: #e77002 1px solid;
-    border-right: none;
-    margin-top: 88px;
-    padding: 0px 7px;
-  }
-
-  .searchSidebar span {
-    font-size: 0.65rem;
-    min-height: 27px;
-    padding: 0px;
-    margin: 7.25px 0px;
-    display: flex;
-    justify-content: end;
-    align-items: center;
-  }
-  .search__carousel__containerMobile {
-    width: 70%;
-    max-height: 770px;
   }
 }
