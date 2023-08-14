@@ -31,6 +31,10 @@ limitations under the License.
   border-top: #b5adad 1px solid;
 }
 
+.searchMAcro__desktop__data tr:hover {
+  background-color: #b5adad;
+}
+
 .datatd {
   padding: 15px 100px 5px 100px;
   text-align: center;
