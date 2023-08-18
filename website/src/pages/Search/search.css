@@ -22,7 +22,7 @@ limitations under the License.
   margin: auto;
 }
 
-.research{
+.research {
   margin-top: 150px;
 }
 
@@ -30,30 +30,60 @@ limitations under the License.
   width: 100%;
 }
 
-.research__input {
+.research__input__div {
   width: 80%;
-  padding: 20px 10px;
-  font-size: 1.5rem;
-  border: #e77002 solid 2px;
-  border-radius: 20px 0px 0px 20px;
-  box-shadow: #e77002 2px 2px 10px;
-  color: var(--font-color);
-  background-color: var(--background-color);
+  border-radius: 20px;
   max-width: 1000px;
+  border-width: 1px;
+  transition-duration: 300ms;
+  position: relative;
+  background-color: #ffffff11;
+  transition-duration: 500ms;
 }
 
-.research__input:focus {
+.research__input__div::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 80;
+  z-index: -1;
+  content: " ";
+  background-color: transparent;
+  border-radius: inherit;
+  transition-duration: inherit;
+}
+
+.research__input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 20px 0 0 20px;
+  font-size: 1.5rem;
+  padding: 10px 20px;
   outline: none;
+  z-index: 10;
+  border: 2px solid #ff8c42;
+  background-color: transparent;
+  color: var(--text-primary);
+}
+
+.research__input__div:has(.research__input:focus) {
+ background: var(--background-color); 
+}
+
+.research__input__div:has(.research__input:focus)::before {
+  background-color: #ff8c42;
+  transform: scaleX(100.4%) scaleY(106%);
 }
 
 .research button {
-  border: #e77002 solid 2px;
-  border-left: 0px;
-  background-color: var(--accent-color);
+  background: linear-gradient(to right, #ffcd02, #ff8c42);
   color: white;
   padding: 20px;
   border-radius: 0px 20px 20px 0px;
-  box-shadow: #e77002 2px 2px 10px;
+  border: none;
   font-size: 1.5rem;
   cursor: pointer;
 }
@@ -76,13 +106,14 @@ limitations under the License.
   border-radius: 10px 0px 0px 10px;
   text-align: end;
   width: 15%;
-  margin-top: 39px;
+  margin-top: 40px;
 }
 
 .searchSidebar span {
   padding: 13px 10px;
   font-size: 0.8rem;
   font-weight: bold;
+  min-height: 44px;
 }
 
 .search__carousel__containerMobile {
@@ -131,7 +162,10 @@ limitations under the License.
 
   .searchSidebar {
     width: 24%;
-    margin-top: 85px;
+    margin-top: 86px;
+  }
+  .search__carousel__containerMobile {
+    max-height: 807px;
   }
 }
 
@@ -163,25 +197,26 @@ limitations under the License.
   }
 
   .searchSidebar {
-    border-radius: 10px 0px 0px 10px;
-    width: 35%;
-    border: #e77002 1px solid;
-    border-right: none;
-    margin-top: 88px;
-    padding: 0px 7px;
+    margin-top: 89px;
   }
 
   .searchSidebar span {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     min-height: 27px;
-    padding: 0px;
-    margin: 7.25px 0px;
-    display: flex;
-    justify-content: end;
-    align-items: center;
+    padding-left: 0px;
   }
   .search__carousel__containerMobile {
     width: 70%;
-    max-height: 770px;
+    max-height: 714px;
+  }
+  .research__input{
+    font-size: 1rem;
+    padding: 10px;
+    height: 70px;
+  }
+  .research button{
+    font-size: 1rem;
+    padding: 15px;
+    height: 70px;
   }
 }
