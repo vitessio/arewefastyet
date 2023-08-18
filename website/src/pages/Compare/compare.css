@@ -203,9 +203,16 @@ limitations under the License.
 
   .form__inputLeft,
   .form__inputRight {
-    font-size: 0.8rem;
-    padding: 15px;
+    font-size: 1rem;
+    padding: 0px 0px 0px 5px;
     width: 45%;
+    height: 70px;
+  }
+
+  .form__container button{
+    font-size: 1rem;
+    padding: 15px;
+    height: 70px;
   }
 
   .compare__micro__container h3 {

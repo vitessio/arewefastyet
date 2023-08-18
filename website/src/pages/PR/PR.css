@@ -63,11 +63,6 @@ limitations under the License.
     display: none;
   }
 
-  .pr__top h2 {
-    font-size: 4rem;
-    margin-left: 0px;
-  }
-
   .pr__top {
     text-align: center;
     justify-content: center;
@@ -87,9 +82,8 @@ limitations under the License.
   .hidden--mobile {
     display: none;
   }
-
-  .pr__top h2 {
-    font-size: 2rem;
+  .pr{
+    padding: 0px 0px 50px 0px;
   }
   .linkSidebar {
     width: 50%;
