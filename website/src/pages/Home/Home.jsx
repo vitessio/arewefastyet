@@ -178,7 +178,7 @@ const Home = () => {
                 <h3>{item.title}</h3>
                 <ul>
                   {microMacroContent[key].points.map((point, i) => (
-                    <li><h5>{point.title}</h5> <p>{point.content}</p></li>
+                    <li key={i}><h5>{point.title}</h5> <p>{point.content}</p></li>
                   ))}
                 </ul>
               </div>
