@@ -50,23 +50,21 @@ const Compare = () => {
     data: dataMacrobench,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
-    textLoading: macroTextLoading
+    textLoading: macroTextLoading,
   } = useApiCall(
     `${
       import.meta.env.VITE_API_URL
     }macrobench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
     [isFormSubmitted]
   );
-    
-  const {
-    data: dataMicrobench,
-  } = useApiCall(
+
+  const { data: dataMicrobench } = useApiCall(
     `${
       import.meta.env.VITE_API_URL
     }microbench/compare?rtag=${gitRefRight}&ltag=${gitRefLeft}`,
     [isFormSubmitted]
   );
-    
+
   // Changing the URL relative to the reference of a selected benchmark.
   // Storing the carousel position as a URL parameter.
   const navigate = useNavigate();
@@ -100,20 +98,24 @@ const Compare = () => {
       <div className="compare__top">
         <div className="justify--content form__container">
           <form className="justify--content" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              value={gitRefLeft === "Left" ? "" : gitRefLeft}
-              onChange={handleInputChangeLeft}
-              placeholder="Left commit SHA"
-              className="form__inputLeft"
-            ></input>
-            <input
-              type="text"
-              value={gitRefRight === "Right" ? "" : gitRefRight}
-              onChange={handleInputChangeRight}
-              placeholder="Right commit SHA"
-              className="form__inputRight"
-            ></input>
+            <div className="form__left">
+              <input
+                type="text"
+                value={gitRefLeft === "Left" ? "" : gitRefLeft}
+                onChange={handleInputChangeLeft}
+                placeholder="Left commit SHA"
+                className="form__inputLeft"
+              />
+            </div>
+            <diV className="form__right">
+              <input
+                type="text"
+                value={gitRefRight === "Right" ? "" : gitRefRight}
+                onChange={handleInputChangeRight}
+                placeholder="Right commit SHA"
+                className="form__inputRight"
+              />
+            </diV>
             <button type="submit">Search</button>
           </form>
         </div>
