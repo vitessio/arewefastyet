@@ -274,10 +274,9 @@ limitations under the License.
     font-size: 1rem;
   }
 
-  .form__inputLeft,
-  .form__inputRight {
+  .form__left,
+  .form__right {
     font-size: 1rem;
-    padding: 0px 0px 0px 5px;
     width: 45%;
     height: 70px;
   }
