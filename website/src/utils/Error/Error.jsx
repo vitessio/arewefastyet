@@ -27,16 +27,13 @@ const Error = () => {
             <div>
                 <h1>404</h1>
             </div>
-            <div>
+            <div className="errorImg">
                 <img src={ErrorImage} alt='error' />
             </div>
             <div>
                 <h2>OOPS! Something went wrong</h2>
                 <Link to='/home'><button className='goHome'>Go Back</button> </Link>
             </div>
-
-
-
         </div>
     );
 };
