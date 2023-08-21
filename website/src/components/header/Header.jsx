@@ -112,13 +112,6 @@ const Header = () => {
                   </div>
                 ))}
               </ul>
-              <button className="buttonMode" onClick={handleButtonClick}>
-                {isColorChanged ? (
-                  <i className="fa-solid fa-moon fa-2x " style={{ "color": "#e77002" }}></i>
-                ) : (
-                  <i className="far fa-sun fa-xl" style={{ "color": "#ffffffdc" }}></i>
-                )}
-              </button>
             </nav>
 
             <figure
@@ -135,7 +128,15 @@ const Header = () => {
             <figure className="lineMenuBottom"></figure>
           </figure>
         )}
+        
       </div>
+      <button className="buttonMode" onClick={handleButtonClick}>
+          {isColorChanged ? (
+            <i className="fa-solid fa-moon fa-2x " style={{ "color": "#e77002" }}></i>
+          ) : (
+            <i className="far fa-sun fa-xl" style={{ "color": "#ffffffdc" }}></i>
+          )}
+        </button>
     </div>
   );
 };
