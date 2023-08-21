@@ -98,22 +98,22 @@ const Compare = () => {
       <div className="compare__top">
         <div className="justify--content form__container">
           <form className="justify--content" onSubmit={handleSubmit}>
-            <div className="form__left">
+            <div className="form__div">
               <input
                 type="text"
                 value={gitRefLeft === "Left" ? "" : gitRefLeft}
                 onChange={handleInputChangeLeft}
                 placeholder="Left commit SHA"
-                className="form__inputLeft"
+                className="form__input"
               />
             </div>
-            <diV className="form__right">
+            <diV className="form__div">
               <input
                 type="text"
                 value={gitRefRight === "Right" ? "" : gitRefRight}
                 onChange={handleInputChangeRight}
                 placeholder="Right commit SHA"
-                className="form__inputRight"
+                className="form__input"
               />
             </diV>
             <button type="submit">Search</button>

@@ -40,9 +40,13 @@ limitations under the License.
   margin-top: 50px;
 }
 
-.form__left {
-  width: 40%;
+.form__container form div:nth-child(1){
   border-radius: 20px 0 0 20px;
+  
+}
+
+.form__div {
+  width: 40%;
   max-width: 500px;
   border-width: 1px;
   transition-duration: 300ms;
@@ -51,7 +55,7 @@ limitations under the License.
   transition-duration: 500ms;
 }
 
-.form__left::before{
+.form__div::before{
   position: absolute;
   top: 0;
   left: 0;
@@ -65,60 +69,11 @@ limitations under the License.
   transition-duration: inherit;
 }
 
-.form__inputLeft {
+.form__input {
   width: 100%;
   height: 100%;
   border: none;
-  border-radius: 20px 0 0 20px;
-  font-size: 1.5rem;
-  padding: 10px 20px;
-  outline: none;
-  z-index: 10;
-  border: 2px solid #ff8c42;
-  background-color: transparent;
-  color: var(--text-primary);
-}
-
-.form__left:has(.form__inputLeft:focus) {
-  background: var(--background-color); 
- }
- 
- .form__left:has(.form__inputLeft:focus)::before {
-   background-color: #ff8c42;
-   transform: scaleX(100.7%) scaleY(106%);
- }
-
-
- .form__right {
-  width: 40%;
-  border-radius: 0px;
-  max-width: 500px;
-  border-width: 1px;
-  transition-duration: 300ms;
-  position: relative;
-  background-color: #ffffff11;
-  transition-duration: 500ms;
-}
-
-.form__right::before{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 80;
-  z-index: -1;
-  content: " ";
-  background-color: transparent;
   border-radius: inherit;
-  transition-duration: inherit;
-}
-
-.form__inputRight {
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 0;
   font-size: 1.5rem;
   padding: 10px 20px;
   outline: none;
@@ -128,15 +83,14 @@ limitations under the License.
   color: var(--text-primary);
 }
 
-.form__right:has(.form__inputRight:focus) {
+.form__div:has(.form__input:focus) {
   background: var(--background-color); 
  }
  
- .form__right:has(.form__inputRight:focus)::before {
+ .form__div:has(.form__input:focus)::before {
    background-color: #ff8c42;
    transform: scaleX(100.7%) scaleY(106%);
  }
-
 
 .form__container button {
   background: linear-gradient(to right, #ffcd02, #ff8c42);
