@@ -18,7 +18,6 @@ limitations under the License.
     width: 100%;
     border: #E77002 1px solid;
     border-radius: 10px 10px 10px 0px;
-    border-bottom: #E77002 3px solid;
     position: relative;
     z-index: 2;
 }
@@ -50,7 +49,7 @@ table{
 }
 
 .search__macro__data td{
-    padding: 14px 0px 5px 0px;
+    padding: 15px 0px 5px 0px;
 }
 
 .dataNull{
@@ -58,20 +57,22 @@ table{
     font-size: 1.5rem;
     background-color: #343A40;
 }
-
+#noborder{
+    border-bottom: none;
+}
+@media only screen and (max-width: 1225px) {
+    
+}
 @media only screen and (max-width: 767px){
     .search__macro__data h3{
         font-size: 1rem;
         padding-bottom: 51px;
-    }
-    .search__macro__data{
-        border-bottom: none;
     }
 
     #marginTr{
         padding: 15.5px 0px 5px 0px;
     }
     .search__macro__data td{
-        padding: 12px 0px 5px 0px;
+        padding: 9px 0px 5px 0px;
     }
 }

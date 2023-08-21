@@ -44,7 +44,7 @@ const SearchMacro = ({data}) => {
                         <tr><td><span>{data[1][0].Metrics.ComponentsCPUTime.vttablet}</span></td></tr>
                         <tr><td><span>{data[1][0].Metrics.TotalComponentsMemStatsAllocBytes}</span></td></tr>
                         <tr><td><span>{data[1][0].Metrics.ComponentsMemStatsAllocBytes.vtgate}</span></td></tr>
-                        <tr><td><span>{data[1][0].Metrics.ComponentsMemStatsAllocBytes.vttablet}</span></td></tr>
+                        <tr id='noborder'><td><span>{data[1][0].Metrics.ComponentsMemStatsAllocBytes.vttablet}</span></td></tr>
                     </tbody>
                 </table>
            ) : (
@@ -65,7 +65,7 @@ const SearchMacro = ({data}) => {
                 <tr><td><span>0</span></td></tr>
                 <tr><td><span>0</span></td></tr>
                 <tr><td><span>0</span></td></tr>
-                <tr><td><span>0</span></td></tr>
+                <tr id='noborder'><td><span>0</span></td></tr>
             </tbody>
         </table>
            )}

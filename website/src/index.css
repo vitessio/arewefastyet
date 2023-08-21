@@ -186,4 +186,10 @@ body{
     width: 150px;
     padding: 0px;
   }
+  .header--text{
+      width: 100%;
+  }
+  .header--title{
+    font-size: 2rem
+  }
 }
