@@ -14,11 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import React, { useContext } from "react";
 
 import logo from "../../assets/logo.png";
 
 import "./home.css";
+import { AppContext } from "../../AppContext";
+import executionPipeline from "../../assets/images/execution-pipeline.png"
+import executionPipelineDark from "../../assets/images/execution-pipeline-dark.png"
 
 const howItWorksItems = [
   {
@@ -107,6 +110,8 @@ const microMacroContent = [
 ];
 
 const Home = () => {
+  const { isColorChanged } = useContext(AppContext);
+
   return (
     <div className="home">
       <article className="home__top">
@@ -173,12 +178,19 @@ const Home = () => {
                 <h3>{item.title}</h3>
                 <ul>
                   {microMacroContent[key].points.map((point, i) => (
-                    <li><h5>{point.title}</h5> <p>{point.content}</p></li>
+                    <li key={i}><h5>{point.title}</h5> <p>{point.content}</p></li>
                   ))}
                 </ul>
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="micro_and_macro">
+          <h1 className="home_bodysection_title">
+            Diagramatic overview
+          </h1>
+          <img src={isColorChanged ? executionPipeline : executionPipelineDark} alt="execution pipeline" className="execution__pipeline__image" />
         </section>
       </article>
     </div>

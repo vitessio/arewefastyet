@@ -221,6 +221,11 @@ limitations under the License.
   font-weight: 400;
 }
 
+.execution__pipeline__image {
+  width: 80vw;
+  margin-top: 5vh;
+}
+
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
   .home_top_logo {
