@@ -32,7 +32,7 @@ const howItWorksItems = [
   {
     title: "Dedicated Benchmarking Servers",
     content:
-      "For our production deployment, AreWeFastYet relies on dedicated hardware provided by Equinix Metal. Our benchmarking infrastructure uses m2.xlarge.x86 bare-metal servers, boosting benchmark reliability and accuracy. Terraform handles the server provisioning, ensuring consistent configurations. Dynamic adjustments are applied using Ansible roles, tailored to each benchmark's requirements. Whether it's a macro-benchmark involving Vitess clusters or a micro-benchmark, the server configurations are tailored accordingly.",
+      "arewefastyet relies on dedicated hardware provided by CNCF and Equinix Metal. Our benchmarking infrastructure uses large bare-metal servers, boosting benchmark reliability and accuracy.",
   },
   {
     title: "Customized Benchmark Settings",
