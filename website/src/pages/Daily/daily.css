@@ -72,6 +72,7 @@ limitations under the License.
 @media only screen and (max-width: 1225px) {
   .daily {
     overflow-x: scroll;
+    padding: 0px 0px 50px 0px;
   }
   .chart {
     width: 1200px;
