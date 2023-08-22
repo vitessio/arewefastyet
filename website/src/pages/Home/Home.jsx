@@ -37,7 +37,7 @@ const howItWorksItems = [
   {
     title: "Customized Benchmark Settings",
     content:
-      "Different benchmarks demand distinct configurations. For instance, a macro-benchmark necessitates the setup of a Vitess cluster, while a micro-benchmark might not. Server configuration includes package installations, binary setups, network adjustments, and the deployment of both Vitess and AreWeFastYet codebases. The Vitess cluster's settings align with the initial trigger configuration. The default setup examines Vitess performance in a sharded keyspace with six vtgates and two vttablets.",
+      "Different benchmarks demand distinct configurations. For instance, a macro-benchmark necessitates the setup of a Vitess cluster, while a micro-benchmark does not. The default setup for macro-benchmarks examines Vitess performance in a sharded keyspace with six VTGates and two VTTablets.",
   },
   {
     title: "Starting Benchmark Runs",
