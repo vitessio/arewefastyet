@@ -42,7 +42,7 @@ const howItWorksItems = [
   {
     title: "Starting Benchmark Runs",
     content:
-      "Once the server is primed, the final step is initiating the benchmark run. Ansible triggers AreWeFastYet's CLI to set the benchmark in motion. This comprehensive process, from YAML-based pipeline configuration to dynamic server setup, ensures that every benchmark run is accurate, reproducible, and adaptable to the unique demands of each benchmark type. AreWeFastYet streamlines the complexities of executing benchmarks against Vitess, offering a robust and precise benchmarking solution at scale.",
+      "Once the server is ready, the final step is initiating the benchmark run. Ansible triggers arewefastyet's CLI to set the benchmark in motion. This comprehensive process, from YAML-based pipeline configuration to dynamic server setup, ensures that every benchmark run is accurate, reproducible, and adaptable to the unique demands of each benchmark type. arewefastyet streamlines the complexities of executing benchmarks against Vitess, offering a robust and precise benchmarking solution at scale.",
   },
 ];
 
