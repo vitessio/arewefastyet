@@ -27,22 +27,22 @@ const howItWorksItems = [
   {
     title: "The Execution Engine",
     content:
-      "At the heart of AreWeFastYet is the Execution Engine. It orchestrates the entire benchmarking process, ensuring accuracy and reproducibility on a large scale. Each benchmark run, referred to as an 'execution', is initiated from various sources like CLI triggers, scheduled tasks, or events like pull requests or releases. This kicks off a pipeline creation, configured via a YAML file. This file encompasses infrastructure provisioning, results storage, notifications, and more, setting the stage for meticulous benchmarking.",
+      "At the heart of arewefastyet is the Execution engine. It orchestrates the entire benchmarking process, ensuring accuracy and reproducibility on a large scale. Each benchmark run is initiated by new releases, new PRs, and new commits on main.",
   },
   {
     title: "Dedicated Benchmarking Servers",
     content:
-      "For our production deployment, AreWeFastYet relies on dedicated hardware provided by Equinix Metal. Our benchmarking infrastructure uses m2.xlarge.x86 bare-metal servers, boosting benchmark reliability and accuracy. Terraform handles the server provisioning, ensuring consistent configurations. Dynamic adjustments are applied using Ansible roles, tailored to each benchmark's requirements. Whether it's a macro-benchmark involving Vitess clusters or a micro-benchmark, the server configurations are tailored accordingly.",
+      "arewefastyet relies on dedicated hardware provided by CNCF and Equinix Metal. Our benchmarking infrastructure uses large bare-metal servers, boosting benchmark reliability and accuracy.",
   },
   {
     title: "Customized Benchmark Settings",
     content:
-      "Different benchmarks demand distinct configurations. For instance, a macro-benchmark necessitates the setup of a Vitess cluster, while a micro-benchmark might not. Server configuration includes package installations, binary setups, network adjustments, and the deployment of both Vitess and AreWeFastYet codebases. The Vitess cluster's settings align with the initial trigger configuration. The default setup examines Vitess performance in a sharded keyspace with six vtgates and two vttablets.",
+      "Different benchmarks demand distinct configurations. For instance, a macro-benchmark necessitates the setup of a Vitess cluster, while a micro-benchmark does not. The default setup for macro-benchmarks examines Vitess performance in a sharded keyspace with six VTGates and two VTTablets.",
   },
   {
     title: "Starting Benchmark Runs",
     content:
-      "Once the server is primed, the final step is initiating the benchmark run. Ansible triggers AreWeFastYet's CLI to set the benchmark in motion. This comprehensive process, from YAML-based pipeline configuration to dynamic server setup, ensures that every benchmark run is accurate, reproducible, and adaptable to the unique demands of each benchmark type. AreWeFastYet streamlines the complexities of executing benchmarks against Vitess, offering a robust and precise benchmarking solution at scale.",
+      "Once the server is ready, the final step is initiating the benchmark run. Ansible triggers arewefastyet's CLI to set the benchmark in motion. This comprehensive process, from YAML-based pipeline configuration to dynamic server setup, ensures that every benchmark run is accurate, reproducible, and adaptable to the unique demands of each benchmark type. arewefastyet streamlines the complexities of executing benchmarks against Vitess, offering a robust and precise benchmarking solution at scale.",
   },
 ];
 
