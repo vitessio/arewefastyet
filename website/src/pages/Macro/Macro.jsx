@@ -178,6 +178,8 @@ const Macro = () => {
                                                     handleSlideChange={handleSlideChange} 
                                                     setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
                                                     currentSlideIndexMobile={currentSlideIndexMobile}
+                                                    commitHashLeft={commitHashLeft}
+                                                    commitHashRight={commitHashRight}
                                                     textLoading={textLoading}
                                                     />
                                                 </div>

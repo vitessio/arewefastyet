@@ -16,7 +16,7 @@ limitations under the License.
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import ErrorImage from '../../assets/error.png';
 
 import '../Error/error.css'
 
@@ -24,9 +24,16 @@ import '../Error/error.css'
 const Error = () => {
     return (
         <div className='error'>
-           <h2>404</h2>
-
-            <Link to='/home'>Back to home </Link>
+            <div>
+                <h1>404</h1>
+            </div>
+            <div className="errorImg">
+                <img src={ErrorImage} alt='error' />
+            </div>
+            <div>
+                <h2>OOPS! Something went wrong</h2>
+                <Link to='/home'><button className='goHome'>Go Back</button> </Link>
+            </div>
         </div>
     );
 };
