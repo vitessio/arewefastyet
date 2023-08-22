@@ -96,6 +96,8 @@ type Server struct {
 
 	// Mode used to run the server.
 	Mode
+
+	appProvider github.LoggerProvider
 }
 
 func (s *Server) AddToCommand(cmd *cobra.Command) {

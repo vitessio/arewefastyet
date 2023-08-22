@@ -50,12 +50,16 @@ type RecentExecutions struct {
 }
 
 func (s *Server) getRecentExecutions(c *gin.Context) {
+	logger := s.appProvider.GetLogger()
+
 	execs, err := exec.GetRecentExecutions(s.dbClient)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-		slog.Error(err)
+		errorMessage := err.Error()
+		logger.Error().Err(err).Msg("Failed to get recent executions")
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: errorMessage})
 		return
 	}
+
 	recentExecs := make([]RecentExecutions, 0, len(execs))
 	for _, e := range execs {
 		recentExecs = append(recentExecs, RecentExecutions{
@@ -72,6 +76,7 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, recentExecs)
 }
+
 
 func (s *Server) getExecutionsQueue(c *gin.Context) {
 	recentExecs := make([]RecentExecutions, 0, len(queue))

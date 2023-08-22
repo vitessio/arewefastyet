@@ -45,6 +45,10 @@ type App struct {
 	logger zerolog.Logger
 }
 
+type LoggerProvider interface {
+	GetLogger() zerolog.Logger
+}
+
 const (
 	flagAppID          = "gh-app-id"
 	flagWebHookSecret  = "gh-webhook-secret"
