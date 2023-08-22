@@ -27,7 +27,7 @@ const howItWorksItems = [
   {
     title: "The Execution Engine",
     content:
-      "At the heart of AreWeFastYet is the Execution Engine. It orchestrates the entire benchmarking process, ensuring accuracy and reproducibility on a large scale. Each benchmark run, referred to as an 'execution', is initiated from various sources like CLI triggers, scheduled tasks, or events like pull requests or releases. This kicks off a pipeline creation, configured via a YAML file. This file encompasses infrastructure provisioning, results storage, notifications, and more, setting the stage for meticulous benchmarking.",
+      "At the heart of arewefastyet is the Execution engine. It orchestrates the entire benchmarking process, ensuring accuracy and reproducibility on a large scale. Each benchmark run is initiated by new releases, new PRs, and new commits on main.",
   },
   {
     title: "Dedicated Benchmarking Servers",
