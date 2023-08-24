@@ -238,7 +238,7 @@ const Daily = () => {
       </div>
       <figure className="line"></figure>
       {errorDailySummary || dailyError ? (
-        <div className="apiError">{error}</div>
+        <div className="apiError">{dailyError}</div>
       ) : isLoadingDailySummary ? (
         <div className="loadingSpinner">
           <RingLoader

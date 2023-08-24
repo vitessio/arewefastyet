@@ -67,14 +67,16 @@ const Search = () => {
     <div className="search">
       <div className="research">
         <form className="justify--content" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={gitRef}
-            onChange={handleInputChange}
-            placeholder="Search using commit SHA"
-            className="research__input"
-          />
-          <button type="submit">Search</button>
+          <div className="research__input__div justify--content">
+            <input
+              type="text"
+              value={gitRef}
+              onChange={handleInputChange}
+              className="research__input"
+              placeholder="Search using commit SHA"
+            />
+            <button type="submit">Search</button>
+          </div>
         </form>
       </div>
       {searchError ? (

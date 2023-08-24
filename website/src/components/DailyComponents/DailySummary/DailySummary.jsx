@@ -73,7 +73,6 @@ DailySummary.propTypes = {
   }),
   setBenchmarktype: PropTypes.func.isRequired,
   isSelected: PropTypes.bool,
-  handleClick: PropTypes.func.isRequired,
 };
 
 export default DailySummary;

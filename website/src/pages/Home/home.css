@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 /* HOME__TOP */
 
 .home__top {
@@ -28,7 +27,7 @@ limitations under the License.
   padding: 50px 50px 0px 50px;
 }
 
-.home__top__gradient {
+.home_top_gradient {
   position: absolute;
   top: 0;
   left: 0;
@@ -37,7 +36,7 @@ limitations under the License.
   height: 100%;
 }
 
-.home__top__gradient::before {
+.home_top_gradient::before {
   position: absolute;
   top: 0;
   content: " ";
@@ -50,50 +49,50 @@ limitations under the License.
     rgba(255, 205, 2) 100%
   );
   background-size: 200% 200%;
-  animation: home__top__gradient__move 4000ms linear infinite;
+  animation: home_topgradient_move 4000ms linear infinite;
 }
 
-.home__top__content {
+.home_top_content {
   display: flex;
   flex-direction: column;
   row-gap: 20px;
 }
 
-.home__top__content__text {
+.home_topcontent_text {
   padding: 30px 40px;
-  border-radius: 2rem;
+  border-radius: 2rem 0 0 2rem;
   background-color: var(--background-color);
   font-size: 3.8vw;
 }
 
-.home__top__content__text__heading {
+.home_topcontenttext_heading {
   margin-bottom: 20px;
 }
 
-.home__top__content__text__heading h3 {
+.home_topcontenttext_heading h3 {
   font-size: 0.6em;
   font-weight: 600;
 }
 
-.home__top__content__text__heading h1 {
+.home_topcontenttext_heading h1 {
   line-height: 1;
   font-size: 1em;
   font-weight: 700;
   color: #e77002;
 }
 
-.home__top__content__text p {
+.home_topcontent_text p {
   font-size: 0.3em;
   font-weight: 400;
 }
 
-.home__top__content__button {
+.home_topcontent_button {
   display: flex;
   flex-direction: row;
   column-gap: 10px;
 }
 
-.home__top__content__button button{
+.home_topcontent_button button {
   padding: 20px;
   font-size: 1rem;
   border-radius: 1rem;
@@ -108,21 +107,21 @@ limitations under the License.
   column-gap: 10px;
 }
 
-.home__top__content__button i{
+.home_topcontent_button i {
   font-size: 1.5rem;
 }
 
-.home__top__content__button button:hover {
+.home_topcontent_button button:hover {
   transform: translateY(-5px);
 }
-.home__top__text span{
+.home_top_text span {
   width: 100%;
   text-align: justify;
   line-height: 40px;
   display: block;
 }
 
-.home__top__logo {
+.home_top_logo {
   width: 30vw;
   aspect-ratio: 1;
   margin-left: 30px;
@@ -130,51 +129,162 @@ limitations under the License.
   filter: drop-shadow(10px 10px 20px #b74002);
 }
 
+.home_bodyhowit_works h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.home_bodyhowit_works {
+  background-color: #000000;
+  color: #ffffff;
+  padding: 7vh 0;
+}
+
+.how_itworkscards_container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 7vh 8vw 4vh 8vw;
+  gap: 2.5rem;
+}
+
+.how_itworks_card {
+  padding: 1rem;
+  width: calc(50% - 1.25rem);
+  border-radius: 0.5rem;
+  border: 1px solid #ffffff25;
+  background-color: #ffffff12;
+}
+
+.how_itworks_card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.how_itworks_card p {
+  text-align: justify;
+  font-size: 0.93rem;
+  color: #ffffff99;
+}
+
+.micro_and_macro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8vh 8vw 8vh 8vw;
+}
+
+.home_bodysection_title {
+  background-color: #e7700222;
+  color: #e77002;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 100rem;
+}
+
+.micro_andmacro_cards {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8vh;
+}
+
+.micro_andmacro_card {
+  width: 48%;
+  border: 1px solid #e77002;
+  border-radius: 0.5rem;
+}
+
+.micro_andmacro_card h3 {
+  text-align: center;
+  margin: 1rem 0;
+  color: #e77002;
+}
+
+.micro_andmacro_card ul {
+  list-style-type: none;
+  padding: 1rem;
+}
+
+.micro_andmacro_card ul li {
+  margin-bottom: 1rem;
+}
+
+.micro_andmacro_card ul li h5 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.micro_andmacro_card ul li p {
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.execution__pipeline__image {
+  width: 80vw;
+  margin-top: 5vh;
+}
+
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 1225px) {
-
-  .home__top__logo{
+  .home_top_logo {
     width: 40vw;
   }
 
-  .home__top__gradient::before {
+  .home_top_gradient::before {
     clip-path: polygon(0% 0%, 30% 0%, 64% 100%, 0% 100%);
   }
 }
 
 /* MEDIA QUERIES FOR MOBILE */
 @media only screen and (max-width: 767px) {
-
   .home__top {
     display: flex;
     flex-direction: column-reverse;
     align-items: center;
+  }
+
+  .home_top_gradient::before {
+    clip-path: polygon(0% 0%, 64% 100%, 0% 100%);
+  }
+
+  .home_top_content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .home_topcontent_text {
+    font-size: 8vw;
+  }
+
+  .home_topcontent_button button {
+    font-size: 0.8rem;
+  }
+
+  .home_topcontent_button i {
+    font-size: 1rem;
+  }
+
+  .how_itworkscards_container {
+    flex-direction: column;
+  }
+
+  .how_itworks_card {
+    width: 100%;
+  }
+
+  .micro_andmacro_cards {
+    flex-direction: column;
+    row-gap: 2rem;
+  }
+  
+  .micro_andmacro_card {
+    width: 100%;
+  }
 }
 
-.home__top__gradient::before {
-  clip-path: polygon(0% 0%, 64% 100%, 0% 100%);
-}
-
-.home__top__content {
-  align-items: center;
-  text-align: center;
-}
-
-.home__top__content__text {
-  font-size: 8vw;
-}
-
-.home__top__content__button button{
-  font-size: 0.8rem;
-}
-
-.home__top__content__button i{
-  font-size: 1rem;
-}
-}
-
-
-@keyframes home__top__gradient__move {
+@keyframes home_topgradient_move {
   from {
     background-position: 0% 0%;
   }
