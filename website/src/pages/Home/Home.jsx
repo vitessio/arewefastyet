@@ -136,7 +136,7 @@ const Home = () => {
                 )
               }
             >
-              Read our blog post <i class="fa-solid fa-bookmark"></i>
+              Read our blog post <i className="fa-solid fa-bookmark"></i>
             </button>
             <button
               onClick={() =>
