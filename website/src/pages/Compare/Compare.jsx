@@ -107,7 +107,7 @@ const Compare = () => {
                 className="form__input"
               />
             </div>
-            <diV className="form__div">
+            <div className="form__div">
               <input
                 type="text"
                 value={gitRefRight === "Right" ? "" : gitRefRight}
@@ -115,7 +115,7 @@ const Compare = () => {
                 placeholder="Right commit SHA"
                 className="form__input"
               />
-            </diV>
+            </div>
             <button type="submit">Search</button>
           </form>
         </div>
