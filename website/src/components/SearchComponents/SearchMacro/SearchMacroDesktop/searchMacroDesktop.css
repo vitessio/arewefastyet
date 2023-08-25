@@ -14,13 +14,64 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.searchMAcro__desktop__data{
-    width: 100%;
-    text-align: center;
+.searchMAcro__desktop__data {
+  width: 100%;
+  border: #e77002 1px solid;
+  border-radius: 10px 10px 10px 0px;
+  border-bottom: #e77002 1px solid;
+  position: relative;
+  margin-bottom: 90px;
 }
 
-.searchMAcro__desktop__data span{
-    height: 45px;
-    border-top: #B5ADAD 1px solid;
-    padding-top: 15px;
+.searchMAcro__desktop__data__header {
+  padding: 20px;
 }
+
+.searchMAcro__desktop__data tr {
+  border-top: #b5adad 1px solid;
+}
+
+.searchMAcro__desktop__data tr:hover {
+  background-color: #b5adad;
+}
+
+.datatd {
+  padding: 15px 100px 5px 100px;
+  text-align: center;
+  min-width: 280px;
+}
+
+.sidebar--border {
+  display: flex;
+  justify-content: end;
+  border-right: #e77002 1px solid;
+  font-weight: bold;
+  padding: 15px 0px 5px 50px;
+  min-width: 240px;
+}
+
+.sidebar--border span {
+  margin-right: 20px;
+}
+
+@media only screen and (max-width: 767px) {
+  .searchMAcro__desktop__data {
+    width: 100vw;
+  }
+  .sidebar--border {
+    width: 45vw;
+    padding: 15px 0px;
+    min-width: 0px;
+  }
+  .sidebar--border span {
+    width: 100%;
+    text-align: end;
+    font-size: 0.9rem;
+  }
+  .datatd {
+    padding: 15px 0px 5px 0px;
+    width: 100%;
+    min-width: 0px;
+  }
+}
+
