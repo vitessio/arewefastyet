@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* setting default background, text color and font */
+  html {
+    @apply bg-background text-front font-opensans scroll-smooth;
+  }
+
+  /* removing any margin and padding from body for future updates to tailwind base */
+  body {
+    @apply m-0 p-0;
+  }
+
+  /* Declaring Themes */
+  :root {
+    --color-primary: 231 112 2;
+    --color-secondary: ;
+    --color-accent: 255 205 2;
+    --color-foreground: 26 26 26;
+    --color-background: 255 255 255;
+    --color-front: 26 26 26;
+    --color-back: 255 255 255;
+  }
+  :root[data-theme="dark"] {
+    --color-primary: 231 112 2;
+    --color-secondary: ;
+    --color-accent: 255 205 2;
+    --color-foreground: 255 255 255;
+    --color-background: 26 26 26;
+    --color-front: 255 255 255;
+    --color-back: 26 26 26;
+  }
+}
