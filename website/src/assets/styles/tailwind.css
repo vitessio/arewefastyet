@@ -33,3 +33,9 @@
     --color-back: 26 26 26;
   }
 }
+
+@layer utilities {
+  .p-page {
+    @apply px-[8vw];
+  }
+}
