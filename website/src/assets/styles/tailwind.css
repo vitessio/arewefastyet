@@ -38,4 +38,8 @@
   .p-page {
     @apply px-[5vw];
   }
+
+  .absolute-cover {
+    @apply absolute top-0 left-0 w-full h-full;
+  }
 }
