@@ -17,13 +17,14 @@ limitations under the License.
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { AppProvider } from "../AppContext";
-import Header from "../components/header/Header";
+import Navbar from "../components/header/Navbar";
 import Footer from "../components/footer/Footer";
+import Header from "../components/header/Header";
 
 const Layout = () => {
   return (
     <AppProvider>
-      <Header />
+      <Navbar />
       <Outlet />
       <Footer />
     </AppProvider>

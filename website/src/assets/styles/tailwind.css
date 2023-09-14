@@ -28,7 +28,7 @@
     --color-secondary: ;
     --color-accent: 255 205 2;
     --color-foreground: 255 255 255;
-    --color-background: 26 26 26;
+    --color-background: 0 0 0;
     --color-front: 255 255 255;
     --color-back: 26 26 26;
   }
@@ -36,6 +36,6 @@
 
 @layer utilities {
   .p-page {
-    @apply px-[8vw];
+    @apply px-[5vw];
   }
 }

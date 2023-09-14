@@ -23,11 +23,6 @@ limitations under the License.
   align-items: center;
 }
 
-a {
-  text-decoration: none;
-  color: #e77002;
-}
-
 .spanStatus {
   padding: 3px 20px;
   border-radius: 20px;
