@@ -30,7 +30,7 @@ const navItems = [
 
 export default function Navbar() {
   const [theme, setTheme] = useState("default");
-  const [hideBackground, setHideBackground] = useState(true);
+  const [hidden, setHidden] = useState(false);
 
   function toggleTheme() {
     setTheme((t) => (t === "default" ? "dark" : "default"));
@@ -48,16 +48,39 @@ export default function Navbar() {
     if (darkColorPreference.matches) {
       setTheme("dark");
     }
+
+    // Check for user intent to scroll and hide / show navbar accordingly
+    const scrollThreshold = window.innerHeight * 0.15;
+    window.addEventListener("scroll", () => {
+      const currY = window.scrollY;
+      if (currY < window.innerHeight * 0.25) {
+        setHidden(false);
+      } else {
+        setTimeout(() => {
+          if (window.scrollY > currY + scrollThreshold) {
+            setHidden(true);
+          }
+          if (window.scrollY < currY - scrollThreshold / 2) {
+            setHidden(false);
+          }
+        }, 200);
+      }
+    });
   }, []);
 
   return (
-    <div className="flex justify-center p-page py-4 border-b border-front border-opacity-30">
+    <nav
+      className={twMerge(
+        "fixed w-full bg-background z-[999] flex justify-center p-page py-4 border-b border-front border-opacity-30 duration-500",
+        hidden ? "-translate-y-full" : "translate-y-0"
+      )}
+    >
       <Link to="/" className="flex flex-1 gap-x-2 items-center">
         <img src="/logo.png" className="h-[2.5em]" alt="logo" />
         <h1 className="font-medium text-2xl">arewefastyet</h1>
       </Link>
 
-      <div className="flex gap-x-8 items-center">
+      <div className="flex gap-x-10 items-center">
         {navItems.map((item, key) => (
           <NavLink
             key={key}
@@ -81,9 +104,11 @@ export default function Navbar() {
       <div className="flex-1 flex justify-end items-center">
         <button className="relative" onClick={toggleTheme}>
           Theme
-          <p className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 text-xs text-front text-opacity-70">{theme}</p>
+          <p className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 text-xs text-front text-opacity-70">
+            {theme}
+          </p>
         </button>
       </div>
-    </div>
+    </nav>
   );
 }
