@@ -15,21 +15,21 @@ export default function Hero() {
           <div className="flex flex-col bg-background flex-1 p-10 rounded-3xl gap-y-2">
             <h3 className="text-4xl font-semibold">Vitess Introduces</h3>
             <h1 className="text-6xl font-bold text-primary">arewefastyet</h1>
-            <p className="text-lg font-normal mt-5">
+            <p className="text-lg font-normal mt-5 whitespace-nowrap">
               A Cutting-Edge Benchmarking Approach for Unparalleled Database
               Speed
             </p>
           </div>
           <div className="flex gap-x-8">
             <Link
-              className="bg-background rounded-2xl p-5 flex items-center gap-x-2"
+              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2"
               to="https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet"
               target="__blank"
             >
               Read our blog post <i className="fa-solid fa-bookmark"></i>
             </Link>
             <button
-              className="bg-background rounded-2xl p-5 flex items-center gap-x-2"
+              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2"
               to="https://github.com/vitessio/arewefastyet"
               target="__blank"
             >
@@ -40,7 +40,7 @@ export default function Hero() {
         </div>
       </div>
       <div className="basis-1/3 flex justify-start items-center">
-        <img src="/logo.png" alt="logo" className="w-11/12" />
+        <img src="/logo.png" alt="logo" className="w-11/12" style={{filter : 'drop-shadow(10px 10px 20px rgb(var(--color-primary))'}} />
       </div>
     </section>
   );
