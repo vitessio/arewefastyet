@@ -42,4 +42,10 @@
   .absolute-cover {
     @apply absolute top-0 left-0 w-full h-full;
   }
+
+  .counter {
+    transition: --num 4s ease-out;
+    counter-set: num var(--num);
+    @apply after:content-[counter(num)];
+  }
 }

@@ -1,0 +1,7 @@
+/* This file mut contain all directives which are unrelated to Tailwind. like @keyframes or @property */
+
+@property --num {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}

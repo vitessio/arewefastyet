@@ -24,6 +24,7 @@ import PreviousExe from "../../components/StatusComponents/PreviousExecutions/Pr
 import ExeQueue from "../../components/StatusComponents/ExecutionQueue/ExeQueue";
 import PreviousExeResMobile from "../../components/StatusComponents/PreviousExeResponsiveMobile/PreviousExeResMobile";
 import PreviousExeResTablet from "../../components/StatusComponents/PreviousExecutionResponsiveTablet/PreviousExeResTablet";
+import Hero from "./components/Hero";
 
 export default function StatusPage() {
   const {
@@ -34,62 +35,15 @@ export default function StatusPage() {
   const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
     `${import.meta.env.VITE_API_URL}recent`
   );
-  const { data: dataStatusStats } = useApiCall(
-    `${import.meta.env.VITE_API_URL}status/stats`
-  );
 
   return (
     <div className="status">
-      <article className="flex h-screen items-center p-page">
-        <div className="flex basis-1/2 flex-col">
-          <h2 className="text-8xl text-primary">Status</h2>
-          <p className="my-6 leading-loose">
-            Arewefastyet has a single execution queue, each element in the queue
-            is executed one after the other. In the status page, we can see the
-            content of the execution queue, along with the 50 last executions.
-            Each execution has a status that can be either: <b>started</b>,{" "}
-            <b>failed</b> or <b>finished</b>. When a benchmark is marked as{" "}
-            <b>finished</b> it means that it successfully finished.
-          </p>
-        </div>
-
-        <div className="flex-1 flex flex-col items-center">
-          <div className="flex flex-col gap-y-8">
-            <div className="">
-              <CountUp
-                start={0}
-                end={dataStatusStats.Total}
-                style={{ fontSize: "5rem", color: "#E77002" }}
-                duration={3}
-              />
-              <p className="countUp__title">Total Benchmarks</p>
-            </div>
-            <div className="">
-              <CountUp
-                start={0}
-                end={dataStatusStats.Finished}
-                style={{ fontSize: "5rem", color: "#E77002" }}
-                duration={3}
-              />
-              <p className="countUp__title">Successful benchmarks</p>
-            </div>
-            <div className="">
-              <CountUp
-                start={0}
-                end={dataStatusStats.Last30Days}
-                style={{ fontSize: "5rem", color: "#E77002" }}
-                duration={3}
-              />
-              <p className="countUp__title">Total Benchmarks (last 30 days)</p>
-            </div>
-          </div>
-        </div>
-      </article>
-      <figure className="line"></figure>
+      <Hero />
+      <div className="p-page"><div className="border-front border" /></div>
 
       {/* EXECUTION QUEUE  */}
       {isLoadingQueue ? (
-        <div className="loadingSpinner">
+        <div className="flex justify-center items-center m-20">
           <RingLoader loading={isLoadingQueue} color="#E77002" size={300} />
         </div>
       ) : dataQueue.length > 0 ? (
