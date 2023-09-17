@@ -18,7 +18,6 @@ import React from 'react';
 import { Routes,Route } from 'react-router-dom';
 
 
-import Home from './Home/Home';
 import Status from './Status/Status';
 import Error from '../utils/Error/Error';
 import Layout from '../pages/Layout'
@@ -30,14 +29,15 @@ import MacroQueriesCompare from './MacroQueriesCompare/MacroQueriesCompare';
 import Compare from './Compare/Compare';
 import PR from './PR/PR';
 import SinglePR from './SinglePR/SinglePR';
+import HomePage from './HomePage/HomePage';
 
 const PublicRoute = () => {
     return (
         <Routes>
         <Route element={<Layout/>}>
-            <Route index element={<Home/>}/>
+            <Route index element={<HomePage/>}/>
 
-            <Route path='/home' element={<Home/>}/>
+            <Route path='/home' element={<HomePage/>}/>
             <Route path='/status' element={<Status/>}/>
             <Route path='/Daily' element={<Daily/>}/>
             <Route path='/search' element={<Search/>}/>
