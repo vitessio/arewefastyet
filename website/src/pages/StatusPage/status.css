@@ -1,0 +1,177 @@
+/*
+Copyright 2023 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+.status {
+  padding: 0px 50px 50px 50px;
+  min-height: 100vh;
+  max-width: 1500px;
+  margin: auto;
+}
+
+/*STATUS TOP*/
+
+.status__top {
+  margin-top: 100px;
+  align-items: center;
+}
+
+.status__top__text {
+  width: 50%;
+  margin-right: 200px;
+  height: 500px;
+}
+
+.status__top__text h2 {
+  font-size: 5rem;
+  font-weight: 100;
+  margin-bottom: 50px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.status__top__text span {
+  width: 100%;
+  line-height: 40px;
+  text-align: justify;
+  display: block;
+}
+.statusStats {
+  min-width: 300px;
+  height: 500px;
+}
+
+.status h3 {
+  font-size: 2rem;
+  font-weight: 200;
+  margin-bottom: 50px;
+  text-align: center;
+}
+.countUp__title {
+  margin-bottom: 50px;
+  font-size: 1.2rem;
+}
+
+.hiddenDesktop {
+  display: none;
+}
+
+/*PREVIOUS EXECUTIONS*/
+
+.previousExe__top {
+  justify-content: space-between;
+}
+.previousExe__top__line {
+  border: #b5adad 1px solid;
+  margin-top: 10px;
+}
+.previousExe__top span {
+  text-align: center;
+  font-weight: bold;
+}
+
+/* EXECUTION QUEUE */
+
+.queue {
+  margin-bottom: 200px;
+  text-align: center;
+}
+.queue__top__line {
+  border: #b5adad 1px solid;
+  margin-top: 10px;
+}
+.queue__top {
+  justify-content: space-around;
+}
+
+/* SPINNER */
+
+.loadingSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 100px 0px;
+}
+
+/* MEDIA QUERIES FOR TABLETS */
+@media only screen and (max-width: 1225px) {
+  .status {
+    padding: 0px 20px 50px 20px;
+  }
+  .status__top{
+    flex-direction: column;
+  }
+  .status__top__text{
+    height: 300px;
+  }
+  .status__top__text h2 {
+    font-size: 4rem;
+  }
+  .statusStats {
+    width: 300px;
+  }
+  .hiddenDesktop {
+    display: block;
+  }
+  .hiddenTablet {
+    display: none;
+  }
+  .statusStats {
+    text-align: center;
+  }
+
+  .grey--background {
+    background-color: #343a40;
+  }
+
+  /* EXECUTION QUEUE */
+
+  .queue {
+    margin-bottom: 100px;
+    text-align: center;
+  }
+  .queue__top__line {
+    border: #b5adad 1px solid;
+    margin-top: 10px;
+  }
+  .queue__top {
+    justify-content: space-around;
+  }
+
+  /* SPINNER */
+
+  .loadingSpinner {
+    display: flex;
+    justify-content: center;
+  }
+  .status__top__text {
+    width: 100%;
+    margin-right: 0px;
+    text-align: center;
+  }
+  .statusStats {
+    margin-top: 50px;
+  }
+}
+
+/* MEDIA QUERIES FOR MOBILE */
+@media only screen and (max-width: 767px) {
+  .hiddenMobile {
+    display: none;
+  }
+  .status__top__text{
+    height: 500px;
+  }
+}
