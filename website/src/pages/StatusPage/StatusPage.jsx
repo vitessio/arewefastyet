@@ -16,15 +16,11 @@ limitations under the License.
 
 import React from "react";
 import RingLoader from "react-spinners/RingLoader";
-import { v4 as uuidv4 } from "uuid";
 import useApiCall from "../../utils/Hook";
-import CountUp from "react-countup";
 
-import PreviousExe from "../../components/StatusComponents/PreviousExecutions/PreviousExe";
-import ExeQueue from "../../components/StatusComponents/ExecutionQueue/ExeQueue";
-import PreviousExeResMobile from "../../components/StatusComponents/PreviousExeResponsiveMobile/PreviousExeResMobile";
-import PreviousExeResTablet from "../../components/StatusComponents/PreviousExecutionResponsiveTablet/PreviousExeResTablet";
 import Hero from "./components/Hero";
+import ExecutionQueue from "./components/PreviousExecutions";
+import PreviousExecutions from "./components/PreviousExecutions";
 
 export default function StatusPage() {
   const {
@@ -37,76 +33,36 @@ export default function StatusPage() {
   );
 
   return (
-    <div className="status">
+    <>
       <Hero />
-      <div className="p-page"><div className="border-front border" /></div>
 
-      {/* EXECUTION QUEUE  */}
-      {isLoadingQueue ? (
-        <div className="flex justify-center items-center m-20">
-          <RingLoader loading={isLoadingQueue} color="#E77002" size={300} />
-        </div>
-      ) : dataQueue.length > 0 ? (
-        <>
-          <article className="queue">
-            <h3>Executions Queue</h3>
-            <div className="queue__top flex">
-              <span className="width--6em">SHA</span>
-              <span className="width--11em"> Source</span>
-              <span className="width--11em">Type</span>
-              <span className="width--5em">Pull Request</span>
-            </div>
-            <figure className="queue__top__line"></figure>
-            {dataQueue.map((queue, index) => {
-              return <ExeQueue data={queue} key={index} />;
-            })}
-          </article>
-          <figure className="line"></figure>
-        </>
-      ) : null}
+      <figure className="p-page w-full">
+        <div className="border-front border" />
+      </figure>
+
+      {/* EXECUTION QUEUE */}
+      {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
+        <ExecutionQueue data={dataQueue} />
+      )}
 
       {/* PREVIOUS EXECUTIONS */}
+      {!isLoadingPreviousExe &&
+        dataPreviousExe &&
+        dataPreviousExe.length > 0 && (
+          <PreviousExecutions data={dataPreviousExe} />
+        )}
 
-      {isLoadingPreviousExe ? (
-        <div className="loadingSpinner">
+      {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}
+      {(isLoadingPreviousExe || isLoadingQueue) && (
+        <div className="flex justify-center w-full my-16">
           <RingLoader
-            loading={isLoadingPreviousExe}
+            loading={isLoadingPreviousExe || isLoadingQueue}
             color="#E77002"
             size={300}
           />
         </div>
-      ) : dataPreviousExe.length > 0 ? (
-        <article className="previousExe">
-          <h3> Previous Executions</h3>
-          <div className="previousExe__top flex">
-            <span className="width--6em hiddenMobile hiddenTablet">UUID</span>
-            <span className="width--6em hiddenMobile">SHA</span>
-            <span className="width--11em">Source</span>
-            <span className="width--11em hiddenMobile">Started</span>
-            <span className="width--11em hiddenMobile">Finished</span>
-            <span className="width--11em hiddenMobile hiddenTablet">Type</span>
-            <span className="width--5em hiddenMobile hiddenTablet">PR</span>
-            <span className="width--6em hiddenMobile hiddenTablet">
-              Go version
-            </span>
-            <span className="width--6em">Status</span>
-            <span className="hiddenDesktop width--3em">More</span>
-          </div>
-          <figure className="previousExe__top__line"></figure>
-
-          {dataPreviousExe.map((previousExe, index) => {
-            return (
-              <React.Fragment key={uuidv4()}>
-                <PreviousExe data={previousExe} key={index} />
-                <PreviousExeResMobile data={previousExe} key={uuidv4()} />
-                <PreviousExeResTablet data={previousExe} key={uuidv4()} />
-              </React.Fragment>
-            );
-          })}
-        </article>
-      ) : null}
-
+      )}
       {errorQueue ? <div className="apiError">{errorQueue}</div> : null}
-    </div>
+    </>
   );
 }
