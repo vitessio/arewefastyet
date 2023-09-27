@@ -43,7 +43,7 @@
     gateway_targets: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (gateway.port | default(15001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
     vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port | default(15000) | string )) }}{% endfor -%}{{ targets }}"
     node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
-    prometheus_skip_install: true
+    prometheus_skip_install: false
     prometheus_targets:
       tablets:
         - targets: '{{ tablet_targets }}'
