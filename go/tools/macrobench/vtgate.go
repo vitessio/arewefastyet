@@ -42,6 +42,8 @@ type VTGateQueryPlanValue struct {
 	RowsReturned int // Total number of rows
 	RowsAffected int // Total number of rows
 	Errors       int // Total number of errors
+
+	TablesUsed interface{}
 }
 
 type VTGateQueryPlan struct {
@@ -158,24 +160,22 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	}
 	defer resp.Body.Close()
 
-	var response []VTGateQueryPlan
+	var response map[string]VTGateQueryPlanValue
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
-	planMap := VTGateQueryPlanMap{}
-	for _, plan := range response {
+	for key, plan := range response {
 		// keeping only select statements
-		if strings.HasPrefix(plan.Key, "select") {
-			jsonPlan, err := json.MarshalIndent(plan.Value.Instructions, "", "\t")
+		if strings.HasPrefix(key, "select") {
+			jsonPlan, err := json.MarshalIndent(plan.Instructions, "", "\t")
 			if err != nil {
 				return nil, err
 			}
-			plan.Value.Instructions = string(jsonPlan)
-			planMap[plan.Key] = plan.Value
+			plan.Instructions = string(jsonPlan)
 		}
 	}
-	return planMap, nil
+	return response, nil
 }
 
 func getVTGatesQueryPlans(ports []string) (VTGateQueryPlanMap, error) {
@@ -230,7 +230,7 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 		case []byte:
 			plan.Value.Instructions = string(p)
 		}
-		
+
 		// Remove all comments from the query
 		// This prevents the query from not match across two versions
 		// of Vitess where we changed query hints and added comments
