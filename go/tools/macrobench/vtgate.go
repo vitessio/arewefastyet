@@ -163,7 +163,7 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	var response map[string]VTGateQueryPlanValue
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
-		return nil, err
+		return getOldVTGateQueryPlans(resp)
 	}
 	for key, plan := range response {
 		// keeping only select statements
@@ -176,6 +176,27 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 		}
 	}
 	return response, nil
+}
+
+func getOldVTGateQueryPlans(resp *http.Response) (VTGateQueryPlanMap, error) {
+	var response []VTGateQueryPlan
+	err := json.NewDecoder(resp.Body).Decode(&response)
+	if err != nil {
+		return nil, err
+	}
+	planMap := VTGateQueryPlanMap{}
+	for _, plan := range response {
+		// keeping only select statements
+		if strings.HasPrefix(plan.Key, "select") {
+			jsonPlan, err := json.MarshalIndent(plan.Value.Instructions, "", "\t")
+			if err != nil {
+				return nil, err
+			}
+			plan.Value.Instructions = string(jsonPlan)
+			planMap[plan.Key] = plan.Value
+		}
+	}
+	return planMap, nil
 }
 
 func getVTGatesQueryPlans(ports []string) (VTGateQueryPlanMap, error) {
