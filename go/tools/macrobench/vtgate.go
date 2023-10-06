@@ -19,9 +19,11 @@
 package macrobench
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -160,10 +162,15 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	}
 	defer resp.Body.Close()
 
-	var response map[string]VTGateQueryPlanValue
-	err = json.NewDecoder(resp.Body).Decode(&response)
+	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return getOldVTGateQueryPlans(resp)
+		return nil, err
+	}
+
+	var response map[string]VTGateQueryPlanValue
+	err = json.NewDecoder(bytes.NewReader(respBytes)).Decode(&response)
+	if err != nil {
+		return getOldVTGateQueryPlans(respBytes)
 	}
 	for key, plan := range response {
 		// keeping only select statements
@@ -178,9 +185,9 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	return response, nil
 }
 
-func getOldVTGateQueryPlans(resp *http.Response) (VTGateQueryPlanMap, error) {
+func getOldVTGateQueryPlans(respBytes []byte) (VTGateQueryPlanMap, error) {
 	var response []VTGateQueryPlan
-	err := json.NewDecoder(resp.Body).Decode(&response)
+	err := json.NewDecoder(bytes.NewReader(respBytes)).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
