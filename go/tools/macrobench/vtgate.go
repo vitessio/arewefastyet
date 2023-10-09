@@ -19,9 +19,11 @@
 package macrobench
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -42,6 +44,8 @@ type VTGateQueryPlanValue struct {
 	RowsReturned int // Total number of rows
 	RowsAffected int // Total number of rows
 	Errors       int // Total number of errors
+
+	TablesUsed interface{}
 }
 
 type VTGateQueryPlan struct {
@@ -158,8 +162,32 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	}
 	defer resp.Body.Close()
 
+	respBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response map[string]VTGateQueryPlanValue
+	err = json.NewDecoder(bytes.NewReader(respBytes)).Decode(&response)
+	if err != nil {
+		return getOldVTGateQueryPlans(respBytes)
+	}
+	for key, plan := range response {
+		// keeping only select statements
+		if strings.HasPrefix(key, "select") {
+			jsonPlan, err := json.MarshalIndent(plan.Instructions, "", "\t")
+			if err != nil {
+				return nil, err
+			}
+			plan.Instructions = string(jsonPlan)
+		}
+	}
+	return response, nil
+}
+
+func getOldVTGateQueryPlans(respBytes []byte) (VTGateQueryPlanMap, error) {
 	var response []VTGateQueryPlan
-	err = json.NewDecoder(resp.Body).Decode(&response)
+	err := json.NewDecoder(bytes.NewReader(respBytes)).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +258,7 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 		case []byte:
 			plan.Value.Instructions = string(p)
 		}
-		
+
 		// Remove all comments from the query
 		// This prevents the query from not match across two versions
 		// of Vitess where we changed query hints and added comments
