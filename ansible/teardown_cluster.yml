@@ -14,6 +14,11 @@
   hosts:
     - all
   tasks:
+    - name: Clean host
+      include_role:
+        name: host
+        tasks_from: clean
+
     - name: Stop sysbench
       include_role:
         name: sysbench
