@@ -113,6 +113,8 @@ func Run(mabcfg Config) error {
 		}
 	}
 
+	fmt.Println("Step insert is done")
+
 	// Prepare
 	if mabcfg.WorkingDirectory == "" {
 		mabcfg.WorkingDirectory, _ = os.Getwd()
@@ -120,9 +122,12 @@ func Run(mabcfg Config) error {
 	mabcfg.parseIntoMap(prefixMacroBenchSysbenchConfig)
 	newSteps := skipSteps(steps, mabcfg.SkipSteps)
 
+	fmt.Println("Step prepare is done")
+
 	// Execution
 	var resStr []byte
 	for _, step := range newSteps {
+		fmt.Printf("Step %s begins\n", step)
 		args := buildSysbenchArgString(mabcfg.M, step.Name)
 		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
 		command := exec.Command(mabcfg.SysbenchExec, args...)
@@ -131,6 +136,7 @@ func Run(mabcfg Config) error {
 		if err != nil {
 			return fmt.Errorf("%s:\n%s", err.Error(), string(out))
 		}
+		fmt.Printf("Step %s is done\n", step)
 		if step.Name == stepRun {
 			resStr = out
 		}
