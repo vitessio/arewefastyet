@@ -70,7 +70,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 		return nErr
 	}
 
-	timeout := 2 * time.Hour
+	timeout := 1 * time.Hour
 	if identifier.BenchmarkType == "micro" {
 		timeout = 4 * time.Hour
 	}
