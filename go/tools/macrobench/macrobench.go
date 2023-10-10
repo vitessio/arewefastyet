@@ -130,6 +130,7 @@ func Run(mabcfg Config) error {
 		fmt.Printf("Step %s begins\n", step)
 		args := buildSysbenchArgString(mabcfg.M, step.Name)
 		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
+		fmt.Println("Execute:", mabcfg.SysbenchExec, strings.Join(args, " "))
 		command := exec.Command(mabcfg.SysbenchExec, args...)
 		command.Dir = mabcfg.WorkingDirectory
 		out, err := command.Output()
