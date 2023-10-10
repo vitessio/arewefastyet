@@ -41,12 +41,16 @@ function HowItWorksCard(props) {
   const cardRef = useRef();
   const glowRef = useRef();
 
+  function glowWithMouse(event) {
+    const cardRect = cardRef.current.getBoundingClientRect();
+    glowRef.current.style.setProperty("--x", `${event.x - cardRect.x}px`);
+    glowRef.current.style.setProperty("--y", `${event.y - cardRect.y}px`);
+  }
+
   useEffect(() => {
-    window.addEventListener("mousemove", (event) => {
-      const cardRect = cardRef.current.getBoundingClientRect();
-      glowRef.current.style.setProperty("--x", `${event.x - cardRect.x}px`);
-      glowRef.current.style.setProperty("--y", `${event.y - cardRect.y}px`);
-    });
+    window.addEventListener("mousemove", glowWithMouse);
+
+    return () => window.removeEventListener("mousemove", glowWithMouse);
   }, []);
 
   return (
