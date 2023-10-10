@@ -14,46 +14,47 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
-import { Routes,Route } from 'react-router-dom';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-
-import Status from './Status/Status';
-import Error from '../utils/Error/Error';
-import Layout from '../pages/Layout'
-import Macro from './Macro/Macro';
-import Micro from './Micro/Micro';
-import Search from './Search/Search';
-import Daily from './Daily/Daily'
-import MacroQueriesCompare from './MacroQueriesCompare/MacroQueriesCompare';
-import Compare from './Compare/Compare';
-import PR from './PR/PR';
-import SinglePR from './SinglePR/SinglePR';
-import HomePage from './HomePage/HomePage';
+// import Status from './Status/Status';
+import Error from "../utils/Error/Error";
+import Layout from "../pages/Layout";
+import Macro from "./Macro/Macro";
+import Micro from "./Micro/Micro";
+import Search from "./Search/Search";
+import MacroQueriesCompare from "./MacroQueriesCompare/MacroQueriesCompare";
+import Compare from "./Compare/Compare";
+import PR from "./PR/PR";
+import SinglePR from "./SinglePR/SinglePR";
+import HomePage from "./HomePage/HomePage";
+import StatusPage from "./StatusPage/StatusPage";
+import DailyPage from "./DailyPage/DailyPage";
 
 const PublicRoute = () => {
-    return (
-        <Routes>
-        <Route element={<Layout/>}>
-            <Route index element={<HomePage/>}/>
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<HomePage />} />
 
-            <Route path='/home' element={<HomePage/>}/>
-            <Route path='/status' element={<Status/>}/>
-            <Route path='/Daily' element={<Daily/>}/>
-            <Route path='/search' element={<Search/>}/>
-            <Route path='/compare' element={<Compare/>}/>
-            <Route path='/macro' element={<Macro/>}/>
-            <Route path='/macrobench/queries/compare' element={<MacroQueriesCompare/>}/>
-            <Route path='/micro' element={<Micro/>}/>
-            <Route path='/pr' element={<PR/>}/>
-            <Route path='/pr/:pull_nb' element={<SinglePR/>}/>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/status" element={<StatusPage />} />
+        <Route path="/Daily" element={<DailyPage />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/compare" element={<Compare />} />
+        <Route path="/macro" element={<Macro />} />
+        <Route
+          path="/macrobench/queries/compare"
+          element={<MacroQueriesCompare />}
+        />
+        <Route path="/micro" element={<Micro />} />
+        <Route path="/pr" element={<PR />} />
+        <Route path="/pr/:pull_nb" element={<SinglePR />} />
 
-
-            <Route path='*' element={<Error/>}/>
-
-         </Route> 
-     </Routes>
-    );
+        <Route path="*" element={<Error />} />
+      </Route>
+    </Routes>
+  );
 };
 
 export default PublicRoute;

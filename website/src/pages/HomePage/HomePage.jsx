@@ -14,9 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useContext } from "react";
+import React from "react";
 
-import { AppContext } from "../../AppContext";
 import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
 import MicroAndMacro from "./components/MicroAndMacro";
