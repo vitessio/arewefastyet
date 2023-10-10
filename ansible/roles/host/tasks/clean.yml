@@ -16,6 +16,8 @@
   block:
     - name: Remove tmp directories
       shell: |
-        rm -Rf /tmp/*
+        rm -Rf /tmp/
+        mkdir /tmp
+        chmod 1777 /tmp
         rm -Rf /root/.ansible/tmp/*
       changed_when: false
