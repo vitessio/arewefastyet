@@ -6,7 +6,7 @@ web-cron-schedule-tags: "*/1 * * * *"
 
 web-port: 8080
 web-benchmark-config-path: ./config/benchmarks/
-web-source-exclude-filter: "cron_tags_14.0.0-rc1,cron_tags_14.0.4"
+web-source-exclude-filter: "cron_tags_14.0.0-rc1,cron_tags_14.0.4,cron_tags_18.0.0-rc1"
 web-mode: "production"
 web-vitess-path: /tmp
 web-pr-label-trigger: '"Benchmark me"'
