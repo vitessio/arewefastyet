@@ -240,6 +240,7 @@ func (s *Server) pullRequestsCronHandler() {
 		}
 	}
 	for _, element := range elements {
+		s.removePRFromQueue(element)
 		s.addToQueue(element)
 	}
 }
