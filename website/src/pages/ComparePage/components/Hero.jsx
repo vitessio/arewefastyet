@@ -2,7 +2,7 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 
 export default function Hero(props) {
-  const { gitRef, setGitRef } = props;
+  const { setGitRef } = props;
 
   return (
     <div className="flex flex-col h-[35vh] justify-center items-center">

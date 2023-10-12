@@ -27,19 +27,15 @@ import Hero from "./components/Hero";
 
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
-  // The following code sets up state variables `gitRef.left` and `gitRef.right` using the `useState` hook.
-  // The values of these variables are based on the query parameters extracted from the URL.
 
-  // If the 'ltag' query parameter is null or undefined, set the initial value of `gitRef.left` to 'Left',
-  // otherwise, use the value of the 'ltag' query parameter.
   const [gitRef, setGitRef] = useState({
     left: urlParams.get("ltag") || "Left",
     right: urlParams.get("rtag") || "Right",
   });
+
   const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(
     urlParams.get("ptagM") || "0"
   );
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const {
     data: dataMacrobench,
@@ -49,15 +45,13 @@ export default function Compare() {
   } = useApiCall(
     `${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${
       gitRef.right
-    }&ltag=${gitRef.left}`,
-    [isFormSubmitted]
+    }&ltag=${gitRef.left}`
   );
 
   const { data: dataMicrobench } = useApiCall(
     `${import.meta.env.VITE_API_URL}microbench/compare?rtag=${
       gitRef.right
-    }&ltag=${gitRef.left}`,
-    [isFormSubmitted]
+    }&ltag=${gitRef.left}`
   );
 
   // Changing the URL relative to the reference of a selected benchmark.
@@ -70,125 +64,107 @@ export default function Compare() {
     );
   }, [gitRef.left, gitRef.right, currentSlideIndexMobile]);
 
-  const handleInputChangeLeft = (e) => {
-    setgitRef.left(e.target.value);
-  };
-
-  const handleInputChangeRight = (e) => {
-    setgitRef.right(e.target.value);
-  };
-
   const handleSlideChange = (swiper) => {
     setCurrentSlideIndexMobile(swiper.realIndex);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsFormSubmitted((prevState) => !prevState);
-  };
-
   return (
-    <div className="compare">
-      <div className="compare__top">
-        <Hero
-          gitRef={gitRef}
-          setGitRef={setGitRef}
-          handleSubmit={handleSubmit}
-        />
+    <>
+      <Hero setGitRef={setGitRef} />
+      {macrobenchError && <div className="apiError">{macrobenchError}</div>}
+      
+      {isMacrobenchLoading && (
+        <div className="loadingSpinner">
+          <RingLoader
+            loading={isMacrobenchLoading}
+            color="#E77002"
+            size={300}
+          />
+        </div>
+      )}
 
-        {macrobenchError ? (
-          <div className="apiError">{macrobenchError}</div>
-        ) : isMacrobenchLoading ? (
-          <div className="loadingSpinner">
-            <RingLoader
-              loading={isMacrobenchLoading}
-              color="#E77002"
-              size={300}
-            />
-          </div>
-        ) : (
-          <>
-            <h3 className="compare__macrobench__title">Macro Benchmarks</h3>
-            <div className="compare__macrobench__Container flex">
-              <div className="compare__carousel__container">
-                {dataMacrobench.map((macro, index) => {
-                  return (
-                    <div key={index}>
-                      <Macrobench
-                        data={macro}
-                        textLoading={macroTextLoading}
-                        gitRefLeft={gitRef.left.slice(0, 8)}
-                        gitRefRight={gitRef.right.slice(0, 8)}
-                        swiperSlide={SwiperSlide}
-                        commitHashLeft={gitRef.left}
-                        commitHashRight={gitRef.right}
-                      />
-                      <MacrobenchMobile
-                        data={macro}
-                        gitRefLeft={gitRef.left.slice(0, 8)}
-                        gitRefRight={gitRef.right.slice(0, 8)}
-                        swiperSlide={SwiperSlide}
-                        textLoading={macroTextLoading}
-                        handleSlideChange={handleSlideChange}
-                        setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
-                        currentSlideIndexMobile={currentSlideIndexMobile}
-                        commitHashLeft={gitRef.left}
-                        commitHashRight={gitRef.right}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="compare__micro__container">
-              <h3>Micro benchmarks</h3>
-              <div className="micro__thead space--between">
-                <span className="width--12em">Package</span>
-                <span className="width--14em">Benchmark Name</span>
-                <span className="width--18em hiddenMobile">
-                  Number of Iterations
-                </span>
-                <span className="width--18em hiddenTablet">Time/op</span>
-                <span className="width--6em">More</span>
-              </div>
-              <figure className="micro__thead__line"></figure>
-              <div className="space--between--flex data__top hiddenMobile">
-                <div className="width--12em"></div>
-                <div className="width--14em"></div>
-                <div className="width--18em space--between--flex">
-                  <span className="width--100">{gitRef.left.slice(0, 8)}</span>
-                  <span className="width--100">{gitRef.right.slice(0, 8)}</span>
-                  <span className="width--100">Diff %</span>
-                </div>
-                <div className="width--18em space--between--flex hiddenTablet">
-                  <span className="width--100">{gitRef.left.slice(0, 8)}</span>
-                  <span className="width--100">{gitRef.right.slice(0, 8)}</span>
-                  <span className="width--100">Diff %</span>
-                </div>
-                <div className="width--6em"></div>
-              </div>
-              {dataMicrobench.length > 0 &&
-                dataMicrobench[0].PkgName !== "" &&
-                dataMicrobench[0].Name !== "" &&
-                dataMicrobench[0].SubBenchmarkName !== "" &&
-                dataMicrobench.map((micro, index) => {
-                  const isEvenIndex = index % 2 === 0;
-                  const backgroundGrey = isEvenIndex ? "grey--background" : "";
-                  return (
-                    <Microbench
-                      data={micro}
-                      key={index}
-                      className={backgroundGrey}
+      {dataMacrobench && dataMicrobench && (
+        <section className="flex flex-col items-center">
+          <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
+          <div className="compare__macrobench__Container flex">
+            <div className="compare__carousel__container">
+              {dataMacrobench.map((macro, index) => {
+                return (
+                  <div key={index}>
+                    <Macrobench
+                      data={macro}
+                      textLoading={macroTextLoading}
                       gitRefLeft={gitRef.left.slice(0, 8)}
                       gitRefRight={gitRef.right.slice(0, 8)}
+                      swiperSlide={SwiperSlide}
+                      commitHashLeft={gitRef.left}
+                      commitHashRight={gitRef.right}
                     />
-                  );
-                })}
+                    <MacrobenchMobile
+                      data={macro}
+                      gitRefLeft={gitRef.left.slice(0, 8)}
+                      gitRefRight={gitRef.right.slice(0, 8)}
+                      swiperSlide={SwiperSlide}
+                      textLoading={macroTextLoading}
+                      handleSlideChange={handleSlideChange}
+                      setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
+                      currentSlideIndexMobile={currentSlideIndexMobile}
+                      commitHashLeft={gitRef.left}
+                      commitHashRight={gitRef.right}
+                    />
+                  </div>
+                );
+              })}
             </div>
-          </>
-        )}
-      </div>
-    </div>
+          </div>
+
+          <div className="compare__micro__container">
+            <h3>Micro benchmarks</h3>
+            <div className="micro__thead space--between">
+              <span className="width--12em">Package</span>
+              <span className="width--14em">Benchmark Name</span>
+              <span className="width--18em hiddenMobile">
+                Number of Iterations
+              </span>
+              <span className="width--18em hiddenTablet">Time/op</span>
+              <span className="width--6em">More</span>
+            </div>
+            <figure className="micro__thead__line"></figure>
+            <div className="space--between--flex data__top hiddenMobile">
+              <div className="width--12em"></div>
+              <div className="width--14em"></div>
+              <div className="width--18em space--between--flex">
+                <span className="width--100">{gitRef.left.slice(0, 8)}</span>
+                <span className="width--100">{gitRef.right.slice(0, 8)}</span>
+                <span className="width--100">Diff %</span>
+              </div>
+              <div className="width--18em space--between--flex hiddenTablet">
+                <span className="width--100">{gitRef.left.slice(0, 8)}</span>
+                <span className="width--100">{gitRef.right.slice(0, 8)}</span>
+                <span className="width--100">Diff %</span>
+              </div>
+              <div className="width--6em"></div>
+            </div>
+            {dataMicrobench.length > 0 &&
+              dataMicrobench[0].PkgName !== "" &&
+              dataMicrobench[0].Name !== "" &&
+              dataMicrobench[0].SubBenchmarkName !== "" &&
+              dataMicrobench.map((micro, index) => {
+                const isEvenIndex = index % 2 === 0;
+                const backgroundGrey = isEvenIndex ? "grey--background" : "";
+                return (
+                  <Microbench
+                    data={micro}
+                    key={index}
+                    className={backgroundGrey}
+                    gitRefLeft={gitRef.left.slice(0, 8)}
+                    gitRefRight={gitRef.right.slice(0, 8)}
+                  />
+                );
+              })}
+          </div>
+        </section>
+      )}{" "}
+    </>
   );
 }
