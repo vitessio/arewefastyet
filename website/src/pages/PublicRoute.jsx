@@ -24,8 +24,8 @@ import Macro from "./Macro/Macro";
 import Micro from "./Micro/Micro";
 import Search from "./Search/Search";
 import MacroQueriesCompare from "./MacroQueriesCompare/MacroQueriesCompare";
-import Compare from "./Compare/Compare";
-import PR from "./PR/PR";
+import ComparePage from "./ComparePage/ComparePage";
+import PRPage from "./PRPage/PRPage";
 import SinglePR from "./SinglePR/SinglePR";
 import HomePage from "./HomePage/HomePage";
 import StatusPage from "./StatusPage/StatusPage";
@@ -41,14 +41,14 @@ const PublicRoute = () => {
         <Route path="/status" element={<StatusPage />} />
         <Route path="/Daily" element={<DailyPage />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/compare" element={<Compare />} />
+        <Route path="/compare" element={<ComparePage />} />
         <Route path="/macro" element={<Macro />} />
         <Route
           path="/macrobench/queries/compare"
           element={<MacroQueriesCompare />}
         />
         <Route path="/micro" element={<Micro />} />
-        <Route path="/pr" element={<PR />} />
+        <Route path="/pr" element={<PRPage />} />
         <Route path="/pr/:pull_nb" element={<SinglePR />} />
 
         <Route path="*" element={<Error />} />

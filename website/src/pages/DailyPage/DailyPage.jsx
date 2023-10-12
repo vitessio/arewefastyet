@@ -52,6 +52,13 @@ export default function DailyPage() {
     navigate(`?type=${benchmarkType}`);
   }, [benchmarkType]);
 
+  useEffect(()=>{
+    console.log(dataDailySummary)
+    console.log("\n\ndataDaily")
+    console.log(dataDaily)
+    console.log("\n\ndataDailySummary")
+  },[dataDaily,dataDailySummary])
+
   const TPSData = [
     {
       id: "TPS",
@@ -239,7 +246,7 @@ export default function DailyPage() {
 
       {dataDaily && dataDailySummary && (
         <>
-          <div className="flex p-page ">
+          <div className="flex p-page">
             {dataDailySummary.map((dailySummary, index) => {
               return (
                 <DailySummary

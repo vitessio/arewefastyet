@@ -13,6 +13,10 @@
     @apply m-0 p-0;
   }
 
+  :root {
+    @apply duration-700;
+  }
+
   /* Declaring Themes */
   :root {
     --color-primary: 231 112 2;

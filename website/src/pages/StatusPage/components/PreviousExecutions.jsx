@@ -28,9 +28,9 @@ export default function PreviousExecutions(props) {
 
       newData["Source"] = entry.source;
 
-      newData["Started"] = formatDate(entry.started_at);
+      newData["Started"] = formatDate(entry.started_at) || "N/A";
 
-      newData["Finished"] = formatDate(entry.finished_at);
+      newData["Finished"] = formatDate(entry.finished_at) || "In Progress";
 
       newData["Type"] = entry.type_of;
 

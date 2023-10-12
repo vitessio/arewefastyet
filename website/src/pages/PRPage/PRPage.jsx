@@ -18,8 +18,6 @@ import React, { useState, useEffect } from "react";
 import useApiCall from "../../utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
-import "../PR/PR.css";
-
 import { errorApi } from "../../utils/Utils";
 import PRGitInfo from "../../components/PRcomponents/PRGitInfo";
 
