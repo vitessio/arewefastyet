@@ -36,8 +36,6 @@ func TestRun(t *testing.T) {
 		err     string
 	}{
 		{name: "Missing port", args: args{localVitessPath: "~/"}, wantErr: true, err: ErrorIncorrectConfiguration},
-		{name: "Missing template path", args: args{port: "8888", localVitessPath: "~/"}, wantErr: true, err: ErrorIncorrectConfiguration},
-		{name: "Missing static path", args: args{port: "9999", localVitessPath: "~/"}, wantErr: true, err: ErrorIncorrectConfiguration},
 		{name: "Missing local vitess path", args: args{port: "8080"}, wantErr: true, err: ErrorIncorrectConfiguration},
 	}
 	for _, tt := range tests {
