@@ -20,7 +20,7 @@ import PropTypes from "prop-types";
 import { fixed, formatByteForGB } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
 
-const SearchMacroDesktop = ({ data, gitRef }) => {
+export default function SearchMacro({ data, gitRef }) {
   return (
     <div className="flex flex-col border border-primary relative rounded-xl bg-foreground bg-opacity-5 shadow-xl">
       <div className="p-5">
@@ -146,7 +146,7 @@ const SearchMacroDesktop = ({ data, gitRef }) => {
       </table>
     </div>
   );
-};
+}
 
 function Row({ title, value }) {
   return (
@@ -198,5 +198,3 @@ SearchMacroDesktop.propTypes = {
     ])
   ).isRequired,
 };
-
-export default SearchMacroDesktop;

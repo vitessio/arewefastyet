@@ -20,7 +20,7 @@ import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
 
 import Hero from "./components/Hero";
-import SearchMacroDesktop from "./components/SearchMacroDesktop";
+import SearchMacro from "./components/SearchMacro";
 
 export default function SearchPage() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -60,11 +60,7 @@ export default function SearchPage() {
                 index
               ) {
                 return (
-                  <SearchMacroDesktop
-                    key={index}
-                    data={searchMacro}
-                    gitRef={gitRef}
-                  />
+                  <SearchMacro key={index} data={searchMacro} gitRef={gitRef} />
                 );
               })}
           </div>
