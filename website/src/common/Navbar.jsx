@@ -17,7 +17,7 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
-import Icon from "../../common/Icon";
+import Icon from "./Icon";
 
 const navItems = [
   { to: "/status", title: "Status" },
