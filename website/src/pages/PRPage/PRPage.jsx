@@ -1,3 +1,4 @@
+
 /*
 Copyright 2023 The Vitess Authors.
 
@@ -14,103 +15,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
+import Hero from "./components/Hero";
+
 import useApiCall from "../../utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
-import { errorApi } from "../../utils/Utils";
-import PRGitInfo from "../../components/PRcomponents/PRGitInfo";
+import PRTable from "./components/PRTable";
 
-const PR = () => {
-  const [prNumber, setPrNumber] = useState("");
-  const [dataPRInfo, setDataPRInfo] = useState([]);
-
+export default function PRPage() {
   const {
     data: dataPRList,
     isLoading: isPRListLoading,
     error: PRListError,
   } = useApiCall(`${import.meta.env.VITE_API_URL}pr/list`, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (prNumber === "") {
-        return;
-      }
-      try {
-        const responsePRInfo = await fetch(
-          `${import.meta.env.VITE_API_URL}pr/info/${prNumber}`
-        );
-
-        const jsonDataPRInfo = await responsePRInfo.json();
-        console.log(jsonDataPRInfo.Main);
-        setDataPRInfo(jsonDataPRInfo);
-
-        if (jsonDataPRInfo.Main) {
-          window.location.href = `/compare?ltag=${jsonDataPRInfo.Main}&rtag=${jsonDataPRInfo.PR}`;
-        }
-      } catch (error) {
-        console.log("Error while retrieving data from the API", error);
-        setError(errorApi);
-      }
-    };
-
-    fetchData();
-  }, [prNumber]);
-
   return (
-    <div className="pr">
-      <div className="pr__top justify--content">
-        <h2 className="header--title">Pull Request</h2>
-        <span className="header--text">
-          If a given Pull Request on <b>vitessio/vitess</b> is labelled with the <b>Benchmark me</b> label
-          the Pull Request will be handled and benchmark by arewefastyet. For each commit on the Pull Request
-          there will be two benchmarks: one on the Pull Request's HEAD and another on the base of the Pull Request.
-        </span>
-        <br></br>
-        <span className="header--text">
-          On this page you can find all benchmarked Pull Requests.
-        </span>
-      </div>
-      <figure className='line'></figure>
-      {PRListError ? (
-        <div className="apiError">{PRListError}</div>
-      ) : (
-        <>
-          {isPRListLoading ? (
-            <div className="PrLoading justify--content">
-              <RingLoader
-                loading={isPRListLoading}
-                color="#E77002"
-                size={300}
-              />
-            </div>
-          ) : (
-            <>
-              <div className="pr__sidebar">
-                <span className="pullnbTitle width--4em">#</span>
-                <span className="width--40 hidden--tablet">Title</span>
-                <span className="width--20 hidden--tablet">Author</span>
-                <span className="width--10em hidden--mobile">Opened At</span>
-                <span className="linkSidebar"></span>
-                <span className="hidden--desktop">More</span>
-              </div>
+    <>
+      <Hero />
 
-              <div className="pr__container justify--content">
-                {dataPRList.map((PRList, index) => {
-                  return (
-                    <PRGitInfo
-                      key={index}
-                      data={PRList}
-                    />
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </>
+      {isPRListLoading && (
+        <div className="flex justify-center w-full my-16">
+          <RingLoader loading={isPRListLoading} color="#E77002" size={300} />
+        </div>
       )}
-    </div>
-  );
-};
 
-export default PR;
+      {PRListError ? <div className="apiError">{PRListError}</div> : null}
+
+      {!isPRListLoading && dataPRList && (
+        <PRTable data={dataPRList} />
+      )}
+    </>
+  );
+}
