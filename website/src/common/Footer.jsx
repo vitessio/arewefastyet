@@ -16,7 +16,6 @@ limitations under the License.
 
 import React from "react";
 
-import "./footer.css";
 import {
   AiFillGithub,
   AiFillSlackCircle,

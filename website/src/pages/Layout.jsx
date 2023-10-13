@@ -18,8 +18,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { AppProvider } from "../AppContext";
 import Navbar from "../components/header/Navbar";
-import Footer from "../components/footer/Footer";
-import Header from "../components/header/Header";
+import Footer from "../common/Footer";
 
 const Layout = () => {
   return (
