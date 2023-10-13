@@ -71,18 +71,18 @@ services:
       - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
     network_mode: bridge
 
-  # frontend:
-  #   build:
-  #     context: ./website
-  #   image: "arewefastyet-frontend"
-  #   restart: always
-  #   container_name: "frontend"
-  #   volumes:
-  #     - "./website/src:/app/src"
-  #     - "./website/public:/app/public"
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.frontend.rule=Host(`localhost`)"
-  #     - "traefik.http.routers.frontend.entrypoints=http"
-  #     - "traefik.http.services.frontend.loadbalancer.server.port=5173"
-  #   network_mode: bridge
+  frontend:
+    build:
+      context: ./website
+    image: "arewefastyet-frontend"
+    restart: always
+    container_name: "frontend"
+    volumes:
+      - "./website/src:/app/src"
+      - "./website/public:/app/public"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=http"
+      - "traefik.http.services.frontend.loadbalancer.server.port=5173"
+    network_mode: bridge
