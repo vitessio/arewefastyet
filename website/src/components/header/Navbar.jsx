@@ -14,9 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
+import Icon from "../../common/Icon";
 
 const navItems = [
   { to: "/status", title: "Status" },
@@ -102,11 +103,11 @@ export default function Navbar() {
       </div>
 
       <div className="flex-1 flex justify-end items-center">
-        <button className="relative" onClick={toggleTheme}>
-          Theme
-          <p className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 text-xs text-front text-opacity-70">
-            {theme}
-          </p>
+        <button
+          className="relative text-3xl flex items-center"
+          onClick={toggleTheme}
+        >
+          <Icon icon={(theme === "dark" && "light_mode") || "dark_mode"} />
         </button>
       </div>
     </nav>

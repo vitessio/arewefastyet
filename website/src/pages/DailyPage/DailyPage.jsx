@@ -19,9 +19,8 @@ import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
 import useApiCall from "../../utils/Hook";
 
-import { formatByteForGB } from "../../utils/Utils";
-import ResponsiveChart from "../../components/DailyComponents/Chart/Chart";
-import DailySummary from "../../components/DailyComponents/DailySummary/DailySummary";
+import ResponsiveChart from "./components/Chart";
+import DailySummary from "./components/DailySummary";
 import Hero from "./components/Hero";
 
 export default function DailyPage() {
@@ -40,24 +39,13 @@ export default function DailyPage() {
     data: dataDaily,
     error: dailyError,
     textLoading: dailyTextLoading,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`, [
-    benchmarkType,
-  ]);
+  } = useApiCall(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`);
 
-  // Changing the URL relative to the reference of a selected benchmark.
-  // Storing the carousel position as a URL parameter.
   const navigate = useNavigate();
 
   useEffect(() => {
     navigate(`?type=${benchmarkType}`);
   }, [benchmarkType]);
-
-  useEffect(()=>{
-    console.log(dataDailySummary)
-    console.log("\n\ndataDaily")
-    console.log(dataDaily)
-    console.log("\n\ndataDailySummary")
-  },[dataDaily,dataDailySummary])
 
   const TPSData = [
     {
@@ -184,17 +172,17 @@ export default function DailyPage() {
 
     MemBytesData[0].data.push({
       x: xValue,
-      y: formatByteForGB(item.Metrics.TotalComponentsMemStatsAllocBytes),
+      y: item.Metrics.TotalComponentsMemStatsAllocBytes,
     });
 
     MemBytesData[1].data.push({
       x: xValue,
-      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vtgate),
+      y: item.Metrics.ComponentsMemStatsAllocBytes.vtgate,
     });
 
     MemBytesData[2].data.push({
       x: xValue,
-      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vttablet),
+      y: item.Metrics.ComponentsMemStatsAllocBytes.vttablet,
     });
   }
 
@@ -244,9 +232,9 @@ export default function DailyPage() {
         </div>
       )}
 
-      {dataDaily && dataDailySummary && (
+      {dataDailySummary && (
         <>
-          <div className="flex p-page">
+          <section className="flex p-page justify-center flex-wrap gap-10 py-10">
             {dataDailySummary.map((dailySummary, index) => {
               return (
                 <DailySummary
@@ -257,14 +245,14 @@ export default function DailyPage() {
                 />
               );
             })}
-          </div>
+          </section>
 
           <figure className="p-page w-full">
             <div className="border-front border" />
           </figure>
 
-          {benchmarkType !== "" ? (
-            <div className="daily__container">
+          {!dailyTextLoading && benchmarkType !== "" && (
+            <section className="p-page mt-12">
               {allChartData.map((chartData, index) => (
                 <ResponsiveChart
                   key={index}
@@ -274,8 +262,8 @@ export default function DailyPage() {
                   isFirstChart={index === 0}
                 />
               ))}
-            </div>
-          ) : null}
+            </section>
+          )}
         </>
       )}
 

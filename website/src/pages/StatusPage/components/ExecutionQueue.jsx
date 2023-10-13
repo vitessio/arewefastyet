@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import DisplayTable from "./DisplayTable";
 import { Link } from "react-router-dom";
+import DisplayList from "../../../common/DisplayList";
 
 export default function ExecutionQueue(props) {
   const { data } = props;
@@ -50,7 +50,7 @@ export default function ExecutionQueue(props) {
       <h1 className="text-primary text-3xl my-5 text-center">
         Execution Queue
       </h1>
-      {executionQueue.length > 0 && <DisplayTable data={executionQueue} />}
+      {executionQueue.length > 0 && <DisplayList data={executionQueue} />}
     </section>
   );
 }

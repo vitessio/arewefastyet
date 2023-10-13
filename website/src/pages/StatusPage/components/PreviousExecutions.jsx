@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import DisplayTable from "./DisplayTable";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/Utils";
 import { twMerge } from "tailwind-merge";
+import DisplayList from "../../../common/DisplayList";
 
 export default function PreviousExecutions(props) {
   const { data } = props;
@@ -74,7 +74,7 @@ export default function PreviousExecutions(props) {
         Previous Executions
       </h1>
       {previousExecutions.length > 0 && (
-        <DisplayTable data={previousExecutions} />
+        <DisplayList data={previousExecutions} />
       )}
     </section>
   );

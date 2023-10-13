@@ -20,17 +20,13 @@ import PropTypes from 'prop-types';
 import { AppContext } from "../../../AppContext";
 import { ResponsiveLine } from "@nivo/line";
 
-const ResponsiveChart = ({ data, title, colors, isFirstChart }) => {
+const ResponsiveChart = ({ data, title, colors }) => {
   const { isColorChanged } = useContext(AppContext);
 
   return (
     data[0].data.length > 0 && (
       <div className="chart">
-        {isFirstChart ? ( // Conditionally render h3 based on isFirstChart prop
-          <h3>{title}</h3>
-        ) : (
-          <h3 className="chart__title">{title}</h3>
-        )}
+        <h3 className="my-10 text-xl font-medium text-primary">{title}</h3>
         <ResponsiveLine
           data={data}
           height={400}

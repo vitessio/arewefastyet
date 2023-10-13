@@ -22,7 +22,6 @@ import Error from "../utils/Error/Error";
 import Layout from "../pages/Layout";
 import Macro from "./Macro/Macro";
 import Micro from "./Micro/Micro";
-import Search from "./Search/Search";
 import MacroQueriesCompare from "./MacroQueriesCompare/MacroQueriesCompare";
 import ComparePage from "./ComparePage/ComparePage";
 import PRPage from "./PRPage/PRPage";
@@ -30,6 +29,7 @@ import SinglePR from "./SinglePR/SinglePR";
 import HomePage from "./HomePage/HomePage";
 import StatusPage from "./StatusPage/StatusPage";
 import DailyPage from "./DailyPage/DailyPage";
+import SearchPage from "./SearchPage/SearchPage";
 
 const PublicRoute = () => {
   return (
@@ -40,7 +40,7 @@ const PublicRoute = () => {
         <Route path="/home" element={<HomePage />} />
         <Route path="/status" element={<StatusPage />} />
         <Route path="/Daily" element={<DailyPage />} />
-        <Route path="/search" element={<Search />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/macro" element={<Macro />} />
         <Route
