@@ -106,7 +106,7 @@ func (s *Server) removePRFromQueue(element *executionQueueElement) {
 	defer mtx.Unlock()
 
 	for id, e := range queue {
-		if e.Executing == false && id.PullNb == element.identifier.PullNb && id.BenchmarkType == element.identifier.BenchmarkType && id.Source == element.identifier.Source && id.GitRef != element.identifier.GitRef {
+		if !e.Executing && id.PullNb == element.identifier.PullNb && id.BenchmarkType == element.identifier.BenchmarkType && id.Source == element.identifier.Source && id.GitRef != element.identifier.GitRef {
 			slog.Infof("%+v is removed from the queue", id)
 			delete(queue, id)
 		}
