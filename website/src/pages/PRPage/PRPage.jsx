@@ -15,15 +15,13 @@ limitations under the License.
 */
 
 import React from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useApiCall from "../../utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
-import "../SinglePR/singlePR.css";
-
 import { formatDate, errorApi } from "../../utils/Utils";
 
-const SinglePR = () => {
+export default function PRPage() {
   const { pull_nb } = useParams();
 
   const {
@@ -36,7 +34,8 @@ const SinglePR = () => {
     dataSinglePr.Base !== "" && dataSinglePr.Head !== "";
 
   if (
-    dataSinglePr.error == "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
+    dataSinglePr.error ==
+    "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
   ) {
     return (
       <div className="errorPullRequest">Pull request {pull_nb} not found</div>
@@ -44,37 +43,48 @@ const SinglePR = () => {
   }
 
   return (
-    <div className="singlePR">
-      <div className="singlePR__container flex--column">
-        {singlePrError ? (
-          <div className="apiError">{errorApi}</div>
-        ) : singlePrLoading ? (
+    <>
+      <section className="flex h-screen flex-col items-center py-[20vh] p-page">
+        {singlePrLoading && (
           <div className="loadingSpinner">
             <RingLoader loading={singlePrLoading} color="#E77002" size={300} />
           </div>
-        ) : (
-          <>
-            <div className="singlePR__top flex">
-              <div>
-                <h2>
-                  <a target="_blank" rel="noopener noreferrer" href={`https://github.com/vitessio/vitess/pull/${pull_nb}`}>[#{pull_nb}]</a> {dataSinglePr.Title}
+        )}
+
+        {singlePrError && <div className="apiError">{errorApi}</div>}
+
+        {!singlePrLoading && dataSinglePr && (
+          <div className="flex flex-col border border-front rounded-3xl w-11/12 bg-foreground bg-opacity-5">
+            <div className="flex justify-between p-5 border-b border-front">
+              <div className="flex flex-col justify-evenly">
+                <h2 className="text-2xl font-semibold truncate">
+                  <Link
+                    className="text-primary"
+                    target="_blank"
+                    to={`https://github.com/vitessio/vitess/pull/${pull_nb}`}
+                  >
+                    [#{pull_nb}]
+                  </Link>{" "}
+                  {dataSinglePr.Title}
                 </h2>
                 <span>
                   By {dataSinglePr.Author} at{" "}
-                  {formatDate(dataSinglePr.CreateAt)}{" "}
+                  {formatDate(dataSinglePr.CreatedAt)}{" "}
                 </span>
               </div>
+
               {isComparisonAvailable && (
-                <div className="singlePR__link justify--content">
-                  <a
-                    href={`/compare?ltag=${dataSinglePr.Base}&rtag=${dataSinglePr.Head}`}
+                <div className="flex justify-center items-center">
+                  <Link
+                    className="text-primary p-6 border border-primary rounded-xl duration-300 hover:bg-primary hover:bg-opacity-20 hover:scale-105"
+                    to={`/compare?ltag=${dataSinglePr.Base}&rtag=${dataSinglePr.Head}`}
                   >
                     Compare with base commit
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
-            <div className="singlePR__bottom flex--column">
+            <div className="flex flex-col justify-between p-5 text-lg leading-loose">
               {isComparisonAvailable ? (
                 <>
                   <span>Base: {dataSinglePr.Base}</span>
@@ -88,11 +98,9 @@ const SinglePR = () => {
               )}
               <span>{dataSinglePr.error}</span>
             </div>
-          </>
+          </div>
         )}
-      </div>
-    </div>
+      </section>
+    </>
   );
-};
-
-export default SinglePR;
+}

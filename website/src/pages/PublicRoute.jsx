@@ -25,11 +25,11 @@ import Micro from "./Micro/Micro";
 import MacroQueriesCompare from "./MacroQueriesCompare/MacroQueriesCompare";
 import ComparePage from "./ComparePage/ComparePage";
 import PRsPage from "./PRsPage/PRsPage";
-import SinglePR from "./SinglePR/SinglePR";
 import HomePage from "./HomePage/HomePage";
 import StatusPage from "./StatusPage/StatusPage";
 import DailyPage from "./DailyPage/DailyPage";
 import SearchPage from "./SearchPage/SearchPage";
+import PRPage from "./PRPage/PRPage";
 
 const PublicRoute = () => {
   return (
@@ -49,7 +49,7 @@ const PublicRoute = () => {
         />
         <Route path="/micro" element={<Micro />} />
         <Route path="/pr" element={<PRsPage />} />
-        <Route path="/pr/:pull_nb" element={<SinglePR />} />
+        <Route path="/pr/:pull_nb" element={<PRPage />} />
 
         <Route path="*" element={<Error />} />
       </Route>
