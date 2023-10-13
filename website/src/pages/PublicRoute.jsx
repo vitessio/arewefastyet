@@ -24,7 +24,7 @@ import Macro from "./Macro/Macro";
 import Micro from "./Micro/Micro";
 import MacroQueriesCompare from "./MacroQueriesCompare/MacroQueriesCompare";
 import ComparePage from "./ComparePage/ComparePage";
-import PRPage from "./PRPage/PRPage";
+import PRsPage from "./PRsPage/PRsPage";
 import SinglePR from "./SinglePR/SinglePR";
 import HomePage from "./HomePage/HomePage";
 import StatusPage from "./StatusPage/StatusPage";
@@ -48,7 +48,7 @@ const PublicRoute = () => {
           element={<MacroQueriesCompare />}
         />
         <Route path="/micro" element={<Micro />} />
-        <Route path="/pr" element={<PRPage />} />
+        <Route path="/pr" element={<PRsPage />} />
         <Route path="/pr/:pull_nb" element={<SinglePR />} />
 
         <Route path="*" element={<Error />} />

@@ -23,7 +23,7 @@ import RingLoader from "react-spinners/RingLoader";
 
 import PRTable from "./components/PRTable";
 
-export default function PRPage() {
+export default function PRsPage() {
   const {
     data: dataPRList,
     isLoading: isPRListLoading,
