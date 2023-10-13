@@ -161,7 +161,7 @@ function Row({ title, value }) {
   );
 }
 
-SearchMacroDesktop.propTypes = {
+SearchMacro.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.oneOfType([
       PropTypes.string,
