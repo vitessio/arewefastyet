@@ -20,7 +20,7 @@ import { useNavigate, Link } from "react-router-dom";
 import QueryPlan from "./components/QueryPlan";
 import Hero from "./components/Hero";
 
-const MacroQueriesCompare = () => {
+export default function MacroQueriesComparePage() {
   const [error, setError] = useState(null);
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -55,9 +55,9 @@ const MacroQueriesCompare = () => {
       const fetchData = async () => {
         try {
           const responseQueryPlan = await fetch(
-            `${
-              import.meta.env.VITE_API_URL
-            }macrobench/compare/queries?ltag=${commits.left}&rtag=${commits.right}&type=${type}`
+            `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
+              commits.left
+            }&rtag=${commits.right}&type=${type}`
           );
 
           const jsonDataQueryPlan = await responseQueryPlan.json();
@@ -119,6 +119,4 @@ const MacroQueriesCompare = () => {
       )}
     </>
   );
-};
-
-export default MacroQueriesCompare;
+}

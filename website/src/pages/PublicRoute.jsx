@@ -22,7 +22,6 @@ import Error from "../utils/Error/Error";
 import Layout from "../pages/Layout";
 import Macro from "./Macro/Macro";
 import Micro from "./Micro/Micro";
-import MacroQueriesCompare from "./MacroQueriesCompare/MacroQueriesCompare";
 import ComparePage from "./ComparePage/ComparePage";
 import PRsPage from "./PRsPage/PRsPage";
 import HomePage from "./HomePage/HomePage";
@@ -30,6 +29,7 @@ import StatusPage from "./StatusPage/StatusPage";
 import DailyPage from "./DailyPage/DailyPage";
 import SearchPage from "./SearchPage/SearchPage";
 import PRPage from "./PRPage/PRPage";
+import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
 
 const PublicRoute = () => {
   return (
@@ -45,7 +45,7 @@ const PublicRoute = () => {
         <Route path="/macro" element={<Macro />} />
         <Route
           path="/macrobench/queries/compare"
-          element={<MacroQueriesCompare />}
+          element={<MacroQueriesComparePage />}
         />
         <Route path="/micro" element={<Micro />} />
         <Route path="/pr" element={<PRsPage />} />
