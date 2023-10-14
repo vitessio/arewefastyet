@@ -17,34 +17,37 @@ limitations under the License.
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-import "../MacroQueriesCompare/macroQueriesCompare.css";
-
-import { errorApi } from "../../utils/Utils";
-import QueryPlan from "../../components/QueryPlan/QueryPlan";
+import QueryPlan from "./components/QueryPlan";
+import Hero from "./components/Hero";
 
 const MacroQueriesCompare = () => {
   const [error, setError] = useState(null);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const [commitLeft, setcommitLeft] = useState(
-    urlParams.get("ltag") == null ? "" : urlParams.get("ltag")
-  );
-  const [commitRight, setcommitRight] = useState(
-    urlParams.get("rtag") == null ? "" : urlParams.get("rtag")
-  );
-  const [type, settype] = useState(
-    urlParams.get("type") == null ? "" : urlParams.get("type")
-  );
+  const commits = {
+    left: urlParams.get("ltag") || "",
+    right: urlParams.get("rtag") || "",
+  };
+
+  const type = urlParams.get("type") || "";
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`?ltag=${commitLeft}&rtag=${commitRight}&type=${type}`);
+    navigate(`?ltag=${commits.left}&rtag=${commits.right}&type=${type}`);
   }, []);
 
   const [dataQueryPlan, setDataQueryPlan] = useState([]);
 
   useEffect(() => {
-    if (!commitLeft || !commitRight || !type || commitLeft === "null" || commitRight === "null" || type === "null") {
+    if (
+      !commits.left.length ||
+      !commits.right.length ||
+      !type ||
+      !type.length ||
+      commits.left === "null" ||
+      commits.right === "null" ||
+      type === "null"
+    ) {
       setError(
         "Error: Some URL parameters are missing. Please provide both 'ltag', 'rtag' and type parameters."
       );
@@ -54,7 +57,7 @@ const MacroQueriesCompare = () => {
           const responseQueryPlan = await fetch(
             `${
               import.meta.env.VITE_API_URL
-            }macrobench/compare/queries?ltag=${commitLeft}&rtag=${commitRight}&type=${type}`
+            }macrobench/compare/queries?ltag=${commits.left}&rtag=${commits.right}&type=${type}`
           );
 
           const jsonDataQueryPlan = await responseQueryPlan.json();
@@ -62,60 +65,45 @@ const MacroQueriesCompare = () => {
           setDataQueryPlan(jsonDataQueryPlan);
         } catch (error) {
           console.log("Error while retrieving data from the API", error);
-          setError(errorApi);
+          setError(JSON.stringify(error));
         }
       };
       fetchData();
     }
   }, []);
 
-  const [openPlanIndex, setOpenPlanIndex] = useState(0); // Index of the currently open plan
+  const [openPlanIndex, setOpenPlanIndex] = useState(0);
 
   const togglePlan = (index) => {
-    setOpenPlanIndex((prevIndex) => (prevIndex === index ? -1 : index)); // If the plan is already open, close it; otherwise, open it
+    setOpenPlanIndex((prevIndex) => (prevIndex === index ? -1 : index));
   };
 
   return (
-    <div className="query">
-      {error ? (
-        <div className="query__error flex--column">
-          <span>{error}</span>
-          <Link to="/macro" className="macro-link">
+    <>
+      {error && (
+        <div className="flex flex-col h-screen fixed top-0 left-0 w-full justify-center items-center bg-background z-10">
+          <span className="my-2 text-sm text-red-600">
+            An error occured <br /> <br />
+            {error}
+          </span>
+          <Link
+            to="/macro"
+            className="text-primary my-5 text-lg underline underline-offset-2 hover:no-underline"
+          >
             Back to Macro
           </Link>
         </div>
-      ) : (
+      )}
+
+      {!error && (
         <>
-          <div className="query__top flex--column">
-            <h2>Compare Query Plans</h2>
-            <span>
-              Comparing the query plans of two OLTP benchmarks: A and B.
-            </span>
-            <span>
-              <b>A</b> benchmarked commit{" "}
-              <a
-                href={`https://github.com/vitessio/vitess/commit/${commitLeft}`}
-              >
-                {commitLeft.slice(0, 8)}
-              </a>{" "}
-              using the Gen4 query planner.
-            </span>
-            <span>
-              <b>B</b> benchmarked commit{" "}
-              <a
-                href={`https://github.com/vitessio/vitess/commit/${commitRight}`}
-              >
-                {commitRight.slice(0, 8)}
-              </a>{" "}
-              using the Gen4 query planner.
-            </span>
-            <span>
-              Queries are ordered from the worst regression in execution time to
-              the best. All executed queries are shown below.
-            </span>
+          <Hero commits={commits} />
+
+          <div className="p-page my-8">
+            <div className="border border-front" />
           </div>
-          <figure className="line"></figure>
-          <div className="queryPlan__container">
+
+          <section className="p-page flex flex-col gap-y-8 my-5">
             {dataQueryPlan.map((queryPlan, index) => {
               return (
                 <QueryPlan
@@ -126,10 +114,10 @@ const MacroQueriesCompare = () => {
                 />
               );
             })}
-          </div>
+          </section>
         </>
       )}
-    </div>
+    </>
   );
 };
 

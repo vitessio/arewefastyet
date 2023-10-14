@@ -18,6 +18,7 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
+import useTheme from "../hooks/useTheme";
 
 const navItems = [
   { to: "/status", title: "Status" },
@@ -30,26 +31,15 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const [theme, setTheme] = useState("default");
   const [hidden, setHidden] = useState(false);
 
+  const theme = useTheme();
+
   function toggleTheme() {
-    setTheme((t) => (t === "default" ? "dark" : "default"));
+    theme.set((t) => (t === "default" ? "dark" : "default"));
   }
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  useEffect(() => {
-    // Set dark mode if user has set preference manually
-    const darkColorPreference = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    );
-    if (darkColorPreference.matches) {
-      setTheme("dark");
-    }
-
     // Check for user intent to scroll and hide / show navbar accordingly
     const scrollThreshold = window.innerHeight * 0.15;
     window.addEventListener("scroll", () => {

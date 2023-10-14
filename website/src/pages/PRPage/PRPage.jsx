@@ -57,7 +57,7 @@ export default function PRPage() {
           <div className="flex flex-col border border-front rounded-3xl w-11/12 bg-foreground bg-opacity-5">
             <div className="flex justify-between p-5 border-b border-front">
               <div className="flex flex-col justify-evenly">
-                <h2 className="text-2xl font-semibold truncate">
+                <h2 className="text-2xl font-semibold">
                   <Link
                     className="text-primary"
                     target="_blank"
@@ -76,7 +76,7 @@ export default function PRPage() {
               {isComparisonAvailable && (
                 <div className="flex justify-center items-center">
                   <Link
-                    className="text-primary p-6 border border-primary rounded-xl duration-300 hover:bg-primary hover:bg-opacity-20 hover:scale-105"
+                    className="text-primary p-6 border border-primary rounded-xl duration-300 hover:bg-primary hover:bg-opacity-20 hover:scale-105 whitespace-nowrap"
                     to={`/compare?ltag=${dataSinglePr.Base}&rtag=${dataSinglePr.Head}`}
                   >
                     Compare with base commit

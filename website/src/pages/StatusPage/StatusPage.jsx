@@ -62,7 +62,8 @@ export default function StatusPage() {
           />
         </div>
       )}
-      {errorQueue ? <div className="apiError">{errorQueue}</div> : null}
+      
+      {errorQueue && <div className="apiError">{errorQueue}</div>}
     </>
   );
 }

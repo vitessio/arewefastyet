@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useContext } from "react";
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
-import { AppContext } from "../../../AppContext";
 import { ResponsiveLine } from "@nivo/line";
+import useTheme from "../../../hooks/useTheme";
 
 const ResponsiveChart = ({ data, title, colors }) => {
-  const { isColorChanged } = useContext(AppContext);
+  const theme = useTheme();
 
   return (
     data[0].data.length > 0 && (
@@ -32,7 +32,7 @@ const ResponsiveChart = ({ data, title, colors }) => {
           height={400}
           colors={colors}
           theme={{
-            background: isColorChanged ? "#f7f7f7" : "#1F1D1D",
+            background: theme.current === "dark" ? "#f7f7f7" : "#1F1D1D",
             axis: {
               ticks: {
                 text: {
@@ -112,13 +112,17 @@ const ResponsiveChart = ({ data, title, colors }) => {
 };
 
 ResponsiveChart.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(PropTypes.shape({
-      x: PropTypes.string.isRequired,
-      y: PropTypes.number.isRequired,
-    })).isRequired,
-  })).isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      data: PropTypes.arrayOf(
+        PropTypes.shape({
+          x: PropTypes.string.isRequired,
+          y: PropTypes.number.isRequired,
+        })
+      ).isRequired,
+    })
+  ).isRequired,
   title: PropTypes.string.isRequired,
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,
   isFirstChart: PropTypes.bool.isRequired,
