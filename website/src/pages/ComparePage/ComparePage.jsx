@@ -74,7 +74,7 @@ export default function Compare() {
       {macrobenchError && <div className="apiError">{macrobenchError}</div>}
 
       {isMacrobenchLoading && (
-        <div className="loadingSpinner">
+        <div className="flex justify-center items-center">
           <RingLoader
             loading={isMacrobenchLoading}
             color="#E77002"
