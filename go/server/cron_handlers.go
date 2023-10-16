@@ -206,6 +206,9 @@ func (s *Server) pullRequestsCronHandler() {
 		}
 
 		for _, prInfo := range prInfos {
+			if prInfo.Number != 14034 {
+				continue
+			}
 			ref := prInfo.SHA
 			previousGitRef := prInfo.Base
 			pullNb := prInfo.Number
