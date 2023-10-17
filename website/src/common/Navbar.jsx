@@ -25,7 +25,7 @@ const navItems = [
   { to: "/daily", title: "Daily" },
   { to: "/compare", title: "Compare" },
   { to: "/search", title: "Search" },
-  { to: "/micro", title: "Micro" },
+  // { to: "/micro", title: "Micro" },
   { to: "/macro", title: "Macro" },
   { to: "/pr", title: "PR" },
 ];
