@@ -616,3 +616,12 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 	}
 	return false, nil
 }
+
+func DeleteExecution(client storage.SQLClient, gitRef, UUID, source string) error {
+	query := fmt.Sprintf("DELETE FROM execution WHERE uuid LIKE '%%%s%%' AND git_ref LIKE '%%%s%%' AND source = '%s'", UUID, gitRef, source)
+	_, err := client.Select(query)
+	if err != nil {
+		return err
+	}
+	return nil
+}
