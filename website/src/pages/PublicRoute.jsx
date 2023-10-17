@@ -21,7 +21,6 @@ import { Routes, Route } from "react-router-dom";
 import Error from "../utils/Error/Error";
 import Layout from "../pages/Layout";
 import Macro from "./Macro/Macro";
-import Micro from "./Micro/Micro";
 import ComparePage from "./ComparePage/ComparePage";
 import PRsPage from "./PRsPage/PRsPage";
 import HomePage from "./HomePage/HomePage";
@@ -30,6 +29,7 @@ import DailyPage from "./DailyPage/DailyPage";
 import SearchPage from "./SearchPage/SearchPage";
 import PRPage from "./PRPage/PRPage";
 import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
+import MicroPage from "./MicroPage/MicroPage";
 
 const PublicRoute = () => {
   return (
@@ -47,7 +47,7 @@ const PublicRoute = () => {
           path="/macrobench/queries/compare"
           element={<MacroQueriesComparePage />}
         />
-        <Route path="/micro" element={<Micro />} />
+        <Route path="/micro" element={<MicroPage />} />
         <Route path="/pr" element={<PRsPage />} />
         <Route path="/pr/:pull_nb" element={<PRPage />} />
 
