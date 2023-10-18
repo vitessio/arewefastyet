@@ -53,7 +53,7 @@ const Footer = () => {
     },
     {
       title: "arewefastyet",
-      links: [{ title: "github", to: "https://www.github.com/vitessio/arewefastyet" }],
+      links: [{ title: "Github", to: "https://www.github.com/vitessio/arewefastyet" }],
     },
   ];
 
