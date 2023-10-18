@@ -232,7 +232,7 @@ export default function DailyPage() {
         </div>
       )}
 
-      {dataDailySummary && (
+      {!errorDailySummary && dataDailySummary && (
         <>
           <section className="flex p-page justify-center flex-wrap gap-10 py-10">
             {dataDailySummary.map((dailySummary, index) => {
@@ -268,7 +268,7 @@ export default function DailyPage() {
       )}
 
       {(errorDailySummary || dailyError) && (
-        <div className="apiError">{dailyError}</div>
+        <div className="text-red-500 text-center my-10">{dailyError}</div>
       )}
     </>
   );
