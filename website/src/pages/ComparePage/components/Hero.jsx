@@ -5,7 +5,7 @@ export default function Hero(props) {
   const { setGitRef } = props;
 
   return (
-    <div className="flex flex-col h-[35vh] justify-center items-center">
+    <section className="flex flex-col h-[32vh] pt-[8vh] justify-center items-center">
       <h1 className="mb-3 text-front text-opacity-70">Enter SHAs to compare commits</h1>
       <div className="flex overflow-hidden bg-gradient-to-br from-primary to-accent p-[2px] rounded-full">
         <ComparisonInput
@@ -19,7 +19,7 @@ export default function Hero(props) {
           setGitRef={setGitRef}
         />
       </div>
-    </div>
+    </section>
   );
 }
 
