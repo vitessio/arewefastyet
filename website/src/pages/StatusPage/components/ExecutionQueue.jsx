@@ -46,7 +46,7 @@ export default function ExecutionQueue(props) {
   }, []);
 
   return (
-    <section className="p-page mt-20">
+    <section className="p-page mt-20 flex flex-col">
       <h1 className="text-primary text-3xl my-5 text-center">
         Execution Queue
       </h1>
