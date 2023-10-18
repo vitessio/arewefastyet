@@ -82,7 +82,7 @@ const Footer = () => {
           </div>
         ))}
 
-        <div className="flex flex-col items-center text-center text-back text-opacity-80">
+        {/* <div className="flex flex-col items-center text-center text-back text-opacity-80">
           <h5 className="my-3 text-4xl font-bold tracking-tighter text-back">
             TRULY TESTED
           </h5>
@@ -90,7 +90,8 @@ const Footer = () => {
           <p>approach for uparalleled</p>
           <p>Database Speed</p>
           <p className="font-semibold text-back">for vitess</p>
-        </div>
+        </div> */}
+        <div className="w-[15%]" />
       </div>
       <div className="my-2 flex gap-x-4">
         <p className="font-mono text-xl font-bold">Follow Us</p>
