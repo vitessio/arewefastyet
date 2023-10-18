@@ -19,9 +19,11 @@ import { useNavigate, Link } from "react-router-dom";
 
 import QueryPlan from "./components/QueryPlan";
 import Hero from "./components/Hero";
+import RingLoader from "react-spinners/RingLoader";
 
 export default function MacroQueriesComparePage() {
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const urlParams = new URLSearchParams(window.location.search);
   const commits = {
@@ -38,6 +40,26 @@ export default function MacroQueriesComparePage() {
 
   const [dataQueryPlan, setDataQueryPlan] = useState([]);
 
+  async function loadData() {
+    setLoading(true);
+    try {
+      const responseQueryPlan = await fetch(
+        `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
+          commits.left
+        }&rtag=${commits.right}&type=${type}`
+      );
+
+      const jsonDataQueryPlan = await responseQueryPlan.json();
+
+      setDataQueryPlan(jsonDataQueryPlan);
+    } catch (error) {
+      console.log("Error while retrieving data from the API", error);
+      setError(JSON.stringify(error));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     if (
       !commits.left.length ||
@@ -52,31 +74,9 @@ export default function MacroQueriesComparePage() {
         "Error: Some URL parameters are missing. Please provide both 'ltag', 'rtag' and type parameters."
       );
     } else {
-      const fetchData = async () => {
-        try {
-          const responseQueryPlan = await fetch(
-            `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
-              commits.left
-            }&rtag=${commits.right}&type=${type}`
-          );
-
-          const jsonDataQueryPlan = await responseQueryPlan.json();
-
-          setDataQueryPlan(jsonDataQueryPlan);
-        } catch (error) {
-          console.log("Error while retrieving data from the API", error);
-          setError(JSON.stringify(error));
-        }
-      };
-      fetchData();
+      loadData();
     }
   }, []);
-
-  const [openPlanIndex, setOpenPlanIndex] = useState(0);
-
-  const togglePlan = (index) => {
-    setOpenPlanIndex((prevIndex) => (prevIndex === index ? -1 : index));
-  };
 
   return (
     <>
@@ -104,16 +104,18 @@ export default function MacroQueriesComparePage() {
           </div>
 
           <section className="p-page flex flex-col gap-y-8 my-5">
-            {dataQueryPlan.map((queryPlan, index) => {
-              return (
-                <QueryPlan
-                  key={index}
-                  data={queryPlan}
-                  isOpen={index === openPlanIndex}
-                  togglePlan={() => togglePlan(index)}
-                />
-              );
-            })}
+            {loading && (
+              <div className="flex items-center justify-center my-10">
+                <RingLoader loading={loading} color="#E77002" size={300} />
+              </div>
+            )}
+
+            {!loading &&
+              dataQueryPlan &&
+              dataQueryPlan.length > 0 &&
+              dataQueryPlan.map((queryPlan, index) => {
+                return <QueryPlan key={index} data={queryPlan} />;
+              })}
           </section>
         </>
       )}
