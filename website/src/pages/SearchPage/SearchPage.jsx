@@ -42,7 +42,7 @@ export default function SearchPage() {
     <>
       <Hero setGitRef={setGitRef} />
 
-      {searchError && <div className="apiError">{searchError}</div>}
+      {searchError && <div className="text-red-500 text-center my-2">{searchError}</div>}
 
       {isSearchLoading && (
         <div className="flex my-10 justify-center items-center">

@@ -181,7 +181,7 @@ export default function MicroPage() {
       <figure className="line"></figure>
       <div className="micro__bottom">
         {error ? (
-          <div className="apiError">{error}</div>
+          <div className="text-red-500 text-center my-2">{error}</div>
         ) : isLoading ? (
           <div className="loadingSpinner">
             <RingLoader loading={isLoading} color="#E77002" size={300} />
