@@ -20,7 +20,7 @@ import { Routes, Route } from "react-router-dom";
 // import Status from './Status/Status';
 import Error from "../utils/Error/Error";
 import Layout from "../pages/Layout";
-import Macro from "./Macro/Macro";
+import MacroPage from "./MacroPage/MacroPage";
 import ComparePage from "./ComparePage/ComparePage";
 import PRsPage from "./PRsPage/PRsPage";
 import HomePage from "./HomePage/HomePage";
@@ -42,7 +42,7 @@ const PublicRoute = () => {
         <Route path="/Daily" element={<DailyPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/compare" element={<ComparePage />} />
-        <Route path="/macro" element={<Macro />} />
+        <Route path="/macro" element={<MacroPage />} />
         <Route
           path="/macrobench/queries/compare"
           element={<MacroQueriesComparePage />}

@@ -97,7 +97,7 @@ export default function Navbar() {
           className="relative text-3xl flex items-center"
           onClick={toggleTheme}
         >
-          <Icon icon={(theme === "dark" && "light_mode") || "dark_mode"} />
+          <Icon icon={(theme.current === "dark" && "light_mode") || "dark_mode"} />
         </button>
       </div>
     </nav>

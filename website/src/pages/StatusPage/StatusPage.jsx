@@ -63,7 +63,7 @@ export default function StatusPage() {
         </div>
       )}
       
-      {errorQueue && <div className="apiError">{errorQueue}</div>}
+      {errorQueue && <div className="my-10 text-center text-red-500">{errorQueue}</div>}
     </>
   );
 }

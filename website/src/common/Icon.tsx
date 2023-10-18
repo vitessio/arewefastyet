@@ -1,7 +1,9 @@
 import React from "react";
+import { twMerge } from "tailwind-merge";
 
 interface IconProps {
   icon: keyof typeof icons;
+  className?: string;
 }
 
 export default function Icon(props: IconProps) {
@@ -12,7 +14,7 @@ export default function Icon(props: IconProps) {
         height="24"
         viewBox="0 -960 960 960"
         width="24"
-        className="fill-current w-[1em] h-[1em]"
+        className={twMerge("fill-current w-[1em] h-[1em]", props.className)}
       >
         {icons[props.icon]}
       </svg>
@@ -32,5 +34,8 @@ const icons = {
   ),
   close: (
     <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
+  ),
+  expand_more: (
+    <path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z" />
   ),
 } as const;
