@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import useGlobalContext from "../context/GlobalContext";
+import { useState } from "react";
+import useGlobalContext from "../contexts/GlobalContext";
 import resolveConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config.js";
 

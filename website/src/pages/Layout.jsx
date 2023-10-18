@@ -18,7 +18,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
-import { GlobalProvider } from "../context/GlobalContext";
+import { GlobalProvider } from "../contexts/GlobalContext";
 import Modal from "../common/Modal";
 
 const Layout = () => {

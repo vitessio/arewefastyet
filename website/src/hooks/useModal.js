@@ -1,4 +1,4 @@
-import useGlobalContext from "../context/GlobalContext";
+import useGlobalContext from "../contexts/GlobalContext";
 
 export default function useModal() {
   const { modal, setModal } = useGlobalContext();
