@@ -13,7 +13,7 @@ export default function Hero() {
   );
 
   return (
-    <section className="flex h-[83vh] items-center p-page">
+    <section className="flex h-[70vh] pt-[10vh] items-center p-page">
       <div className="flex basis-1/2 flex-col">
         <h2 className="text-8xl text-primary">Status</h2>
         <p className="my-6 leading-loose">
