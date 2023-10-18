@@ -48,7 +48,7 @@ export default function PRTable(props) {
   }, []);
 
   return (
-    <section className="p-page mt-20">
+    <section className="p-page mt-20 flex flex-col">
       {PRList.length > 0 && <DisplayList data={PRList} />}
     </section>
   );
