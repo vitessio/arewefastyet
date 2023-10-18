@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Hero() {
   return (
-    <section className="flex h-[83vh] items-center p-page">
+    <section className="flex pt-[15vh] items-center p-page">
       <div className="flex basis-1/2 flex-col">
         <h2 className="text-8xl text-primary">Pull Request</h2>
         <p className="my-6 leading-loose">

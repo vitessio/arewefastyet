@@ -1,4 +1,3 @@
-
 /*
 Copyright 2023 The Vitess Authors.
 
@@ -42,9 +41,7 @@ export default function PRsPage() {
 
       {PRListError ? <div className="apiError">{PRListError}</div> : null}
 
-      {!isPRListLoading && dataPRList && (
-        <PRTable data={dataPRList} />
-      )}
+      {!isPRListLoading && dataPRList && <PRTable data={dataPRList} />}
     </>
   );
 }
