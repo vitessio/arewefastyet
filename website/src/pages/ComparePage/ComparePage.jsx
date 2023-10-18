@@ -17,13 +17,10 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-import { SwiperSlide } from "swiper/react";
 import useApiCall from "../../utils/Hook";
-
-import Macrobench from "../../components/MacroComponents/Macrobench/Macrobench";
-import MacrobenchMobile from "../../components/MacroComponents/MacrobenchMobile/MacrobenchMobile";
-import Microbench from "../../components/Microbench/Microbench";
 import Hero from "./components/Hero";
+import Macrobench from "../../common/Macrobench";
+import Microbench from "../MicroPage/components/Microbench/Microbench";
 
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -41,7 +38,6 @@ export default function Compare() {
     data: dataMacrobench,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
-    textLoading: macroTextLoading,
   } = useApiCall(
     `${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${
       gitRef.right
@@ -60,13 +56,10 @@ export default function Compare() {
 
   useEffect(() => {
     navigate(
-      `?ltag=${gitRef.left}&rtag=${gitRef.right}&ptagM=${currentSlideIndexMobile}`
+      `?ltag=${gitRef.left}&rtag=${gitRef.right}`
     );
-  }, [gitRef.left, gitRef.right, currentSlideIndexMobile]);
+  }, [gitRef.left, gitRef.right]);
 
-  const handleSlideChange = (swiper) => {
-    setCurrentSlideIndexMobile(swiper.realIndex);
-  };
 
   return (
     <>
@@ -93,24 +86,11 @@ export default function Compare() {
                   <div key={index}>
                     <Macrobench
                       data={macro}
-                      textLoading={macroTextLoading}
-                      gitRefLeft={gitRef.left.slice(0, 8)}
-                      gitRefRight={gitRef.right.slice(0, 8)}
-                      swiperSlide={SwiperSlide}
-                      commitHashLeft={gitRef.left}
-                      commitHashRight={gitRef.right}
-                    />
-                    <MacrobenchMobile
-                      data={macro}
-                      gitRefLeft={gitRef.left.slice(0, 8)}
-                      gitRefRight={gitRef.right.slice(0, 8)}
-                      swiperSlide={SwiperSlide}
-                      textLoading={macroTextLoading}
-                      handleSlideChange={handleSlideChange}
-                      setCurrentSlideIndexMobile={setCurrentSlideIndexMobile}
-                      currentSlideIndexMobile={currentSlideIndexMobile}
-                      commitHashLeft={gitRef.left}
-                      commitHashRight={gitRef.right}
+                      gitRef={{
+                        left: gitRef.left.slice(0, 8),
+                        right: gitRef.right.slice(0, 8),
+                      }}
+                      commits={{ left: gitRef.left, right: gitRef.right }}
                     />
                   </div>
                 );

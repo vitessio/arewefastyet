@@ -27,7 +27,7 @@ import {
   openDropDown,
   valueDropDown,
 } from "../../utils/Utils";
-import Microbench from "../../components/Microbench/Microbench";
+import Microbench from "./components/Microbench/Microbench";
 
 export default function MicroPage() {
   const urlParams = new URLSearchParams(window.location.search);
