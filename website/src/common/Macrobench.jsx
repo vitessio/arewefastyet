@@ -210,7 +210,7 @@ export default function Macrobench({ data, gitRef, commits }) {
 function Row({ title, left, right, diffMetric }) {
   return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-foreground hover:bg-opacity-20">
-      <td className="flex pt-4 pb-2 px-4 justify-end border-r border-r-primary font-semibold">
+      <td className="flex pt-4 pb-2 px-4 justify-end border-r border-r-primary font-semibold text-end">
         <span>{title}</span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">

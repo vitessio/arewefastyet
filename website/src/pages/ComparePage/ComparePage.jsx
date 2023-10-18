@@ -55,11 +55,8 @@ export default function Compare() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(
-      `?ltag=${gitRef.left}&rtag=${gitRef.right}`
-    );
+    navigate(`?ltag=${gitRef.left}&rtag=${gitRef.right}`);
   }, [gitRef.left, gitRef.right]);
-
 
   return (
     <>
@@ -79,23 +76,21 @@ export default function Compare() {
       {!isMacrobenchLoading && dataMacrobench && (
         <section className="flex flex-col items-center">
           <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
-          <div className="compare__macrobench__Container flex">
-            <div className="compare__carousel__container">
-              {dataMacrobench.map((macro, index) => {
-                return (
-                  <div key={index}>
-                    <Macrobench
-                      data={macro}
-                      gitRef={{
-                        left: gitRef.left.slice(0, 8),
-                        right: gitRef.right.slice(0, 8),
-                      }}
-                      commits={{ left: gitRef.left, right: gitRef.right }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+          <div className="flex flex-col gap-y-20">
+            {dataMacrobench.map((macro, index) => {
+              return (
+                <div key={index}>
+                  <Macrobench
+                    data={macro}
+                    gitRef={{
+                      left: gitRef.left.slice(0, 8),
+                      right: gitRef.right.slice(0, 8),
+                    }}
+                    commits={{ left: gitRef.left, right: gitRef.right }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
