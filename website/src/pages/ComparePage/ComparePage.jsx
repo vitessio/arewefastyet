@@ -30,13 +30,10 @@ export default function Compare() {
     right: urlParams.get("rtag") || "Right",
   });
 
-  const [currentSlideIndexMobile, setCurrentSlideIndexMobile] = useState(
-    urlParams.get("ptagM") || "0"
-  );
-
   const {
     data: dataMacrobench,
     isLoading: isMacrobenchLoading,
+    textLoading: macrobenchTextLoading,
     error: macrobenchError,
   } = useApiCall(
     `${import.meta.env.VITE_API_URL}macrobench/compare?rtag=${
@@ -50,8 +47,6 @@ export default function Compare() {
     }&ltag=${gitRef.left}`
   );
 
-  // Changing the URL relative to the reference of a selected benchmark.
-  // Storing the carousel position as a URL parameter.
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,19 +56,21 @@ export default function Compare() {
   return (
     <>
       <Hero gitRef={gitRef} setGitRef={setGitRef} />
-      {macrobenchError && <div className="text-red-500 text-center my-2">{macrobenchError}</div>}
+      {macrobenchError && (
+        <div className="text-red-500 text-center my-2">{macrobenchError}</div>
+      )}
 
-      {isMacrobenchLoading && (
+      {(isMacrobenchLoading || macrobenchTextLoading) && (
         <div className="flex justify-center items-center">
           <RingLoader
-            loading={isMacrobenchLoading}
+            loading={isMacrobenchLoading || macrobenchTextLoading}
             color="#E77002"
             size={300}
           />
         </div>
       )}
 
-      {!isMacrobenchLoading && dataMacrobench && (
+      {!isMacrobenchLoading && !macrobenchTextLoading && dataMacrobench && (
         <section className="flex flex-col items-center">
           <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
           <div className="flex flex-col gap-y-20">
