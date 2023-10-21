@@ -60,7 +60,7 @@ export default function Compare() {
 
   return (
     <>
-      <Hero setGitRef={setGitRef} />
+      <Hero gitRef={gitRef} setGitRef={setGitRef} />
       {macrobenchError && <div className="text-red-500 text-center my-2">{macrobenchError}</div>}
 
       {isMacrobenchLoading && (
