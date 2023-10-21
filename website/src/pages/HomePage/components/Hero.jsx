@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Icon from "../../../common/Icon";
 
 export default function Hero() {
   return (
@@ -21,19 +22,30 @@ export default function Hero() {
           </div>
           <div className="flex gap-x-8">
             <Link
-              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2"
+              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
               to="https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet"
               target="__blank"
             >
-              Read our blog post <i className="fa-solid fa-bookmark"></i>
+              Blog post
+              <Icon className="text-2xl" icon="bookmark" />
             </Link>
+
             <Link
-              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2"
+              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
               to="https://github.com/vitessio/arewefastyet"
               target="__blank"
             >
-              Contribute on GitHub
-              <i className="fa-brands fa-github"></i>
+              GitHub
+              <Icon className="text-2xl" icon="github" />
+            </Link>
+
+            <Link
+              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
+              to="https://www.vitess.io"
+              target="__blank"
+            >
+              Vitess
+              <Icon className="text-2xl" icon="vitess" />
             </Link>
           </div>
         </div>
