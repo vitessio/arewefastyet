@@ -18,46 +18,50 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import { ResponsiveLine } from "@nivo/line";
-import useTheme from "../../../hooks/useTheme";
 
 const ResponsiveChart = ({ data, title, colors }) => {
-  const theme = useTheme();
-
   return (
     data[0].data.length > 0 && (
-      <div className="chart">
+      <>
         <h3 className="my-10 text-xl font-medium text-primary">{title}</h3>
         <ResponsiveLine
           data={data}
           height={400}
           colors={colors}
           theme={{
-            background: theme.current === "dark" ? "#f7f7f7" : "#1F1D1D",
+            background: "transparent",
             axis: {
               ticks: {
                 text: {
                   fontSize: "13px",
-                  fill: "var(--font-color)",
+                  fill: "rgb(var(--color-front))",
                 },
               },
             },
             legends: {
               text: {
                 fontSize: "14px",
-                fill: "var(--font-color)",
+                fill: "rgb(var(--color-front))",
               },
             },
             grid: {
               line: {
-                stroke: "var(--font-color)",
+                stroke: "rgb(var(--color-front))",
               },
             },
           }}
           tooltip={({ point }) => (
-            <div className="tooltip flex">
-              <figure style={{ backgroundColor: point.serieColor }}></figure>
-              <div>commit : {point.data.x}</div>
-              <div>y : {point.data.y}</div>
+            <div className="flex gap-x-2 bg-background bg-opacity-80 pl-1 pr-5 py-1 rounded">
+              <figure
+                className="w-1"
+                style={{ backgroundColor: point.serieColor }}
+              />
+              <div className="flex flex-col gap-y-2">
+                <span>commit : {point.data.x}</span>
+                <span>
+                  {title.split('(')[0]} : {point.data.y}
+                </span>
+              </div>
             </div>
           )}
           areaBaselineValue={50}
@@ -106,7 +110,7 @@ const ResponsiveChart = ({ data, title, colors }) => {
             },
           ]}
         />
-      </div>
+      </>
     )
   );
 };

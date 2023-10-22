@@ -252,15 +252,16 @@ export default function DailyPage() {
           </figure>
 
           {!dailyTextLoading && benchmarkType !== "" && (
-            <section className="p-page mt-12">
+            <section className="p-page mt-12 flex flex-col gap-y-8">
               {allChartData.map((chartData, index) => (
-                <ResponsiveChart
-                  key={index}
-                  data={chartData.data}
-                  title={chartData.title}
-                  colors={chartData.colors}
-                  isFirstChart={index === 0}
-                />
+                <div key={index} className="relative w-full h-[500px]">
+                  <ResponsiveChart
+                    data={chartData.data}
+                    title={chartData.title}
+                    colors={chartData.colors}
+                    isFirstChart={index === 0}
+                  />
+                </div>
               ))}
             </section>
           )}
