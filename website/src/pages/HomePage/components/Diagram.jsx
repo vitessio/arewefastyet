@@ -1,27 +1,32 @@
-import React, { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
+import useTheme from "../../../hooks/useTheme";
+import React from "react";
 
 export default function Diagram() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    if (document.documentElement.getAttribute("data-theme") == "dark") {
-      setDark(true);
-    }
-  }, []);
+  const theme = useTheme();
 
   return (
-    <section className="p-page relative">
-      <img
-        className={twMerge("duration-500", dark ? "opacity-0" : "opacity-100")}
-        src="/images/execution-pipeline.png"
-        alt="execution pipeline"
-      />
-      <img
-        className={twMerge("absolute-cover duration-500 z-1", !dark ? "opacity-0" : "opacity-100")}
-        src="/images/execution-pipeline-dark.png"
-        alt="execution pipeline"
-      />
+    <section className="p-page flex flex-col items-center my-8">
+      <h1 className="bg-primary bg-opacity-20 text-primary text-lg font-semibold px-4 py-2 rounded-full">
+        Diagramatic Overview
+      </h1>
+
+      <div className="relative duration-1000">
+        <img
+          className="duration-inherit"
+          src="/images/execution-pipeline-dark.png"
+          alt="execution pipeline"
+        />
+
+        <img
+          className={twMerge(
+            "absolute-cover duration-inherit",
+            theme.current === "dark" && "opacity-0"
+          )}
+          src="/images/execution-pipeline.png"
+          alt="execution pipeline"
+        />
+      </div>
     </section>
   );
 }
