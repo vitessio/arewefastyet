@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,8 @@ const navItems = [
   { to: "/pr", title: "PR" },
 ];
 
+const scrollThreshold = window.innerHeight * 0.15;
+
 export default function Navbar() {
   const [hidden, setHidden] = useState(false);
 
@@ -39,24 +41,27 @@ export default function Navbar() {
     theme.set((t) => (t === "default" ? "dark" : "default"));
   }
 
+  function handleScroll() {
+    const currY = window.scrollY;
+    if (currY < window.innerHeight * 0.25) {
+      setHidden(false);
+    } else {
+      setTimeout(() => {
+        if (window.scrollY > currY + scrollThreshold) {
+          setHidden(true);
+        }
+        if (window.scrollY < currY - scrollThreshold / 2) {
+          setHidden(false);
+        }
+      }, 200);
+    }
+  }
+
   useEffect(() => {
     // Check for user intent to scroll and hide / show navbar accordingly
-    const scrollThreshold = window.innerHeight * 0.15;
-    window.addEventListener("scroll", () => {
-      const currY = window.scrollY;
-      if (currY < window.innerHeight * 0.25) {
-        setHidden(false);
-      } else {
-        setTimeout(() => {
-          if (window.scrollY > currY + scrollThreshold) {
-            setHidden(true);
-          }
-          if (window.scrollY < currY - scrollThreshold / 2) {
-            setHidden(false);
-          }
-        }, 200);
-      }
-    });
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -97,7 +102,9 @@ export default function Navbar() {
           className="relative text-3xl flex items-center"
           onClick={toggleTheme}
         >
-          <Icon icon={(theme.current === "dark" && "light_mode") || "dark_mode"} />
+          <Icon
+            icon={(theme.current === "dark" && "light_mode") || "dark_mode"}
+          />
         </button>
       </div>
     </nav>
