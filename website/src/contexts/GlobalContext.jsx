@@ -19,7 +19,7 @@ import React, { createContext, useState, useEffect, useContext } from "react";
 const GlobalContext = createContext();
 
 export function GlobalProvider({ children }) {
-  const [theme, setTheme] = useState("default");
+  const [theme, setTheme] = useState();
   const [modal, setModal] = useState();
 
   useEffect(() => {
@@ -30,14 +30,16 @@ export function GlobalProvider({ children }) {
       const darkColorPreference = window.matchMedia(
         "(prefers-color-scheme: dark)"
       );
-      if (darkColorPreference.matches) {
-        setTheme("dark");
-      }
+
+      setTheme(darkColorPreference.matches ? "dark" : "default");
     }
   }, []);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    if (theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("vitess__arewefastyet__theme", theme);
+    }
   }, [theme]);
 
   const value = { theme, setTheme, modal, setModal };
