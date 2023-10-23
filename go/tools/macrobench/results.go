@@ -304,7 +304,8 @@ func GetResultsForLastDays(macroType string, source string, planner PlannerVersi
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
 		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
 		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ?"
+		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
+		"ORDER BY e.finished_at "
 
 	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
 	if err != nil {
