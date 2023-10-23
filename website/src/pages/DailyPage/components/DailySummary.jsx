@@ -18,6 +18,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { ResponsiveLine } from "@nivo/line";
 import { twMerge } from "tailwind-merge";
+import Icon from "../../../common/Icon";
 
 const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
   const orange = "#E77002";
@@ -63,7 +64,7 @@ const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
       <figure className="w-full border-b border-front"></figure>
       <div className="flex justify-between flex-1 p-3 items-center">
         <h3 className="font-extralight">{data.Name}</h3>
-        <i className="fa-solid fa-arrow-right daily--fa-arrow-right"></i>
+        <Icon icon="arrow_forward" className="text-xl" />
       </div>
     </div>
   );
