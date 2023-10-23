@@ -35,7 +35,7 @@ export default function Macrobench({ data, gitRef, commits }) {
         </span>
       </div>
 
-      <table>
+      <table className="w-full">
         <thead>
           <tr>
             <th />
