@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.19.4
+          go-version: 1.21.3
 
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
@@ -24,11 +24,10 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            export PATH=/usr/local/go/bin:$PATH
             cd $HOME/arewefastyet
             git reset --hard FETCH_HEAD
             git clean -fd
             git fetch origin main
             git checkout FETCH_HEAD
-            go build ./go/main.go
-            ./supervisor/update.sh
+            docker compose -f docker-compose.prod.yml build
+            docker compose -f docker-compose.prod.yml up -d

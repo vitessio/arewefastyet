@@ -23,22 +23,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
+	"vitess.io/vitess/go/vt/sqlparser"
 )
 
 type VTGateQueryPlanValue struct {
 	QueryType    string
 	Original     string
 	Instructions interface{}
-	ExecCount    int
-	ExecTime     int
-	ShardQueries int
-	RowsReturned int
-	Errors       int
+
+	ExecCount    int // Count of times this plan was executed
+	ExecTime     int // Average execution time per query
+	ShardQueries int // Total number of shard queries
+	RowsReturned int // Total number of rows
+	RowsAffected int // Total number of rows
+	Errors       int // Total number of errors
+
+	TablesUsed interface{}
 }
 
 type VTGateQueryPlan struct {
@@ -68,10 +75,10 @@ func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanCom
 		for j, rightPlan := range right {
 			if rightPlan.Key == plan.Key {
 				switch instructionRight := rightPlan.Value.Instructions.(type) {
-				case []byte:
+				case string:
 					switch instructionLeft := plan.Value.Instructions.(type) {
-					case []byte:
-						newCompare.SamePlan = bytes.Equal(instructionLeft, instructionRight)
+					case string:
+						newCompare.SamePlan = instructionLeft == instructionRight
 					}
 				}
 				newCompare.Right = &right[j]
@@ -107,6 +114,9 @@ func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanCom
 			})
 		}
 	}
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].ExecTimeDiff > res[j].ExecTimeDiff
+	})
 	return res
 }
 
@@ -152,8 +162,32 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	}
 	defer resp.Body.Close()
 
+	respBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response map[string]VTGateQueryPlanValue
+	err = json.NewDecoder(bytes.NewReader(respBytes)).Decode(&response)
+	if err != nil {
+		return getOldVTGateQueryPlans(respBytes)
+	}
+	for key, plan := range response {
+		// keeping only select statements
+		if strings.HasPrefix(key, "select") {
+			jsonPlan, err := json.MarshalIndent(plan.Instructions, "", "\t")
+			if err != nil {
+				return nil, err
+			}
+			plan.Instructions = string(jsonPlan)
+		}
+	}
+	return response, nil
+}
+
+func getOldVTGateQueryPlans(respBytes []byte) (VTGateQueryPlanMap, error) {
 	var response []VTGateQueryPlan
-	err = json.NewDecoder(resp.Body).Decode(&response)
+	err := json.NewDecoder(bytes.NewReader(respBytes)).Decode(&response)
 	if err != nil {
 		return nil, err
 	}
@@ -186,18 +220,26 @@ func getVTGatesQueryPlans(ports []string) (VTGateQueryPlanMap, error) {
 }
 
 func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner PlannerVersion, client storage.SQLClient) ([]VTGateQueryPlan, error) {
-	if macroType != OLTP && macroType != TPCC {
-		return nil, errors.New(IncorrectMacroBenchmarkType)
-	}
-	query := "select qp.`key` as `key`, qp.plan as plan, convert(avg(qp.exec_time), signed) as time, convert(avg(qp.exec_count), signed) as count, convert(avg(qp.rows), signed) as rows, convert(avg(qp.errors), signed) as errors " +
-		"from query_plans qp, macrobenchmark ma, execution ex " +
-		"where qp.macrobenchmark_id = ma.macrobenchmark_id " +
+	query := "select " +
+		"qp.`key` as `key`, " +
+		"qp.plan as plan, " +
+		"convert(avg(qp.exec_time), signed) as time, " +
+		"convert(avg(qp.exec_count), signed) as count, " +
+		"convert(avg(qp.rows), signed) as r, " +
+		"convert(avg(qp.errors), signed) as errors " +
+		"from " +
+		"query_plans qp, macrobenchmark ma, execution ex " +
+		"where " +
+		"qp.macrobenchmark_id = ma.macrobenchmark_id " +
 		"and ex.uuid = qp.exec_uuid " +
-		"and qp.`key` like \"select%\" " +
-		"and ex.type = ?" +
+		"and ex.uuid = ma.exec_uuid " +
+		"and ex.type = ? " +
 		"and ma.commit = ? " +
 		"and ma.vtgate_planner_version = ? " +
-		"group by qp.`key`, qp.plan order by time desc limit 100;"
+		"group by " +
+		"qp.`key`, qp.plan " +
+		"order by qp.`key` " +
+		"limit 1500;"
 
 	result, err := client.Select(query, macroType.String(), gitRef, string(planner))
 	if err != nil {
@@ -212,6 +254,24 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 		if err != nil {
 			return nil, err
 		}
+		switch p := plan.Value.Instructions.(type) {
+		case []byte:
+			plan.Value.Instructions = string(p)
+		}
+
+		// Remove all comments from the query
+		// This prevents the query from not match across two versions
+		// of Vitess where we changed query hints and added comments
+		stmt, err := sqlparser.Parse(plan.Key)
+		if err != nil {
+			return nil, err
+		}
+		cmmtd, isCmmtd := stmt.(sqlparser.Commented)
+		if isCmmtd && cmmtd != nil {
+			cmmtd.SetComments(nil)
+			plan.Key = sqlparser.String(stmt)
+		}
+
 		res = append(res, plan)
 	}
 	return res, nil

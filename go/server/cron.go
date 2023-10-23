@@ -57,7 +57,7 @@ var (
 	queue            executionQueue
 )
 
-func createIndividualCron(schedule string, job func()) error {
+func createIndividualDaily(schedule string, job func()) error {
 	if schedule == "" {
 		return nil
 	}
@@ -88,17 +88,29 @@ func (s *Server) createCrons() error {
 			continue
 		}
 		slog.Info("Starting the CRON ", c.name, " with schedule: ", c.schedule)
-		err := createIndividualCron(c.schedule, c.f)
+		err := createIndividualDaily(c.schedule, c.f)
 		if err != nil {
 			return err
 		}
 	}
-	go s.cronExecutionQueueWatcher()
+	go s.dailyExecutionQueueWatcher()
 	return nil
 }
 
 func (s *Server) getConfigFiles() map[string]benchmarkConfig {
 	return s.benchmarkConfig
+}
+
+func (s *Server) removePRFromQueue(element *executionQueueElement) {
+	mtx.Lock()
+	defer mtx.Unlock()
+
+	for id, e := range queue {
+		if !e.Executing && id.PullNb == element.identifier.PullNb && id.BenchmarkType == element.identifier.BenchmarkType && id.Source == element.identifier.Source && id.GitRef != element.identifier.GitRef {
+			slog.Infof("%+v is removed from the queue", id)
+			delete(queue, id)
+		}
+	}
 }
 
 func (s *Server) addToQueue(element *executionQueueElement) {

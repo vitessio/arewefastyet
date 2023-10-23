@@ -70,7 +70,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 		return nErr
 	}
 
-	timeout := 2 * time.Hour
+	timeout := 1 * time.Hour
 	if identifier.BenchmarkType == "micro" {
 		timeout = 4 * time.Hour
 	}
@@ -182,7 +182,7 @@ func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, e
 	return false, nil
 }
 
-func (s *Server) cronExecutionQueueWatcher() {
+func (s *Server) dailyExecutionQueueWatcher() {
 	for {
 		time.Sleep(time.Second * 1)
 		mtx.Lock()

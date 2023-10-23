@@ -524,9 +524,9 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeO
 	return
 }
 
-// GetLatestCronJobForMicrobenchmarks will fetch and return the commit sha for which
-// the last cron job for microbenchmarks was run
-func GetLatestCronJobForMicrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
+// GetLatestDailyJobForMicrobenchmarks will fetch and return the commit sha for which
+// the last daily job for microbenchmarks was run
+func GetLatestDailyJobForMicrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
 	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and type = \"micro\" order by started_at desc limit 1"
 	rows, err := client.Select(query)
 	if err != nil {
@@ -541,9 +541,9 @@ func GetLatestCronJobForMicrobenchmarks(client storage.SQLClient) (gitSha string
 	return "", nil
 }
 
-// GetLatestCronJobForMacrobenchmarks will fetch and return the commit sha for which
-// the last cron job for macrobenchmarks was run
-func GetLatestCronJobForMacrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
+// GetLatestDailyJobForMacrobenchmarks will fetch and return the commit sha for which
+// the last daily job for macrobenchmarks was run
+func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
 	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and ( type != \"micro\" ) order by started_at desc limit 1"
 	rows, err := client.Select(query)
 	if err != nil {
@@ -615,4 +615,13 @@ func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, 
 		}
 	}
 	return false, nil
+}
+
+func DeleteExecution(client storage.SQLClient, gitRef, UUID, source string) error {
+	query := fmt.Sprintf("DELETE FROM execution WHERE uuid LIKE '%%%s%%' AND git_ref LIKE '%%%s%%' AND source = '%s'", UUID, gitRef, source)
+	_, err := client.Select(query)
+	if err != nil {
+		return err
+	}
+	return nil
 }

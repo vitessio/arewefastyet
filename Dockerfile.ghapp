@@ -1,0 +1,38 @@
+# Copyright 2023 The Vitess Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+FROM golang:1.21.1-bookworm AS build-stage
+
+WORKDIR /build
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+# Build arewefastyet
+RUN CGO_ENABLED=0 GOOS=linux go build -o /arewefastyetcli ./go/main.go
+
+FROM debian:bookworm AS run-stage
+
+# Copy the source code to the working directory
+COPY --from=build-stage /arewefastyetcli /arewefastyetcli
+
+EXPOSE 8181
+
+# Configuration files MUST be attached to the container using a volume.
+# The configuration files are not mounted on the Docker image for obvious
+# security reasons.
+CMD ["/arewefastyetcli", "ghapp", "--config", "/config/config.yaml", "--secrets", "/config/secrets.yaml"]

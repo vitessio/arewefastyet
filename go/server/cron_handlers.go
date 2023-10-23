@@ -72,6 +72,9 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 
 	// We compare main with the previous hash of main and with the latest release
 	for configType, config := range configs {
+		if config.skip {
+			continue
+		}
 		if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 			continue
 		}
@@ -121,6 +124,9 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 		currVersion.Patch += 1
 
 		for configType, config := range configs {
+			if config.skip {
+				continue
+			}
 			if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 				continue
 			}
@@ -212,6 +218,9 @@ func (s *Server) pullRequestsCronHandler() {
 				continue
 			}
 			for configType, config := range configs {
+				if config.skip {
+					continue
+				}
 				if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > currVersion.Major {
 					continue
 				}
@@ -231,6 +240,7 @@ func (s *Server) pullRequestsCronHandler() {
 		}
 	}
 	for _, element := range elements {
+		s.removePRFromQueue(element)
 		s.addToQueue(element)
 	}
 }
@@ -275,6 +285,9 @@ func (s *Server) tagsCronHandler() {
 	for _, release := range releases {
 		source := exec.SourceTag + release.Name
 		for configType, config := range configs {
+			if config.skip {
+				continue
+			}
 			if minVersion := config.v.GetInt(keyMinimumVitessVersion); minVersion > release.Version.Major {
 				continue
 			}

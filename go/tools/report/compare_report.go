@@ -115,16 +115,16 @@ func GenerateCompareReport(client storage.SQLClient, metricsClient *influxdb.Cli
 			if len(macroCompArr) > 0 {
 				macroComp := macroCompArr[0]
 				macroTable = append(macroTable, []tableCell{{value: strings.ToUpper(key), styleIndex: 2}})
-				macroTable = append(macroTable, []tableCell{{value: "TPS", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.TPS), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.TPS), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "QPS Reads", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Reads), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Reads), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "QPS Writes", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Writes), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Writes), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "QPS Total", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Total), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Total), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "QPS Others", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.QPS.Other), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.QPS.Other), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "Latency", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Latency), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Latency), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "Errors", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Errors), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Errors), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "Reconnects", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Reconnects), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Reconnects), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "Time", styleIndex: 0}, {value: strconv.Itoa(macroComp.Reference.Result.Time), styleIndex: 1}, {value: strconv.Itoa(macroComp.Compare.Result.Time), styleIndex: 1}})
-				macroTable = append(macroTable, []tableCell{{value: "Threads", styleIndex: 0}, {value: convertFloatToString(macroComp.Reference.Result.Threads), styleIndex: 1}, {value: convertFloatToString(macroComp.Compare.Result.Threads), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "TPS", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.TPS), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.TPS), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Reads", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.QPS.Reads), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.QPS.Reads), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Writes", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.QPS.Writes), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.QPS.Writes), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Total", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.QPS.Total), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.QPS.Total), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "QPS Others", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.QPS.Other), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.QPS.Other), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Latency", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.Latency), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.Latency), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Errors", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.Errors), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.Errors), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Reconnects", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.Reconnects), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.Reconnects), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Time", styleIndex: 0}, {value: strconv.Itoa(macroComp.Right.Result.Time), styleIndex: 1}, {value: strconv.Itoa(macroComp.Left.Result.Time), styleIndex: 1}})
+				macroTable = append(macroTable, []tableCell{{value: "Threads", styleIndex: 0}, {value: convertFloatToString(macroComp.Right.Result.Threads), styleIndex: 1}, {value: convertFloatToString(macroComp.Left.Result.Threads), styleIndex: 1}})
 			}
 		}
 		// write the table to pdf
@@ -145,11 +145,11 @@ func GenerateCompareReport(client storage.SQLClient, metricsClient *influxdb.Cli
 		// range over all the microbenchmarks
 		for _, microComp := range microsMatrix {
 			microTable = append(microTable, []tableCell{{value: microComp.PkgName + "." + microComp.SubBenchmarkName, styleIndex: 2}})
-			microTable = append(microTable, []tableCell{{value: "Ops", styleIndex: 0}, {value: convertFloatToString(microComp.Current.Ops), styleIndex: 1}, {value: convertFloatToString(microComp.Last.Ops), styleIndex: 1}})
-			microTable = append(microTable, []tableCell{{value: "NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.NSPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.NSPerOp), styleIndex: 1}})
-			microTable = append(microTable, []tableCell{{value: "MBPerSec", styleIndex: 0}, {value: convertFloatToString(microComp.Current.MBPerSec), styleIndex: 1}, {value: convertFloatToString(microComp.Last.MBPerSec), styleIndex: 1}})
-			microTable = append(microTable, []tableCell{{value: "BytesPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.BytesPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.BytesPerOp), styleIndex: 1}})
-			microTable = append(microTable, []tableCell{{value: "AllocsPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Current.AllocsPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Last.AllocsPerOp), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "Ops", styleIndex: 0}, {value: convertFloatToString(microComp.Right.Ops), styleIndex: 1}, {value: convertFloatToString(microComp.Left.Ops), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Right.NSPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Left.NSPerOp), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "MBPerSec", styleIndex: 0}, {value: convertFloatToString(microComp.Right.MBPerSec), styleIndex: 1}, {value: convertFloatToString(microComp.Left.MBPerSec), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "BytesPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Right.BytesPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Left.BytesPerOp), styleIndex: 1}})
+			microTable = append(microTable, []tableCell{{value: "AllocsPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Right.AllocsPerOp), styleIndex: 1}, {value: convertFloatToString(microComp.Left.AllocsPerOp), styleIndex: 1}})
 			microTable = append(microTable, []tableCell{{value: "Ratio of NSPerOp", styleIndex: 0}, {value: convertFloatToString(microComp.Diff.NSPerOp), styleIndex: 1}})
 		}
 		// write the table to pdf

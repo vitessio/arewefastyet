@@ -10,21 +10,12 @@ WorkingDirectory={{vitess_root}}
 Type=oneshot
 User={{vitess_user}}
 ExecStart=/bin/bash -c 'vtctl \
-	{% if vitess_version_name != "latest" and vitess_version_name != "v_14" %}
-		-topo_implementation ${TOPO_IMPLEMENTATION} \
-		-topo_global_root ${TOPO_GLOBAL_ROOT} \
-		-topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \
-		AddCellInfo \
-		-root ${CELL_ROOT} \
-		-server_address ${CELL_TOPO_SERVER} \
-	{% else %}
 		--topo_implementation ${TOPO_IMPLEMENTATION} \
 		--topo_global_root ${TOPO_GLOBAL_ROOT} \
 		--topo_global_server_address ${TOPO_GLOBAL_SERVER_ADDRESS} \
 		AddCellInfo -- \
 		--root ${CELL_ROOT} \
 		--server_address ${CELL_TOPO_SERVER} \
-	{% endif %}
     %i || /bin/true'
 RemainAfterExit=true
 StandardOutput=journal

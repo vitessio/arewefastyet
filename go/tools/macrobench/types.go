@@ -24,15 +24,12 @@ import (
 
 type (
 	// Type determines the type of a macro benchmark.
-	// For instance a macro benchmark can be OLTP or TPCC.
 	Type string
 )
 
 const (
 	OLTP = Type("oltp")
 	TPCC = Type("tpcc")
-
-	IncorrectMacroBenchmarkType = "incorrect macrobenchmark type"
 )
 
 // Type implements Cobra flag.Value interface.

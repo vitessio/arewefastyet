@@ -84,15 +84,20 @@ type (
 	// Comparison contains two Details and their difference in a
 	// Result field.
 	Comparison struct {
-		Reference, Compare Details
-		Diff               Result
-		DiffMetrics        metrics.ExecutionMetrics
+		Right, Left Details
+		Diff        Result
+		DiffMetrics metrics.ExecutionMetrics
 	}
 
 	ResultsArray []Result
 	DetailsArray []Details
 
 	ComparisonArray []Comparison
+
+	DailySummary struct {
+		CreatedAt *time.Time
+		QPSTotal  float64
+	}
 )
 
 func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
@@ -114,30 +119,44 @@ func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects
 // CompareDetailsArrays compare two DetailsArray and return
 // their comparison in a ComparisonArray.
 func CompareDetailsArrays(references, compares DetailsArray) (compared ComparisonArray) {
+	emptyCmp := Comparison{
+		Right: Details{
+			Metrics: metrics.NewExecMetrics(),
+		},
+		Left: Details{
+			Metrics: metrics.NewExecMetrics(),
+		},
+		DiffMetrics: metrics.NewExecMetrics(),
+	}
 	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
-		var cmp Comparison
+		cmp := emptyCmp
 		if i < len(references) {
-			cmp.Reference = references[i]
+			cmp.Right = references[i]
 		}
 		if i < len(compares) {
-			cmp.Compare = compares[i]
+			cmp.Left = compares[i]
 		}
-		if cmp.Compare.GitRef != "" && cmp.Reference.GitRef != "" {
-			cmp.Diff.QPS.Total = (cmp.Reference.Result.QPS.Total - cmp.Compare.Result.QPS.Total) / cmp.Reference.Result.QPS.Total * 100
-			cmp.Diff.QPS.Reads = (cmp.Reference.Result.QPS.Reads - cmp.Compare.Result.QPS.Reads) / cmp.Reference.Result.QPS.Reads * 100
-			cmp.Diff.QPS.Writes = (cmp.Reference.Result.QPS.Writes - cmp.Compare.Result.QPS.Writes) / cmp.Reference.Result.QPS.Writes * 100
-			cmp.Diff.QPS.Other = (cmp.Reference.Result.QPS.Other - cmp.Compare.Result.QPS.Other) / cmp.Reference.Result.QPS.Other * 100
-			cmp.Diff.TPS = (cmp.Reference.Result.TPS - cmp.Compare.Result.TPS) / cmp.Reference.Result.TPS * 100
-			cmp.Diff.Latency = (cmp.Compare.Result.Latency - cmp.Reference.Result.Latency) / cmp.Compare.Result.Latency * 100
-			cmp.Diff.Reconnects = (cmp.Reference.Result.Reconnects - cmp.Compare.Result.Reconnects) / cmp.Reference.Result.Reconnects * 100
-			cmp.Diff.Errors = (cmp.Compare.Result.Errors - cmp.Reference.Result.Errors) / cmp.Compare.Result.Errors * 100
-			cmp.Diff.Time = int((float64(cmp.Reference.Result.Time) - float64(cmp.Compare.Result.Time)) / float64(cmp.Reference.Result.Time) * 100)
-			cmp.Diff.Threads = (cmp.Reference.Result.Threads - cmp.Compare.Result.Threads) / cmp.Reference.Result.Threads * 100
+		if cmp.Left.GitRef != "" && cmp.Right.GitRef != "" {
+			compareResult := cmp.Left.Result
+			referenceResult := cmp.Right.Result
+			cmp.Diff.QPS.Total = (referenceResult.QPS.Total - compareResult.QPS.Total) / compareResult.QPS.Total * 100
+			cmp.Diff.QPS.Reads = (referenceResult.QPS.Reads - compareResult.QPS.Reads) / compareResult.QPS.Reads * 100
+			cmp.Diff.QPS.Writes = (referenceResult.QPS.Writes - compareResult.QPS.Writes) / compareResult.QPS.Writes * 100
+			cmp.Diff.QPS.Other = (referenceResult.QPS.Other - compareResult.QPS.Other) / compareResult.QPS.Other * 100
+			cmp.Diff.TPS = (referenceResult.TPS - compareResult.TPS) / compareResult.TPS * 100
+			cmp.Diff.Latency = (compareResult.Latency - referenceResult.Latency) / referenceResult.Latency * 100
+			cmp.Diff.Reconnects = (compareResult.Reconnects - referenceResult.Reconnects) / referenceResult.Reconnects * 100
+			cmp.Diff.Errors = (compareResult.Errors - referenceResult.Errors) / referenceResult.Errors * 100
+			cmp.Diff.Time = int(float64(compareResult.Time) - (float64(referenceResult.Time))/float64(referenceResult.Time)*100)
+			cmp.Diff.Threads = (compareResult.Threads - referenceResult.Threads) / referenceResult.Threads * 100
 			awftmath.CheckForNaN(&cmp.Diff, 0)
 			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
-			cmp.DiffMetrics = metrics.CompareTwo(cmp.Compare.Metrics, cmp.Reference.Metrics)
+			cmp.DiffMetrics = metrics.CompareTwo(cmp.Left.Metrics, cmp.Right.Metrics)
 		}
 		compared = append(compared, cmp)
+	}
+	if len(compared) == 0 {
+		compared = append(compared, emptyCmp)
 	}
 	return compared
 }
@@ -277,8 +296,9 @@ func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient s
 // GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
 // The type can either be OLTP or TPCC. Using that type, the function will generate a query using
 // the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	upperMacroType := macroType.ToUpper().String()
+func GetResultsForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
+	macrodetails = []Details{}
+	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
@@ -302,6 +322,30 @@ func GetResultsForLastDays(macroType Type, source string, planner PlannerVersion
 		macrodetails = append(macrodetails, res)
 	}
 	return macrodetails, nil
+}
+
+func GetSummaryForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (dailySummary []DailySummary, err error) {
+	upperMacroType := strings.ToUpper(macroType)
+	query := "SELECT e.finished_at, results.total_qps " +
+		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
+		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
+		"ORDER BY e.finished_at "
+
+	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	for result.Next() {
+		var res DailySummary
+		err = result.Scan(&res.CreatedAt, &res.QPSTotal)
+		if err != nil {
+			return nil, err
+		}
+		dailySummary = append(dailySummary, res)
+	}
+	return
 }
 
 // GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
