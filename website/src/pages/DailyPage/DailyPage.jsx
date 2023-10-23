@@ -23,6 +23,8 @@ import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
 import Hero from "./components/Hero";
 
+import { formatByteForGB } from "../../utils/Utils";
+
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState(
