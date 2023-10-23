@@ -29,7 +29,6 @@ export default function Hero() {
       <div className="flex flex-1">
         <div className="flex flex-col gap-y-8 flex-1 ml-8">
           <div className="flex flex-col bg-background flex-1 p-10 rounded-3xl gap-y-2">
-            <h3 className="text-4xl font-semibold">Vitess Introduces</h3>
             <h1 className="text-6xl font-bold text-primary">arewefastyet</h1>
             <p className="text-lg font-normal mt-5 whitespace-nowrap">
               A Benchmarking System for Vitess

@@ -50,6 +50,7 @@ const (
 	flagBenchmarkConfigPath                  = "web-benchmark-config-path"
 	flagFilterBySource                       = "web-source-filter"
 	flagExcludeFilterBySource                = "web-source-exclude-filter"
+	flagRequestRunKey                        = "web-request-run-key"
 
 	// keyMinimumVitessVersion is used to define on which minimum Vitess version a given
 	// benchmark should be run. Only the major version is counted. This key/value is located
@@ -94,6 +95,8 @@ type Server struct {
 
 	ghApp *github.App
 
+	requestRunKey string
+
 	// Mode used to run the server.
 	Mode
 }
@@ -113,6 +116,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&s.prLabelTriggerV3, flagPullRequestLabelTriggerWithPlannerV3, "Benchmark me (V3)", "GitHub Pull Request label that will trigger the execution of new execution using the V3 planner.")
 	cmd.Flags().StringSliceVar(&s.sourceFilter, flagFilterBySource, nil, "List of execution source that should be run. By default, all sources are ran.")
 	cmd.Flags().StringSliceVar(&s.excludeSourceFilter, flagExcludeFilterBySource, nil, "List of execution source to not execute. By default, all sources are ran.")
+	cmd.Flags().StringVar(&s.requestRunKey, flagRequestRunKey, "", "Key to authenticate requests for custom benchmark runs.")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagVitessPath, cmd.Flags().Lookup(flagVitessPath))
@@ -125,6 +129,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagPullRequestLabelTriggerWithPlannerV3, cmd.Flags().Lookup(flagPullRequestLabelTriggerWithPlannerV3))
 	_ = viper.BindPFlag(flagFilterBySource, cmd.Flags().Lookup(flagFilterBySource))
 	_ = viper.BindPFlag(flagExcludeFilterBySource, cmd.Flags().Lookup(flagExcludeFilterBySource))
+	_ = viper.BindPFlag(flagRequestRunKey, cmd.Flags().Lookup(flagRequestRunKey))
 
 	s.slackConfig.AddToCommand(cmd)
 	if s.dbCfg == nil {
@@ -233,6 +238,8 @@ func (s *Server) Run() error {
 	s.router.GET("/api/daily/summary", s.getDailySummary)
 	s.router.GET("/api/daily", s.getDaily)
 	s.router.GET("/api/status/stats", s.getStatusStats)
+	s.router.GET("/api/run/request", s.requestRun)
+	s.router.GET("/api/run/delete", s.deleteRun)
 
 	return s.router.Run(":" + s.port)
 }

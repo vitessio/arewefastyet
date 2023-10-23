@@ -23,6 +23,8 @@ import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
 import Hero from "./components/Hero";
 
+import { formatByteForGB } from "../../utils/Utils";
+
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState(
@@ -172,17 +174,17 @@ export default function DailyPage() {
 
     MemBytesData[0].data.push({
       x: xValue,
-      y: item.Metrics.TotalComponentsMemStatsAllocBytes,
+      y: formatByteForGB(item.Metrics.TotalComponentsMemStatsAllocBytes),
     });
 
     MemBytesData[1].data.push({
       x: xValue,
-      y: item.Metrics.ComponentsMemStatsAllocBytes.vtgate,
+      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vtgate),
     });
 
     MemBytesData[2].data.push({
       x: xValue,
-      y: item.Metrics.ComponentsMemStatsAllocBytes.vttablet,
+      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vttablet),
     });
   }
 

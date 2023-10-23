@@ -19,9 +19,11 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -347,3 +349,105 @@ func (s *Server) getStatusStats(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, stats)
 }
+
+func (s *Server) requestRun(c *gin.Context) {
+	benchmarkType := c.Query("type")
+	sha := c.Query("sha")
+	pswd := c.Query("key")
+	v := c.Query("version")
+
+	errStrFmt := "missing argument: %s"
+	if benchmarkType == "" {
+		errStr := fmt.Sprintf(errStrFmt, "type")
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	if sha == "" {
+		errStr := fmt.Sprintf(errStrFmt, "sha")
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	if v == "" {
+		errStr := fmt.Sprintf(errStrFmt, "version")
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	// check request run key is correct
+	if pswd != s.requestRunKey {
+		errStr := "unauthorized, wrong key"
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	// get version from URL
+	version, err := strconv.Atoi(v)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	currVersion := git.Version{Major: version}
+
+
+	configs := s.getConfigFiles()
+	cfg, ok := configs[strings.ToLower(benchmarkType)]
+	if !ok {
+		errMsg := "unknown benchmark type: " + strings.ToUpper(benchmarkType)
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errMsg})
+		slog.Error(errMsg)
+		return
+	}
+
+	// create execution element
+	elem := s.createSimpleExecutionQueueElement(cfg, "custom_run", sha, benchmarkType, string(macrobench.Gen4Planner), false, 0, currVersion)
+
+	// to new element to the queue
+	s.addToQueue(elem)
+
+	c.JSON(http.StatusCreated, "created")
+}
+
+func (s *Server) deleteRun(c *gin.Context) {
+	uuid := c.Query("uuid")
+	sha := c.Query("sha")
+	pswd := c.Query("key")
+
+	errStrFmt := "missing argument: %s"
+	if uuid == "" {
+		errStr := fmt.Sprintf(errStrFmt, "uuid")
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	if sha == "" {
+		errStr := fmt.Sprintf(errStrFmt, "sha")
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	// check request run key is correct
+	if pswd != s.requestRunKey {
+		errStr := "unauthorized, wrong key"
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	err := exec.DeleteExecution(s.dbClient, sha, uuid, "custom_run")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, "deleted")
+}
+

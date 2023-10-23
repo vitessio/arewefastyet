@@ -26,7 +26,7 @@ export default function HomePage() {
     <>
       <Hero />
       <HowItWorks />
-      <MicroAndMacro />
+      {/*<MicroAndMacro />*/}
       <Diagram />
     </>
   );

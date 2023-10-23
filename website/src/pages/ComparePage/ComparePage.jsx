@@ -92,53 +92,53 @@ export default function Compare() {
         </section>
       )}
 
-      {!isMicrobenchLoading && dataMicrobench && (
-        <section className="flex flex-col items-center">
-          <h3 className="my-6 text-primary text-2xl">Micro benchmarks</h3>
-          <div className="micro__thead space--between">
-            <span className="width--12em">Package</span>
-            <span className="width--14em">Benchmark Name</span>
-            <span className="width--18em hiddenMobile">
-              Number of Iterations
-            </span>
-            <span className="width--18em hiddenTablet">Time/op</span>
-            <span className="width--6em">More</span>
-          </div>
-          <figure className="micro__thead__line"></figure>
-          <div className="space--between--flex data__top hiddenMobile">
-            <div className="width--12em"></div>
-            <div className="width--14em"></div>
-            <div className="width--18em space--between--flex">
-              <span className="width--100">{gitRef.left.slice(0, 8)}</span>
-              <span className="width--100">{gitRef.right.slice(0, 8)}</span>
-              <span className="width--100">Diff %</span>
-            </div>
-            <div className="width--18em space--between--flex hiddenTablet">
-              <span className="width--100">{gitRef.left.slice(0, 8)}</span>
-              <span className="width--100">{gitRef.right.slice(0, 8)}</span>
-              <span className="width--100">Diff %</span>
-            </div>
-            <div className="width--6em"></div>
-          </div>
-          {dataMicrobench.length > 0 &&
-            dataMicrobench[0].PkgName !== "" &&
-            dataMicrobench[0].Name !== "" &&
-            dataMicrobench[0].SubBenchmarkName !== "" &&
-            dataMicrobench.map((micro, index) => {
-              const isEvenIndex = index % 2 === 0;
-              const backgroundGrey = isEvenIndex ? "grey--background" : "";
-              return (
-                <Microbench
-                  data={micro}
-                  key={index}
-                  className={backgroundGrey}
-                  gitRefLeft={gitRef.left.slice(0, 8)}
-                  gitRefRight={gitRef.right.slice(0, 8)}
-                />
-              );
-            })}
-        </section>
-      )}
+      {/*{!isMicrobenchLoading && dataMicrobench && (*/}
+      {/*  <section className="flex flex-col items-center">*/}
+      {/*    <h3 className="my-6 text-primary text-2xl">Micro benchmarks</h3>*/}
+      {/*    <div className="micro__thead space--between">*/}
+      {/*      <span className="width--12em">Package</span>*/}
+      {/*      <span className="width--14em">Benchmark Name</span>*/}
+      {/*      <span className="width--18em hiddenMobile">*/}
+      {/*        Number of Iterations*/}
+      {/*      </span>*/}
+      {/*      <span className="width--18em hiddenTablet">Time/op</span>*/}
+      {/*      <span className="width--6em">More</span>*/}
+      {/*    </div>*/}
+      {/*    <figure className="micro__thead__line"></figure>*/}
+      {/*    <div className="space--between--flex data__top hiddenMobile">*/}
+      {/*      <div className="width--12em"></div>*/}
+      {/*      <div className="width--14em"></div>*/}
+      {/*      <div className="width--18em space--between--flex">*/}
+      {/*        <span className="width--100">{gitRef.left.slice(0, 8)}</span>*/}
+      {/*        <span className="width--100">{gitRef.right.slice(0, 8)}</span>*/}
+      {/*        <span className="width--100">Diff %</span>*/}
+      {/*      </div>*/}
+      {/*      <div className="width--18em space--between--flex hiddenTablet">*/}
+      {/*        <span className="width--100">{gitRef.left.slice(0, 8)}</span>*/}
+      {/*        <span className="width--100">{gitRef.right.slice(0, 8)}</span>*/}
+      {/*        <span className="width--100">Diff %</span>*/}
+      {/*      </div>*/}
+      {/*      <div className="width--6em"></div>*/}
+      {/*    </div>*/}
+      {/*    {dataMicrobench.length > 0 &&*/}
+      {/*      dataMicrobench[0].PkgName !== "" &&*/}
+      {/*      dataMicrobench[0].Name !== "" &&*/}
+      {/*      dataMicrobench[0].SubBenchmarkName !== "" &&*/}
+      {/*      dataMicrobench.map((micro, index) => {*/}
+      {/*        const isEvenIndex = index % 2 === 0;*/}
+      {/*        const backgroundGrey = isEvenIndex ? "grey--background" : "";*/}
+      {/*        return (*/}
+      {/*          <Microbench*/}
+      {/*            data={micro}*/}
+      {/*            key={index}*/}
+      {/*            className={backgroundGrey}*/}
+      {/*            gitRefLeft={gitRef.left.slice(0, 8)}*/}
+      {/*            gitRefRight={gitRef.right.slice(0, 8)}*/}
+      {/*          />*/}
+      {/*        );*/}
+      {/*      })}*/}
+      {/*  </section>*/}
+      {/*)}*/}
     </>
   );
 }

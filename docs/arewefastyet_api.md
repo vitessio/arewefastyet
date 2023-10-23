@@ -32,6 +32,7 @@ arewefastyet api [flags]
       --web-port string                          Port used for the HTTP server (default "8080")
       --web-pr-label-trigger string              GitHub Pull Request label that will trigger the execution of new execution. (default "Benchmark me")
       --web-pr-label-trigger-planner-v3 string   GitHub Pull Request label that will trigger the execution of new execution using the V3 planner. (default "Benchmark me (V3)")
+      --web-request-run-key string               Key to authenticate requests for custom benchmark runs.
       --web-source-exclude-filter strings        List of execution source to not execute. By default, all sources are ran.
       --web-source-filter strings                List of execution source that should be run. By default, all sources are ran.
       --web-vitess-path string                   Absolute path where the vitess directory is located or where it should be cloned (default "/")
