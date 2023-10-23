@@ -13,24 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import useGlobalContext from "../contexts/GlobalContext";
 
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
-import { GlobalProvider } from "../contexts/GlobalContext";
-import Modal from "../common/Modal";
+export default function useTheme() {
+  const { theme, setTheme } = useGlobalContext();
 
-const Layout = () => {
-  return (
-    <GlobalProvider>
-      <Navbar />
-      <Outlet />
-      <Footer />
+  function set(newTheme) {
+    setTheme(newTheme);
+    setColors(getThemeColors());
+  }
 
-      <Modal />
-    </GlobalProvider>
-  );
-};
-
-export default Layout;
+  return { current: theme, set };
+}

@@ -13,24 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import { useEffect } from "react";
 
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
-import { GlobalProvider } from "../contexts/GlobalContext";
-import Modal from "../common/Modal";
+export default function useClickOutside(ref, callback) {
+  function handleClick(e) {
+    if (ref.current && !ref.current.contains(e.target)) {
+      callback();
+    }
+  }
 
-const Layout = () => {
-  return (
-    <GlobalProvider>
-      <Navbar />
-      <Outlet />
-      <Footer />
+  useEffect(() => {
+    document.addEventListener("click", handleClick);
 
-      <Modal />
-    </GlobalProvider>
-  );
-};
-
-export default Layout;
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  });
+}

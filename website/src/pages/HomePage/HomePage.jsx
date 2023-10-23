@@ -15,22 +15,19 @@ limitations under the License.
 */
 
 import React from "react";
-import { Outlet } from "react-router-dom";
-import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
-import { GlobalProvider } from "../contexts/GlobalContext";
-import Modal from "../common/Modal";
 
-const Layout = () => {
+import Hero from "./components/Hero";
+import HowItWorks from "./components/HowItWorks";
+import MicroAndMacro from "./components/MicroAndMacro";
+import Diagram from "./components/Diagram";
+
+export default function HomePage() {
   return (
-    <GlobalProvider>
-      <Navbar />
-      <Outlet />
-      <Footer />
-
-      <Modal />
-    </GlobalProvider>
+    <>
+      <Hero />
+      <HowItWorks />
+      {/*<MicroAndMacro />*/}
+      <Diagram />
+    </>
   );
-};
-
-export default Layout;
+}

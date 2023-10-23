@@ -13,24 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
 import React from "react";
-import { Outlet } from "react-router-dom";
-import Navbar from "../common/Navbar";
-import Footer from "../common/Footer";
-import { GlobalProvider } from "../contexts/GlobalContext";
-import Modal from "../common/Modal";
 
-const Layout = () => {
+export default function Hero({setGitRef}) {
   return (
-    <GlobalProvider>
-      <Navbar />
-      <Outlet />
-      <Footer />
-
-      <Modal />
-    </GlobalProvider>
+    <section className="h-[30vh] pt-[5vh] flex justify-center items-center">
+      <div className="p-[3px] bg-gradient-to-br from-primary to-accent rounded-full w-1/2 duration-300 focus-within:p-[1px]">
+        <input
+          type="text"
+          onChange={(e) => setGitRef(e.target.value)}
+          className="px-4 py-2 relative text-lg bg-background rounded-inherit w-full text-center focus:outline-none duration-inherit focus:border-none"
+          placeholder="Enter commit SHA"
+        />
+      </div>
+    </section>
   );
-};
-
-export default Layout;
+}

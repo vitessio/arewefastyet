@@ -1,0 +1,71 @@
+/*
+Copyright 2023 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* setting default background, text color and font */
+  html {
+    @apply bg-background text-front font-opensans scroll-smooth;
+  }
+
+  /* removing any margin and padding from body for future updates to tailwind base */
+  body {
+    @apply m-0 p-0;
+  }
+
+  :root {
+    @apply duration-700;
+  }
+
+  /* Declaring Themes */
+  :root {
+    --color-primary: 231 112 2;
+    --color-secondary: ;
+    --color-accent: 255 205 2;
+    --color-foreground: 26 26 26;
+    --color-background: 255 255 255;
+    --color-front: 26 26 26;
+    --color-back: 255 255 255;
+  }
+  :root[data-theme="dark"] {
+    --color-primary: 231 112 2;
+    --color-secondary: ;
+    --color-accent: 255 205 2;
+    --color-foreground: 255 255 255;
+    --color-background: 0 0 0;
+    --color-front: 255 255 255;
+    --color-back: 26 26 26;
+  }
+}
+
+@layer utilities {
+  .p-page {
+    @apply px-[5vw];
+  }
+
+  .absolute-cover {
+    @apply absolute top-0 left-0 w-full h-full;
+  }
+
+  .counter {
+    transition: --num 4s ease-out;
+    counter-set: num var(--num);
+    @apply after:content-[counter(num)];
+  }
+}
