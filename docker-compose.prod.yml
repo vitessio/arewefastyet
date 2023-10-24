@@ -23,13 +23,11 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.https.address=:443"
-      - "--entrypoints.https-ghapp.address=:8181"
       - "--certificatesresolvers.tlsresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.tlsresolver.acme.email=cncf-vitess-project@cncf.io"
       - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "443:443"
-      - "8181:8181"
     volumes:
       - "/var/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -70,22 +68,4 @@ services:
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-    network_mode: bridge
-
-  ghapp:
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.ghapp
-    image: "arewefastyet-ghapp"
-    container_name: "ghapp"
-    volumes:
-      - "./config/prod/config.yaml:/config/config.yaml"
-      - "./config/prod/secrets.yaml:/config/secrets.yaml"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ghapp.rule=Host(`benchmark.vitess.io`)"
-      - "traefik.http.routers.ghapp.entrypoints=https-ghapp"
-      - "traefik.http.routers.ghapp.tls.certresolver=tlsresolver"
-      - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
     network_mode: bridge
