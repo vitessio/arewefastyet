@@ -20,7 +20,6 @@ package github
 
 import (
 	"context"
-	"net/http"
 	"os"
 	"time"
 
@@ -66,29 +65,6 @@ func (a *App) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagSecretKey, cmd.Flags().Lookup(flagSecretKey))
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagInstallationID, cmd.Flags().Lookup(flagInstallationID))
-}
-
-func (a *App) Run() error {
-	prHandler := pullRequestHandler{
-		ClientCreator: a.cc,
-	}
-
-	webhookHandler := githubapp.NewEventDispatcher(
-		[]githubapp.EventHandler{prHandler},
-		a.webHookSecret,
-		githubapp.WithScheduler(
-			githubapp.AsyncScheduler(),
-		),
-	)
-
-	http.Handle("/ghapp"+githubapp.DefaultWebhookRoute, webhookHandler)
-
-	a.logger.Info().Msg("server running")
-	err := http.ListenAndServe(":"+a.port, webhookHandler)
-	if err != nil {
-		a.logger.Error().Err(err).Msg("failed to start server")
-	}
-	return err
 }
 
 func (a *App) Init() error {
