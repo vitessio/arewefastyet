@@ -172,6 +172,7 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	if err != nil {
 		return getOldVTGateQueryPlans(respBytes)
 	}
+	res := make(map[string]VTGateQueryPlanValue)
 	for key, plan := range response {
 		// keeping only select statements
 		if strings.HasPrefix(key, "select") {
@@ -180,9 +181,10 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 				return nil, err
 			}
 			plan.Instructions = string(jsonPlan)
+			res[key] = plan
 		}
 	}
-	return response, nil
+	return res, nil
 }
 
 func getOldVTGateQueryPlans(respBytes []byte) (VTGateQueryPlanMap, error) {
