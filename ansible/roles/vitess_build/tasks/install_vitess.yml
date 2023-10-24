@@ -20,4 +20,4 @@
         dest: /go/src/vitess.io/vitess
         version: "{{ vitess_git_version }}"
         refspec: "{{ vitess_git_version_fetch_pr if vitess_git_version_pr_nb is defined else '' | default('') }}"
-        force: false
+        force: true
