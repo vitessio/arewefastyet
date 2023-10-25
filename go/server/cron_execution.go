@@ -182,7 +182,7 @@ func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, e
 	return false, nil
 }
 
-func (s *Server) dailyExecutionQueueWatcher() {
+func (s *Server) cronExecutionQueueWatcher() {
 	for {
 		time.Sleep(time.Second * 1)
 		mtx.Lock()
