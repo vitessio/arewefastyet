@@ -42,14 +42,14 @@ export default function StatusPage() {
 
       {/* EXECUTION QUEUE */}
       {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
-        <ExecutionQueue data={dataQueue} />
+        <ExecutionQueue data={dataQueue} title={"Execution Queue"} />
       )}
 
       {/* PREVIOUS EXECUTIONS */}
       {!isLoadingPreviousExe &&
         dataPreviousExe &&
         dataPreviousExe.length > 0 && (
-          <PreviousExecutions data={dataPreviousExe} />
+          <PreviousExecutions data={dataPreviousExe} title={"Previous Executions"}/>
         )}
 
       {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}

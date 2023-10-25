@@ -20,7 +20,7 @@ import { twMerge } from "tailwind-merge";
 import DisplayList from "../../../common/DisplayList";
 
 export default function PreviousExecutions(props) {
-  const { data } = props;
+  const { data, title } = props;
 
   const [previousExecutions, setPreviousExecutions] = useState([]);
 
@@ -86,7 +86,7 @@ export default function PreviousExecutions(props) {
   return (
     <section className="p-page mt-20 flex flex-col">
       <h1 className="text-primary text-3xl my-5 text-center">
-        Previous Executions
+        {title}
       </h1>
       {previousExecutions.length > 0 && (
         <DisplayList data={previousExecutions} />
