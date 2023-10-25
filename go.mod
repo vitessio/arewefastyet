@@ -13,7 +13,6 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/influxdata/influxdb-client-go/v2 v2.12.3
-	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.12.0
 	github.com/palantir/go-githubapp v0.18.0
