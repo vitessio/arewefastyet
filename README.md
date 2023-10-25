@@ -29,14 +29,3 @@ The website lets us:
 * Compare two results for two git SHAs.
 * See micro and macro benchmarks results throughout different releases.
 * Compare performance between VTGate's v3 planner and Gen4 planner.
-
-## Read more
-
-Read more in our [docs](docs/README.md) section.
-
-## Architecture
-
-![arewefastyet architecture](./docs/architecture/arewefastyet_architecture.png)
-
-## SQL Schema
-![arewefastyet schema](./docs/architecture/sql/arewefastyet_schema.png)
