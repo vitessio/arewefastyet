@@ -62,7 +62,7 @@ func createIndividualCRON(schedule string, job func()) error {
 		return nil
 	}
 
-	c := cron.New()
+	c := cron.New(cron.WithLogger(cron.DefaultLogger))
 	_, err := c.AddFunc(schedule, job)
 	if err != nil {
 		return err
@@ -92,6 +92,9 @@ func (s *Server) createCrons() error {
 		if err != nil {
 			return err
 		}
+
+		// Trigger CRONs upon creation of the server
+		go c.f()
 	}
 	go s.cronExecutionQueueWatcher()
 	return nil
