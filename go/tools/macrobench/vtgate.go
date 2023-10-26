@@ -26,7 +26,6 @@ import (
 	"io"
 	"net/http"
 	"sort"
-	"strings"
 
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
@@ -174,15 +173,12 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	}
 	res := make(map[string]VTGateQueryPlanValue)
 	for key, plan := range response {
-		// keeping only select statements
-		if strings.HasPrefix(key, "select") {
-			jsonPlan, err := json.MarshalIndent(plan.Instructions, "", "\t")
-			if err != nil {
-				return nil, err
-			}
-			plan.Instructions = string(jsonPlan)
-			res[key] = plan
+		jsonPlan, err := json.MarshalIndent(plan.Instructions, "", "\t")
+		if err != nil {
+			return nil, err
 		}
+		plan.Instructions = string(jsonPlan)
+		res[key] = plan
 	}
 	return res, nil
 }
@@ -195,15 +191,12 @@ func getOldVTGateQueryPlans(respBytes []byte) (VTGateQueryPlanMap, error) {
 	}
 	planMap := VTGateQueryPlanMap{}
 	for _, plan := range response {
-		// keeping only select statements
-		if strings.HasPrefix(plan.Key, "select") {
-			jsonPlan, err := json.MarshalIndent(plan.Value.Instructions, "", "\t")
-			if err != nil {
-				return nil, err
-			}
-			plan.Value.Instructions = string(jsonPlan)
-			planMap[plan.Key] = plan.Value
+		jsonPlan, err := json.MarshalIndent(plan.Value.Instructions, "", "\t")
+		if err != nil {
+			return nil, err
 		}
+		plan.Value.Instructions = string(jsonPlan)
+		planMap[plan.Key] = plan.Value
 	}
 	return planMap, nil
 }
