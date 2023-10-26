@@ -148,11 +148,11 @@ func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metrics
 	if err != nil {
 		return err
 	}
-	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID)
+	totalQueriesExec, err := handleVTGateResults(mabcfg.vtgateWebPorts, sqlClient, mabcfg.execUUID, macrobenchID)
 	if err != nil {
 		return err
 	}
-	err = handleVTGateResults(mabcfg.vtgateWebPorts, sqlClient, mabcfg.execUUID, macrobenchID)
+	err = handleMetricsResults(totalQueriesExec, metricsClient, sqlClient, mabcfg.execUUID)
 	if err != nil {
 		return err
 	}
@@ -179,16 +179,20 @@ func createMetricsDatabaseClient(dbConfig *influxdb.Config) (client *influxdb.Cl
 	return
 }
 
-func handleVTGateResults(ports []string, sqlClient *psdb.Client, execUUID string, macrobenchID int) error {
+func handleVTGateResults(ports []string, sqlClient *psdb.Client, execUUID string, macrobenchID int) (int, error) {
 	plans, err := getVTGatesQueryPlans(ports)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return insertVTGateQueryMapToMySQL(sqlClient, execUUID, plans, macrobenchID)
+	var totalQueriesExec int
+	for _, value := range plans {
+		totalQueriesExec += value.ExecCount
+	}
+	return totalQueriesExec, insertVTGateQueryMapToMySQL(sqlClient, execUUID, plans, macrobenchID)
 }
 
-func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string) error {
-	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID)
+func handleMetricsResults(totalQueriesExec int, client *influxdb.Client, sqlClient *psdb.Client, execUUID string) error {
+	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, totalQueriesExec)
 	if err != nil {
 		return err
 	}

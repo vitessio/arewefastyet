@@ -75,18 +75,18 @@ type (
 
 // GetExecutionMetrics fetches and computes a single execution's metrics.
 // Metrics are fetched using the given influxdb.Client and execUUID.
-func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
+func GetExecutionMetrics(client influxdb.Client, execUUID string, totalQueriesExec int) (ExecutionMetrics, error) {
 	execMetrics := NewExecMetrics()
 
 	var err error
 	for _, component := range components {
-		execMetrics.ComponentsCPUTime[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponent, client.Config.Database, "0", "now()", execUUID, component))
+		execMetrics.ComponentsCPUTime[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponent, client.Config.Database, "0", "now()", execUUID, component), totalQueriesExec)
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
 		execMetrics.TotalComponentsCPUTime += execMetrics.ComponentsCPUTime[component]
 
-		execMetrics.ComponentsMemStatsAllocBytes[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponent, client.Config.Database, "0", "now()", execUUID, component))
+		execMetrics.ComponentsMemStatsAllocBytes[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponent, client.Config.Database, "0", "now()", execUUID, component), totalQueriesExec)
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
@@ -164,7 +164,7 @@ func GetExecutionMetricsSQL(client storage.SQLClient, execUUID string) (Executio
 
 // getSumFloatValueForQuery return the sum of a float value based on the given query, for
 // each row.
-func getSumFloatValueForQuery(client influxdb.Client, query string) (float64, error) {
+func getSumFloatValueForQuery(client influxdb.Client, query string, totalQueriesExec int) (float64, error) {
 	result, err := client.Select(query)
 	if err != nil {
 		return 0, err
@@ -174,6 +174,7 @@ func getSumFloatValueForQuery(client influxdb.Client, query string) (float64, er
 	for _, value := range result {
 		res += value["_value"].(float64)
 	}
+	res /= float64(totalQueriesExec)
 	return res, nil
 }
 
