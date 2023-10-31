@@ -18,7 +18,6 @@ import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 
 import Error from "../utils/Error/Error";
-import Layout from "../layouts/Layout";
 import MacroPage from "./MacroPage/MacroPage";
 import ComparePage from "./ComparePage/ComparePage";
 import PRsPage from "./PRsPage/PRsPage";
@@ -30,11 +29,12 @@ import PRPage from "./PRPage/PRPage";
 import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
 import MicroPage from "./MicroPage/MicroPage";
 import AdminLoginPage from "./AdminLoginPage/AdminLoginPage";
+import Layout from "../layout";
 
 const PublicRoute = () => {
   return (
     <Routes>
-      <Route element={<Layout />}>
+      <Route element={<Layout.Default />}>
         <Route index element={<HomePage />} />
 
         <Route path="/home" element={<HomePage />} />
@@ -54,7 +54,7 @@ const PublicRoute = () => {
         <Route path="*" element={<Error />} />
       </Route>
 
-      <Route path="temp" element={<Outlet />}>
+      <Route path="temp" element={<Layout.Admin />}>
         <Route path="admin/auth" element={<AdminLoginPage />} />
       </Route>
     </Routes>
