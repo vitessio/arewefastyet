@@ -15,10 +15,10 @@ limitations under the License.
 */
 
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 
 import Error from "../utils/Error/Error";
-import Layout from "../pages/Layout";
+import Layout from "../layouts/Layout";
 import MacroPage from "./MacroPage/MacroPage";
 import ComparePage from "./ComparePage/ComparePage";
 import PRsPage from "./PRsPage/PRsPage";
@@ -29,6 +29,7 @@ import SearchPage from "./SearchPage/SearchPage";
 import PRPage from "./PRPage/PRPage";
 import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
 import MicroPage from "./MicroPage/MicroPage";
+import AdminLoginPage from "./AdminLoginPage/AdminLoginPage";
 
 const PublicRoute = () => {
   return (
@@ -51,6 +52,10 @@ const PublicRoute = () => {
         <Route path="/pr/:pull_nb" element={<PRPage />} />
 
         <Route path="*" element={<Error />} />
+      </Route>
+
+      <Route path="temp" element={<Outlet />}>
+        <Route path="admin/auth" element={<AdminLoginPage />} />
       </Route>
     </Routes>
   );
