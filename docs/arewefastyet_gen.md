@@ -24,5 +24,4 @@ Top level command to generate files like documentation and reports
 * [arewefastyet](arewefastyet.md)	 - Nightly Benchmarks Project
 * [arewefastyet gen doc](arewefastyet_gen_doc.md)	 - Generates documentation for the CLI
 * [arewefastyet gen exec_metrics](arewefastyet_gen_exec_metrics.md)	 - For each execution, fetches the metrics from influxDB and store them to SQL if not already present.
-* [arewefastyet gen report](arewefastyet_gen_report.md)	 - Generate comparison between two sha commits of Vitess
 
