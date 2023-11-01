@@ -27,6 +27,22 @@ function Container(
 ) {
   const [data, setData] = useState<object>({});
 
+  function submitHandler(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    props.onSubmit(data);
+  }
+
+  return (
+    <form {...props} onSubmit={submitHandler}>
+      <MappedInputs setData={setData}>{props.children}</MappedInputs>
+    </form>
+  );
+}
+
+function MappedInputs(props: {
+  children: React.ReactNode;
+  setData: React.Dispatch<React.SetStateAction<object>>;
+}) {
   useEffect(() => {
     React.Children.forEach(props.children, (child) => {
       if (
@@ -35,37 +51,41 @@ function Container(
         child.props.type !== "submit" &&
         child.props.name
       ) {
-        setData((p) => ({
+        props.setData((p) => ({
           ...p,
           [child.props.name]:
-            child.props.defaultValue || child.props.value || null,
+            child.props.defaultValue || child.props.value || '',
         }));
       }
     });
   }, []);
 
-  function submitHandler(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    props.onSubmit(data);
-  }
-
   return (
-    <form {...props} onSubmit={submitHandler}>
+    <>
       {React.Children.map(props.children, (child, key) => {
         if (React.isValidElement(child))
           if (child.type === Input)
             return React.cloneElement(child as React.ReactElement, {
               key,
               onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-                setData((p) => ({
+                props.setData((p) => ({
                   ...p,
                   [child.props.name]: event.target.value,
                 }));
               },
             });
-          else return React.cloneElement(child);
+          else if (child.props.children)
+            return React.cloneElement(child as React.ReactElement, {
+              key,
+              children: (
+                <MappedInputs setData={props.setData}>
+                  {child.props.children}
+                </MappedInputs>
+              ),
+            });
+        return child;
       })}
-    </form>
+    </>
   );
 }
 
