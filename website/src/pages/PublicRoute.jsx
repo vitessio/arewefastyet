@@ -30,6 +30,8 @@ import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesCompa
 import MicroPage from "./MicroPage/MicroPage";
 import AdminLoginPage from "./AdminLoginPage/AdminLoginPage";
 import Layout from "../layout";
+import AdminPanelPage from "./AdminPanelPage/AdminPanelPage";
+import AdminBenchmarksPage from "./AdminBenchmarksPage/AdminBenchmarksPage";
 
 const PublicRoute = () => {
   return (
@@ -54,8 +56,11 @@ const PublicRoute = () => {
         <Route path="*" element={<Error />} />
       </Route>
 
-      <Route path="temp" element={<Layout.Admin />}>
-        <Route path="admin/auth" element={<AdminLoginPage />} />
+      <Route path="/admin/auth/login" element={<AdminLoginPage />} />
+
+      <Route path="admin" element={<Layout.Admin />}>
+        <Route index element={<AdminPanelPage />} />
+        <Route path="benchmarks" element={<AdminBenchmarksPage />} />
       </Route>
     </Routes>
   );

@@ -18,15 +18,18 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Modal from "../common/Modal";
 import ThemeToggleButton from "../common/ThemeToggleButton";
+import AdminSideNav from "../common/AdminSideNav";
 
 export default function Admin() {
   return (
     <>
-      <Outlet />
-      <Modal />
-      <div className="fixed bottom-5 right-5 z-[999] rounded-full">
-        <ThemeToggleButton className="text-2xl p-4" />
-      </div>
+      <main className="flex">
+        <AdminSideNav />
+        <div className="flex-1">
+          <Outlet />
+        </div>
+      </main>
+      <ThemeToggleButton className="fixed bottom-5 right-5" />
     </>
   );
 }
