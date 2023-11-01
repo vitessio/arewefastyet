@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="flex justify-between">
-              <Link to="/" className="px-6 py-2 rounded-md bg-[#D93036] text-back font-medium"> Cancel</Link>
+              <Link to="/" className="px-6 py-2 rounded-md bg-red-600 text-back font-medium"> Cancel</Link>
               <DataForm.Input className="px-6 py-2 rounded-md bg-foreground text-back font-medium cursor-pointer" type="submit" value="Login" />
             </div>
           </DataForm.Container>
