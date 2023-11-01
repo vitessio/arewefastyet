@@ -57,7 +57,7 @@ function AdminNavLink(props: AdminNavLinkProps) {
           isPending
             ? "pointer-events-none opacity-50"
             : isActive
-            ? "bg-primary"
+            ? "bg-primary pointer-events-none"
             : "hover:bg-background",
           props.className
         )
