@@ -23,6 +23,7 @@ interface ContainerProps {
   className?: string;
   defaultIndex?: number;
   placeholder?: string;
+  name?: string;
   onChange?: (event: { value: string }) => void;
 }
 
