@@ -14,23 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { BrowserRouter,Route,Routes } from 'react-router-dom'
-import React from 'react';
-import PublicRoute from './pages/PublicRoute';
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import React from "react";
+import PublicRoute from "./pages/PublicRoute";
+import { GlobalProvider } from "./contexts/GlobalContext";
 
 function App() {
-  
-
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/*' element={<PublicRoute/>}/>
-        </Routes>
-      </BrowserRouter>
+      <GlobalProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/*" element={<PublicRoute />} />
+          </Routes>
+        </BrowserRouter>
+      </GlobalProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
