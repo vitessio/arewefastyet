@@ -1,14 +1,15 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
+import Icon from "./Icon";
 
 // path relative to "/admin"
 const navItems = [
-  { title: "Dashboard", to: "/" },
-  { title: "Benchmarks", to: "/benchmarks" },
-  { title: "Logs", to: "/logs" },
-  { title: "Dummy", to: "/dummy" },
-];
+  { title: "Dashboard", to: "/", icon: "person" },
+  { title: "Benchmarks", to: "/benchmarks", icon: "ssidChart" },
+  { title: "Logs", to: "/logs", icon: "description" },
+  { title: "Dummy", to: "/dummy", icon: "key" },
+] as const;
 
 export default function AdminSideNav() {
   return (
@@ -19,14 +20,19 @@ export default function AdminSideNav() {
           alt="vitess logo"
           className="h-[1.23em] aspect-square"
         />
-        <h3 className="font-medium tracking-tight text-primary font-opensans">
+        <h3 className="font-medium tracking-tight text-primary font-opensans relative after:absolute after:top-full after:right-1 after:content-['admin'] after:text-xs">
           arewefastyet
         </h3>
       </div>
 
       <div className="flex-1 flex flex-col gap-y-1 my-8">
         {navItems.map((item, key) => (
-          <AdminNavLink to={`/admin${item.to}`} key={key}>
+          <AdminNavLink
+            to={`/admin${item.to}`}
+            key={key}
+            className="flex gap-x-3 items-center"
+            icon={item.icon}
+          >
             {item.title}
           </AdminNavLink>
         ))}
@@ -35,6 +41,7 @@ export default function AdminSideNav() {
       <AdminNavLink
         to="/admin/auth/logout"
         className="bg-red-600 text-white shadow"
+        icon="logout"
       >
         Logout
       </AdminNavLink>
@@ -45,6 +52,7 @@ export default function AdminSideNav() {
 interface AdminNavLinkProps {
   children?: React.ReactNode;
   className?: string;
+  icon?: React.ComponentPropsWithoutRef<typeof Icon>["icon"];
   to: string;
 }
 
@@ -53,7 +61,7 @@ function AdminNavLink(props: AdminNavLinkProps) {
     <NavLink
       className={({ isActive, isPending }) =>
         twMerge(
-          "w-full px-5 py-2 rounded-xl duration-150",
+          "w-full px-5 py-2 rounded-xl duration-150 flex items-center gap-x-3",
           isPending
             ? "pointer-events-none opacity-50"
             : isActive
@@ -64,6 +72,7 @@ function AdminNavLink(props: AdminNavLinkProps) {
       }
       to={props.to}
     >
+      {props.icon && <Icon icon={props.icon} className="text-2xl" />}
       {props.children}
     </NavLink>
   );
