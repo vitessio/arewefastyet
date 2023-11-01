@@ -75,18 +75,17 @@ function MappedInputs(props: {
                 }));
               },
             });
-          else if (child.type === Dropdown.Container){
+          else if (child.type === Dropdown.Container) {
             return React.cloneElement(child as React.ReactElement, {
               key,
-              onChange: (event : {value : string}) => {
+              onChange: (event: { value: string }) => {
                 props.setData((p) => ({
                   ...p,
                   [child.props.name]: event.value,
                 }));
               },
             });
-          }
-          else if (child.props.children)
+          } else if (child.props.children)
             return React.cloneElement(child as React.ReactElement, {
               key,
               children: (
@@ -101,17 +100,16 @@ function MappedInputs(props: {
   );
 }
 
-interface InputProps {
-  name: string;
-}
+type InputProps =
+  | {
+      type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
+      name: string;
+    }
+  | { type: "submit"; name?: string };
 
 type InputAttributes = React.InputHTMLAttributes<HTMLInputElement>;
 
-function Input(
-  props: InputProps &
-    Partial<InputAttributes> &
-    Required<Pick<InputAttributes, "name">>
-) {
+function Input(props: InputProps & Partial<InputAttributes>) {
   return <input {...props} />;
 }
 
