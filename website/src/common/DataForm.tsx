@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import React, { useEffect, useState } from "react";
+import Dropdown from "./Dropdown";
 
 interface ContainerProps {
   children?: React.ReactNode;
@@ -74,6 +75,17 @@ function MappedInputs(props: {
                 }));
               },
             });
+          else if (child.type === Dropdown.Container){
+            return React.cloneElement(child as React.ReactElement, {
+              key,
+              onChange: (event : {value : string}) => {
+                props.setData((p) => ({
+                  ...p,
+                  [child.props.name]: event.value,
+                }));
+              },
+            });
+          }
           else if (child.props.children)
             return React.cloneElement(child as React.ReactElement, {
               key,

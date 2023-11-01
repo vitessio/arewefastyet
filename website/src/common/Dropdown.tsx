@@ -15,23 +15,31 @@ limitations under the License.
 */
 import React, { useEffect, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
-import Icon from "../common/Icon";
+import Icon from "./Icon";
 import { twMerge } from "tailwind-merge";
 
-function Container(props) {
+interface ContainerProps {
+  children?: React.ReactNode;
+  className?: string;
+  defaultIndex?: number;
+  placeholder?: string;
+  onChange?: (event: { value: string }) => void;
+}
+
+function Container(props: ContainerProps) {
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(props.defaultIndex || 0);
 
-  const ref = useRef();
+  const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
 
-  let items = React.Children.map(
-    props.children,
-    (child) => `${child.props.children}`
-  );
+  let items =
+    React.Children.map(props.children, (child) => {
+      if (React.isValidElement(child)) return `${child.props.children}`;
+    }) || [];
 
   useClickOutside(ref, () => setOpen(false));
 
-  function handleOptionClick(index) {
+  function handleOptionClick(index: number) {
     setOpen(false);
     setSelectedIndex(index);
   }
@@ -41,7 +49,7 @@ function Container(props) {
   }, [selectedIndex]);
 
   useEffect(() => {
-    props.onChange({ value: items[selectedIndex] });
+    props.onChange && props.onChange({ value: items[selectedIndex] });
   }, [selectedIndex]);
 
   return (
@@ -75,7 +83,7 @@ function Container(props) {
         >
           {React.Children.map(props.children, (child, index) => {
             if (React.isValidElement(child) && child.type === Option)
-              return React.cloneElement(child, {
+              return React.cloneElement(child as React.ReactElement, {
                 index,
                 onClick: () => handleOptionClick(index),
                 isSelected: index === selectedIndex,
@@ -87,7 +95,14 @@ function Container(props) {
   );
 }
 
-function Option(props) {
+interface OptionProps {
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  children?: React.ReactNode;
+  isSelected?: boolean;
+}
+
+function Option(props: OptionProps) {
   return (
     <button
       className={twMerge("", props.className, props.isSelected && "bg-primary")}
