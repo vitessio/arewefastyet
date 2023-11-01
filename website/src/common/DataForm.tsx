@@ -17,8 +17,8 @@ limitations under the License.
 import React, { useEffect, useState } from "react";
 
 interface ContainerProps {
-  children: React.ReactNode;
-  onSubmit: (data: object) => void;
+  children?: React.ReactNode;
+  onSubmit?: (data: object) => void;
 }
 
 //Form implementation by @marsian83 (https://github.com/marsian83)
@@ -29,7 +29,7 @@ function Container(
 
   function submitHandler(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    props.onSubmit(data);
+    props.onSubmit && props.onSubmit(data);
   }
 
   return (
@@ -54,7 +54,7 @@ function MappedInputs(props: {
         props.setData((p) => ({
           ...p,
           [child.props.name]:
-            child.props.defaultValue || child.props.value || '',
+            child.props.defaultValue || child.props.value || "",
         }));
       }
     });
