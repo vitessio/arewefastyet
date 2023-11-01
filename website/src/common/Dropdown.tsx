@@ -57,6 +57,7 @@ function Container(props: ContainerProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
+        type="button"
         className={twMerge(
           "flex items-center justify-center duration-inherit",
           props.className
@@ -107,6 +108,7 @@ function Option(props: OptionProps) {
   return (
     <button
       className={twMerge("", props.className, props.isSelected && "bg-primary")}
+      type="button"
       onClick={props.onClick}
     >
       {props.children}
