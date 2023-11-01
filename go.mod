@@ -13,11 +13,9 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/influxdata/influxdb-client-go/v2 v2.12.3
-	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.12.0
 	github.com/palantir/go-githubapp v0.18.0
-	github.com/pkg/errors v0.9.1
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/zerolog v1.29.1
@@ -95,6 +93,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.16.0 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
@@ -131,7 +130,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
-	google.golang.org/grpc v1.56.1 // indirect
+	google.golang.org/grpc v1.56.3 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/DataDog/dd-trace-go.v1 v1.51.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

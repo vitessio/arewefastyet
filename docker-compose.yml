@@ -53,24 +53,6 @@ services:
       - "traefik.http.services.api.loadbalancer.server.port=8080"
     network_mode: bridge
 
-  ghapp:
-    restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile.ghapp
-    image: "arewefastyet-ghapp"
-    container_name: "ghapp"
-    volumes:
-      - "./config/dev/config.yaml:/config/config.yaml"
-      - "./config/dev/secrets.yaml:/config/secrets.yaml"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.ghapp.rule=Host(`localhost`)"
-      - "traefik.http.routers.ghapp.rule=PathPrefix(`/ghapp`)"
-      - "traefik.http.routers.ghapp.entrypoints=http"
-      - "traefik.http.services.ghapp.loadbalancer.server.port=8181"
-    network_mode: bridge
-
   frontend:
     build:
       context: ./website

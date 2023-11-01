@@ -57,12 +57,12 @@ var (
 	queue            executionQueue
 )
 
-func createIndividualDaily(schedule string, job func()) error {
+func createIndividualCRON(schedule string, job func()) error {
 	if schedule == "" {
 		return nil
 	}
 
-	c := cron.New()
+	c := cron.New(cron.WithLogger(cron.DefaultLogger))
 	_, err := c.AddFunc(schedule, job)
 	if err != nil {
 		return err
@@ -88,12 +88,15 @@ func (s *Server) createCrons() error {
 			continue
 		}
 		slog.Info("Starting the CRON ", c.name, " with schedule: ", c.schedule)
-		err := createIndividualDaily(c.schedule, c.f)
+		err := createIndividualCRON(c.schedule, c.f)
 		if err != nil {
 			return err
 		}
+
+		// Trigger CRONs upon creation of the server
+		go c.f()
 	}
-	go s.dailyExecutionQueueWatcher()
+	go s.cronExecutionQueueWatcher()
 	return nil
 }
 

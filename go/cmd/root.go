@@ -25,7 +25,6 @@ import (
 	"github.com/vitessio/arewefastyet/go/cmd/api"
 	"github.com/vitessio/arewefastyet/go/cmd/exec"
 	"github.com/vitessio/arewefastyet/go/cmd/gen"
-	"github.com/vitessio/arewefastyet/go/cmd/ghapp"
 	"github.com/vitessio/arewefastyet/go/cmd/macrobench"
 	"github.com/vitessio/arewefastyet/go/cmd/microbench"
 
@@ -68,7 +67,6 @@ func init() {
 	rootCmd.AddCommand(macrobench.MacroBenchCmd())
 	rootCmd.AddCommand(exec.ExecCmd())
 	rootCmd.AddCommand(gen.GenCmd())
-	rootCmd.AddCommand(ghapp.GHAppCmd())
 }
 
 // initConfig reads in config file and ENV variables if set.
