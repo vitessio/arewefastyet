@@ -36,6 +36,10 @@ export function GlobalProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    setTimeout(() => {
+      document.documentElement.style.transitionDuration = "700ms";
+    }, 100);
+
     if (theme) {
       document.documentElement.setAttribute("data-theme", theme);
       localStorage.setItem("vitess__arewefastyet__theme", theme);
