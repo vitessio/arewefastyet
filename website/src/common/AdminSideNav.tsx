@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
@@ -12,40 +12,52 @@ const navItems = [
 ] as const;
 
 export default function AdminSideNav() {
+  const [width, setWidth] = useState(0);
+
+  const navRef = useRef() as React.MutableRefObject<HTMLElement>;
+
+  useEffect(() => setWidth(navRef.current.offsetWidth), []);
+
   return (
-    <nav className="h-screen flex flex-col p-6 bg-foreground bg-opacity-10">
-      <div className="flex items-center gap-x-1 text-3xl pl-3">
-        <img
-          src="/logo.png"
-          alt="vitess logo"
-          className="h-[1.23em] aspect-square"
-        />
-        <h3 className="font-medium tracking-tight text-primary font-opensans relative after:absolute after:top-full after:right-1 after:content-['admin'] after:text-xs">
-          arewefastyet
-        </h3>
-      </div>
-
-      <div className="flex-1 flex flex-col gap-y-1 my-8">
-        {navItems.map((item, key) => (
-          <AdminNavLink
-            to={`/admin${item.to}`}
-            key={key}
-            className="flex gap-x-3 items-center"
-            icon={item.icon}
-          >
-            {item.title}
-          </AdminNavLink>
-        ))}
-      </div>
-
-      <AdminNavLink
-        to="/admin/auth/logout"
-        className="bg-red-600 text-white shadow"
-        icon="logout"
+    <>
+      <div style={{ width }} />
+      <nav
+        ref={navRef}
+        className="h-screen flex flex-col p-6 bg-foreground bg-opacity-10 fixed"
       >
-        Logout
-      </AdminNavLink>
-    </nav>
+        <div className="flex items-center gap-x-1 text-3xl pl-3">
+          <img
+            src="/logo.png"
+            alt="vitess logo"
+            className="h-[1.23em] aspect-square"
+          />
+          <h3 className="font-medium tracking-tight text-primary font-opensans relative after:absolute after:top-full after:right-1 after:content-['admin'] after:text-xs">
+            arewefastyet
+          </h3>
+        </div>
+
+        <div className="flex-1 flex flex-col gap-y-1 my-8">
+          {navItems.map((item, key) => (
+            <AdminNavLink
+              to={`/admin${item.to}`}
+              key={key}
+              className="flex gap-x-3 items-center"
+              icon={item.icon}
+            >
+              {item.title}
+            </AdminNavLink>
+          ))}
+        </div>
+
+        <AdminNavLink
+          to="/admin/auth/logout"
+          className="bg-red-600 text-white shadow"
+          icon="logout"
+        >
+          Logout
+        </AdminNavLink>
+      </nav>
+    </>
   );
 }
 
