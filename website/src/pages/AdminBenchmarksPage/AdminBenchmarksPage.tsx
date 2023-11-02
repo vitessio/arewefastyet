@@ -1,6 +1,7 @@
 import React from "react";
 import DataForm from "../../common/DataForm";
 import Dropdown from "../../common/Dropdown";
+import ExecutionQueue from "./components/ExecutionQueue";
 
 const benchmarkWorkloads = [
   "OLTP-SET",
@@ -49,12 +50,18 @@ export default function AdminBenchmarksPage() {
             </Dropdown.Container>
             <DataForm.Input
               type="submit"
-              className="cursor-pointer bg-primary px-6 py-2 rounded-md self-stretch font-medium text-back"
+              className="cursor-pointer bg-primary px-6 py-2 rounded-md self-stretch font-medium text-back duration-300 hover:brightness-125 hover:scale-105 active:scale-90 active:brightness-90"
               value="Request"
             />
           </DataForm.Container>
         </div>
       </section>
+
+      <figure className="p-page">
+        <div className="border border-front border-opacity-10" />
+      </figure>
+
+      <ExecutionQueue />
     </>
   );
 }
