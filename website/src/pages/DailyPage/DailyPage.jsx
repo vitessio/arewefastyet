@@ -43,6 +43,8 @@ export default function DailyPage() {
     textLoading: dailyTextLoading,
   } = useApiCall(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`);
 
+  console.log(dataDailySummary, "\nhjj", dataDaily);
+
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -49,7 +49,10 @@ export default function StatusPage() {
       {!isLoadingPreviousExe &&
         dataPreviousExe &&
         dataPreviousExe.length > 0 && (
-          <PreviousExecutions data={dataPreviousExe} title={"Previous Executions"}/>
+          <PreviousExecutions
+            data={dataPreviousExe}
+            title={"Previous Executions"}
+          />
         )}
 
       {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}
@@ -62,8 +65,10 @@ export default function StatusPage() {
           />
         </div>
       )}
-      
-      {errorQueue && <div className="my-10 text-center text-red-500">{errorQueue}</div>}
+
+      {errorQueue && (
+        <div className="my-10 text-center text-red-500">{errorQueue}</div>
+      )}
     </>
   );
 }
