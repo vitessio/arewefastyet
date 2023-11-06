@@ -19,7 +19,7 @@ import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
 
 import Hero from "./components/Hero";
-import ExecutionQueue from "./components/PreviousExecutions";
+import ExecutionQueue from "./components/ExecutionQueue";
 import PreviousExecutions from "./components/PreviousExecutions";
 
 export default function StatusPage() {
