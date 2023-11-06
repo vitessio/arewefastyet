@@ -32,6 +32,7 @@ import AdminLoginPage from "./AdminLoginPage/AdminLoginPage";
 import Layout from "../layout";
 import AdminPanelPage from "./AdminPanelPage/AdminPanelPage";
 import AdminBenchmarksPage from "./AdminBenchmarksPage/AdminBenchmarksPage";
+import TestingPage from "./TestingPage/TestingPage";
 
 const PublicRoute = () => {
   return (
@@ -57,6 +58,8 @@ const PublicRoute = () => {
       </Route>
 
       <Route path="/admin/auth/login" element={<AdminLoginPage />} />
+
+      <Route path="/test/api" element={<TestingPage />} />
 
       <Route path="admin" element={<Layout.Admin />}>
         <Route index element={<AdminPanelPage />} />
