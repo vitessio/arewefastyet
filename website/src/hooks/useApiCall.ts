@@ -1,24 +1,32 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { useEffect, useState } from "react";
+import { ApiEndpoint, ApiResponse } from "../types";
 
-export default function useFetch<T, I = undefined>(
-  url: string,
+const serverUrl = import.meta.env.VITE_API_URL;
+
+export default function useApiCall<T extends ApiEndpoint>(
+  uri: T,
   config?: AxiosRequestConfig & {
-    initial?: I;
     method?: "get" | "post" | "put" | "delete";
   }
 ) {
-  const [data, setData] = useState<T | I>(config?.initial as I);
+  const [data, setData] = useState<ApiResponse<T>>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>(null);
 
   async function loadData() {
     try {
-      const response = await axios[config?.method || "get"]<T>(url, config);
-
-      if (response.statusText !== "OK") {
-        throw new Error(`HTTP error status: ${response.status}`);
-      }
+      const response = await axios[config?.method || "get"]<ApiResponse<T>>(
+        uri,
+        {
+          baseURL: serverUrl,
+          timeout: 32_000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          ...config,
+        }
+      );
 
       setData(response.data);
     } catch (err) {
@@ -30,7 +38,7 @@ export default function useFetch<T, I = undefined>(
 
   useEffect(() => {
     loadData();
-  }, [url, config]);
+  }, [uri, config]);
 
   return [data, loading, error] as const;
 }

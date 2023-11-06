@@ -13,19 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React from "react";
-import useApiCall from "../../../utils/Hook";
+import useApiCall from "../../../hooks/useApiCall";
 
 const info = [
   { title: "Total Benchmarks", content: "Total" },
   { title: "Successful Benchmarks", content: "Finished" },
   { title: "Total Benchmarks (last 30 days)", content: "Last30Days" },
-];
+] as const;
 
 export default function Hero() {
-  const { data: dataStatusStats } = useApiCall(
-    `${import.meta.env.VITE_API_URL}status/stats`
-  );
+  const [stats] = useApiCall("/status/stats");
 
   return (
     <section className="flex h-[70vh] pt-[10vh] items-center p-page">
@@ -47,7 +46,9 @@ export default function Hero() {
             <div key={key} className="">
               <h4
                 className="counter text-7xl text-primary"
-                style={{ "--num": dataStatusStats[item.content] }}
+                style={
+                  { "--num": stats?.[item.content] } as React.CSSProperties
+                }
               ></h4>
               <p className="text-lg font-medium">{item.title}</p>
             </div>
