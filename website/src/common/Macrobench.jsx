@@ -16,7 +16,7 @@ limitations under the License.
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { formatByteForGB, fixed } from "../utils/Utils";
+import { formatByteForGB, fixed } from "../utils";
 
 export default function Macrobench({ data, gitRef, commits }) {
   return (

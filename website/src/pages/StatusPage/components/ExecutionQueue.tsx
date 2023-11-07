@@ -13,22 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../../utils/Utils";
-import { twMerge } from "tailwind-merge";
 import DisplayList from "../../../common/DisplayList";
+import { BenchmarkExecution, BenchmarkStatus } from "../../../types";
 
-export default function PreviousExecutions(props) {
-  const { data, title } = props;
+interface ExecutionQueueProps {
+  data: BenchmarkExecution<BenchmarkStatus.Ongoing>[];
+}
 
-  const [previousExecutions, setPreviousExecutions] = useState([]);
+export default function ExecutionQueue(props: ExecutionQueueProps) {
+  const { data } = props;
+
+  const [executionQueue, setExecutionQueue] = useState<DataType[]>([]);
 
   useEffect(() => {
     for (const entry of data) {
-      const newData = {};
-
-      newData["UUID"] = entry.uuid.slice(0, 8);
+      const newData: Partial<DataType> = {};
 
       newData["SHA"] = (
         <Link
@@ -43,11 +44,7 @@ export default function PreviousExecutions(props) {
 
       newData["Source"] = entry.source;
 
-      newData["Started"] = formatDate(entry.started_at) || "N/A";
-
-      newData["Finished"] = formatDate(entry.finished_at) || "N/A";
-
-      newData["Type"] = entry.type_of;
+      if (entry.type_of) newData["Type"] = entry.type_of;
 
       if (entry.pull_nb) {
         newData["PR"] = (
@@ -64,33 +61,23 @@ export default function PreviousExecutions(props) {
         newData["PR"] = <span></span>;
       }
 
-      newData["Go version"] = entry.golang_version;
-
-      newData["Status"] = (
-        <span
-          className={twMerge(
-            "text-lg text-white px-4 rounded-full",
-            entry.status === "failed" && "bg-[#dd1a2a]",
-            entry.status === "finished" && "bg-[#00aa00]",
-            entry.status === "started" && "bg-[#3a3aed]"
-          )}
-        >
-          {entry.status}
-        </span>
-      );
-
-      setPreviousExecutions((p) => [...p, newData]);
+      setExecutionQueue((p) => [...p, newData as DataType]);
     }
   }, []);
 
   return (
     <section className="p-page mt-20 flex flex-col">
       <h1 className="text-primary text-3xl my-5 text-center">
-        {title}
+        Execution Queue
       </h1>
-      {previousExecutions.length > 0 && (
-        <DisplayList data={previousExecutions} />
-      )}
+      {executionQueue.length > 0 && <DisplayList data={executionQueue} />}
     </section>
   );
+}
+
+interface DataType {
+  SHA: React.ReactNode;
+  Source: string;
+  Type: string;
+  PR: React.ReactNode;
 }

@@ -14,23 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
 import RingLoader from "react-spinners/RingLoader";
-import useApiCall from "../../utils/Hook";
+import useApiCall from "../../hooks/useApiCall";
 
 import Hero from "./components/Hero";
 import ExecutionQueue from "./components/ExecutionQueue";
 import PreviousExecutions from "./components/PreviousExecutions";
 
 export default function StatusPage() {
-  const {
-    data: dataQueue,
-    isLoading: isLoadingQueue,
-    error: errorQueue,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}queue`);
-  const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
-    `${import.meta.env.VITE_API_URL}recent`
-  );
+  const [queue, queueLoading, queueError] = useApiCall("/queue");
+  const [executions, executionsLoading, executionsError] =
+    useApiCall("/recent");
 
   return (
     <>
@@ -40,34 +34,27 @@ export default function StatusPage() {
         <div className="border-front border" />
       </figure>
 
-      {/* EXECUTION QUEUE */}
-      {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
-        <ExecutionQueue data={dataQueue} title={"Execution Queue"} />
+      {!queueLoading && queue?.length && <ExecutionQueue data={queue} />}
+
+      {!executionsLoading && executions?.length && (
+        <PreviousExecutions data={executions} />
       )}
 
-      {/* PREVIOUS EXECUTIONS */}
-      {!isLoadingPreviousExe &&
-        dataPreviousExe &&
-        dataPreviousExe.length > 0 && (
-          <PreviousExecutions
-            data={dataPreviousExe}
-            title={"Previous Executions"}
-          />
-        )}
-
       {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}
-      {(isLoadingPreviousExe || isLoadingQueue) && (
+      {(executionsLoading || queueLoading) && (
         <div className="flex justify-center w-full my-16">
           <RingLoader
-            loading={isLoadingPreviousExe || isLoadingQueue}
+            loading={executionsLoading || queueLoading}
             color="#E77002"
             size={300}
           />
         </div>
       )}
 
-      {errorQueue && (
-        <div className="my-10 text-center text-red-500">{errorQueue}</div>
+      {(queueError || executionsError) && (
+        <div className="my-10 text-center text-red-500">
+          {JSON.stringify([queueError, executionsError], null, 2)}
+        </div>
       )}
     </>
   );

@@ -19,7 +19,7 @@ import { Link, useParams } from "react-router-dom";
 import useApiCall from "../../utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
-import { formatDate, errorApi } from "../../utils/Utils";
+import { formatDate, errorApi } from "../../utils";
 
 export default function PRPage() {
   const { pull_nb } = useParams();

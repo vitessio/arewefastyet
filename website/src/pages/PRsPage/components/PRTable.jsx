@@ -15,7 +15,7 @@ limitations under the License.
 */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { formatDate } from "../../../utils/Utils";
+import { formatDate } from "../../../utils";
 import DisplayList from "../../../common/DisplayList";
 import Icon from "../../../common/Icon";
 

@@ -20,7 +20,7 @@ import RingLoader from "react-spinners/RingLoader";
 
 import Macrobench from "../../common/Macrobench";
 
-import { errorApi } from "../../utils/Utils";
+import { errorApi } from "../../utils";
 import Hero from "./components/Hero";
 
 const Macro = () => {

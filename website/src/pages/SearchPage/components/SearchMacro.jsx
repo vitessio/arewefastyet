@@ -17,7 +17,7 @@ limitations under the License.
 import React from "react";
 import PropTypes from "prop-types";
 
-import { fixed, formatByteForGB } from "../../../utils/Utils";
+import { fixed, formatByteForGB } from "../../../utils";
 import { Link } from "react-router-dom";
 
 export default function SearchMacro({ data, gitRef }) {

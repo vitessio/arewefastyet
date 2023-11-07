@@ -13,9 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from "react";
 
-export default function DisplayList(props) {
+interface DisplayListProps {
+  data: Array<object>;
+}
+
+export default function DisplayList(props: DisplayListProps) {
   const { data } = props;
 
   return (
@@ -38,7 +41,7 @@ export default function DisplayList(props) {
             >
               {Object.keys(val).map((item, key) => (
                 <td className="border-b py-3 text-center" key={key}>
-                  {val[item]}
+                  {val[item as keyof typeof val]}
                 </td>
               ))}
             </tr>

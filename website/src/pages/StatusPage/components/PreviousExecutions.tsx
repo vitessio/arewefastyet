@@ -15,16 +15,25 @@ limitations under the License.
 */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { formatDate } from "../../../utils";
+import { twMerge } from "tailwind-merge";
 import DisplayList from "../../../common/DisplayList";
+import { BenchmarkExecution, BenchmarkStatus } from "../../../types";
 
-export default function ExecutionQueue(props) {
+interface PreviousExecutionsProps {
+  data: BenchmarkExecution<BenchmarkStatus.Completed>[];
+}
+
+export default function PreviousExecutions(props: PreviousExecutionsProps) {
   const { data } = props;
 
-  const [executionQueue, setExecutionQueue] = useState([]);
+  const [previousExecutions, setPreviousExecutions] = useState<DataType[]>([]);
 
   useEffect(() => {
     for (const entry of data) {
-      const newData = {};
+      const newData: Partial<DataType> = {};
+
+      newData["UUID"] = entry.uuid.slice(0, 8);
 
       newData["SHA"] = (
         <Link
@@ -39,7 +48,11 @@ export default function ExecutionQueue(props) {
 
       newData["Source"] = entry.source;
 
-      if (entry.type_of) newData["Type"] = entry.type_of;
+      newData["Started"] = formatDate(entry.started_at) || "N/A";
+
+      newData["Finished"] = formatDate(entry.finished_at) || "N/A";
+
+      newData["Type"] = entry.type_of;
 
       if (entry.pull_nb) {
         newData["PR"] = (
@@ -56,16 +69,45 @@ export default function ExecutionQueue(props) {
         newData["PR"] = <span></span>;
       }
 
-      setExecutionQueue((p) => [...p, newData]);
+      newData["Go version"] = entry.golang_version;
+
+      newData["Status"] = (
+        <span
+          className={twMerge(
+            "text-lg text-white px-4 rounded-full",
+            entry.status === "failed" && "bg-[#dd1a2a]",
+            entry.status === "finished" && "bg-[#00aa00]",
+            entry.status === "started" && "bg-[#3a3aed]"
+          )}
+        >
+          {entry.status}
+        </span>
+      );
+
+      setPreviousExecutions((p) => [...p, newData as DataType]);
     }
   }, []);
 
   return (
     <section className="p-page mt-20 flex flex-col">
       <h1 className="text-primary text-3xl my-5 text-center">
-        Execution Queue
+        Previous Executions
       </h1>
-      {executionQueue.length > 0 && <DisplayList data={executionQueue} />}
+      {previousExecutions.length > 0 && (
+        <DisplayList data={previousExecutions} />
+      )}
     </section>
   );
+}
+
+interface DataType {
+  UUID: string;
+  SHA: React.ReactNode;
+  Source: string;
+  Started: string;
+  Finished: string;
+  Type: string;
+  PR: React.ReactNode;
+  "Go version": string;
+  Status: React.ReactNode;
 }

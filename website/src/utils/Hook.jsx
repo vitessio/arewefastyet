@@ -16,7 +16,7 @@ limitations under the License.
 
 import { useState, useEffect } from 'react';
 
-import { errorApi } from '../utils/Utils';
+import { errorApi } from '../utils';
 
 const useApiCall = (url) => {
   const [data, setData] = useState([]);

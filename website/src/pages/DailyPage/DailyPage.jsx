@@ -23,7 +23,7 @@ import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
 import Hero from "./components/Hero";
 
-import { formatByteForGB } from "../../utils/Utils";
+import { formatByteForGB } from "../../utils";
 
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
