@@ -1,17 +1,47 @@
-import { BenchmarkExecution, BenchmarkStatus } from ".";
+import { AxiosRequestConfig } from "axios";
+import { BenchmarkExecution, BenchmarkStatus, Macros, Micro } from ".";
 
-type ApiEndpointResponses = {
-  "/recent": BenchmarkExecution<BenchmarkStatus.Completed>[];
+type SimpleApiEndpoints = {
+  "/recent": {
+    response: BenchmarkExecution<BenchmarkStatus.Completed>[];
+  };
 
-  "/queue": BenchmarkExecution<BenchmarkStatus.Ongoing>[];
+  "/queue": {
+    response: BenchmarkExecution<BenchmarkStatus.Ongoing>[];
+  };
 
   "/status/stats": {
-    Total: number;
-    Finished: number;
-    Last30Days: number;
+    response: {
+      Total: number;
+      Finished: number;
+      Last30Days: number;
+    };
   };
 };
 
-export type ApiEndpoint = keyof ApiEndpointResponses;
+export type ApiEndpointsWithParams = {
+  "/search": {
+    response: { Macros: Macros; Micro: Micro };
+    params: { git_ref: string };
+  };
+};
 
-export type ApiResponse<T extends ApiEndpoint> = ApiEndpointResponses[T];
+type ApiEndpoints = SimpleApiEndpoints & ApiEndpointsWithParams;
+
+export type ApiEndpoint = keyof ApiEndpoints;
+
+export type ApiResponse<T extends ApiEndpoint> = ApiEndpoints[T]["response"];
+
+export type ApiParams<T extends ApiEndpoint> =
+  T extends keyof ApiEndpointsWithParams
+    ? ApiEndpointsWithParams[T]["params"]
+    : undefined;
+
+type BaseApiCallConfig = {
+  method?: "get" | "post" | "put" | "delete";
+};
+
+export type ApiCallConfig<T extends ApiEndpoint> = BaseApiCallConfig &
+  (ApiParams<T> extends undefined
+    ? AxiosRequestConfig
+    : Omit<AxiosRequestConfig, "params"> & { params: ApiParams<T> });

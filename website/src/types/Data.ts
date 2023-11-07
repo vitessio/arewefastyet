@@ -82,14 +82,14 @@ export interface MicroBenchmark {
 }
 
 export interface Macros {
-  OLTP: MacroBenchmark[];
-  "OLTP-READONLY": MacroBenchmark[];
+  OLTP: MacroBenchmark[] | null;
+  "OLTP-READONLY": MacroBenchmark[] | null;
   "OLTP-READONLY-OLAP": MacroBenchmark[] | null;
-  "OLTP-SET": MacroBenchmark[];
-  TPCC: MacroBenchmark[];
+  "OLTP-SET": MacroBenchmark[] | null;
+  TPCC: MacroBenchmark[] | null;
 }
 
-export type Micro = MicroBenchmark[];
+export type Micro = MicroBenchmark[] | null;
 
 export interface PR {
   ID: number;

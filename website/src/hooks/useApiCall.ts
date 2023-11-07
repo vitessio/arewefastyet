@@ -1,20 +1,19 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { useEffect, useState } from "react";
-import { ApiEndpoint, ApiResponse } from "../types";
+import { ApiCallConfig, ApiEndpoint, ApiResponse } from "../types";
 
 const serverUrl = import.meta.env.VITE_API_URL;
 
 export default function useApiCall<T extends ApiEndpoint>(
   uri: T,
-  config?: AxiosRequestConfig & {
-    method?: "get" | "post" | "put" | "delete";
-  }
+  config?: ApiCallConfig<T>
 ) {
   const [data, setData] = useState<ApiResponse<T>>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>(null);
 
   async function loadData() {
+    setLoading(true);
     try {
       const response = await axios[config?.method || "get"]<ApiResponse<T>>(
         uri,
@@ -38,7 +37,7 @@ export default function useApiCall<T extends ApiEndpoint>(
 
   useEffect(() => {
     loadData();
-  }, [uri, config]);
+  }, [uri, JSON.stringify(config)]);
 
   return [data, loading, error] as const;
 }
