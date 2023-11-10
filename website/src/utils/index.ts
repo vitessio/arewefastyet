@@ -29,7 +29,6 @@ export function formatDate(_date: string | number) {
   return `${month}/${day}/${year} ${hours}:${minutes}`;
 }
 
-//FORMATTING BYTES TO GB
 export function formatByteForGB(byte: number) {
   const byteValue = bytes(byte);
   if (byteValue === null) {

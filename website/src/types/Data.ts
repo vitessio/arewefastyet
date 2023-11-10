@@ -1,3 +1,4 @@
+import Macrobench from "../common/Macrobench";
 import { BenchmarkStatus } from "./enums";
 
 export type BenchmarkExecution<
@@ -91,6 +92,64 @@ export interface Macros {
 
 export type Micro = MicroBenchmark[] | null;
 
+export interface MacrobenchDiff {
+  Left: MacroBenchmark;
+  Right: MacroBenchmark;
+  Diff: Result;
+  DiffMetrics: Metrics;
+}
+
+export type MacrobenchComparison = [
+  {
+    type: "OLTP";
+    diff: MacrobenchDiff;
+  },
+  {
+    type: "OLTP-READONLY";
+    diff: MacrobenchDiff;
+  },
+  {
+    type: "OLTP-READONLY-OLAP";
+    diff: MacrobenchDiff;
+  },
+  {
+    type: "OLTP-SET";
+    diff: MacrobenchDiff;
+  },
+  {
+    type: "TPCC";
+    diff: MacrobenchDiff;
+  }
+];
+
+export type DailySummary = [
+  {
+    Name: "OLTP";
+    Data: DailySummaryData;
+  },
+  {
+    Name: "OLTP-READONLY";
+    Data: DailySummaryData;
+  },
+  {
+    Name: "OLTP-READONLY-OLAP";
+    Data: DailySummaryData;
+  },
+  {
+    Name: "OLTP-SET";
+    Data: DailySummaryData;
+  },
+  {
+    Name: "TPCC";
+    Data: DailySummaryData;
+  }
+];
+
+export interface DailySummaryData {
+  CreatedAt: string;
+  QPSTotal: number;
+}
+
 export interface PR {
   ID: number;
   Author: string;
@@ -98,4 +157,38 @@ export interface PR {
   CreatedAt: string;
   Base: string;
   Head: string;
+}
+
+export interface QueryPlanComparison {
+  Left: QueryPlan;
+  Right: QueryPlan;
+  SamePlan: boolean;
+  Key: string;
+  ExecCountDiff: number;
+  ExecTimeDiff: number;
+  RowsReturnedDiff: number;
+  ErrorsDiff: number;
+}
+
+export interface QueryPlan {
+  Key: string;
+  Value: {
+    QueryType: string;
+    Original: string;
+    Instructions: string;
+    ExecCount: number;
+    ExecTime: number;
+    ShardQueries: number;
+    RowsReturned: number;
+    RowsAffected: number;
+    Errors: number;
+    TablesUsed: string[] | null;
+  };
+}
+
+export interface GitRef {
+  Name: string;
+  CommitHash: string;
+  Version: { Major: number; Minor: number; Patch: number };
+  RCnumber: number;
 }

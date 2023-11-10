@@ -1,7 +1,7 @@
-import React from "react";
 import DataForm from "../../common/DataForm";
 import Dropdown from "../../common/Dropdown";
 import ExecutionQueue from "./components/ExecutionQueue";
+import dummyQueue from "./dummyQueue";
 
 const benchmarkWorkloads = [
   "OLTP-SET",
@@ -61,7 +61,7 @@ export default function AdminBenchmarksPage() {
         <div className="border border-front border-opacity-10" />
       </figure>
 
-      <ExecutionQueue />
+      <ExecutionQueue data={dummyQueue} />
     </>
   );
 }
