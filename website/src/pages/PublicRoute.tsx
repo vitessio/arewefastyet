@@ -39,31 +39,30 @@ const PublicRoute = () => {
       <Route element={<Layout.Default />}>
         <Route index element={<HomePage />} />
 
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/status" element={<StatusPage />} />
-        <Route path="/Daily" element={<DailyPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/compare" element={<ComparePage />} />
-        <Route path="/macro" element={<MacroPage />} />
+        <Route path="home" element={<HomePage />} />
+        <Route path="status" element={<StatusPage />} />
+        <Route path="Daily" element={<DailyPage />} />
+        <Route path="search" element={<SearchPage />} />
+        <Route path="compare" element={<ComparePage />} />
+        <Route path="macro" element={<MacroPage />} />
         <Route
-          path="/macrobench/queries/compare"
+          path="macrobench/queries/compare"
           element={<MacroQueriesComparePage />}
         />
         {/* <Route path="/micro" element={<MicroPage />} /> */}
-        <Route path="/pr" element={<PRsPage />} />
-        <Route path="/pr/:pull_nb" element={<PRPage />} />
+        <Route path="pr" element={<PRsPage />} />
+        <Route path="pr/:pull_nb" element={<PRPage />} />
 
         <Route path="*" element={<ErrorPage />} />
       </Route>
-
-      <Route path="/admin/auth/login" element={<AdminLoginPage />} />
-
-      <Route path="/test/api" element={<TestingPage />} />
 
       <Route path="admin" element={<Layout.Admin />}>
         <Route index element={<AdminPanelPage />} />
         <Route path="benchmarks" element={<AdminBenchmarksPage />} />
       </Route>
+
+      <Route path="admin/auth/login" element={<AdminLoginPage />} />
+      <Route path="test/api" element={<TestingPage />} />
     </Routes>
   );
 };

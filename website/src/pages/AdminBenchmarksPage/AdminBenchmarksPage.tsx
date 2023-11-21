@@ -1,7 +1,7 @@
 import DataForm from "../../common/DataForm";
 import Dropdown from "../../common/Dropdown";
+import useApiCall from "../../hooks/useApiCall";
 import ExecutionQueue from "./components/ExecutionQueue";
-import dummyQueue from "./dummyQueue";
 
 const benchmarkWorkloads = [
   "OLTP-SET",
@@ -12,6 +12,8 @@ const benchmarkWorkloads = [
 ];
 
 export default function AdminBenchmarksPage() {
+  const [queue, loading, error] = useApiCall("/queue");
+
   return (
     <>
       <section className="p-page my-16">
@@ -56,12 +58,14 @@ export default function AdminBenchmarksPage() {
           </DataForm.Container>
         </div>
       </section>
-
       <figure className="p-page">
         <div className="border border-front border-opacity-10" />
       </figure>
 
-      <ExecutionQueue data={dummyQueue} />
+      {!loading && queue && <ExecutionQueue data={queue} />}
+      {loading && (
+        <h3 className="text-center text-primary my-10">Loading queue</h3>
+      )}
     </>
   );
 }

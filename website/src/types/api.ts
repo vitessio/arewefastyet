@@ -16,11 +16,11 @@ import {
 type ApiEndpoints = [
   {
     uri: "/recent";
-    response: BenchmarkExecution<BenchmarkStatus.Completed>;
+    response: BenchmarkExecution<BenchmarkStatus.Completed>[];
   },
   {
     uri: "/queue";
-    response: BenchmarkExecution<BenchmarkStatus.Ongoing>;
+    response: BenchmarkExecution<BenchmarkStatus.Ongoing>[];
   },
   {
     uri: "/status/stats";
