@@ -64,7 +64,6 @@ all:
     vttablet:
       vars:
         vitess_memory_ratio: 0.8
-        vttablet_query_cache_size: 5000
         vttablet_max_goproc: 42
       hosts:
         DEVICE_IP_0:
