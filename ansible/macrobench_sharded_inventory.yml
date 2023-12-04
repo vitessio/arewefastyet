@@ -44,7 +44,6 @@ all:
         DEVICE_IP_0:
     vtgate:
       vars:
-        vtgate_query_cache_size: 5000
         vtgate_max_goproc: 42
       hosts:
         DEVICE_IP_0:
