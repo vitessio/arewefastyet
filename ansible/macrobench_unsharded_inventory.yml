@@ -43,7 +43,6 @@ all:
         DEVICE_IP_0:
     vtgate:
       vars:
-        vtgate_query_cache_size: 1000
         vtgate_max_goproc: 6
       hosts:
         DEVICE_IP_0:
