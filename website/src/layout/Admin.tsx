@@ -22,7 +22,7 @@ import admin from "../utils/admin";
 export default function Admin() {
   const navigate = useNavigate();
 
-  if (false && !admin.isAuthed()) {
+  if (!admin.isAuthed()) {
     navigate("/admin/auth/login");
   }
 
