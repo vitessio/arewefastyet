@@ -350,6 +350,19 @@ func (s *Server) getStatusStats(c *gin.Context) {
 	c.JSON(http.StatusOK, stats)
 }
 
+func (s *Server) validateAdminKey(c *gin.Context) {
+	pswd := c.Query("key")
+
+	if pswd != s.requestRunKey {
+		errStr := "unauthorized, wrong key"
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: errStr})
+		slog.Error(errStr)
+		return
+	}
+
+	c.JSON(http.StatusOK, "valid")
+}
+
 func (s *Server) requestRun(c *gin.Context) {
 	benchmarkType := c.Query("type")
 	sha := c.Query("sha")
@@ -394,7 +407,6 @@ func (s *Server) requestRun(c *gin.Context) {
 		return
 	}
 	currVersion := git.Version{Major: version}
-
 
 	configs := s.getConfigFiles()
 	cfg, ok := configs[strings.ToLower(benchmarkType)]
@@ -450,4 +462,3 @@ func (s *Server) deleteRun(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, "deleted")
 }
-

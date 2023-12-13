@@ -19,14 +19,14 @@ import Dropdown from "./Dropdown";
 
 interface ContainerProps {
   children?: React.ReactNode;
-  onSubmit?: (data: object) => void;
+  onSubmit?: (data: Record<string, string>) => void;
 }
 
 //Form implementation by @marsian83 (https://github.com/marsian83)
 function Container(
-  props: ContainerProps & React.FormHTMLAttributes<HTMLFormElement>
+  props: ContainerProps & Omit<React.FormHTMLAttributes<HTMLFormElement>, "onSubmit">
 ) {
-  const [data, setData] = useState<object>({});
+  const [data, setData] = useState<Record<string, string>>({});
 
   function submitHandler(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,7 +42,7 @@ function Container(
 
 function MappedInputs(props: {
   children: React.ReactNode;
-  setData: React.Dispatch<React.SetStateAction<object>>;
+  setData: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }) {
   useEffect(() => {
     React.Children.forEach(props.children, (child) => {

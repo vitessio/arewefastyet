@@ -47,3 +47,38 @@ export function fixed(value: number, f: number) {
 //ERROR API MESSAGE ERROR
 export const errorApi =
   "An error occurred while retrieving data from the API. Please try again.";
+
+export async function sha256(message: string) {
+  const msgBuffer = new TextEncoder().encode(message);
+
+  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
+export function saveTokenToLocalStorage(token: string) {
+  localStorage.setItem("onepanel_JWT_stored", token);
+}
+
+export function getTokenFromLocalStorage() {
+  const localCookie = localStorage.getItem("onepanel_JWT_stored");
+  if (!localCookie) return false;
+  return localCookie;
+}
+
+export function clearTokenFromLocalStorage() {
+  localStorage.removeItem("onepanel_JWT_stored");
+}
+
+export function deepCopy<T>(source: T) {
+  return JSON.parse(JSON.stringify(source)) as T;
+}
+
+export function equateObjects(a: object, b: object) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}

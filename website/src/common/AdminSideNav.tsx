@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
+import admin from "../utils/admin";
 
 // path relative to "/admin"
 const navItems = [
   { title: "Dashboard", to: "/", icon: "person" },
   { title: "Benchmarks", to: "/benchmarks", icon: "ssidChart" },
   { title: "Logs", to: "/logs", icon: "description" },
-  { title: "Dummy", to: "/dummy", icon: "key" },
+  // { title: "Dummy", to: "/dummy", icon: "key" },
 ] as const;
 
 export default function AdminSideNav() {
@@ -49,13 +50,12 @@ export default function AdminSideNav() {
           ))}
         </div>
 
-        <AdminNavLink
-          to="/admin/auth/logout"
-          className="bg-red-600 text-white shadow"
-          icon="logout"
+        <button
+          onClick={() => admin.logout()}
+          className="bg-red-600 text-white shadow w-full px-5 py-2 rounded-xl duration-150 flex items-center gap-x-3"
         >
-          Logout
-        </AdminNavLink>
+          <Icon icon={"logout"} className="text-2xl" /> Logout
+        </button>
       </nav>
     </>
   );

@@ -14,12 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
 import DataForm from "../../common/DataForm";
 import Icon from "../../common/Icon";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import admin from "../../utils/admin";
+import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 export default function AdminLoginPage() {
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  async function loginHandler(data: Record<string, string>) {
+    setLoading(true);
+    if (await admin.login(data.username, data.password)) {
+      navigate("/admin");
+    } else {
+      alert("Login failed")
+    }
+    setLoading(false);
+  }
+
+  if(admin.isAuthed()) {
+    navigate("/admin")
+  }
+
   return (
     <>
       <section className="h-screen flex justify-center items-center">
@@ -36,7 +55,7 @@ export default function AdminLoginPage() {
           </div>
           <DataForm.Container
             className="flex flex-col p-5 gap-y-5"
-            onSubmit={(data) => console.log(data)}
+            onSubmit={(data) => loginHandler(data)}
           >
             <div
               className="relative flex items-center p-2 gap-x-4 border border-front duration-300 rounded-md outline outline-transparent outline-offset-8 bg-foreground bg-opacity-5
@@ -65,8 +84,21 @@ export default function AdminLoginPage() {
             </div>
 
             <div className="flex justify-between">
-              <Link to="/" className="px-6 py-2 rounded-md bg-red-600 text-back font-medium"> Cancel</Link>
-              <DataForm.Input className="px-6 py-2 rounded-md bg-foreground text-back font-medium cursor-pointer" type="submit" value="Login" />
+              <Link
+                to="/"
+                className="px-6 py-2 rounded-md bg-red-600 text-back font-medium"
+              >
+                Cancel
+              </Link>
+              <DataForm.Input
+                disabled={loading}
+                className={twMerge(
+                  "px-6 py-2 rounded-md bg-foreground text-back font-medium cursor-pointer",
+                  loading && "opacity-50 cursor-not-allowed"
+                )}
+                type="submit"
+                value="Login"
+              />
             </div>
           </DataForm.Container>
         </div>

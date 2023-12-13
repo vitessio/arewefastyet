@@ -240,6 +240,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/status/stats", s.getStatusStats)
 	s.router.GET("/api/run/request", s.requestRun)
 	s.router.GET("/api/run/delete", s.deleteRun)
+	s.router.GET("/api/admin/validate-key", s.validateAdminKey)
 
 	return s.router.Run(":" + s.port)
 }

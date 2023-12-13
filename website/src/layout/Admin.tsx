@@ -14,13 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Modal from "../common/Modal";
+import { Outlet, useNavigate } from "react-router-dom";
 import ThemeToggleButton from "../common/ThemeToggleButton";
 import AdminSideNav from "../common/AdminSideNav";
+import admin from "../utils/admin";
 
 export default function Admin() {
+  const navigate = useNavigate();
+
+  if (false && !admin.isAuthed()) {
+    navigate("/admin/auth/login");
+  }
+
   return (
     <>
       <main className="flex">
