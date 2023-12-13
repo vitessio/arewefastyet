@@ -17,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DisplayList from "../../../common/DisplayList";
 import { BenchmarkExecution, BenchmarkStatus } from "../../../types";
+import admin from "../../../utils/admin";
 
 interface ExecutionQueueProps {
   data: BenchmarkExecution<BenchmarkStatus.Ongoing>[];
@@ -24,6 +25,15 @@ interface ExecutionQueueProps {
 
 export default function ExecutionQueue(props: ExecutionQueueProps) {
   const [executionQueue, setExecutionQueue] = useState<DataType[]>([]);
+  const [deleteLoading, setDeleteLoading] = useState(false)
+
+  function deleteHandler(uuid: string, sha : string) {
+    setDeleteLoading(false)
+
+    admin.deleteRun(uuid, sha)
+
+    setDeleteLoading(true)
+  }
 
   useEffect(() => {
     for (const entry of props.data) {
@@ -45,7 +55,7 @@ export default function ExecutionQueue(props: ExecutionQueueProps) {
       if (entry.type_of) newData["Workload"] = entry.type_of;
 
       newData[""] = (
-        <button className="px-5 py-1 rounded bg-red-600 text-white duration-300 hover:scale-105 hover:shadow hover:-translate-y-[2px]">
+        <button onClick={() => {deleteHandler(entry.git_ref, entry.git_ref)}} className="px-5 py-1 rounded bg-red-600 text-white duration-300 hover:scale-105 hover:shadow hover:-translate-y-[2px]">
           Cancel
         </button>
       );

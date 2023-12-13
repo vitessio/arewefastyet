@@ -61,7 +61,7 @@ const admin = {
   async login(username: string, password: string) {
     const key = await sha256(`${username}+${password}`);
 
-    const response = await client.post(`/admin/validate-key?key=${key}`);
+    const response = await client.get(`/admin/validate-key?key=${key}`);
 
     if (response.data.error || response.data.Error) {
       throw new Error(response.data.error || response.data.Error);
@@ -83,7 +83,31 @@ const admin = {
   logout() {
     clearTokenFromLocalStorage();
     clearKey();
-    location.reload()
+    location.reload();
+  },
+
+  async newRun(type: string, sha: string) {
+    const response = await client.get(
+      `/api/run/request?type=${type}&sha=${sha}&version=${"1"}`
+    );
+
+    if (response.status === 200) {
+      return true;
+    }
+
+    return false;
+  },
+
+  async deleteRun(uuid: string, sha: string) {
+    const response = await client.get(
+      `/api/run/request?uuid=${uuid}&sha=${sha}`
+    );
+
+    if (response.status === 200) {
+      return true;
+    }
+
+    return false;
   },
 };
 
