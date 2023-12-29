@@ -44,7 +44,6 @@ all:
         DEVICE_IP_0:
     vtgate:
       vars:
-        vtgate_query_cache_size: 5000
         vtgate_max_goproc: 42
       hosts:
         DEVICE_IP_0:
@@ -64,7 +63,6 @@ all:
     vttablet:
       vars:
         vitess_memory_ratio: 0.8
-        vttablet_query_cache_size: 5000
         vttablet_max_goproc: 42
       hosts:
         DEVICE_IP_0:
