@@ -1,5 +1,6 @@
 {
   "sharded": true,
+  "foreignKeyMode": "managed",
   "vindexes": {
     "hash": {
       "type": "hash"
