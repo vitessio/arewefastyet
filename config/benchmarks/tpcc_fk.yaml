@@ -1,6 +1,7 @@
 ## Exec configuration
 exec-type: tpcc_fk
 exec-schema: "./vitess-benchmark/tpcc_fk_vschema.json"
+minimum-version: 18
 
 ## Ansible
 ansible-inventory-file: macrobench_sharded_inventory.yml
