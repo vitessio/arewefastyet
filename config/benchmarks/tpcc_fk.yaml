@@ -4,7 +4,7 @@ exec-schema: "./vitess-benchmark/tpcc_fk_vschema.json"
 minimum-version: 18
 
 ## Ansible
-ansible-inventory-file: macrobench_sharded_inventory.yml
+ansible-inventory-file: macrobench_unsharded_inventory.yml
 ansible-playbook-file: macrobench.yml
 
 ## Macrobench cmd

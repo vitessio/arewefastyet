@@ -19,7 +19,6 @@ all:
   vars:
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "main"
-    macrobenchmark_vschema: "./vitess-benchmark/sysbench.json"
     cell: local
     keyspace: main
     provision: 1
@@ -28,7 +27,8 @@ all:
       hosts:
         DEVICE_IP_0:
       vars:
-        vtgate_web_ports: "15001,15002"
+
+        vtgate_web_ports: "15001,15002,15003"
     sysbench:
       hosts:
         DEVICE_IP_0:
@@ -43,7 +43,7 @@ all:
         DEVICE_IP_0:
     vtgate:
       vars:
-        vtgate_max_goproc: 6
+        vtgate_max_goproc: 42
       hosts:
         DEVICE_IP_0:
           gateways:
@@ -55,10 +55,14 @@ all:
               port: 15002
               mysql_port: 13307
               grpc_port: 15307
+            - id: 3
+              port: 15003
+              mysql_port: 13308
+              grpc_port: 15308
     vttablet:
       vars:
-        vitess_memory_ratio: 0.6
-        vttablet_max_goproc: 24
+        vitess_memory_ratio: 0.8
+        vttablet_max_goproc: 42
       hosts:
         DEVICE_IP_0:
           tablets:
@@ -67,3 +71,34 @@ all:
               shard: 0
               pool_size: 500
               transaction_cap: 2000
+              port: 16011
+              grpc_port: 17011
+              mysql_port: 18011
+              mysqld_exporter_port: 9104
+            - id: 1002
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16012
+              grpc_port: 17012
+              mysql_port: 18012
+              mysqld_exporter_port: 9105
+            - id: 2001
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16021
+              grpc_port: 17021
+              mysql_port: 18021
+              mysqld_exporter_port: 9106
+            - id: 2002
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16022
+              grpc_port: 17022
+              mysql_port: 18022
+              mysqld_exporter_port: 9107
