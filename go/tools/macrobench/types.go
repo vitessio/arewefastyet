@@ -27,11 +27,6 @@ type (
 	Type string
 )
 
-const (
-	OLTP = Type("oltp")
-	TPCC = Type("tpcc")
-)
-
 // Type implements Cobra flag.Value interface.
 func (mbtype *Type) Type() string {
 	return "Type"

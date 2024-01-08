@@ -7,7 +7,7 @@ web-pr-label-trigger: '"Benchmark me"'
 web-pr-label-trigger-planner-v3: '"Benchmark me (V3)"'
 web-vitess-path: /tmp
 web-mode: "development"
-web-cron-schedule: "1 1 1 1 1"
+web-cron-schedule: "*/1 * * * *"
 web-cron-schedule-pull-requests: "1 1 1 1 1"
 web-cron-schedule-tags: "1 1 1 1 1"
 

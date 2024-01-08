@@ -19,8 +19,6 @@ all:
   vars:
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
     arewefastyet_git_version: "main"
-    macrobenchmark_vschema_oltp: "./vitess-benchmark/sysbench.json"
-    macrobenchmark_vschema_tpcc: "./vitess-benchmark/tpcc_vschema.json"
     cell: local
     keyspace: main
     provision: 1
