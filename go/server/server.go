@@ -181,7 +181,7 @@ func (s *Server) Init() error {
 
 		// TODO: oltp-readonly-olap benchmarks are skipped for now as they fail very often due to
 		// MySQL connections being dropped. This issue will be investigated soon.
-		// "oltp-readonly-olap": {file: path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"), v: viper.New(), skip: true},
+		"oltp-readonly-olap": {file: path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"), v: viper.New(), skip: true},
 
 		"tpcc":    {file: path.Join(s.benchmarkConfigPath, "tpcc.yaml"), v: viper.New()},
 		"tpcc_fk": {file: path.Join(s.benchmarkConfigPath, "tpcc_fk.yaml"), v: viper.New()},
