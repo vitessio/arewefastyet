@@ -11,7 +11,7 @@ ansible-playbook-file: macrobench.yml
 macrobench-sysbench-executable: /usr/local/bin/sysbench
 macrobench-workload-path: /src/sysbench-tpcc/tpcc.lua
 macrobench-skip-steps:
-macrobench-type: tpcc
+macrobench-type: tpcc_fk
 macrobench-working-directory: /src/sysbench-tpcc
 
 ## Sysbench all steps
