@@ -14,13 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import "./assets/styles/index.css"
+import { Outlet } from "react-router-dom";
+import Navbar from "../common/Navbar";
+import Footer from "../common/Footer";
+import Modal from "../common/Modal";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+export default function Default() {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+      <Footer />
+
+      <Modal />
+    </>
+  );
+}

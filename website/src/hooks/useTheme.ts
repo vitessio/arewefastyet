@@ -13,14 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import useGlobalContext from "../contexts/GlobalContext";
+import { Theme } from "../types";
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import "./assets/styles/index.css"
+export default function useTheme() {
+  const { theme, setTheme } = useGlobalContext();
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+  function set(newTheme: Theme | ((prev: Theme) => Theme)) {
+    setTheme(newTheme);
+  }
+
+  return { current: theme, set };
+}
