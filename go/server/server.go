@@ -183,8 +183,9 @@ func (s *Server) Init() error {
 		// MySQL connections being dropped. This issue will be investigated soon.
 		"oltp-readonly-olap": {file: path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"), v: viper.New(), skip: true},
 
-		"tpcc":    {file: path.Join(s.benchmarkConfigPath, "tpcc.yaml"), v: viper.New()},
-		"tpcc_fk": {file: path.Join(s.benchmarkConfigPath, "tpcc_fk.yaml"), v: viper.New()},
+		"tpcc":           {file: path.Join(s.benchmarkConfigPath, "tpcc.yaml"), v: viper.New()},
+		"tpcc_unsharded": {file: path.Join(s.benchmarkConfigPath, "tpcc_unsharded.yaml"), v: viper.New()},
+		"tpcc_fk":        {file: path.Join(s.benchmarkConfigPath, "tpcc_fk.yaml"), v: viper.New()},
 	}
 	for configName, config := range s.benchmarkConfig {
 		config.v.SetConfigFile(config.file)
