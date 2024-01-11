@@ -1,0 +1,16 @@
+{
+	"sharded": false,
+	"foreignKeyMode": "unmanaged",
+	"tables": {
+		"customer1": {},
+		"district1": {},
+		"history1": {},
+		"item1": {},
+		"new_orders1": {},
+		"order_line1": {},
+		"orders1": {},
+		"stock1": {},
+		"warehouse1": {}
+	}
+}
+
