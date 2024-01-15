@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 import React from "react";
-import { Link } from "react-router-dom";
 import { formatByteForGB, fixed } from "../../../utils/Utils";
 
 export default function FK({ data }) {
@@ -44,7 +43,7 @@ export default function FK({ data }) {
             title={"QPS Total"}
             data={data}
             extract={function ({value}) {
-              return value.Result.qps.total
+              return fixed(value.Result.qps.total, 2)
             }}
           />
 
@@ -52,7 +51,7 @@ export default function FK({ data }) {
             title="QPS Reads"
             data={data}
             extract={function ({value}) {
-              return value.Result.qps.reads
+              return fixed(value.Result.qps.reads, 2)
             }}
           />
 
@@ -60,7 +59,7 @@ export default function FK({ data }) {
             title="QPS Writes"
             data={data}
             extract={function ({value}) {
-              return value.Result.qps.writes
+              return fixed(value.Result.qps.writes, 2)
             }}
           />
 
@@ -68,7 +67,7 @@ export default function FK({ data }) {
             title="QPS Other"
             data={data}
             extract={function ({value}) {
-              return value.Result.qps.other
+              return fixed(value.Result.qps.other, 2)
             }}
           />
 
@@ -76,7 +75,7 @@ export default function FK({ data }) {
             title="TPS"
             data={data}
             extract={function ({value}) {
-              return value.Result.tps
+              return fixed(value.Result.tps, 2)
             }}
           />
 
@@ -84,7 +83,7 @@ export default function FK({ data }) {
             title="Latency"
             data={data}
             extract={function ({value}) {
-              return value.Result.latency
+              return fixed(value.Result.latency, 2)
             }}
           />
 
@@ -92,7 +91,7 @@ export default function FK({ data }) {
             title="Errors"
             data={data}
             extract={function ({value}) {
-              return value.Result.errors
+              return fixed(value.Result.errors, 2)
             }}
           />
 
@@ -100,7 +99,7 @@ export default function FK({ data }) {
             title="Reconnects"
             data={data}
             extract={function ({value}) {
-              return value.Result.reconnects
+              return fixed(value.Result.reconnects, 2)
             }}
           />
 
@@ -108,7 +107,7 @@ export default function FK({ data }) {
             title="Time"
             data={data}
             extract={function ({value}) {
-              return value.Result.time
+              return fixed(value.Result.time, 2)
             }}
           />
 
@@ -116,7 +115,7 @@ export default function FK({ data }) {
             title="Threads"
             data={data}
             extract={function ({value}) {
-              return value.Result.threads
+              return fixed(value.Result.threads, 2)
             }}
           />
 
@@ -124,7 +123,7 @@ export default function FK({ data }) {
             title="Total CPU time"
             data={data}
             extract={function ({value}) {
-              return value.Metrics.TotalComponentsCPUTime
+              return fixed(value.Metrics.TotalComponentsCPUTime, 2)
             }}
           />
 
@@ -132,7 +131,7 @@ export default function FK({ data }) {
             title="CPU time vtgate"
             data={data}
             extract={function ({value}) {
-              return value.Metrics.ComponentsCPUTime.vtgate
+              return fixed(value.Metrics.ComponentsCPUTime.vtgate, 2)
             }}
           />
 
@@ -140,7 +139,7 @@ export default function FK({ data }) {
             title="CPU time vttablet"
             data={data}
             extract={function ({value}) {
-              return value.Metrics.ComponentsCPUTime.vttablet
+              return fixed(value.Metrics.ComponentsCPUTime.vttablet, 2)
             }}
           />
 

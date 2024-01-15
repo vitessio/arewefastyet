@@ -238,6 +238,7 @@ func GetDetailsFromAllTypes(sha string, planner PlannerVersion, dbclient storage
 	result := make(map[string]Details, len(details))
 	for s, array := range details {
 		var d Details
+		d.Metrics = metrics.NewExecMetrics()
 		if len(array) == 1 {
 			d = array[0]
 		}

@@ -18,7 +18,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
 
-import Macrobench from "../../common/Macrobench";
 
 import { errorApi } from "../../utils/Utils";
 import Hero from "./components/Hero";
@@ -30,7 +29,6 @@ const ForeignKeys = () => {
   const [gitRef, setGitRef] = useState({
     tag: urlParams.get("tag") || "",
   });
-  const [commits, setCommits] = useState({ tag: "" });
 
   const [dataRefs, setDataRefs] = useState();
   const [dataFKs, setDataFKs] = useState([]);
@@ -53,7 +51,6 @@ const ForeignKeys = () => {
     const commits = {
       tag: dataRefs.filter((r) => r.Name === gitRef.tag)[0].CommitHash,
     };
-    setCommits(commits);
 
     setLoading(true);
     try {
