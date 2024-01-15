@@ -27,10 +27,9 @@ const ForeignKeys = () => {
   const urlParams = new URLSearchParams(window.location.search);
 
   const [gitRef, setGitRef] = useState({
-    left: urlParams.get("ltag") || "Left",
-    right: urlParams.get("rtag") || "Right",
+    tag: urlParams.get("tag") || "",
   });
-  const [commits, setCommits] = useState({ left: "", right: "" });
+  const [commits, setCommits] = useState({ tag: "" });
 
   const [dataRefs, setDataRefs] = useState();
   const [dataMacrobench, setDataMacrobench] = useState([]);
@@ -51,8 +50,7 @@ const ForeignKeys = () => {
 
   async function loadData() {
     const commits = {
-      left: dataRefs.filter((r) => r.Name === gitRef.left)[0].CommitHash,
-      right: dataRefs.filter((r) => r.Name === gitRef.right)[0].CommitHash,
+      tag: dataRefs.filter((r) => r.Name === gitRef.tag)[0].CommitHash,
     };
     setCommits(commits);
 
@@ -60,8 +58,8 @@ const ForeignKeys = () => {
     try {
       const responseMacrobench = await fetch(
         `${import.meta.env.VITE_API_URL}macrobench/compare?ltag=${
-          commits.left
-        }&rtag=${commits.right}`
+          commits.tag
+        }`
       );
       const jsonDataMacrobench = await responseMacrobench.json();
       setDataMacrobench(jsonDataMacrobench);
@@ -79,10 +77,10 @@ const ForeignKeys = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    navigate(`?ltag=${gitRef.left}&rtag=${gitRef.right}`);
+    navigate(`?tag=${gitRef.tag}`);
 
     dataRefs && loadData();
-  }, [gitRef.left, gitRef.right, dataRefs]);
+  }, [gitRef.tag, dataRefs]);
 
   return (
     <>
@@ -101,8 +99,7 @@ const ForeignKeys = () => {
 
         {!loading && dataMacrobench && (
           <div className="flex flex-col gap-y-20 ">
-            {gitRef.left &&
-              gitRef.right &&
+            {gitRef.tag &&
               dataMacrobench.map((macro, index) => {
                 return (
                   <div key={index}>
