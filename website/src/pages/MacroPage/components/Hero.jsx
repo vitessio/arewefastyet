@@ -21,10 +21,7 @@ export default function Hero(props) {
   const { refs, gitRef, setGitRef } = props;
 
   return (
-    <section className="flex flex-col gap-y-[10vh] pt-[10vh] justify-center items-center h-[70vh]">
-      <h2 className="text-primary font-medium text-6xl cursor-default">
-        Compare Macrobenchmarks
-      </h2>
+    <section className="flex flex-col gap-y-[10vh] pt-[5vh] justify-center items-center h-[30vh]">
       {refs && refs.length > 0 && (
         <div className="flex gap-x-24">
           <Dropdown.Container

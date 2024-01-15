@@ -395,7 +395,6 @@ func (s *Server) requestRun(c *gin.Context) {
 	}
 	currVersion := git.Version{Major: version}
 
-
 	configs := s.getConfigFiles()
 	cfg, ok := configs[strings.ToLower(benchmarkType)]
 	if !ok {
@@ -451,3 +450,21 @@ func (s *Server) deleteRun(c *gin.Context) {
 	c.JSON(http.StatusOK, "deleted")
 }
 
+func (s *Server) compareBenchmarkFKs(c *gin.Context) {
+	sha := c.Query("sha")
+
+	var mtypes []string
+	for _, benchmarkType := range s.benchmarkTypes {
+		if strings.Contains(benchmarkType, "TPCC") {
+			mtypes = append(mtypes, benchmarkType)
+		}
+	}
+
+	allBenchmarkResults, err := macrobench.GetDetailsFromAllTypes(sha, macrobench.Gen4Planner, s.dbClient, mtypes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, allBenchmarkResults)
+}

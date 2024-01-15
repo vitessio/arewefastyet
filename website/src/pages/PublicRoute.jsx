@@ -29,6 +29,7 @@ import SearchPage from "./SearchPage/SearchPage";
 import PRPage from "./PRPage/PRPage";
 import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
 import MicroPage from "./MicroPage/MicroPage";
+import ForeignKeysPage from "./ForeignKeysPage/ForeignKeysPage";
 
 const PublicRoute = () => {
   return (
@@ -42,13 +43,11 @@ const PublicRoute = () => {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/macro" element={<MacroPage />} />
-        <Route
-          path="/macrobench/queries/compare"
-          element={<MacroQueriesComparePage />}
-        />
+        <Route path="/macrobench/queries/compare" element={<MacroQueriesComparePage />} />
         <Route path="/micro" element={<MicroPage />} />
         <Route path="/pr" element={<PRsPage />} />
         <Route path="/pr/:pull_nb" element={<PRPage />} />
+        <Route path="/fk" element={<ForeignKeysPage />} />
 
         <Route path="*" element={<Error />} />
       </Route>

@@ -27,7 +27,6 @@ import (
 
 	"github.com/vitessio/arewefastyet/go/storage"
 
-	"github.com/dustin/go-humanize"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
@@ -231,44 +230,21 @@ func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
 	return reduceMabd
 }
 
-func (mbr Result) TPSStr() string {
-	return humanize.FormatFloat("#,###.#", mbr.TPS)
-}
-
-func (mbr Result) LatencyStr() string {
-	return humanize.FormatFloat("#,###.#", mbr.Latency)
-}
-
-func (mbr Result) ErrorsStr() string {
-	return humanize.FormatFloat("#,###.#", mbr.Errors)
-}
-
-func (mbr Result) ReconnectsStr() string {
-	return humanize.FormatFloat("#,###.#", mbr.Reconnects)
-}
-
-func (mbr Result) TimeStr() string {
-	return humanize.Comma(int64(mbr.Time))
-}
-
-func (mbr Result) ThreadsStr() string {
-	return humanize.FormatFloat("#,###.#", mbr.Threads)
-}
-
-func (qps QPS) TotalStr() string {
-	return humanize.FormatFloat("#,###.#", qps.Total)
-}
-
-func (qps QPS) ReadsStr() string {
-	return humanize.FormatFloat("#,###.#", qps.Reads)
-}
-
-func (qps QPS) WritesStr() string {
-	return humanize.FormatFloat("#,###.#", qps.Writes)
-}
-
-func (qps QPS) OtherStr() string {
-	return humanize.FormatFloat("#,###.#", qps.Other)
+func GetDetailsFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]Details, error) {
+	details, err := GetDetailsArraysFromAllTypes(sha, planner, dbclient, types)
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[string]Details, len(details))
+	for s, array := range details {
+		var d Details
+		d.Metrics = metrics.NewExecMetrics()
+		if len(array) == 1 {
+			d = array[0]
+		}
+		result[s] = d
+	}
+	return result, nil
 }
 
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.

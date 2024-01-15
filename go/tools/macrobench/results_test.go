@@ -118,34 +118,6 @@ func BenchmarkReduceSimpleMedian(b *testing.B) {
 	}
 }
 
-func TestHumanReadableStrings(t *testing.T) {
-	c := qt.New(t)
-	r := Result{
-		QPS: QPS{
-			Total:  72029.0,
-			Reads:  45018.1,
-			Writes: 18007.2,
-			Other:  9003.6,
-		},
-		TPS:        4501.8,
-		Latency:    189848.3,
-		Errors:     8999.6,
-		Reconnects: 7984.3,
-		Time:       11064,
-		Threads:    1107794.12,
-	}
-	c.Assert(r.QPS.TotalStr(), qt.Equals, "72,029.0")
-	c.Assert(r.QPS.ReadsStr(), qt.Equals, "45,018.1")
-	c.Assert(r.QPS.WritesStr(), qt.Equals, "18,007.2")
-	c.Assert(r.QPS.OtherStr(), qt.Equals, "9,003.6")
-	c.Assert(r.TPSStr(), qt.Equals, "4,501.8")
-	c.Assert(r.LatencyStr(), qt.Equals, "189,848.3")
-	c.Assert(r.ErrorsStr(), qt.Equals, "8,999.6")
-	c.Assert(r.ReconnectsStr(), qt.Equals, "7,984.3")
-	c.Assert(r.TimeStr(), qt.Equals, "11,064")
-	c.Assert(r.ThreadsStr(), qt.Equals, "1,107,794.1")
-}
-
 func TestCompareDetailsArrays(t *testing.T) {
 	type args struct {
 		references DetailsArray
