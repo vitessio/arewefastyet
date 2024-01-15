@@ -22,6 +22,7 @@ import Macrobench from "../../common/Macrobench";
 
 import { errorApi } from "../../utils/Utils";
 import Hero from "./components/Hero";
+import FK from "./components/FK";
 
 const ForeignKeys = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -57,7 +58,7 @@ const ForeignKeys = () => {
     setLoading(true);
     try {
       const responseFK = await fetch(
-        `${import.meta.env.VITE_API_URL}macrobench/compare?ltag=${
+        `${import.meta.env.VITE_API_URL}fk/compare?sha=${
           commits.tag
         }`
       );
@@ -99,18 +100,9 @@ const ForeignKeys = () => {
 
         {!loading && dataFKs && (
           <div className="flex flex-col gap-y-20 ">
-            {gitRef.tag &&
-              dataFKs.map((macro, index) => {
-                return (
-                  <div key={index}>
-                    <Macrobench
-                      data={macro}
-                      gitRef={gitRef}
-                      commits={commits}
-                    />
-                  </div>
-                );
-              })}
+            <FK
+              data={dataFKs}
+            />
           </div>
         )}
       </div>
