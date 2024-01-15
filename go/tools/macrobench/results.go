@@ -271,6 +271,22 @@ func (qps QPS) OtherStr() string {
 	return humanize.FormatFloat("#,###.#", qps.Other)
 }
 
+func GetDetailsFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]Details, error) {
+	details, err := GetDetailsArraysFromAllTypes(sha, planner, dbclient, types)
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[string]Details, len(details))
+	for s, array := range details {
+		var d Details
+		if len(array) == 1 {
+			d = array[0]
+		}
+		result[s] = d
+	}
+	return result, nil
+}
+
 // GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
 func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]DetailsArray, error) {
 	macros := map[string]DetailsArray{}

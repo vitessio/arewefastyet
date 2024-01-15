@@ -206,12 +206,12 @@ func (s *Server) Run() error {
 		return errors.New(ErrorIncorrectConfiguration)
 	}
 
-	err := s.createCrons()
-	if err != nil {
-		return err
-	}
+	// err := s.createCrons()
+	// if err != nil {
+	// 	return err
+	// }
 
-	err = s.ghApp.Init()
+	err := s.ghApp.Init()
 	if err != nil {
 		return err
 	}
@@ -232,6 +232,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/recent", s.getRecentExecutions)
 	s.router.GET("/api/queue", s.getExecutionsQueue)
 	s.router.GET("/api/vitess/refs", s.getLatestVitessGitRef)
+	s.router.GET("/api/fk/compare", s.compareBenchmarkFKs)
 	s.router.GET("/api/macrobench/compare", s.compareMacrobenchmarks)
 	s.router.GET("/api/microbench/compare", s.compareMicrobenchmarks)
 	s.router.GET("/api/search", s.searchBenchmarck)
