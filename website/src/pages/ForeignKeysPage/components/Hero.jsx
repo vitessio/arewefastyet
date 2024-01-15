@@ -21,33 +21,57 @@ export default function Hero(props) {
   const { refs, gitRef, setGitRef } = props;
 
   return (
-    <section className="flex flex-col gap-y-[10vh] pt-[5vh] justify-center items-center h-[30vh]">
-      {refs && refs.length > 0 && (
-        <div className="flex gap-x-24">
-          <Dropdown.Container
-            className="w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
-            defaultIndex={refs.map((r) => r.Name).indexOf(gitRef.tag)}
-            onChange={(event) => {
-              setGitRef((p) => {
-                return { ...p, tag: event.value };
-              });
-            }}
-          >
-            {refs.map((ref, key) => (
-              <Dropdown.Option
-                key={key}
-                className={twMerge(
-                  "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 after:duration-150 after:absolute-cover after:bg-foreground after:bg-opacity-0 hover:after:bg-opacity-10 font-medium",
-                  key === 0 && "rounded-t border-t-front",
-                  key === refs.length - 1 && "rounded-b"
-                )}
-              >
-                {ref.Name}
-              </Dropdown.Option>
-            ))}
-          </Dropdown.Container>
+      <section className="flex h-[60vh] pt-[10vh] items-center p-page">
+        <div className="flex basis-1/2 flex-col">
+          <h2 className="text-8xl text-primary">Foreign Keys</h2>
+          <p className="my-6 leading-loose">
+            Support for Foreign Keys have been added to Vitess in v18.0.0.
+            We want to be able to compare the performance of Vitess with and without Foreign Keys.
+            <br/>
+            For this purpose, we propose four benchmarks:
+            <br/>
+            - TPCC, with a sharded keyspace
+            <br/>
+            - TPCC_UNSHARDED, with an unsharded keyspace
+            <br/>
+            - TPCC_FK, with Foreign Keys enabled and set to vitess managed
+            <br/>
+            - TPCC_FK_UNMANAGED, with Foreign Keys enabled and set to vitess unmanaged
+            <br/>
+            Use the dropdown on the right to select which version of Vitess you would like to use to compare the performance of our four TPCC benchmarks.
+          </p>
         </div>
-      )}
-    </section>
+
+        <div className="flex-1 flex flex-col items-center">
+          <div className="flex flex-col gap-y-8">
+            {refs && refs.length > 0 && (
+                <div className="flex gap-x-24">
+                  <Dropdown.Container
+                      className="w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
+                      defaultIndex={refs.map((r) => r.Name).indexOf(gitRef.tag)}
+                      onChange={(event) => {
+                        setGitRef((p) => {
+                          return { ...p, tag: event.value };
+                        });
+                      }}
+                  >
+                    {refs.map((ref, key) => (
+                        <Dropdown.Option
+                            key={key}
+                            className={twMerge(
+                                "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 after:duration-150 after:absolute-cover after:bg-foreground after:bg-opacity-0 hover:after:bg-opacity-10 font-medium",
+                                key === 0 && "rounded-t border-t-front",
+                                key === refs.length - 1 && "rounded-b"
+                            )}
+                        >
+                          {ref.Name}
+                        </Dropdown.Option>
+                    ))}
+                  </Dropdown.Container>
+                </div>
+            )}
+          </div>
+        </div>
+      </section>
   );
 }

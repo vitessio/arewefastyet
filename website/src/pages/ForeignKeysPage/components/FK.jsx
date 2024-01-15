@@ -21,9 +21,7 @@ export default function FK({ data }) {
   return (
     <div className="w-full border border-primary rounded-xl relative shadow-lg">
       <div className="p-5 flex flex-col gap-y-3">
-        <h3 className="text-start text-3xl font-medium">FKs benchmark Comparison</h3>
       </div>
-
       <table>
         <thead>
           <tr>
