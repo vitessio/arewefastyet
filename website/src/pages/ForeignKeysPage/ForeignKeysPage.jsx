@@ -32,7 +32,7 @@ const ForeignKeys = () => {
   const [commits, setCommits] = useState({ tag: "" });
 
   const [dataRefs, setDataRefs] = useState();
-  const [dataMacrobench, setDataMacrobench] = useState([]);
+  const [dataFKs, setDataFKs] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,13 +56,13 @@ const ForeignKeys = () => {
 
     setLoading(true);
     try {
-      const responseMacrobench = await fetch(
+      const responseFK = await fetch(
         `${import.meta.env.VITE_API_URL}macrobench/compare?ltag=${
           commits.tag
         }`
       );
-      const jsonDataMacrobench = await responseMacrobench.json();
-      setDataMacrobench(jsonDataMacrobench);
+      const jsonDataFKs = await responseFK.json();
+      setDataFKs(jsonDataFKs);
     } catch (error) {
       console.error("Error while retrieving data from the API", error);
       setError(errorApi);
@@ -97,10 +97,10 @@ const ForeignKeys = () => {
 
         {loading && <RingLoader loading={loading} color="#E77002" size={300} />}
 
-        {!loading && dataMacrobench && (
+        {!loading && dataFKs && (
           <div className="flex flex-col gap-y-20 ">
             {gitRef.tag &&
-              dataMacrobench.map((macro, index) => {
+              dataFKs.map((macro, index) => {
                 return (
                   <div key={index}>
                     <Macrobench
