@@ -206,12 +206,12 @@ func (s *Server) Run() error {
 		return errors.New(ErrorIncorrectConfiguration)
 	}
 
-	// err := s.createCrons()
-	// if err != nil {
-	// 	return err
-	// }
+	err := s.createCrons()
+	if err != nil {
+		return err
+	}
 
-	err := s.ghApp.Init()
+	err = s.ghApp.Init()
 	if err != nil {
 		return err
 	}
