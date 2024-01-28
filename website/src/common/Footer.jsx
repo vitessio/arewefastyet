@@ -53,14 +53,16 @@ const Footer = () => {
     },
     {
       title: "arewefastyet",
-      links: [{ title: "GitHub", to: "https://www.github.com/vitessio/arewefastyet" }],
+      links: [
+        { title: "GitHub", to: "https://www.github.com/vitessio/arewefastyet" },
+      ],
     },
   ];
 
   return (
     <footer className="p-page relative mt-10 py-20 text-back">
       <div className="absolute bottom-6 left-6 right-6 top-6 -z-1 rounded-lg bg-primary" />
-      <div className="flex justify-between text-sm font-light tracking-tight">
+      <div className="flex flex-col gap-5 md:flex-row justify-center md:justify-between text-sm font-light tracking-tight">
         <div
           className={`flex basis-[20%] flex-col items-center gap-y-5 opacity-90 drop-shadow-[0px_0px_0px_theme("colors.back")]`}
         >
@@ -71,16 +73,20 @@ const Footer = () => {
           />
           <h2 className="text-xl font-medium">arewefastyet</h2>
         </div>
-        {items.map((item, key) => (
-          <div key={key} className="flex flex-col">
-            <h5 className="font-semibold">{item.title}</h5>
-            <div className="my-7 flex flex-col gap-y-3">
-              {item.links.map((link, key) => (
-                <Link key={key} to={link.to}>{link.title}</Link>
-              ))}
+        <div className="flex md:gap-[3em] px-5 md:px-0 justify-between md:justify-end">
+          {items.map((item, key) => (
+            <div key={key} className="flex flex-col">
+              <h5 className="font-semibold">{item.title}</h5>
+              <div className="my-4 md:my-7 flex flex-col gap-y-3">
+                {item.links.map((link, key) => (
+                  <Link key={key} to={link.to}>
+                    {link.title}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
 
         {/* <div className="flex flex-col items-center text-center text-back text-opacity-80">
           <h5 className="my-3 text-4xl font-bold tracking-tighter text-back">
@@ -91,10 +97,10 @@ const Footer = () => {
           <p>Database Speed</p>
           <p className="font-semibold text-back">for vitess</p>
         </div> */}
-        <div className="w-[15%]" />
+        {/* <div className="w-[15%]" /> */}
       </div>
-      <div className="my-2 flex gap-x-4">
-        <p className="font-mono text-xl font-bold">Follow Us</p>
+      <div className="my-2 flex justify-between md:justify-start px-5 md:px-0 gap-x-4">
+        <p className="font-mono md:text-xl font-bold">Follow Us</p>
         <div className="flex items-center gap-x-3">
           {socials.map((social, key) => (
             <Link key={key} to={social.url} target="__blank" className="">
@@ -104,7 +110,9 @@ const Footer = () => {
         </div>
       </div>
       <div className="my-2 w-full border border-back"></div>
-      <div className="mt-4 text-xs">@vitessio/arewefastyet</div>
+      <div className="mt-4 text-center md:text-left text-xs">
+        @vitessio/arewefastyet
+      </div>
     </footer>
   );
 };

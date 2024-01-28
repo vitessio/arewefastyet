@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
@@ -30,83 +30,124 @@ const navItems = [
   { to: "/pr", title: "PR" },
 ];
 
-const scrollThreshold = window.innerHeight * 0.15;
-
 export default function Navbar() {
-  const [hidden, setHidden] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const theme = useTheme();
+
+  function toggleMenu() {
+    setIsMenuOpen((o) => !o);
+  }
 
   function toggleTheme() {
     theme.set((t) => (t === "default" ? "dark" : "default"));
   }
 
-  function handleScroll() {
-    const currY = window.scrollY;
-    if (currY < window.innerHeight * 0.25) {
-      setHidden(false);
-    } else {
-      setTimeout(() => {
-        if (window.scrollY > currY + scrollThreshold) {
-          setHidden(true);
-        }
-        if (window.scrollY < currY - scrollThreshold / 2) {
-          setHidden(false);
-        }
-      }, 200);
-    }
-  }
-
-  useEffect(() => {
-    // Check for user intent to scroll and hide / show navbar accordingly
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <nav
-      className={twMerge(
-        "fixed w-full bg-background z-[999] flex justify-center p-page py-4 border-b border-front border-opacity-30 duration-500",
-        hidden ? "-translate-y-full" : "translate-y-0"
-      )}
-    >
-      <Link to="/" className="flex flex-1 gap-x-2 items-center">
-        <img src="/logo.png" className="h-[2.5em]" alt="logo" />
-        <h1 className="font-medium text-2xl">arewefastyet</h1>
-      </Link>
+    <nav className="flex flex-col relative">
+      <div
+        className={twMerge(
+          "w-full bg-background z-[999] flex justify-between md:justify-center p-page py-4 border-b border-front border-opacity-30 duration-500"
+        )}
+      >
+        <Link to="/" className="flex flex-1 gap-x-2 items-center">
+          <img src="/logo.png" className="h-[2.5em]" alt="logo" />
+          <h1 className="font-medium text-lg md:text-2xl">arewefastyet</h1>
+        </Link>
 
-      <div className="flex gap-x-10 items-center">
-        {navItems.map((item, key) => (
-          <NavLink
-            key={key}
-            to={item.to}
-            className={({ isActive, isPending }) =>
-              twMerge(
-                "text-lg",
-                isPending
-                  ? "pointer-events-none opacity-50"
-                  : isActive
-                  ? "text-primary"
-                  : ""
-              )
-            }
+        <div className="hidden md:flex gap-x-10 items-center">
+          {navItems.map((item, key) => (
+            <NavLink
+              key={key}
+              to={item.to}
+              className={({ isActive, isPending }) =>
+                twMerge(
+                  "text-lg",
+                  isPending
+                    ? "pointer-events-none opacity-50"
+                    : isActive
+                    ? "text-primary"
+                    : ""
+                )
+              }
+            >
+              {item.title}
+            </NavLink>
+          ))}
+        </div>
+
+        <div className="flex-1 flex gap-3 justify-end items-center">
+          <button
+            className="relative text-3xl flex items-center"
+            onClick={toggleTheme}
           >
-            {item.title}
-          </NavLink>
-        ))}
+            <Icon
+              icon={(theme.current === "dark" && "light_mode") || "dark_mode"}
+            />
+          </button>
+          <button
+            className="relative md:hidden text-3xl flex items-center"
+            onClick={toggleMenu}
+          >
+            {isMenuOpen ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-x"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-menu"
+              >
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
-
-      <div className="flex-1 flex justify-end items-center">
-        <button
-          className="relative text-3xl flex items-center"
-          onClick={toggleTheme}
-        >
-          <Icon
-            icon={(theme.current === "dark" && "light_mode") || "dark_mode"}
-          />
-        </button>
-      </div>
+      {isMenuOpen && (
+        <div className="flex flex-col justify-center items-center z-[999] bg-background w-full">
+          {navItems.map((item, key) => (
+            <NavLink
+              key={key}
+              to={item.to}
+              className={({ isActive, isPending }) =>
+                twMerge(
+                  "text-2xl text-center font-medium border-b border-front border-opacity-30 py-3 w-full",
+                  isPending
+                    ? "pointer-events-none opacity-50"
+                    : isActive
+                    ? "text-primary"
+                    : ""
+                )
+              }
+            >
+              {item.title}
+            </NavLink>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
