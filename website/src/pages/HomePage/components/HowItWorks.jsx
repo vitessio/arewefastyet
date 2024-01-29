@@ -43,7 +43,7 @@ export default function HowItWorks() {
     <section className="relative flex flex-col items-center p-page -z-1 pb-14 bg-black text-white">
       <div className="absolute-cover bg-white bg-opacity-5 z-0" />
       <h1 className="text-4xl font-semibold my-14">How it works</h1>
-      <div className="flex flex-wrap justify-between gap-y-12 px-10 relative z-1">
+      <div className="flex flex-col md:flex-row md:flex-wrap justify-center items-center gap-5 md:justify-between md:items-start md:gap-y-12 px-5 md:px-10 md:relative z-1">
         {items.map((item, key) => (
           <HowItWorksCard key={key} title={item.title} content={item.content} />
         ))}
@@ -63,21 +63,29 @@ function HowItWorksCard(props) {
   }
 
   useEffect(() => {
-    window.addEventListener("mousemove", glowWithMouse);
+    const isSmallScreen = window.innerWidth < 768;
 
-    return () => window.removeEventListener("mousemove", glowWithMouse);
+    if (!isSmallScreen) {
+      window.addEventListener("mousemove", glowWithMouse);
+    }
+
+    return () => {
+      if (!isSmallScreen) {
+        window.removeEventListener("mousemove", glowWithMouse);
+      }
+    };
   }, []);
 
   return (
     <div
       ref={cardRef}
-      className="relative flex flex-col items-center p-4 w-[calc(50%_-_1.25rem)] bg-black 
+      className="w-full min-h-[200px] md:relative flex flex-col items-center p-4 md:w-[calc(50%_-_1.25rem)] bg-black 
       rounded-lg border border-white border-opacity-20 gap-y-4 overflow-hidden"
     >
       <div
         ref={glowRef}
-        className="absolute bg-white bg-opacity-10 z-1 top-[var(--y)] left-[var(--x)] blur-3xl
-      w-[20vw] h-[20vw] rounded-full -translate-x-1/2 -translate-y-1/2"
+        className="absolute bg-white bg-opacity-10 z-1 md:top-[var(--y)] md:left-[var(--x)] blur-3xl
+      md:w-[20vw] w-full h-[20vw] rounded-full -translate-x-1/2 -translate-y-1/2"
       />
       <h3 className="text-2xl font-semibold">{props.title}</h3>
       <p className="text-sm mt-2 text-white text-opacity-70">{props.content}</p>

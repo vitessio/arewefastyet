@@ -19,7 +19,7 @@ import Icon from "../../../common/Icon";
 
 export default function Hero() {
   return (
-    <section className="flex items-center relative h-screen p-page">
+    <section className="hidden md:flex items-center h-screen relative p-page">
       <div className="absolute-cover overflow-hidden -z-1">
         <div
           className="absolute-cover bg-gradient-to-br from-primary to-accent scale-150"

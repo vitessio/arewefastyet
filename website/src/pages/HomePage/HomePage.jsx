@@ -20,11 +20,13 @@ import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
 import MicroAndMacro from "./components/MicroAndMacro";
 import Diagram from "./components/Diagram";
+import HeroMobile from "./components/HeroMobile";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
+      <HeroMobile />
       <HowItWorks />
       {/*<MicroAndMacro />*/}
       <Diagram />
