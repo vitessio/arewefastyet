@@ -22,7 +22,7 @@ macrobench_all_db-driver: mysql
 macrobench_all_luajit-cmd: "off"
 macrobench_all_threads: 42
 macrobench_all_tables: 1
-macrobench_all_scale: 1
+macrobench_all_scale: 100
 macrobench_all_rand-type: uniform
 macrobench_all_rand-seed: 1
 macrobench_all_use_fk: 0

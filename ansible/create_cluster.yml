@@ -49,15 +49,6 @@
       vars:
         - clean_vttablet: False
 
-- name: Install and build sysbench
-  hosts:
-    - all
-  tasks:
-    - name: Install sysbench
-      include_role:
-        name: sysbench
-        tasks_from: install
-
 - hosts: vtctld
   tasks:
     - name: Gather facts
