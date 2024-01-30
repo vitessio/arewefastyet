@@ -64,6 +64,49 @@ all:
         vttablet_max_goproc: 42
       hosts:
         DEVICE_IP_0:
+          # all_tablets is a list of all the possible tablets in the cluster
+          # this list is used to properly clean up the machine from all tablets
+          # if the previous benchmark was a sharded cluster and it had failed
+          # and was not able to clean up correctly, using the unsharded list of
+          # tablets will results in a not complete clean up as we would only remove
+          # two tablets instead of four.
+          all_tablets:
+            - id: 1001
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16011
+              grpc_port: 17011
+              mysql_port: 18011
+              mysqld_exporter_port: 9104
+            - id: 1002
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16012
+              grpc_port: 17012
+              mysql_port: 18012
+              mysqld_exporter_port: 9105
+            - id: 2001
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16021
+              grpc_port: 17021
+              mysql_port: 18021
+              mysqld_exporter_port: 9106
+            - id: 2002
+              keyspace: main
+              shard: 0
+              pool_size: 500
+              transaction_cap: 2000
+              port: 16022
+              grpc_port: 17022
+              mysql_port: 18022
+              mysqld_exporter_port: 9107
           tablets:
             - id: 1001
               keyspace: main
