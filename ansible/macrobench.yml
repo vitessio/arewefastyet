@@ -45,8 +45,8 @@
     node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
     prometheus_skip_install: false
     prometheus_global:
-      scrape_interval: 1s
-      scrape_timeout: 5s
+      scrape_interval: 2s
+      scrape_timeout: 1s
       evaluation_interval: 10s
     prometheus_targets:
       tablets:
