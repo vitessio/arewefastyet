@@ -18,7 +18,7 @@ all:
         partition: nvme0n1p1
   vars:
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
-    arewefastyet_git_version: "main"
+    arewefastyet_git_version: "measure-per-query-stats"
     cell: local
     keyspace: main
     provision: 1
@@ -27,7 +27,6 @@ all:
       hosts:
         DEVICE_IP_0:
       vars:
-
         vtgate_web_ports: "15001,15002,15003"
     sysbench:
       hosts:

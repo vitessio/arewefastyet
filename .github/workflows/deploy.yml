@@ -1,6 +1,7 @@
 name: Deploy
 
 on:
+  pull_request:
   push:
     branches:
       - main
@@ -27,7 +28,7 @@ jobs:
             cd $HOME/arewefastyet
             git reset --hard FETCH_HEAD
             git clean -fd
-            git fetch origin main
+            git fetch origin measure-per-query-stats
             git checkout FETCH_HEAD
             docker compose -f docker-compose.prod.yml build
             docker compose -f docker-compose.prod.yml up -d
