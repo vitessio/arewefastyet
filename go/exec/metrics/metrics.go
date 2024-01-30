@@ -51,20 +51,20 @@ type (
 	// ExecutionMetrics contains all the different system and service metrics
 	// that were gathered during the execution of a benchmark.
 	ExecutionMetrics struct {
-		// The sum of the time taken by every component.
+		// The sum of the time taken by every component to run one query on average.
 		TotalComponentsCPUTime float64
 
 		// Map of string/float that contains the name of the component as a key
-		// and the time taken by that component as a value.
+		// and the time taken by that component on average per query as a value.
 		ComponentsCPUTime map[string]float64
 
 		// TotalComponentsMemStatsAllocBytes represents the total number of bytes
-		// allocated even if freed, by all the components of the execution.
+		// allocated even if freed, by all the components of the execution and on average per query.
 		// The underlying go metrics used is go_memstats_alloc_bytes_total.
 		TotalComponentsMemStatsAllocBytes float64
 
 		// ComponentsMemStatsAllocBytes represents the number of bytes allocated
-		// and freed that each component used. The go metrics used is go_memstats_alloc_bytes_total.
+		// and freed that each component used on average per query. The go metrics used is go_memstats_alloc_bytes_total.
 		ComponentsMemStatsAllocBytes map[string]float64
 	}
 
@@ -75,7 +75,7 @@ type (
 
 // GetExecutionMetrics fetches and computes a single execution's metrics.
 // Metrics are fetched using the given influxdb.Client and execUUID.
-func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
+func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int) (ExecutionMetrics, error) {
 	execMetrics := NewExecMetrics()
 
 	var err error
@@ -91,6 +91,18 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetr
 			return ExecutionMetrics{}, err
 		}
 		execMetrics.TotalComponentsMemStatsAllocBytes += execMetrics.ComponentsMemStatsAllocBytes[component]
+	}
+
+	// Divide all metrics by the number of queries that were executed
+	if queries > 0 {
+		execMetrics.TotalComponentsCPUTime = execMetrics.TotalComponentsCPUTime / float64(queries)
+		execMetrics.TotalComponentsMemStatsAllocBytes = execMetrics.TotalComponentsMemStatsAllocBytes / float64(queries)
+		for key, val := range execMetrics.ComponentsCPUTime {
+			execMetrics.ComponentsCPUTime[key] = val / float64(queries)
+		}
+		for key, val := range execMetrics.ComponentsMemStatsAllocBytes {
+			execMetrics.ComponentsMemStatsAllocBytes[key] = val / float64(queries)
+		}
 	}
 	return execMetrics, nil
 }

@@ -144,11 +144,11 @@ func Run(mabcfg Config) error {
 }
 
 func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int) error {
-	err := handleSysBenchResults(resStr, sqlClient, macrobenchID)
+	sysbenchResults, err := handleSysBenchResults(resStr, sqlClient, macrobenchID)
 	if err != nil {
 		return err
 	}
-	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID)
+	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID, sysbenchResults.Queries)
 	if err != nil {
 		return err
 	}
@@ -187,8 +187,8 @@ func handleVTGateResults(ports []string, sqlClient *psdb.Client, execUUID string
 	return insertVTGateQueryMapToMySQL(sqlClient, execUUID, plans, macrobenchID)
 }
 
-func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string) error {
-	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID)
+func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string, queries int) error {
+	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, queries)
 	if err != nil {
 		return err
 	}
@@ -199,23 +199,23 @@ func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execU
 	return nil
 }
 
-func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchID int) error {
+func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchID int) (Result, error) {
 	// Parse results
 	var results []Result
 	err := json.Unmarshal(resStr, &results)
 	if err != nil {
-		return fmt.Errorf("unmarshal results: %+v\n", err)
+		return Result{}, fmt.Errorf("unmarshal results: %+v\n", err)
 	}
 	if len(results) == 0 {
-		return errors.New(ErrorNoSysBenchResult)
+		return Result{}, errors.New(ErrorNoSysBenchResult)
 	}
 
 	// Save results
 	if sqlClient != nil {
 		err = results[0].insertToMySQL(macrobenchID, sqlClient)
 		if err != nil {
-			return err
+			return Result{}, err
 		}
 	}
-	return nil
+	return results[0], nil
 }
