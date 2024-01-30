@@ -34,7 +34,6 @@ const (
 var (
 	steps = []step{
 		{Name: stepPrepare, SysbenchName: stepPrepare},
-		{Name: stepWarmUp, SysbenchName: stepRun},
 		{Name: stepRun, SysbenchName: stepRun},
 	}
 )
