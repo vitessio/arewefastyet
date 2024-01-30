@@ -15,7 +15,7 @@
 
 - name: clean all vttablet
   include_tasks: clean_one.yml
-  loop: '{{ tablets }}'
+  loop: '{{ all_tablets }}'
   loop_control:
     loop_var: tablet
 
