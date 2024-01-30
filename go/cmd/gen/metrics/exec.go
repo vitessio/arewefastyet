@@ -19,12 +19,13 @@
 package metrics
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
-	"log"
 )
 
 func GenExecMetricsCmd() *cobra.Command {
@@ -32,8 +33,8 @@ func GenExecMetricsCmd() *cobra.Command {
 	metricsDBConfig := &influxdb.Config{}
 
 	cmd := &cobra.Command{
-		Use:     "exec_metrics",
-		Short:   "For each execution, fetches the metrics from influxDB and store them to SQL if not already present.",
+		Use:   "exec_metrics",
+		Short: "For each execution, fetches the metrics from influxDB and store them to SQL if not already present.",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientSQL, err := dbConfig.NewClient()
 			if err != nil {
@@ -67,7 +68,7 @@ func GenExecMetricsCmd() *cobra.Command {
 					continue
 				}
 
-				executionMetrics, err := metrics.GetExecutionMetrics(*clientMetrics, uuid)
+				executionMetrics, err := metrics.GetExecutionMetrics(*clientMetrics, uuid, 0)
 				if err != nil {
 					return err
 				}
