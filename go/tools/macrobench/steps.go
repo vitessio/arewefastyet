@@ -27,7 +27,6 @@ type step struct {
 
 const (
 	stepPrepare = "prepare"
-	stepWarmUp  = "warmup"
 	stepRun     = "run"
 )
 
