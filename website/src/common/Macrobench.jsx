@@ -16,7 +16,7 @@ limitations under the License.
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { formatByteForGB, fixed } from "../utils/Utils";
+import { formatByte, fixed } from "../utils/Utils";
 
 export default function Macrobench({ data, gitRef, commits }) {
   return (
@@ -161,11 +161,11 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="Total Allocs bytes"
-            left={formatByteForGB(
+            title="Total Allocs bytes / query"
+            left={formatByte(
               data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
             )}
-            right={formatByteForGB(
+            right={formatByte(
               data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes
             )}
             diffMetric={fixed(
@@ -175,11 +175,11 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="Allocs bytes vtgate"
-            left={formatByteForGB(
+            title="Allocs bytes / query vtgate"
+            left={formatByte(
               data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate
             )}
-            right={formatByteForGB(
+            right={formatByte(
               data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate
             )}
             diffMetric={fixed(
@@ -189,11 +189,11 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="Allocs bytes vttablet"
-            left={formatByteForGB(
+            title="Allocs bytes / query vttablet"
+            left={formatByte(
               data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet
             )}
-            right={formatByteForGB(
+            right={formatByte(
               data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vttablet
             )}
             diffMetric={fixed(

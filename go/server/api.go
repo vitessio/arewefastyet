@@ -200,7 +200,7 @@ type searchResult struct {
 	Micro  microbench.DetailsArray
 }
 
-func (s *Server) searchBenchmarck(c *gin.Context) {
+func (s *Server) searchBenchmark(c *gin.Context) {
 	gitRef := c.Query("git_ref")
 
 	macros, err := macrobench.GetDetailsArraysFromAllTypes(gitRef, macrobench.Gen4Planner, s.dbClient, s.benchmarkTypes)

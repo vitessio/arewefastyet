@@ -17,7 +17,7 @@ limitations under the License.
 import React from "react";
 import PropTypes from "prop-types";
 
-import { fixed, formatByteForGB } from "../../../utils/Utils";
+import { fixed, formatByte } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
 
 export default function SearchMacro({ data, gitRef }) {
@@ -111,10 +111,10 @@ export default function SearchMacro({ data, gitRef }) {
           />
 
           <Row
-            title={"Total Allocs bytes"}
+            title={"Total Allocs bytes / query"}
             value={
               data[1]
-                ? formatByteForGB(
+                ? formatByte(
                     data[1][0].Metrics.TotalComponentsMemStatsAllocBytes
                   )
                 : 0
@@ -122,10 +122,10 @@ export default function SearchMacro({ data, gitRef }) {
           />
 
           <Row
-            title={"Allocs bytes vtgate"}
+            title={"Allocs bytes / query vtgate"}
             value={
               data[1]
-                ? formatByteForGB(
+                ? formatByte(
                     data[1][0].Metrics.ComponentsMemStatsAllocBytes.vtgate
                   )
                 : 0
@@ -133,10 +133,10 @@ export default function SearchMacro({ data, gitRef }) {
           />
 
           <Row
-            title={"Allocs bytes vttablet"}
+            title={"Allocs bytes / query vttablet"}
             value={
               data[1]
-                ? formatByteForGB(
+                ? formatByte(
                     data[1][0].Metrics.ComponentsMemStatsAllocBytes.vttablet
                   )
                 : 0

@@ -209,9 +209,6 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 	for _, metrics := range metricsArray {
 		// If an execution is missing metrics, we do not count it toward
 		// the median of all execution.
-		if metrics.TotalComponentsCPUTime == 0 {
-			continue
-		}
 		interResults.totalComponentsCPUTime = append(interResults.totalComponentsCPUTime, metrics.TotalComponentsCPUTime)
 		for component, value := range metrics.ComponentsCPUTime {
 			interResults.componentsCPUTime[component] = append(interResults.componentsCPUTime[component], value)

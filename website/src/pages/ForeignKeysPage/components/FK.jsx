@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import React from "react";
-import { formatByteForGB, fixed } from "../../../utils/Utils";
+import { formatByte, fixed } from "../../../utils/Utils";
 
 export default function FK({ data }) {
   return (
@@ -142,26 +142,26 @@ export default function FK({ data }) {
           />
 
           <Row
-            title="Total Allocs bytes"
+            title="Total Allocs bytes / query"
             data={data}
             extract={function ({value}) {
-              return formatByteForGB(value.Metrics.TotalComponentsMemStatsAllocBytes)
+              return formatByte(value.Metrics.TotalComponentsMemStatsAllocBytes)
             }}
           />
 
           <Row
-            title="Allocs bytes vtgate"
+            title="Allocs bytes / query vtgate"
             data={data}
             extract={function ({value}) {
-              return formatByteForGB(value.Metrics.ComponentsMemStatsAllocBytes.vtgate)
+              return formatByte(value.Metrics.ComponentsMemStatsAllocBytes.vtgate)
             }}
           />
 
           <Row
-            title="Allocs bytes vttablet"
+            title="Allocs bytes / query vttablet"
             data={data}
             extract={function ({value}) {
-              return formatByteForGB(value.Metrics.ComponentsMemStatsAllocBytes.vttablet)
+              return formatByte(value.Metrics.ComponentsMemStatsAllocBytes.vttablet)
             }}
           />
         </tbody>

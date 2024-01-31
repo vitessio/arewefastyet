@@ -38,13 +38,13 @@ export const formatDate = (date) => {
   return `${month}/${day}/${year} ${hours}:${minutes}`;
 };
 
-//FORMATTING BYTES TO GB
-export const formatByteForGB = (byte) => {
+//FORMATTING BYTES TO Bytes
+export const formatByte = (byte) => {
   const byteValue = bytes(byte);
   if (byteValue === null) {
     return "0";
   }
-  return byteValue.toString("GB");
+  return byteValue.toString("B");
 };
 
 export const fixed = (value, f) => {
