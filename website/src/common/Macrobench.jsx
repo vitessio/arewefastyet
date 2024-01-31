@@ -16,7 +16,7 @@ limitations under the License.
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { formatByte, fixed } from "../utils/Utils";
+import { formatByte, fixed, secondToMicrosecond } from "../utils/Utils";
 
 export default function Macrobench({ data, gitRef, commits }) {
   return (
@@ -134,16 +134,19 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="Total CPU time"
-            left={fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 2)}
-            right={fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 2)}
-            diffMetric={fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}
+            title="Total CPU / query"
+            left={secondToMicrosecond(data.diff.Left.Metrics.TotalComponentsCPUTime)}
+            right={secondToMicrosecond(data.diff.Right.Metrics.TotalComponentsCPUTime)}
+            diffMetric={fixed(
+                data.diff.DiffMetrics.TotalComponentsCPUTime,
+                2
+            )}
           />
 
           <Row
-            title="CPU time vtgate"
-            left={fixed(data.diff.Left.Metrics.ComponentsCPUTime.vtgate, 2)}
-            right={fixed(data.diff.Right.Metrics.ComponentsCPUTime.vtgate, 2)}
+            title="CPU / query (vtgate)"
+            left={secondToMicrosecond(data.diff.Left.Metrics.ComponentsCPUTime.vtgate)}
+            right={secondToMicrosecond(data.diff.Right.Metrics.ComponentsCPUTime.vtgate)}
             diffMetric={fixed(
               data.diff.DiffMetrics.ComponentsCPUTime.vtgate,
               2
@@ -151,9 +154,9 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="CPU time vttablet"
-            left={fixed(data.diff.Left.Metrics.ComponentsCPUTime.vttablet, 2)}
-            right={fixed(data.diff.Right.Metrics.ComponentsCPUTime.vttablet, 2)}
+            title="CPU / query (vttablet)"
+            left={secondToMicrosecond(data.diff.Left.Metrics.ComponentsCPUTime.vttablet)}
+            right={secondToMicrosecond(data.diff.Right.Metrics.ComponentsCPUTime.vttablet)}
             diffMetric={fixed(
               data.diff.DiffMetrics.ComponentsCPUTime.vttablet,
               2
@@ -161,7 +164,7 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="Total Allocs bytes / query"
+            title="Total Allocated / query"
             left={formatByte(
               data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
             )}
@@ -175,7 +178,7 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="Allocs bytes / query vtgate"
+            title="Allocated / query (vtgate)"
             left={formatByte(
               data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate
             )}
@@ -189,7 +192,7 @@ export default function Macrobench({ data, gitRef, commits }) {
           />
 
           <Row
-            title="Allocs bytes / query vttablet"
+            title="Allocated / query (vttablet)"
             left={formatByte(
               data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet
             )}

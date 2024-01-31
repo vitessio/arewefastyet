@@ -17,7 +17,7 @@ limitations under the License.
 import React from "react";
 import PropTypes from "prop-types";
 
-import { fixed, formatByte } from "../../../utils/Utils";
+import { fixed, formatByte, secondToMicrosecond } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
 
 export default function SearchMacro({ data, gitRef }) {
@@ -86,32 +86,32 @@ export default function SearchMacro({ data, gitRef }) {
           />
 
           <Row
-            title={"Total CPU Time"}
+            title={"Total CPU / query"}
             value={
-              data[1] ? fixed(data[1][0].Metrics.TotalComponentsCPUTime, 2) : 0
+              data[1] ? secondToMicrosecond(data[1][0].Metrics.TotalComponentsCPUTime) : 0
             }
           />
 
           <Row
-            title={"CPU Time vtgate"}
+            title={"CPU / query (vtgate)"}
             value={
               data[1]
-                ? fixed(data[1][0].Metrics.ComponentsCPUTime.vtgate, 2)
+                ? secondToMicrosecond(data[1][0].Metrics.ComponentsCPUTime.vtgate)
                 : 0
             }
           />
 
           <Row
-            title={"CPU Time vttablet"}
+            title={"CPU / query (vttablet)"}
             value={
               data[1]
-                ? fixed(data[1][0].Metrics.ComponentsCPUTime.vttablet, 2)
+                ? secondToMicrosecond(data[1][0].Metrics.ComponentsCPUTime.vttablet)
                 : 0
             }
           />
 
           <Row
-            title={"Total Allocs bytes / query"}
+            title={"Total Allocated / query"}
             value={
               data[1]
                 ? formatByte(
@@ -122,7 +122,7 @@ export default function SearchMacro({ data, gitRef }) {
           />
 
           <Row
-            title={"Allocs bytes / query vtgate"}
+            title={"Allocated / query (vtgate)"}
             value={
               data[1]
                 ? formatByte(
@@ -133,7 +133,7 @@ export default function SearchMacro({ data, gitRef }) {
           />
 
           <Row
-            title={"Allocs bytes / query vttablet"}
+            title={"Allocated / query (vttablet)"}
             value={
               data[1]
                 ? formatByte(

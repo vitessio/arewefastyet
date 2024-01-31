@@ -54,6 +54,10 @@ export const fixed = (value, f) => {
   return value.toFixed(f);
 };
 
+export const secondToMicrosecond = (value) => {
+  return fixed(value * 1000000, 2)+"μs";
+};
+
 //ERROR API MESSAGE ERROR
 export const errorApi =
   "An error occurred while retrieving data from the API. Please try again.";
