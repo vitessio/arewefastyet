@@ -22,7 +22,7 @@ all:
         HOST_IP_0:
       vars:
         prometheus_web_external_url: "http://{{ ansible_host }}/prom/"
-        prometheus_version: 2.26.0
+        prometheus_version: 2.49.1
         prometheus_config_flags_extra:
           enable-feature: remote-write-receiver,promql-at-modifier
     frontend:
@@ -37,14 +37,16 @@ all:
           admin_user: admin
           admin_password: "{{ grafana_password }}"
         grafana_datasources:
-          - name: "Prometheus"
-            type: "prometheus"
-            access: "proxy"
-            url: "http://{{ ansible_host }}/prom"
-            isDefault: true
-            basicAuth: true
-            basicAuthUser: prometheus
-            basicAuthPassword: "{{ prometheus_password }}"
+          - name: "InfluxDB"
+            type: "influxdb"
+            url: "http://{{ ansible_host }}:8086"
+            access: proxy
+            user: prometheus
+            jsonData:
+              dbName: site
+              httpMode: GET
+            secureJsonData:
+              password: "{{ influxdb_prometheus_password }}"
         grafana_dashboards_dir: "dashboards"
         grafana_dashboards:
           - dashboard_id: 1860
@@ -56,3 +58,7 @@ all:
           - dashboard_id: 7362
             revision_id: 5
             datasource: Prometheus
+          - dashboard_id: 14031
+            revision_id: 5
+            datasource: Prometheus
+
