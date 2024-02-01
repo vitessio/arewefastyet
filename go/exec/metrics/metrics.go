@@ -20,8 +20,8 @@ package metrics
 
 import (
 	"fmt"
-	"math"
 	"strings"
+	"time"
 
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
@@ -29,13 +29,23 @@ import (
 )
 
 const (
-	cpuSecondsPerComponent = `from(bucket:"%s")
-			|> range(start: %s, stop: %s)
+	cpuSecondsPerComponentStart = `from(bucket:"%s")
+			|> range(start: -%.0fs, stop: -%.0fs)
 			|> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s" and r.component == "%s")
 			|> max()`
 
-	memAllocBytesPerComponent = `from(bucket:"%s")
-			|> range(start: %s, stop: %s)
+	cpuSecondsPerComponentEnd = `from(bucket:"%s")
+			|> range(start: 0, stop: now())
+			|> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s" and r.component == "%s")
+			|> max()`
+
+	memAllocBytesPerComponentStart = `from(bucket:"%s")
+			|> range(start: -%.0fs, stop: -%.0fs)
+			|> filter(fn:(r) => r._measurement == "go_memstats_alloc_bytes_total" and r.exec_uuid == "%s" and r.component == "%s")
+			|> max()`
+
+	memAllocBytesPerComponentEnd = `from(bucket:"%s")
+			|> range(start: 0, stop: now())
 			|> filter(fn:(r) => r._measurement == "go_memstats_alloc_bytes_total" and r.exec_uuid == "%s" and r.component == "%s")
 			|> max()`
 )
@@ -51,20 +61,20 @@ type (
 	// ExecutionMetrics contains all the different system and service metrics
 	// that were gathered during the execution of a benchmark.
 	ExecutionMetrics struct {
-		// The sum of the time taken by every component.
+		// The sum of the time taken by every component to run one query on average.
 		TotalComponentsCPUTime float64
 
 		// Map of string/float that contains the name of the component as a key
-		// and the time taken by that component as a value.
+		// and the time taken by that component on average per query as a value.
 		ComponentsCPUTime map[string]float64
 
 		// TotalComponentsMemStatsAllocBytes represents the total number of bytes
-		// allocated even if freed, by all the components of the execution.
+		// allocated even if freed, by all the components of the execution and on average per query.
 		// The underlying go metrics used is go_memstats_alloc_bytes_total.
 		TotalComponentsMemStatsAllocBytes float64
 
 		// ComponentsMemStatsAllocBytes represents the number of bytes allocated
-		// and freed that each component used. The go metrics used is go_memstats_alloc_bytes_total.
+		// and freed that each component used on average per query. The go metrics used is go_memstats_alloc_bytes_total.
 		ComponentsMemStatsAllocBytes map[string]float64
 	}
 
@@ -75,22 +85,48 @@ type (
 
 // GetExecutionMetrics fetches and computes a single execution's metrics.
 // Metrics are fetched using the given influxdb.Client and execUUID.
-func GetExecutionMetrics(client influxdb.Client, execUUID string) (ExecutionMetrics, error) {
+func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, startRun, startSysbench time.Time) (ExecutionMetrics, error) {
 	execMetrics := NewExecMetrics()
 
-	var err error
 	for _, component := range components {
-		execMetrics.ComponentsCPUTime[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponent, client.Config.Database, "0", "now()", execUUID, component))
+		// CPU time
+		endValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentEnd, client.Config.Database, execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
+
+		startValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentStart, client.Config.Database, time.Since(startSysbench).Seconds(), time.Since(startRun).Seconds(), execUUID, component))
+		if err != nil {
+			return ExecutionMetrics{}, err
+		}
+		execMetrics.ComponentsCPUTime[component] = endValue - startValue
 		execMetrics.TotalComponentsCPUTime += execMetrics.ComponentsCPUTime[component]
 
-		execMetrics.ComponentsMemStatsAllocBytes[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponent, client.Config.Database, "0", "now()", execUUID, component))
+		// Memory
+		endValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentEnd, client.Config.Database, execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
+
+		startValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentStart, client.Config.Database, time.Since(startSysbench).Seconds(), time.Since(startRun).Seconds(), execUUID, component))
+		if err != nil {
+			return ExecutionMetrics{}, err
+		}
+
+		execMetrics.ComponentsMemStatsAllocBytes[component] = endValue - startValue
 		execMetrics.TotalComponentsMemStatsAllocBytes += execMetrics.ComponentsMemStatsAllocBytes[component]
+	}
+
+	// Divide all metrics by the number of queries that were executed
+	if queries > 0 {
+		execMetrics.TotalComponentsCPUTime = execMetrics.TotalComponentsCPUTime / float64(queries)
+		execMetrics.TotalComponentsMemStatsAllocBytes = execMetrics.TotalComponentsMemStatsAllocBytes / float64(queries)
+		for key, val := range execMetrics.ComponentsCPUTime {
+			execMetrics.ComponentsCPUTime[key] = val / float64(queries)
+		}
+		for key, val := range execMetrics.ComponentsMemStatsAllocBytes {
+			execMetrics.ComponentsMemStatsAllocBytes[key] = val / float64(queries)
+		}
 	}
 	return execMetrics, nil
 }
@@ -111,19 +147,19 @@ func NewExecMetrics() ExecutionMetrics {
 func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetrics ExecutionMetrics) error {
 	query := "INSERT INTO metrics(exec_uuid, `name`, `value`) VALUES (?, ?, ?), (?, ?, ?)"
 	args := []interface{}{
-		execUUID, "TotalComponentsCPUTime", math.Round(float64(int(execMetrics.TotalComponentsCPUTime*100))) / 100,
-		execUUID, "TotalComponentsMemStatsAllocBytes", math.Round(float64(int(execMetrics.TotalComponentsMemStatsAllocBytes*100))) / 100,
+		execUUID, "TotalComponentsCPUTime", execMetrics.TotalComponentsCPUTime,
+		execUUID, "TotalComponentsMemStatsAllocBytes", execMetrics.TotalComponentsMemStatsAllocBytes,
 	}
 	for k, v := range execMetrics.ComponentsCPUTime {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsCPUTime." + k, math.Round(float64(int(v*100))) / 100,
+			execUUID, "ComponentsCPUTime." + k, v,
 		}...)
 	}
 	for k, v := range execMetrics.ComponentsMemStatsAllocBytes {
 		query += ", (?,?,?)"
 		args = append(args, []interface{}{
-			execUUID, "ComponentsMemStatsAllocBytes." + k, math.Round(float64(int(v*100))) / 100,
+			execUUID, "ComponentsMemStatsAllocBytes." + k, v,
 		}...)
 	}
 	_, err := client.Insert(query, args...)
@@ -198,9 +234,6 @@ func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
 	for _, metrics := range metricsArray {
 		// If an execution is missing metrics, we do not count it toward
 		// the median of all execution.
-		if metrics.TotalComponentsCPUTime == 0 {
-			continue
-		}
 		interResults.totalComponentsCPUTime = append(interResults.totalComponentsCPUTime, metrics.TotalComponentsCPUTime)
 		for component, value := range metrics.ComponentsCPUTime {
 			interResults.componentsCPUTime[component] = append(interResults.componentsCPUTime[component], value)

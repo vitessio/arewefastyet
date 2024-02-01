@@ -23,7 +23,7 @@ import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
 import Hero from "./components/Hero";
 
-import { formatByteForGB } from "../../utils/Utils";
+import { secondToMicrosecond } from "../../utils/Utils";
 
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -157,34 +157,34 @@ export default function DailyPage() {
 
     CPUTimeData[0].data.push({
       x: xValue,
-      y: item.Metrics.TotalComponentsCPUTime,
+      y: secondToMicrosecond(item.Metrics.TotalComponentsCPUTime),
     });
 
     CPUTimeData[1].data.push({
       x: xValue,
-      y: item.Metrics.ComponentsCPUTime.vtgate,
+      y: secondToMicrosecond(item.Metrics.ComponentsCPUTime.vtgate),
     });
 
     CPUTimeData[2].data.push({
       x: xValue,
-      y: item.Metrics.ComponentsCPUTime.vttablet,
+      y: secondToMicrosecond(item.Metrics.ComponentsCPUTime.vttablet),
     });
 
     //MemStatsAllocBytes Data
 
     MemBytesData[0].data.push({
       x: xValue,
-      y: formatByteForGB(item.Metrics.TotalComponentsMemStatsAllocBytes),
+      y: item.Metrics.TotalComponentsMemStatsAllocBytes,
     });
 
     MemBytesData[1].data.push({
       x: xValue,
-      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vtgate),
+      y: item.Metrics.ComponentsMemStatsAllocBytes.vtgate,
     });
 
     MemBytesData[2].data.push({
       x: xValue,
-      y: formatByteForGB(item.Metrics.ComponentsMemStatsAllocBytes.vttablet),
+      y: item.Metrics.ComponentsMemStatsAllocBytes.vttablet,
     });
   }
 
@@ -201,17 +201,17 @@ export default function DailyPage() {
     },
     {
       data: latencyData,
-      title: "Latency (Milliseconds)",
+      title: "Latency (ms)",
       colors: ["#fad900"],
     },
     {
       data: CPUTimeData,
-      title: "CPU Time",
+      title: "CPU / query (μs)",
       colors: ["#fad900", "orange", "brown"],
     },
     {
       data: MemBytesData,
-      title: "Allocated Bytes",
+      title: "Allocated / query (bytes)",
       colors: ["#fad900", "orange", "brown"],
     },
   ];

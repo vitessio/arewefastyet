@@ -12,7 +12,7 @@
 ---
 - name: Import InfluxDB GPG signing key
   apt_key:
-    url: https://repos.influxdata.com/influxdb.key
+    url: https://repos.influxdata.com/influxdata-archive_compat.key
     state: present
   when: create_influxdb is defined
 

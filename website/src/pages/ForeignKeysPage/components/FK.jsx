@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import React from "react";
-import { formatByteForGB, fixed } from "../../../utils/Utils";
+import { formatByte, fixed, secondToMicrosecond } from "../../../utils/Utils";
 
 export default function FK({ data }) {
   return (
@@ -118,50 +118,50 @@ export default function FK({ data }) {
           />
 
           <Row
-            title="Total CPU time"
+            title="Total CPU / query"
             data={data}
             extract={function ({value}) {
-              return fixed(value.Metrics.TotalComponentsCPUTime, 2)
+              return secondToMicrosecond(value.Metrics.TotalComponentsCPUTime)
             }}
           />
 
           <Row
-            title="CPU time vtgate"
+            title="CPU / query (vtgate)"
             data={data}
             extract={function ({value}) {
-              return fixed(value.Metrics.ComponentsCPUTime.vtgate, 2)
+              return secondToMicrosecond(value.Metrics.ComponentsCPUTime.vtgate)
             }}
           />
 
           <Row
-            title="CPU time vttablet"
+            title="CPU / query (vttablet)"
             data={data}
             extract={function ({value}) {
-              return fixed(value.Metrics.ComponentsCPUTime.vttablet, 2)
+              return secondToMicrosecond(value.Metrics.ComponentsCPUTime.vttablet)
             }}
           />
 
           <Row
-            title="Total Allocs bytes"
+            title="Total Allocated / query"
             data={data}
             extract={function ({value}) {
-              return formatByteForGB(value.Metrics.TotalComponentsMemStatsAllocBytes)
+              return formatByte(value.Metrics.TotalComponentsMemStatsAllocBytes)
             }}
           />
 
           <Row
-            title="Allocs bytes vtgate"
+            title="Allocated / query (vtgate)"
             data={data}
             extract={function ({value}) {
-              return formatByteForGB(value.Metrics.ComponentsMemStatsAllocBytes.vtgate)
+              return formatByte(value.Metrics.ComponentsMemStatsAllocBytes.vtgate)
             }}
           />
 
           <Row
-            title="Allocs bytes vttablet"
+            title="Allocated / query (vttablet)"
             data={data}
             extract={function ({value}) {
-              return formatByteForGB(value.Metrics.ComponentsMemStatsAllocBytes.vttablet)
+              return formatByte(value.Metrics.ComponentsMemStatsAllocBytes.vttablet)
             }}
           />
         </tbody>

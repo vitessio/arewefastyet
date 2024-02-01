@@ -27,14 +27,12 @@ type step struct {
 
 const (
 	stepPrepare = "prepare"
-	stepWarmUp  = "warmup"
 	stepRun     = "run"
 )
 
 var (
 	steps = []step{
 		{Name: stepPrepare, SysbenchName: stepPrepare},
-		{Name: stepWarmUp, SysbenchName: stepRun},
 		{Name: stepRun, SysbenchName: stepRun},
 	}
 )

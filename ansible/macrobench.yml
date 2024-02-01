@@ -44,6 +44,11 @@
     vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port | default(15000) | string )) }}{% endfor -%}{{ targets }}"
     node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
     prometheus_skip_install: false
+    prometheus_version: 2.49.1
+    prometheus_global:
+      scrape_interval: 15s
+      scrape_timeout: 10s
+      evaluation_interval: 15s
     prometheus_targets:
       tablets:
         - targets: '{{ tablet_targets }}'

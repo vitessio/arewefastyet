@@ -27,7 +27,6 @@ import (
 
 func Test_skipSteps(t *testing.T) {
 	prepare := step{Name: stepPrepare, SysbenchName: stepPrepare}
-	warmup := step{Name: stepWarmUp, SysbenchName: stepRun}
 	run := step{Name: stepRun, SysbenchName: stepRun}
 
 	type args struct {
@@ -39,12 +38,10 @@ func Test_skipSteps(t *testing.T) {
 		args         args
 		wantNewSteps []step
 	}{
-		{name: "No skip step", args: args{steps: []step{prepare, warmup, run}}, wantNewSteps: []step{prepare, warmup, run}},
-		{name: "Skip prepare", args: args{steps: []step{prepare, warmup, run}, skip: stepPrepare}, wantNewSteps: []step{warmup, run}},
-		{name: "Skip warm up", args: args{steps: []step{prepare, warmup, run}, skip: stepWarmUp}, wantNewSteps: []step{prepare, run}},
-		{name: "Skip run", args: args{steps: []step{prepare, warmup, run}, skip: stepRun}, wantNewSteps: []step{prepare, warmup}},
-		{name: "Skip prepare and run", args: args{steps: []step{prepare, warmup, run}, skip: fmt.Sprintf("%s,%s", stepPrepare, stepRun)}, wantNewSteps: []step{warmup}},
-		{name: "Skip all", args: args{steps: []step{prepare, warmup, run}, skip: fmt.Sprintf("%s,%s,%s", stepPrepare, stepWarmUp, stepRun)}, wantNewSteps: []step{}},
+		{name: "No skip step", args: args{steps: []step{prepare, run}}, wantNewSteps: []step{prepare, run}},
+		{name: "Skip prepare", args: args{steps: []step{prepare, run}, skip: stepPrepare}, wantNewSteps: []step{run}},
+		{name: "Skip run", args: args{steps: []step{prepare, run}, skip: stepRun}, wantNewSteps: []step{prepare}},
+		{name: "Skip all", args: args{steps: []step{prepare, run}, skip: fmt.Sprintf("%s,%s", stepPrepare, stepRun)}, wantNewSteps: []step{}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
