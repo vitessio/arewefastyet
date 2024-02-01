@@ -35,50 +35,11 @@
     name: "vtgate"
     tasks_from: systemd
 
-- name: ensure vtgate directory
-  become: yes
-  become_user: root
+- name: install config files
+  include_tasks: vtgate.yml
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
-  async: 600
-  poll: 0
-  file:
-    state: directory
-    path: '{{ vitess_root }}/tmp/vtgate-{{ gateway.id }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-
-- name: install config
-  become: yes
-  become_user: root
-  loop: '{{ gateways }}'
-  loop_control:
-    loop_var: gateway
-  async: 600
-  poll: 0
-  template:
-    src: 'vtgate.conf.j2'
-    dest: '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
-
-- name: start vtgate
-  become: yes
-  become_user: root
-  loop: '{{ gateways }}'
-  loop_control:
-    loop_var: gateway
-  async: 600
-  poll: 0
-  when:
-    - enable_vtgate | bool
-  service:
-    name: 'vtgate@{{ gateway.id }}'
-    enabled: yes
-    state: started
-  changed_when: false
 
 - name: Turn on loadbalancing
   vars:
