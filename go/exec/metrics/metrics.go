@@ -21,6 +21,7 @@ package metrics
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
@@ -28,13 +29,23 @@ import (
 )
 
 const (
-	cpuSecondsPerComponent = `from(bucket:"%s")
-			|> range(start: %s, stop: %s)
+	cpuSecondsPerComponentStart = `from(bucket:"%s")
+			|> range(start: 0, stop: -%.0fs)
 			|> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s" and r.component == "%s")
 			|> max()`
 
-	memAllocBytesPerComponent = `from(bucket:"%s")
-			|> range(start: %s, stop: %s)
+	cpuSecondsPerComponentEnd = `from(bucket:"%s")
+			|> range(start: 0, stop: now())
+			|> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s" and r.component == "%s")
+			|> max()`
+
+	memAllocBytesPerComponentStart = `from(bucket:"%s")
+			|> range(start: 0, stop: -%.0fs)
+			|> filter(fn:(r) => r._measurement == "go_memstats_alloc_bytes_total" and r.exec_uuid == "%s" and r.component == "%s")
+			|> max()`
+
+	memAllocBytesPerComponentEnd = `from(bucket:"%s")
+			|> range(start: 0, stop: now())
 			|> filter(fn:(r) => r._measurement == "go_memstats_alloc_bytes_total" and r.exec_uuid == "%s" and r.component == "%s")
 			|> max()`
 )
@@ -74,21 +85,35 @@ type (
 
 // GetExecutionMetrics fetches and computes a single execution's metrics.
 // Metrics are fetched using the given influxdb.Client and execUUID.
-func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int) (ExecutionMetrics, error) {
+func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, startTime time.Time) (ExecutionMetrics, error) {
 	execMetrics := NewExecMetrics()
 
-	var err error
 	for _, component := range components {
-		execMetrics.ComponentsCPUTime[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponent, client.Config.Database, "0", "now()", execUUID, component))
+		// CPU time
+		endValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentEnd, client.Config.Database, execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
+
+		startValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentStart, client.Config.Database, time.Since(startTime).Seconds(), execUUID, component))
+		if err != nil {
+			return ExecutionMetrics{}, err
+		}
+		execMetrics.ComponentsCPUTime[component] = endValue - startValue
 		execMetrics.TotalComponentsCPUTime += execMetrics.ComponentsCPUTime[component]
 
-		execMetrics.ComponentsMemStatsAllocBytes[component], err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponent, client.Config.Database, "0", "now()", execUUID, component))
+		// Memory
+		endValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentEnd, client.Config.Database, execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
+
+		startValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentStart, client.Config.Database, time.Since(startTime).Seconds(), execUUID, component))
+		if err != nil {
+			return ExecutionMetrics{}, err
+		}
+
+		execMetrics.ComponentsMemStatsAllocBytes[component] = endValue - startValue
 		execMetrics.TotalComponentsMemStatsAllocBytes += execMetrics.ComponentsMemStatsAllocBytes[component]
 	}
 

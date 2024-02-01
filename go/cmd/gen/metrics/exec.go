@@ -20,6 +20,7 @@ package metrics
 
 import (
 	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/exec"
@@ -68,7 +69,7 @@ func GenExecMetricsCmd() *cobra.Command {
 					continue
 				}
 
-				executionMetrics, err := metrics.GetExecutionMetrics(*clientMetrics, uuid, 0)
+				executionMetrics, err := metrics.GetExecutionMetrics(*clientMetrics, uuid, 0, time.Now())
 				if err != nil {
 					return err
 				}

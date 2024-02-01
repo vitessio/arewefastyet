@@ -25,6 +25,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
@@ -122,9 +123,15 @@ func Run(mabcfg Config) error {
 
 	// Execution
 	var resStr []byte
+	var runStartTime time.Time
 	for _, step := range newSteps {
 		args := buildSysbenchArgString(mabcfg.M, step.Name)
 		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
+
+		if step.Name == stepRun {
+			runStartTime = time.Now()
+		}
+
 		command := exec.Command(mabcfg.SysbenchExec, args...)
 		command.Dir = mabcfg.WorkingDirectory
 		out, err := command.Output()
@@ -136,19 +143,19 @@ func Run(mabcfg Config) error {
 		}
 	}
 
-	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID)
+	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID, runStartTime)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int) error {
+func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int, startTime time.Time) error {
 	sysbenchResults, err := handleSysBenchResults(resStr, sqlClient, macrobenchID)
 	if err != nil {
 		return err
 	}
-	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID, sysbenchResults.Queries)
+	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID, sysbenchResults.Queries, startTime)
 	if err != nil {
 		return err
 	}
@@ -187,8 +194,8 @@ func handleVTGateResults(ports []string, sqlClient *psdb.Client, execUUID string
 	return insertVTGateQueryMapToMySQL(sqlClient, execUUID, plans, macrobenchID)
 }
 
-func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string, queries int) error {
-	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, queries)
+func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string, queries int, startTime time.Time) error {
+	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, queries, startTime)
 	if err != nil {
 		return err
 	}
