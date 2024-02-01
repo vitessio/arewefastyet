@@ -16,11 +16,6 @@
     name: "vtgate"
     tasks_from: clean
 
-- name: Create users
-  include_role:
-    name: "vitess_build"
-    tasks_from: create_users
-
 - name: ensure vitess directories
   become: yes
   become_user: root
