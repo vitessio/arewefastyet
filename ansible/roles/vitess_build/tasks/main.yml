@@ -13,6 +13,7 @@
 - name: Update Vitess
   become: yes
   become_user: root
+  when: commit_previous_exec != vitess_git_version
   block:
     - name: Fetch Updated Vitess
       include_tasks: install_vitess.yml
@@ -52,6 +53,7 @@
       changed_when: false
 
 - name: Disbale AppArmor
+  when: not clean_previous_exec | bool
   block:
     - name: link apparmor
       file:
