@@ -141,6 +141,12 @@ type Exec struct {
 	vitessConfig    vitessConfig
 
 	vitessSchemaPath string
+
+	// We always fetch the previous execution to let Ansible skip certain steps of the benchmark
+	// execution. Like cleaning up at the start of the execution, this is not required when the
+	// previous execution was clean and did not fail. Moreover, we can skip the fetch and build
+	// of Vitess if the previous execution share the same commit as the current execution.
+	previousExecution *Exec
 }
 
 const (
@@ -254,6 +260,13 @@ func (e *Exec) Prepare() error {
 	if err != nil {
 		return err
 	}
+
+	// get previous benchmark
+	previousExec, err := getPreviousExecution(e.clientDB)
+	if err != nil {
+		return err
+	}
+	e.previousExecution = previousExec
 
 	// insert new exec in SQL
 	if _, err = e.clientDB.Insert(
@@ -380,6 +393,10 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	// runtime related values
 	e.AnsibleConfig.AddExtraVar(ansible.KeyGoVersion, e.GolangVersion)
 
+	// previous execution
+	e.AnsibleConfig.AddExtraVar(ansible.KeyCleanPreviousExec, e.previousExecution.Status == StatusFinished)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyCommitPreviousExec, e.previousExecution.GitRef)
+
 	// stats database related values
 	e.statsRemoteDBConfig.AddToAnsible(&e.AnsibleConfig)
 	return nil
@@ -419,6 +436,29 @@ func (e *Exec) defineVersionNameOfVitess() error {
 
 	e.VitessVersionName = fmt.Sprintf("%s%d", VitessPreviousVersion, e.VitessVersion.Major)
 	return nil
+}
+
+func getPreviousExecution(client storage.SQLClient) (*Exec, error) {
+	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, type, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 1"
+	result, err := client.Select(query)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+
+	var eUUID string
+	exec := &Exec{}
+	if result.Next() {
+		err = result.Scan(&eUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.TypeOf, &exec.PullNB, &exec.GolangVersion)
+		if err != nil {
+			return nil, err
+		}
+		exec.UUID, err = uuid.Parse(eUUID)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return exec, nil
 }
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
@@ -524,23 +564,6 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeO
 	return
 }
 
-// GetLatestDailyJobForMicrobenchmarks will fetch and return the commit sha for which
-// the last daily job for microbenchmarks was run
-func GetLatestDailyJobForMicrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
-	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and type = \"micro\" order by started_at desc limit 1"
-	rows, err := client.Select(query)
-	if err != nil {
-		return "", err
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&gitSha)
-		return gitSha, err
-	}
-	return "", nil
-}
-
 // GetLatestDailyJobForMacrobenchmarks will fetch and return the commit sha for which
 // the last daily job for macrobenchmarks was run
 func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
@@ -576,45 +599,6 @@ func ExistsMacrobenchmark(client storage.SQLClient, gitRef, source, typeOf, stat
 	}
 	defer result.Close()
 	return result.Next(), nil
-}
-
-func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, typeOf, planner, status string) (bool, error) {
-	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", status)
-	result, err := client.Select(query, gitRef, typeOf, source, planner)
-	if err != nil {
-		return false, err
-	}
-	exists := result.Next()
-	result.Close()
-	if exists {
-		return true, nil
-	}
-	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", status)
-	result, err = client.Select(query, gitRef, typeOf, source)
-	if err != nil {
-		return false, err
-	}
-	defer result.Close()
-	for result.Next() {
-		var exec_uuid string
-		err = result.Scan(&exec_uuid)
-		if err != nil {
-			return false, err
-		}
-		query = "SELECT exec_uuid FROM macrobenchmark m WHERE m.exec_uuid = ?"
-		resultMacro, err := client.Select(query, exec_uuid)
-		if err != nil {
-			return false, err
-		}
-		defer resultMacro.Close()
-
-		next := resultMacro.Next()
-		resultMacro.Close()
-		if !next {
-			return true, nil
-		}
-	}
-	return false, nil
 }
 
 func DeleteExecution(client storage.SQLClient, gitRef, UUID, source string) error {

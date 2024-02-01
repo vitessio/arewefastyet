@@ -10,7 +10,8 @@
 # limitations under the License.
 
 ---
-- name: Clean Post Macrobench
+- name: Clean Pre Macrobench
+  when: not clean_previous_exec | bool
   import_playbook: clean_macrobench.yml
 
 - name: Build Vitess
@@ -69,6 +70,3 @@
     - name: Apply VSchema
       shell: |
         vtctlclient --server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -- --vschema="$(cat /tmp/vschema_sysbench.json)" main
-
-    - name: Print go version
-      debug: msg="VSchema is applied."

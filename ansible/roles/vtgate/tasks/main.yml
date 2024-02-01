@@ -16,11 +16,6 @@
     name: "vtgate"
     tasks_from: clean
 
-- name: Create users
-  include_role:
-    name: "vitess_build"
-    tasks_from: create_users
-
 - name: ensure vitess directories
   become: yes
   become_user: root
@@ -45,6 +40,8 @@
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
 
 - name: Turn on loadbalancing
   vars:

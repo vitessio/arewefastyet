@@ -10,17 +10,11 @@
 # limitations under the License.
 
 ---
-- name: Create users
-  include_role:
-    name: "vitess_build"
-    tasks_from: create_users
-
 - name: make sure vtctld is stopped
   when: clean_vtctld | bool
   include_role:
     name: "vtctld"
     tasks_from: "clean"
-
 
 - name: ensure vitess directories
   become: yes
