@@ -69,7 +69,7 @@ func GenExecMetricsCmd() *cobra.Command {
 					continue
 				}
 
-				executionMetrics, err := metrics.GetExecutionMetrics(*clientMetrics, uuid, 0, time.Now())
+				executionMetrics, err := metrics.GetExecutionMetrics(*clientMetrics, uuid, 0, time.Now(), time.Now())
 				if err != nil {
 					return err
 				}

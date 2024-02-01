@@ -122,14 +122,15 @@ func Run(mabcfg Config) error {
 	newSteps := skipSteps(steps, mabcfg.SkipSteps)
 
 	// Execution
+	startSysbench := time.Now()
 	var resStr []byte
-	var runStartTime time.Time
+	var startRun time.Time
 	for _, step := range newSteps {
 		args := buildSysbenchArgString(mabcfg.M, step.Name)
 		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
 
 		if step.Name == stepRun {
-			runStartTime = time.Now()
+			startRun = time.Now()
 		}
 
 		command := exec.Command(mabcfg.SysbenchExec, args...)
@@ -143,19 +144,19 @@ func Run(mabcfg Config) error {
 		}
 	}
 
-	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID, runStartTime)
+	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID, startRun, startSysbench)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int, startTime time.Time) error {
+func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int, startRun, startSysbench time.Time) error {
 	sysbenchResults, err := handleSysBenchResults(resStr, sqlClient, macrobenchID)
 	if err != nil {
 		return err
 	}
-	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID, sysbenchResults.Queries, startTime)
+	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID, sysbenchResults.Queries, startRun, startSysbench)
 	if err != nil {
 		return err
 	}
@@ -194,8 +195,8 @@ func handleVTGateResults(ports []string, sqlClient *psdb.Client, execUUID string
 	return insertVTGateQueryMapToMySQL(sqlClient, execUUID, plans, macrobenchID)
 }
 
-func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string, queries int, startTime time.Time) error {
-	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, queries, startTime)
+func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string, queries int, startRun, startSysbench time.Time) error {
+	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, queries, startRun, startSysbench)
 	if err != nil {
 		return err
 	}
