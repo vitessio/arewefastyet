@@ -22,7 +22,7 @@
 - name: Update Vitess
   become: yes
   become_user: root
-  when: commit_previous_exec != vitess_git_version
+  when: commit_previous_exec != vitess_git_version or not clean_previous_exec | bool
   block:
     - name: Fetch Updated Vitess
       include_tasks: install_vitess.yml
