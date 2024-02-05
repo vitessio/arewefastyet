@@ -95,9 +95,6 @@ const (
 	// this is useful when doing optimization to skip certain steps of the setup
 	KeyCleanPreviousExec = "clean_previous_exec"
 
-	// KeyCommitPreviousExec is the commit SHA of the previous execution.
-	KeyCommitPreviousExec = "commit_previous_exec"
-
 	// Stats database related keys
 
 	// KeyStatsDBHost corresponding value in the map is the hostname for the stats

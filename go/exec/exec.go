@@ -142,11 +142,10 @@ type Exec struct {
 
 	vitessSchemaPath string
 
-	// We always fetch the previous execution to let Ansible skip certain steps of the benchmark
-	// execution. Like cleaning up at the start of the execution, this is not required when the
-	// previous execution was clean and did not fail. Moreover, we can skip the fetch and build
-	// of Vitess if the previous execution share the same commit as the current execution.
-	previousExecution *Exec
+	// cleanPreviousExecution is set to true when the previous execution in the database is marked
+	// as "finished", meaning it has executed normally. In this case, Ansible doesn't need to clean up
+	// the execution server at the start of the execution to save time.
+	cleanPreviousExecution bool
 }
 
 const (
@@ -266,7 +265,9 @@ func (e *Exec) Prepare() error {
 	if err != nil {
 		return err
 	}
-	e.previousExecution = previousExec
+	if previousExec.Status == StatusFinished {
+		e.cleanPreviousExecution = true
+	}
 
 	// insert new exec in SQL
 	if _, err = e.clientDB.Insert(
@@ -394,8 +395,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	e.AnsibleConfig.AddExtraVar(ansible.KeyGoVersion, e.GolangVersion)
 
 	// previous execution
-	e.AnsibleConfig.AddExtraVar(ansible.KeyCleanPreviousExec, e.previousExecution.Status == StatusFinished)
-	e.AnsibleConfig.AddExtraVar(ansible.KeyCommitPreviousExec, e.previousExecution.GitRef)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyCleanPreviousExec, e.cleanPreviousExecution)
 
 	// stats database related values
 	e.statsRemoteDBConfig.AddToAnsible(&e.AnsibleConfig)
