@@ -18,6 +18,8 @@
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
 
 - name: remove old config
   become: yes
