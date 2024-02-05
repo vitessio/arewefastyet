@@ -55,6 +55,9 @@
     loop_var: tablet
   async: 600
   poll: 0
+  with_items:
+    - s: extra_my.cnf
+      d: '/etc/vitess/extra_my{{ tablet.id }}.cnf'
   template:
     src: 'vttablet.conf.j2'
     dest: '/etc/vitess/conf/vttablet-{{ tablet.id }}.conf'
