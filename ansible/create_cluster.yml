@@ -31,16 +31,6 @@
       vars:
         - etcd_launch: True
 
-- hosts: all
-  name: ensure vitess tmp directory
-  become: yes
-  become_user: root
-  file:
-    state: directory
-    path: '{{ vitess_root }}/tmp'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-
 - hosts: vtctld
   roles:
     - role: vtctld

@@ -35,17 +35,20 @@
     name: "vtgate"
     tasks_from: systemd
 
-- name: ensure vtgate directory
+- name: ensure vtgate directories
   become: yes
   become_user: root
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
+  with_items:
+    - '{{ vitess_root }}/tmp'
+    - '{{ vitess_root }}/tmp/vtgate-{{ gateway.id }}'
   file:
     state: directory
-    path: '{{ vitess_root }}/tmp/vtgate-{{ gateway.id }}'
+    path: '{{ item }}'
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
 
@@ -55,11 +58,14 @@
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
+  with_items:
+    - s: vtgate.conf
+      d: '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
   template:
-    src: 'vtgate.conf.j2'
-    dest: '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
+    src: '{{ item.s }}.j2'
+    dest: '{{ item.d }}'
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
     mode: '0644'
@@ -70,8 +76,8 @@
   loop: '{{ gateways }}'
   loop_control:
     loop_var: gateway
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
   when:
     - enable_vtgate | bool
   service:

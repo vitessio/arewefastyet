@@ -33,83 +33,60 @@
 - name: install systemd units
   include_tasks: systemd.yml
 
-- name: ensure vttablet directory
+- name: ensure vttablet directories
   become: yes
   become_user: root
   loop: '{{ tablets }}'
   loop_control:
     loop_var: tablet
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
+  with_items:
+    - '{{ vitess_root }}/tmp/'
+    - '{{ vitess_root }}/tmp/vttablet-{{ tablet.id }}'
   file:
     state: directory
-    path: '{{ vitess_root }}/tmp/vttablet-{{ tablet.id }}'
+    path: '{{ item }}'
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
 
-- name: install vttablet config
+- name: install configs
   become: yes
   become_user: root
   loop: '{{ tablets }}'
   loop_control:
     loop_var: tablet
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
   with_items:
+    - s: vttablet.conf
+      d: '/etc/vitess/conf/vttablet-{{ tablet.id }}.conf'
     - s: extra_my.cnf
       d: '/etc/vitess/extra_my{{ tablet.id }}.cnf'
   template:
-    src: 'vttablet.conf.j2'
-    dest: '/etc/vitess/conf/vttablet-{{ tablet.id }}.conf'
+    src: '{{ item.s }}.j2'
+    dest: '{{ item.d }}'
     owner: '{{ vitess_user }}'
     group: '{{ vitess_group }}'
     mode: '0644'
 
-- name: install extra cnf config
+- name: start mysql
   become: yes
   become_user: root
   loop: '{{ tablets }}'
   loop_control:
     loop_var: tablet
-  async: 600
-  poll: 0
-  template:
-    src: 'extra_my.cnf.j2'
-    dest: '/etc/vitess/extra_my{{ tablet.id }}.cnf'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
-
-- name: start mysqlctld
-  become: yes
-  become_user: root
-  loop: '{{ tablets }}'
-  loop_control:
-    loop_var: tablet
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
   when:
     - enable_vttablet | bool
   service:
-    name: 'mysqlctld@{{ tablet.id }}'
+    name: '{{ item }}'
     enabled: yes
     state: started
-  changed_when: false
-
-- name: start mysqld exporter
-  become: yes
-  become_user: root
-  loop: '{{ tablets }}'
-  loop_control:
-    loop_var: tablet
-  async: 600
-  poll: 0
-  when:
-    - enable_vttablet | bool
-  service:
-    name: 'mysqld_exporter@{{ tablet.id }}'
-    enabled: yes
-    state: started
+  with_items:
+    - 'mysqlctld@{{ tablet.id }}'
+    - 'mysqld_exporter@{{ tablet.id }}'
   changed_when: false
 
 - name: wait for mysql socket
@@ -118,8 +95,8 @@
   loop: '{{ tablets }}'
   loop_control:
     loop_var: tablet
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
   when:
     - enable_vttablet | bool
   wait_for:
@@ -136,8 +113,8 @@
   loop: '{{ tablets }}'
   loop_control:
     loop_var: tablet
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
   when:
     - enable_vttablet | bool
   wait_for:
@@ -154,12 +131,14 @@
   loop: '{{ tablets }}'
   loop_control:
     loop_var: tablet
-  async: 600
-  poll: 0
+  async: 600   # Maximum time to wait for all tasks to complete in seconds
+  poll: 0      # Polling interval, 0 means don't poll and wait for completion
   when:
     - enable_vttablet | bool
   service:
-    name: 'vttablet@{{ tablet.id }}'
+    name: '{{ item }}'
     enabled: yes
     state: started
+  with_items:
+    - 'vttablet@{{ tablet.id }}'
   changed_when: false
