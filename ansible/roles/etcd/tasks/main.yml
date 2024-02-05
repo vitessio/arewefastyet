@@ -10,6 +10,8 @@
 # limitations under the License.
 
 ---
+- include_tasks: clean.yml
+
 - include_tasks: install.yml
   when: not etcd_launch | bool
 
