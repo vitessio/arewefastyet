@@ -16,6 +16,7 @@
     name: "vtctld"
     tasks_from: "clean"
 
+
 - name: ensure vitess directories
   become: yes
   become_user: root

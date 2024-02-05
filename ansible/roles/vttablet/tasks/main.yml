@@ -33,11 +33,8 @@
 - name: install systemd units
   include_tasks: systemd.yml
 
-- name: Install config files
+- name: install config files
   include_tasks: vttablet.yml
   loop: '{{ tablets }}'
   loop_control:
     loop_var: tablet
-  async: 600   # Maximum time to wait for all tasks to complete in seconds
-  poll: 0      # Polling interval, 0 means don't poll and wait for completion
-
