@@ -10,8 +10,7 @@
 # limitations under the License.
 
 ---
-- name: Clean Pre Macrobench
-  when: not clean_previous_exec | bool
+- name: Clean Post Macrobench
   import_playbook: clean_macrobench.yml
 
 - name: Build Vitess
