@@ -1,4 +1,4 @@
-exec-go-version: "1.21.3"
+exec-go-version: "1.22.0"
 
 web-port: 8080
 web-benchmark-config-path: ./config/benchmarks/
