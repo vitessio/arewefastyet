@@ -16,7 +16,7 @@ limitations under the License.
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function Hero(props) {
+export default function Hero(props: { commits: { left: any; right: any } }) {
   const { left, right } = props.commits;
 
   return (

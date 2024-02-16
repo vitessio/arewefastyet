@@ -55,7 +55,7 @@ export const fixed = (value, f) => {
 };
 
 export const secondToMicrosecond = (value) => {
-  return fixed(value * 1000000, 2)+"μs";
+  return fixed(value * 1000000, 2) + "μs";
 };
 
 //ERROR API MESSAGE ERROR

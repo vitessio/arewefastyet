@@ -45,7 +45,7 @@ export default function MicroPage() {
   const [isFirstCallFinished, setIsFirstCallFinished] = useState(false);
   const [commitHashLeft, setCommitHashLeft] = useState("");
   const [commitHashRight, setCommitHashRight] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function MicroPage() {
         setIsLoading(false);
       }
     };
-
+    ``;
     fetchData();
   }, []);
 
