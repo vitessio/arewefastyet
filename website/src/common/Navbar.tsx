@@ -19,6 +19,7 @@ import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import Icon from "./Icon";
 import useTheme from "../hooks/useTheme";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const navItems = [
   { to: "/status", title: "Status" },
@@ -79,14 +80,8 @@ export default function Navbar() {
         </div>
 
         <div className="flex-1 flex gap-3 justify-end items-center">
-          <button
-            className="relative text-3xl flex items-center"
-            onClick={toggleTheme}
-          >
-            <Icon
-              icon={(theme.current === "dark" && "light_mode") || "dark_mode"}
-            />
-          </button>
+          <ModeToggle />
+
           <button
             className="relative md:hidden text-3xl flex items-center"
             onClick={toggleMenu}

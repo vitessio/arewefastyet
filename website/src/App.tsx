@@ -16,6 +16,7 @@ limitations under the License.
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PublicRoute from "./pages/PublicRoute";
+import { ThemeProvider } from "./components/theme-provider";
 
 function App() {
   return (

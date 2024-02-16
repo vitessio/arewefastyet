@@ -21,6 +21,7 @@ import HowItWorks from "./components/HowItWorks";
 import MicroAndMacro from "./components/MicroAndMacro";
 import Diagram from "./components/Diagram";
 import HeroMobile from "./components/HeroMobile";
+import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
   return (
