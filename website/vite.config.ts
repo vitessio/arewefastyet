@@ -15,6 +15,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dotenv from "dotenv";
+import path from "path";
 
 export default defineConfig(({ mode }) => {
   // Load environment variables from the corresponding .env file based on the mode (dev or prod)
@@ -22,5 +23,10 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
   };
 });
