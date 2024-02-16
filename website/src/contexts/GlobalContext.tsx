@@ -15,40 +15,51 @@ limitations under the License.
 */
 
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { Theme } from "../types";
 
-const GlobalContext = createContext();
+interface GlobalContextType {
+  theme: Theme;
+  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
+  modal: React.ReactNode;
+  setModal: React.Dispatch<React.SetStateAction<React.ReactNode>>;
+}
 
-export function GlobalProvider({ children }) {
-  const [theme, setTheme] = useState();
-  const [modal, setModal] = useState();
+const GlobalContext = createContext<GlobalContextType>({} as GlobalContextType);
+
+export function GlobalProvider({ children }: { children: React.ReactNode }) {
+  // @ts-ignore
+  const [theme, setTheme] = useState<Theme>(null);
+  const [modal, setModal] = useState<React.ReactNode | null>(null);
 
   useEffect(() => {
     const storedTheme = localStorage.getItem("vitess__arewefastyet__theme");
-    if (storedTheme) {
+    if (storedTheme === "default" || storedTheme === "dark") {
       setTheme(storedTheme);
     } else {
       const darkColorPreference = window.matchMedia(
         "(prefers-color-scheme: dark)"
       );
-
       setTheme(darkColorPreference.matches ? "dark" : "default");
     }
   }, []);
 
   useEffect(() => {
+    setTimeout(() => {
+      document.documentElement.style.transitionDuration = "700ms";
+    }, 100);
+
     if (theme) {
       document.documentElement.setAttribute("data-theme", theme);
       localStorage.setItem("vitess__arewefastyet__theme", theme);
     }
   }, [theme]);
 
-  const value = { theme, setTheme, modal, setModal };
+  const value = { theme: theme as Theme, setTheme, modal, setModal };
 
   return (
     <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
   );
 }
-
 export default function useGlobalContext() {
   return useContext(GlobalContext);
 }

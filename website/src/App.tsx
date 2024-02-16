@@ -13,20 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import { useEffect } from "react";
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import PublicRoute from "./pages/PublicRoute";
 
-export default function useClickOutside(ref, callback) {
-  function handleClick(e) {
-    if (ref.current && !ref.current.contains(e.target)) {
-      callback();
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("click", handleClick);
-
-    return () => {
-      document.removeEventListener("click", handleClick);
-    };
-  });
+function App() {
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/*" element={<PublicRoute />} />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
 }
+
+export default App;

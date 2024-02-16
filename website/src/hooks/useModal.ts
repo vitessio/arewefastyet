@@ -13,24 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import useGlobalContext from "../contexts/GlobalContext";
 
-import { BrowserRouter,Route,Routes } from 'react-router-dom'
-import React from 'react';
-import PublicRoute from './pages/PublicRoute';
+export default function useModal() {
+  const { modal, setModal } = useGlobalContext();
 
+  function hide() {
+    setModal(null);
+  }
 
-function App() {
-  
+  function show(element: React.ReactNode) {
+    setModal(element);
+  }
 
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/*' element={<PublicRoute/>}/>
-        </Routes>
-      </BrowserRouter>
-    </>
-  )
+  return { element: modal, show, hide };
 }
-
-export default App

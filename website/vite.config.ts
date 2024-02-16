@@ -1,4 +1,3 @@
-
 // Copyright 2023 The Vitess Authors.
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
-
-import { defineConfig } from 'vite';
-import dotenv from 'dotenv';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import dotenv from "dotenv";
 
 export default defineConfig(({ mode }) => {
   // Load environment variables from the corresponding .env file based on the mode (dev or prod)
   dotenv.config({ path: `./.env.${mode}` });
 
   return {
-    // Configuration of your Vite application
-    // ...
+    plugins: [react()],
   };
 });

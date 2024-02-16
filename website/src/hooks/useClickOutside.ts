@@ -13,15 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import useGlobalContext from "../contexts/GlobalContext";
+import { useEffect } from "react";
 
-export default function useTheme() {
-  const { theme, setTheme } = useGlobalContext();
-
-  function set(newTheme) {
-    setTheme(newTheme);
-    setColors(getThemeColors());
+export default function useClickOutside(
+  ref: React.MutableRefObject<HTMLElement>,
+  callback: () => any
+) {
+  function handleClick(e: Event) {
+    if (ref.current && !ref.current.contains(e.target as Node)) {
+      callback();
+    }
   }
-
-  return { current: theme, set };
+  useEffect(() => {
+    document.addEventListener("click", handleClick);
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  });
 }

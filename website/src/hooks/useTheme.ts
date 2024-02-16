@@ -14,17 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import useGlobalContext from "../contexts/GlobalContext";
+import { Theme } from "../types";
 
-export default function useModal() {
-  const { modal, setModal } = useGlobalContext();
+export default function useTheme() {
+  const { theme, setTheme } = useGlobalContext();
 
-  function hide() {
-    setModal(null);
+  function set(newTheme: Theme | ((prev: Theme) => Theme)) {
+    setTheme(newTheme);
   }
 
-  function show(element) {
-    setModal(element);
-  }
-
-  return { element: modal, show, hide };
+  return { current: theme, set };
 }

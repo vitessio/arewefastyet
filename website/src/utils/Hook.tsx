@@ -14,28 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-import { errorApi } from '../utils/Utils';
+import { errorApi } from "./Utils";
 
-const useApiCall = (url) => {
+const useApiCall = (url: string) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [textLoading, setTextLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null);
+  const [textLoading, setTextLoading] = useState(true);
 
   useEffect(() => {
-    setTextLoading(true)
+    setTextLoading(true);
     const fetchData = async () => {
       try {
         const response = await fetch(url);
         const jsonData = await response.json();
-        setTextLoading(false)
+        setTextLoading(false);
         setData(jsonData);
         setIsLoading(false);
       } catch (error) {
-        console.log('Error while retrieving data from the API', error);
-        setTextLoading(false)
+        console.log("Error while retrieving data from the API", error);
+        setTextLoading(false);
         setError(errorApi);
         setIsLoading(false);
       }

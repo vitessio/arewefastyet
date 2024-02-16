@@ -13,10 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from "react";
 import { twMerge } from "tailwind-merge";
 
-export default function Hero(props) {
+export default function Hero(props: { gitRef: any; setGitRef: any }) {
   const { gitRef, setGitRef } = props;
 
   return (
@@ -42,7 +41,12 @@ export default function Hero(props) {
   );
 }
 
-function ComparisonInput(props) {
+function ComparisonInput(props: {
+  className: any;
+  gitRef: any;
+  setGitRef: any;
+  name: any;
+}) {
   const { className, gitRef, setGitRef, name } = props;
 
   return (
@@ -56,7 +60,7 @@ function ComparisonInput(props) {
       defaultValue={gitRef[name]}
       placeholder={`${name} commit SHA`}
       onChange={(event) =>
-        setGitRef((p) => {
+        setGitRef((p: any) => {
           return { ...p, [name]: event.target.value };
         })
       }
