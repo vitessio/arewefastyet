@@ -102,7 +102,9 @@ export default function Navbar() {
             </SheetTrigger>
             <SheetContent className="border-accent">
               <SheetHeader>
-                <SheetTitle>Vitess | Arewefastyet</SheetTitle>
+                <SheetTitle className="text-left">
+                  Vitess | Arewefastyet
+                </SheetTitle>
                 <SheetDescription asChild>
                   <div className="flex flex-col justify-center items-center z-[50] bg-background w-full">
                     <NavLink
