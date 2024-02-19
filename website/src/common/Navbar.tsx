@@ -19,6 +19,15 @@ import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import useTheme from "../hooks/useTheme";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const navItems = [
   { to: "/status", title: "Status" },
@@ -31,23 +40,11 @@ const navItems = [
 ];
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const theme = useTheme();
-
-  function toggleMenu() {
-    setIsMenuOpen((o) => !o);
-  }
-
-  function toggleTheme() {
-    theme.set((t) => (t === "default" ? "dark" : "default"));
-  }
-
   return (
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[999] flex justify-between md:justify-center p-page py-4 border-b border-border"
+          "w-full bg-background z-[49] flex justify-between md:justify-center p-page py-4 border-b border-border"
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
@@ -81,69 +78,76 @@ export default function Navbar() {
         <div className="flex-1 flex gap-3 justify-end items-center">
           <ModeToggle />
 
-          <button
-            className="relative md:hidden text-3xl flex items-center"
-            onClick={toggleMenu}
-          >
-            {isMenuOpen ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-x"
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant={"ghost"}
+                size={"icon"}
+                className="relative md:hidden text-3xl flex items-center"
               >
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-menu"
-              >
-                <line x1="4" x2="20" y1="12" y2="12" />
-                <line x1="4" x2="20" y1="6" y2="6" />
-                <line x1="4" x2="20" y1="18" y2="18" />
-              </svg>
-            )}
-          </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-menu"
+                >
+                  <line x1="4" x2="20" y1="12" y2="12" />
+                  <line x1="4" x2="20" y1="6" y2="6" />
+                  <line x1="4" x2="20" y1="18" y2="18" />
+                </svg>
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="border-accent">
+              <SheetHeader>
+                <SheetTitle>Vitess | Arewefastyet</SheetTitle>
+                <SheetDescription asChild>
+                  <div className="flex flex-col justify-center items-center z-[50] bg-background w-full">
+                    <NavLink
+                      to={"/"}
+                      className={({ isActive, isPending }) =>
+                        twMerge(
+                          "text-xl text-left font-medium py-3 w-full",
+                          isPending
+                            ? "pointer-events-none "
+                            : isActive
+                            ? "text-foreground"
+                            : ""
+                        )
+                      }
+                    >
+                      Home
+                    </NavLink>
+                    {navItems.map((item, key) => (
+                      <NavLink
+                        key={key}
+                        to={item.to}
+                        className={({ isActive, isPending }) =>
+                          twMerge(
+                            "text-xl text-left font-medium py-3 w-full",
+                            isPending
+                              ? "pointer-events-none "
+                              : isActive
+                              ? "text-foreground"
+                              : ""
+                          )
+                        }
+                      >
+                        {item.title}
+                      </NavLink>
+                    ))}
+                  </div>
+                </SheetDescription>
+              </SheetHeader>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-      {isMenuOpen && (
-        <div className="flex flex-col justify-center items-center z-[999] bg-background w-full">
-          {navItems.map((item, key) => (
-            <NavLink
-              key={key}
-              to={item.to}
-              className={({ isActive, isPending }) =>
-                twMerge(
-                  "text-2xl text-center font-medium border-b border-front border-opacity-30 py-3 w-full",
-                  isPending
-                    ? "pointer-events-none opacity-50"
-                    : isActive
-                    ? "text-primary"
-                    : ""
-                )
-              }
-            >
-              {item.title}
-            </NavLink>
-          ))}
-        </div>
-      )}
     </nav>
   );
 }
