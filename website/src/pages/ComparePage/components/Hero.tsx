@@ -24,7 +24,7 @@ export default function Hero(props: { gitRef: any; setGitRef: any }) {
       <h1 className="mb-3 text-front text-opacity-70">
         Enter SHAs to compare commits
       </h1>
-      <div className="flex overflow-hidden bg-gradient-to-br from-primary to-accent p-[2px] rounded-full">
+      <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
         <ComparisonInput
           name="left"
           className="rounded-l-full"

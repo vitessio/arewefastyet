@@ -15,10 +15,10 @@ limitations under the License.
 */
 import React from "react";
 
-export default function Hero({setGitRef}) {
+export default function Hero({ setGitRef }) {
   return (
     <section className="h-[30vh] pt-[5vh] flex justify-center items-center">
-      <div className="p-[3px] bg-gradient-to-br from-primary to-accent rounded-full w-1/2 duration-300 focus-within:p-[1px]">
+      <div className="p-[3px] bg-gradient-to-br from-primary to-theme rounded-full w-1/2 duration-300 focus-within:p-[1px]">
         <input
           type="text"
           onChange={(e) => setGitRef(e.target.value)}

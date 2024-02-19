@@ -22,7 +22,7 @@ export default function Hero() {
     <section className="hidden md:flex items-center h-screen relative p-page">
       <div className="absolute-cover overflow-hidden -z-1">
         <div
-          className="absolute-cover bg-gradient-to-br from-primary to-accent scale-150"
+          className="absolute-cover bg-gradient-to-br from-primary to-theme scale-150"
           style={{ clipPath: "polygon(0% 0%, 35% 0%, 62% 100%, 0% 100%)" }}
         />
       </div>
