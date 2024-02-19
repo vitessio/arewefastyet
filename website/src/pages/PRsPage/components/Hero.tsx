@@ -18,9 +18,9 @@ import React from "react";
 export default function Hero() {
   return (
     <section className="flex h-[60vh] pt-[15vh] items-center p-page">
-      <div className="flex basis-1/2 flex-col">
+      <div className="flex flex-col justify-start items-start gap-5 max-w-screen-md">
         <h2 className="text-8xl text-primary">Pull Request</h2>
-        <p className="my-6 leading-loose">
+        <p className="md:my-6 leading-loose">
           If a given Pull Request on vitessio/vitess is labelled with the
           Benchmark me label the Pull Request will be handled and benchmark by
           arewefastyet. For each commit on the Pull Request there will be two

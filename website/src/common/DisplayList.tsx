@@ -23,7 +23,10 @@ export default function DisplayList(props) {
       <thead>
         <tr>
           {Object.keys(data[0]).map((item, key) => (
-            <th className="border-b font-semibold py-2 border-front" key={key}>
+            <th
+              className="border-b min-w-[150px] text-left font-semibold py-2 border-front"
+              key={key}
+            >
               {item}
             </th>
           ))}
@@ -34,7 +37,7 @@ export default function DisplayList(props) {
           return (
             <tr key={key} className="hover:bg-accent cursor-default">
               {Object.keys(val).map((item, key) => (
-                <td className="border-b py-3 text-center" key={key}>
+                <td className="border-b py-3 text-left" key={key}>
                   {val[item]}
                 </td>
               ))}

@@ -53,7 +53,10 @@ export default function PRTable(props) {
       newData["Opened At"] = formatDate(entry.CreatedAt);
 
       newData["Details"] = (
-        <Link to={`/pr/${entry.ID}`} className="flex justify-center text-lg text-primary duration-300 hover:scale-105">
+        <Link
+          to={`/pr/${entry.ID}`}
+          className="flex justify-center text-lg text-primary duration-300 hover:scale-105"
+        >
           <Icon icon="open_in_new" />
         </Link>
       );
@@ -63,7 +66,7 @@ export default function PRTable(props) {
   }, []);
 
   return (
-    <section className="p-page mt-20 flex flex-col">
+    <section className="p-page mt-20 flex flex-col overflow-y-scroll">
       {PRList.length > 0 && <DisplayList data={PRList} />}
     </section>
   );
