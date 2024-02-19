@@ -14,10 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
-import useTheme from "../hooks/useTheme";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -85,6 +83,7 @@ export default function Navbar() {
                 size={"icon"}
                 className="relative md:hidden text-3xl flex items-center"
               >
+                <span className="sr-only">Open Menu</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
