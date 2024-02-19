@@ -84,10 +84,8 @@ export default function PreviousExecutions(props) {
   }, []);
 
   return (
-    <section className="p-page mt-20 flex flex-col">
-      <h1 className="text-primary text-3xl my-5 text-center">
-        {title}
-      </h1>
+    <section className="p-page mt-20 flex flex-col overflow-y-scroll">
+      <h1 className="text-primary text-3xl my-5 text-center">{title}</h1>
       {previousExecutions.length > 0 && (
         <DisplayList data={previousExecutions} />
       )}
