@@ -14,10 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
-import Icon from "./Icon";
 import useTheme from "../hooks/useTheme";
 import { ModeToggle } from "@/components/mode-toggle";
 
