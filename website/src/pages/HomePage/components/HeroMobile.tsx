@@ -44,7 +44,7 @@ const HeroMobile = () => {
             ></path>
           </svg>
         </div>
-        <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-[rgba(236,132,3,0)] via-[rgba(236,132,3)] to-rgba(236,132,3,0) transition-opacity duration-500 group-hover:opacity-40"></span>
+        <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-[rgba(236,132,3,0)] via-[rgba(236,132,3)] to-rgba(236,132,3,0) transition-opacity group-hover:opacity-40"></span>
       </Link>
       <img
         src="/logo.png"

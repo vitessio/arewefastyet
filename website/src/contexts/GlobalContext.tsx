@@ -45,7 +45,7 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setTimeout(() => {
-      document.documentElement.style.transitionDuration = "700ms";
+      document.documentElement.style.transitionDuration = "100ms";
     }, 100);
 
     if (theme) {
