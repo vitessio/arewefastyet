@@ -16,6 +16,7 @@ limitations under the License.
 import React from "react";
 import { Link } from "react-router-dom";
 import Icon from "../../../common/Icon";
+import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
@@ -28,39 +29,58 @@ export default function Hero() {
       </div>
       <div className="flex flex-1">
         <div className="flex flex-col gap-y-8 flex-1 ml-8">
-          <div className="flex flex-col bg-background flex-1 p-10 rounded-3xl gap-y-2">
+          <div className="flex flex-col bg-background flex-1 p-10 rounded-xl gap-y-2">
             <h1 className="text-6xl font-bold text-primary">arewefastyet</h1>
             <p className="text-lg font-normal mt-5 whitespace-nowrap">
               A Benchmarking System for Vitess
             </p>
           </div>
           <div className="flex gap-x-8">
-            <Link
-              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
-              to="https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet"
-              target="__blank"
+            <Button
+              asChild
+              size={"lg"}
+              variant={"default"}
+              className="bg-background text-foreground hover:bg-accent rounded-lg"
             >
-              Blog post
-              <Icon className="text-2xl" icon="bookmark" />
-            </Link>
-
-            <Link
-              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
-              to="https://github.com/vitessio/arewefastyet"
-              target="__blank"
+              <Link
+                className=" rounded-2xl p-5 flex items-center gap-x-2"
+                to="https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet"
+                target="__blank"
+              >
+                Blog post
+                <Icon className="text-2xl" icon="bookmark" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size={"lg"}
+              variant={"default"}
+              className="bg-background text-foreground hover:bg-accent rounded-lg"
             >
-              GitHub
-              <Icon className="text-2xl" icon="github" />
-            </Link>
-
-            <Link
-              className="bg-black text-white rounded-2xl p-5 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
-              to="https://www.vitess.io"
-              target="__blank"
+              <Link
+                className=" rounded-2xl p-5 flex items-center gap-x-2"
+                to="https://github.com/vitessio/arewefastyet"
+                target="__blank"
+              >
+                GitHub
+                <Icon className="text-2xl" icon="github" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size={"lg"}
+              variant={"default"}
+              className="bg-background text-foreground hover:bg-accent rounded-lg"
             >
-              Vitess
-              <Icon className="text-2xl" icon="vitess" />
-            </Link>
+              <Link
+                className=" rounded-2xl p-5 flex items-center gap-x-2"
+                to="https://www.vitess.io"
+                target="__blank"
+              >
+                Vitess
+                <Icon className="text-2xl" icon="vitess" />
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

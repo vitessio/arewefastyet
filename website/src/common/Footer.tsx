@@ -60,7 +60,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="p-page relative mt-10 py-20 text-back">
+    <footer className="p-page relative mt-10 py-20 text-black">
       <div className="absolute bottom-6 left-6 right-6 top-6 -z-1 rounded-lg bg-primary" />
       <div className="flex flex-col gap-5 md:flex-row justify-center md:justify-between text-sm font-light tracking-tight">
         <div
@@ -109,7 +109,7 @@ const Footer = () => {
           ))}
         </div>
       </div>
-      <div className="my-2 w-full border border-border"></div>
+      <div className="my-2 w-full border border-black"></div>
       <div className="mt-4 text-center md:text-left text-xs">
         @vitessio/arewefastyet
       </div>

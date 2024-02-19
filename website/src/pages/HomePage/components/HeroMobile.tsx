@@ -17,23 +17,28 @@ limitations under the License.
 import React from "react";
 import { Link } from "react-router-dom";
 import Icon from "../../../common/Icon";
+import { Button } from "@/components/ui/button";
 
 const HeroMobile = () => {
   return (
     <section className="md:hidden h-[90vh] w-full flex flex-col justify-center items-center gap-5">
       <Link
-        className="bg-front bg-opacity-30 mb-4 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block"
+        className="bg-accent bg-opacity-30 mb-4 no-underline group cursor-pointer relative shadow-2xl shadow-zinc-900 rounded-full p-px text-xs font-semibold leading-6  text-white inline-block"
         to="https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet"
         target="__blank"
       >
-        <div className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-0.5 px-4 ring-1 ring-white/10 ">
-          <p>{`Read the Announcement Blog`}</p>
+        <span className="absolute inset-0 overflow-hidden rounded-full">
+          <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(236,132,3)_0%,rgba(236,132,3,0)_75%)]" />
+        </span>
+        <div className="relative flex space-x-2 items-center z-10 rounded-full bg-[rgba(236,132,3)] dark:bg-background py-0.5 px-4 ring-1 ring-white/10 ">
+          <p className="text-foreground">{`Read the Announcement Blog`}</p>
           <svg
             width="16"
             height="16"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            className="text-foreground"
           >
             <path
               stroke="currentColor"
@@ -63,23 +68,26 @@ const HeroMobile = () => {
         </p>
       </div>
       <div className="flex gap-x-8">
-        <Link
-          className="bg-primary text-black rounded-2xl p-3 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
-          to="https://github.com/vitessio/arewefastyet"
-          target="__blank"
-        >
-          GitHub
-          <Icon className="text-2xl" icon="github" />
-        </Link>
-
-        <Link
-          className="bg-primary text-black rounded-2xl p-3 flex items-center gap-x-2 duration-300 hover:scale-105 hover:-translate-y-1"
-          to="https://www.vitess.io"
-          target="__blank"
-        >
-          Vitess
-          <Icon className="text-2xl" icon="vitess" />
-        </Link>
+        <Button size={"lg"} asChild>
+          <Link
+            className="bg-primary text-black rounded-2xl p-3 flex items-center gap-x-2"
+            to="https://github.com/vitessio/arewefastyet"
+            target="__blank"
+          >
+            GitHub
+            <Icon className="text-2xl" icon="github" />
+          </Link>
+        </Button>
+        <Button size={"lg"} asChild>
+          <Link
+            className="bg-primary text-black rounded-2xl p-3 flex items-center gap-x-2"
+            to="https://www.vitess.io"
+            target="__blank"
+          >
+            Vitess
+            <Icon className="text-2xl" icon="vitess" />
+          </Link>
+        </Button>
       </div>
     </section>
   );

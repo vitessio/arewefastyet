@@ -46,10 +46,8 @@ export default function Navbar() {
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
-          <img src="/logo.png" className="h-[2.5em]" alt="logo" />
-          <h1 className="hidden lg:block font-medium text-lg md:text-2xl">
-            arewefastyet
-          </h1>
+          <img src="/logo.png" className="h-[2em]" alt="logo" />
+          <h1 className="font-semilight text-lg md:text-2xl">arewefastyet</h1>
         </Link>
 
         <div className="hidden md:flex gap-x-10 items-center">

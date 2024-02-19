@@ -22,7 +22,7 @@ export default function Diagram() {
 
   return (
     <section className="p-page flex flex-col items-center my-8">
-      <h1 className="bg-primary bg-opacity-20 text-foreground text-lg font-semibold px-4 py-2 rounded-full">
+      <h1 className="bg-primary bg-opacity-20 text-black text-lg font-semibold px-4 py-2 rounded-full">
         Diagramatic Overview
       </h1>
 
