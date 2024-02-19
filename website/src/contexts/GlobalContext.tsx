@@ -14,12 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { createContext, useState, useEffect, useContext } from "react";
-import { Theme } from "../types";
+import React, { createContext, useState, useContext } from "react";
 
 interface GlobalContextType {
-  theme: Theme;
-  setTheme: React.Dispatch<React.SetStateAction<Theme>>;
   modal: React.ReactNode;
   setModal: React.Dispatch<React.SetStateAction<React.ReactNode>>;
 }
@@ -27,34 +24,9 @@ interface GlobalContextType {
 const GlobalContext = createContext<GlobalContextType>({} as GlobalContextType);
 
 export function GlobalProvider({ children }: { children: React.ReactNode }) {
-  // @ts-ignore
-  const [theme, setTheme] = useState<Theme>(null);
   const [modal, setModal] = useState<React.ReactNode | null>(null);
 
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("vitess__arewefastyet__theme");
-    if (storedTheme === "default" || storedTheme === "dark") {
-      setTheme(storedTheme);
-    } else {
-      const darkColorPreference = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      );
-      setTheme(darkColorPreference.matches ? "dark" : "default");
-    }
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => {
-      document.documentElement.style.transitionDuration = "100ms";
-    }, 100);
-
-    if (theme) {
-      document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem("vitess__arewefastyet__theme", theme);
-    }
-  }, [theme]);
-
-  const value = { theme: theme as Theme, setTheme, modal, setModal };
+  const value = { modal, setModal };
 
   return (
     <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>

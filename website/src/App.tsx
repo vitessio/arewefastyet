@@ -16,16 +16,18 @@ limitations under the License.
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PublicRoute from "./pages/PublicRoute";
-import { ThemeProvider } from "./components/theme-provider";
+import { GlobalProvider } from "./contexts/GlobalContext";
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/*" element={<PublicRoute />} />
-        </Routes>
-      </BrowserRouter>
+      <GlobalProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/*" element={<PublicRoute />} />
+          </Routes>
+        </BrowserRouter>
+      </GlobalProvider>
     </>
   );
 }

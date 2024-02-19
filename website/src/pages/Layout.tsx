@@ -18,13 +18,12 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
-import { GlobalProvider } from "../contexts/GlobalContext";
 import Modal from "../common/Modal";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const Layout = () => {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <Navbar />
       <Outlet />
       <Footer />

@@ -27,10 +27,10 @@ export default function QueryPlan({ data }) {
 
   return (
     <div
-      className="border border-front p-5 rounded-xl bg-foreground bg-opacity-[0.08] shadow-md cursor-pointer duration-300 hover:bg-opacity-20 hover:saturate-150"
+      className="border border-front p-5 rounded-xl bg-accent shadow-md cursor-pointer duration-300"
       onClick={() => modal.show(<DetailsModal data={data} />)}
     >
-      <span className="text-lg border-l-primary border-l-4 py-2 pr-8 rounded-r-xl pl-4 bg-foreground bg-opacity-5 tracking-wider">
+      <span className="text-lg border-l-primary border-l-4 py-2 pr-8 rounded-r-xl pl-4 bg-accent tracking-wider">
         {data.Key}
       </span>
       <div className="flex gap-x-3 mt-5">
@@ -88,7 +88,7 @@ function DetailsModal({ data }) {
 
         <div className="flex gap-x-4 items-center">
           <span className="font-bold">Query</span>
-          <span className="font-light bg-foreground bg-opacity-10 px-4 py-1 rounded-md">
+          <span className="font-light bg-accent px-4 py-1 rounded-md">
             {data.Key}
           </span>
         </div>

@@ -51,14 +51,7 @@ const HeroMobile = () => {
         </div>
         <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-[rgba(236,132,3,0)] via-[rgba(236,132,3)] to-rgba(236,132,3,0) transition-opacity group-hover:opacity-40"></span>
       </Link>
-      <img
-        src="/logo.png"
-        alt="logo"
-        className="w-[70vw]"
-        style={{
-          filter: "drop-shadow(10px 10px 20px rgb(var(--color-primary))",
-        }}
-      />
+      <img src="/logo.png" alt="logo" className="w-[70vw]" />
       <div className="flex flex-col justify-center mt-4 gap-y-2">
         <h1 className="text-3xl text-center font-bold text-primary">
           arewefastyet
