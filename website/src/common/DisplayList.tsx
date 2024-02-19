@@ -32,10 +32,7 @@ export default function DisplayList(props) {
       <tbody>
         {data.map((val, key) => {
           return (
-            <tr
-              key={key}
-              className="hover:bg-foreground hover:bg-opacity-10 cursor-default"
-            >
+            <tr key={key} className="hover:bg-accent cursor-default">
               {Object.keys(val).map((item, key) => (
                 <td className="border-b py-3 text-center" key={key}>
                   {val[item]}

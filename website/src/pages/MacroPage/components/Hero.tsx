@@ -43,7 +43,7 @@ export default function Hero(props: {
               <Dropdown.Option
                 key={key}
                 className={twMerge(
-                  "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 after:duration-150 after:absolute-cover after:bg-foreground after:bg-opacity-0 hover:after:bg-opacity-10 font-medium",
+                  "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 font-medium hover:bg-accent",
                   key === 0 && "rounded-t border-t-front",
                   key === refs.length - 1 && "rounded-b"
                 )}
@@ -68,7 +68,8 @@ export default function Hero(props: {
               <Dropdown.Option
                 key={key}
                 className={twMerge(
-                  "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 after:duration-150 after:absolute-cover after:bg-foreground after:bg-opacity-0 hover:after:bg-opacity-10 font-medium",
+                  "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 font-medium hover:bg-accent",
+
                   key === 0 && "rounded-t border-t-front",
                   key === refs.length - 1 && "rounded-b"
                 )}

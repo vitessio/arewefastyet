@@ -160,7 +160,10 @@ function DetailsModal({ data }) {
               {bothPlansExist && arePlansDifferent && " A"}
               {!bothPlansExist && " A"}
             </h3>
-            <ReactJson data={data.Left.Value.Instructions} className="json w-11/12 overflow-auto" />
+            <ReactJson
+              data={data.Left.Value.Instructions}
+              className="json w-11/12 overflow-auto"
+            />
           </>
         )}
 
@@ -171,7 +174,10 @@ function DetailsModal({ data }) {
               {bothPlansExist && arePlansDifferent && " B"}
               {!bothPlansExist && " B"}
             </h3>
-            <ReactJson data={data.Right.Value.Instructions} className="json w-11/12 overflow-x-auto" />
+            <ReactJson
+              data={data.Right.Value.Instructions}
+              className="json w-11/12 overflow-x-auto"
+            />
           </>
         )}
       </div>

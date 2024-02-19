@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 
 export default function SearchMacro({ data, gitRef }) {
   return (
-    <div className="flex flex-col border border-primary relative rounded-xl bg-foreground bg-opacity-5 shadow-xl">
+    <div className="flex flex-col border border-primary relative rounded-xl bg-background bg-opacity-5 shadow-xl">
       <div className="p-5">
         <h3 className="text-xl font-semibold">{data[0]}</h3>
         <Link
@@ -88,7 +88,9 @@ export default function SearchMacro({ data, gitRef }) {
           <Row
             title={"Total CPU / query"}
             value={
-              data[1] ? secondToMicrosecond(data[1][0].Metrics.TotalComponentsCPUTime) : 0
+              data[1]
+                ? secondToMicrosecond(data[1][0].Metrics.TotalComponentsCPUTime)
+                : 0
             }
           />
 
@@ -96,7 +98,9 @@ export default function SearchMacro({ data, gitRef }) {
             title={"CPU / query (vtgate)"}
             value={
               data[1]
-                ? secondToMicrosecond(data[1][0].Metrics.ComponentsCPUTime.vtgate)
+                ? secondToMicrosecond(
+                    data[1][0].Metrics.ComponentsCPUTime.vtgate
+                  )
                 : 0
             }
           />
@@ -105,7 +109,9 @@ export default function SearchMacro({ data, gitRef }) {
             title={"CPU / query (vttablet)"}
             value={
               data[1]
-                ? secondToMicrosecond(data[1][0].Metrics.ComponentsCPUTime.vttablet)
+                ? secondToMicrosecond(
+                    data[1][0].Metrics.ComponentsCPUTime.vttablet
+                  )
                 : 0
             }
           />
@@ -150,7 +156,7 @@ export default function SearchMacro({ data, gitRef }) {
 
 function Row({ title, value }) {
   return (
-    <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-foreground hover:bg-opacity-20">
+    <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-1 px-4 text-lg justify-end border-r border-r-primary font-bold">
         <span>{title}</span>
       </td>

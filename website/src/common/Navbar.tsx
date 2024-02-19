@@ -47,7 +47,7 @@ export default function Navbar() {
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[999] flex justify-between md:justify-center p-page py-4 border-b border-front border-opacity-30 duration-500"
+          "w-full bg-background z-[999] flex justify-between md:justify-center p-page py-4 border-b border-accent duration-500"
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">

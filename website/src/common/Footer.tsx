@@ -109,7 +109,7 @@ const Footer = () => {
           ))}
         </div>
       </div>
-      <div className="my-2 w-full border border-back"></div>
+      <div className="my-2 w-full border border-accent"></div>
       <div className="mt-4 text-center md:text-left text-xs">
         @vitessio/arewefastyet
       </div>

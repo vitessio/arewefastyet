@@ -135,18 +135,23 @@ export default function Macrobench({ data, gitRef, commits }) {
 
           <Row
             title="Total CPU / query"
-            left={secondToMicrosecond(data.diff.Left.Metrics.TotalComponentsCPUTime)}
-            right={secondToMicrosecond(data.diff.Right.Metrics.TotalComponentsCPUTime)}
-            diffMetric={fixed(
-                data.diff.DiffMetrics.TotalComponentsCPUTime,
-                2
+            left={secondToMicrosecond(
+              data.diff.Left.Metrics.TotalComponentsCPUTime
             )}
+            right={secondToMicrosecond(
+              data.diff.Right.Metrics.TotalComponentsCPUTime
+            )}
+            diffMetric={fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}
           />
 
           <Row
             title="CPU / query (vtgate)"
-            left={secondToMicrosecond(data.diff.Left.Metrics.ComponentsCPUTime.vtgate)}
-            right={secondToMicrosecond(data.diff.Right.Metrics.ComponentsCPUTime.vtgate)}
+            left={secondToMicrosecond(
+              data.diff.Left.Metrics.ComponentsCPUTime.vtgate
+            )}
+            right={secondToMicrosecond(
+              data.diff.Right.Metrics.ComponentsCPUTime.vtgate
+            )}
             diffMetric={fixed(
               data.diff.DiffMetrics.ComponentsCPUTime.vtgate,
               2
@@ -155,8 +160,12 @@ export default function Macrobench({ data, gitRef, commits }) {
 
           <Row
             title="CPU / query (vttablet)"
-            left={secondToMicrosecond(data.diff.Left.Metrics.ComponentsCPUTime.vttablet)}
-            right={secondToMicrosecond(data.diff.Right.Metrics.ComponentsCPUTime.vttablet)}
+            left={secondToMicrosecond(
+              data.diff.Left.Metrics.ComponentsCPUTime.vttablet
+            )}
+            right={secondToMicrosecond(
+              data.diff.Right.Metrics.ComponentsCPUTime.vttablet
+            )}
             diffMetric={fixed(
               data.diff.DiffMetrics.ComponentsCPUTime.vttablet,
               2
@@ -212,7 +221,7 @@ export default function Macrobench({ data, gitRef, commits }) {
 
 function Row({ title, left, right, diffMetric }) {
   return (
-    <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-foreground hover:bg-opacity-20">
+    <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-2 px-4 justify-end border-r border-r-primary font-semibold text-end">
         <span>{title}</span>
       </td>
