@@ -91,15 +91,6 @@ limitations under the License.
   }
 }
 
-/* @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-} */
-
 @layer base {
   /* setting default background, text color and font */
   html {
