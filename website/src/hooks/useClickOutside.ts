@@ -13,14 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import { useEffect } from "react";
 
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./assets/styles/index.css";
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+export default function useClickOutside(
+  ref: React.MutableRefObject<HTMLElement>,
+  callback: () => any
+) {
+  function handleClick(e: Event) {
+    if (ref.current && !ref.current.contains(e.target as Node)) {
+      callback();
+    }
+  }
+  useEffect(() => {
+    document.addEventListener("click", handleClick);
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  });
+}

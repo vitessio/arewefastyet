@@ -1,5 +1,5 @@
 /*
-Copyright 2023 The Vitess Authors.
+Copyright 2024 The Vitess Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,14 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
 import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./assets/styles/index.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import PublicRoute from "./pages/PublicRoute";
+import { GlobalProvider } from "./contexts/GlobalContext";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+function App() {
+  return (
+    <>
+      <GlobalProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/*" element={<PublicRoute />} />
+          </Routes>
+        </BrowserRouter>
+      </GlobalProvider>
+    </>
+  );
+}
+
+export default App;

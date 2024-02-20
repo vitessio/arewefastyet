@@ -15,12 +15,22 @@ limitations under the License.
 */
 
 import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import "./assets/styles/index.css";
+import { Outlet } from "react-router-dom";
+import Navbar from "../common/Navbar";
+import Footer from "../common/Footer";
+import Modal from "../common/Modal";
+import { ThemeProvider } from "@/components/theme-provider";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const Layout = () => {
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <Navbar />
+      <Outlet />
+      <Footer />
+
+      <Modal />
+    </ThemeProvider>
+  );
+};
+
+export default Layout;
