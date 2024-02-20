@@ -34,19 +34,19 @@ const ResponsiveChart = ({ data, title, colors }) => {
               ticks: {
                 text: {
                   fontSize: "13px",
-                  fill: "hsl(var(--color-foreground))",
+                  fill: "hsl(var(--foreground))",
                 },
               },
             },
             legends: {
               text: {
                 fontSize: "14px",
-                fill: "hsl(var(--color-foreground))",
+                fill: "hsl(var(--foreground))",
               },
             },
             grid: {
               line: {
-                stroke: "hsl(var(--color-foreground))",
+                stroke: "hsl(var(--foreground))",
               },
             },
           }}
