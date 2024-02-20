@@ -34,19 +34,19 @@ const ResponsiveChart = ({ data, title, colors }) => {
               ticks: {
                 text: {
                   fontSize: "13px",
-                  fill: "rgb(var(--color-front))",
+                  fill: "hsl(var(--color-foreground))",
                 },
               },
             },
             legends: {
               text: {
                 fontSize: "14px",
-                fill: "rgb(var(--color-front))",
+                fill: "hsl(var(--color-foreground))",
               },
             },
             grid: {
               line: {
-                stroke: "rgb(var(--color-front))",
+                stroke: "hsl(var(--color-foreground))",
               },
             },
           }}
@@ -59,7 +59,7 @@ const ResponsiveChart = ({ data, title, colors }) => {
               <div className="flex flex-col gap-y-2">
                 <span>commit : {point.data.x}</span>
                 <span>
-                  {title.split('(')[0]} : {point.data.y}
+                  {title.split("(")[0]} : {point.data.y}
                 </span>
               </div>
             </div>
