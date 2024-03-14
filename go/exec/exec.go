@@ -385,6 +385,13 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecUUID, e.UUID.String())
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionType, e.TypeOf)
 
+	if e.PreviousBenchmarkIsTheSame {
+		e.AnsibleConfig.AddExtraVar(ansible.KeyLastIsSame, true)
+	}
+	if e.NextBenchmarkIsTheSame {
+		e.AnsibleConfig.AddExtraVar(ansible.KeyNextIsSame, true)
+	}
+
 	// vitess related values
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessVersion, e.GitRef)
 	if e.PullNB != 0 {
