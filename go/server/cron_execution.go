@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/vitessio/arewefastyet/go/exec"
 )
 
@@ -40,7 +41,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 		}
 	}()
 
-	e, err = exec.NewExecWithConfig(config.file)
+	e, err = exec.NewExecWithConfig(config.file, identifier.UUID)
 
 	if err != nil {
 		nErr := fmt.Errorf(fmt.Sprintf("new exec error: %v", err))
@@ -102,6 +103,7 @@ func (s *Server) executeElement(element *executionQueueElement) {
 
 		// execution failed, we retry
 		element.retry -= 1
+		element.identifier.UUID = uuid.NewString()
 		s.executeElement(element)
 		return
 	}
@@ -157,50 +159,71 @@ func (s *Server) compareElement(element *executionQueueElement) {
 	}
 }
 
-func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, error) {
-	checkStatus := []struct {
-		status string
-	}{
-		{status: exec.StatusFinished},
-	}
-	for _, status := range checkStatus {
+func (s *Server) getNumberOfBenchmarksInDB(identifier executionIdentifier) (int, error) {
+	var nb int
+	var err error
+	if identifier.BenchmarkType == "micro" {
 		var exists bool
-		var err error
-		if identifier.BenchmarkType == "micro" {
-			exists, err = exec.Exists(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, status.status)
-		} else {
-			exists, err = exec.ExistsMacrobenchmark(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, status.status, identifier.PlannerVersion)
-		}
-		if err != nil {
-			slog.Error(err)
-			return false, err
-		}
+		exists, err = exec.Exists(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, exec.StatusFinished)
 		if exists {
-			return true, nil
+			nb = 1
 		}
+	} else {
+		nb, err = exec.CountMacroBenchmark(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, exec.StatusFinished, identifier.PlannerVersion)
 	}
-	return false, nil
+	if err != nil {
+		slog.Error(err)
+		return 0, err
+	}
+	return nb, nil
 }
 
 func (s *Server) cronExecutionQueueWatcher() {
-	for {
-		time.Sleep(time.Second * 1)
-		mtx.Lock()
-		if currentCountExec >= maxConcurJob {
-			mtx.Unlock()
-			continue
-		}
-		for _, element := range queue {
-			if !element.Executing {
-				currentCountExec++
+	var lastExecutedId executionIdentifier
 
-				// setting this element to `Executing = true`, so we do not execute it twice in the future
-				element.Executing = true
-				go s.executeElement(element)
+	queueWatch := func() {
+		mtx.Lock()
+		defer mtx.Unlock()
+		if currentCountExec >= maxConcurJob {
+			return
+		}
+
+		// Prioritize executing the same configuration of benchmark in a row
+		var nextExecuteElement *executionQueueElement
+		for _, element := range queue {
+			if element.Executing {
+				continue
+			}
+			if element.identifier.equalWithoutUUID(lastExecutedId) {
+				nextExecuteElement = element
 				break
 			}
 		}
-		mtx.Unlock()
+
+		// If we did not find any matching element just go to the first one which is not executing
+		if nextExecuteElement == nil {
+			for _, element := range queue {
+				if !element.Executing {
+					nextExecuteElement = element
+					break
+				}
+			}
+		}
+
+		// Execute the element if found
+		if nextExecuteElement != nil {
+			currentCountExec++
+			lastExecutedId = nextExecuteElement.identifier
+
+			// setting this element to `Executing = true`, so we do not execute it twice in the future
+			nextExecuteElement.Executing = true
+			go s.executeElement(nextExecuteElement)
+			return
+		}
+	}
+
+	for {
+		queueWatch()
 	}
 }
 

@@ -26,7 +26,7 @@ import (
 )
 
 func ExecCmd() *cobra.Command {
-	ex, err := exec.NewExec()
+	ex, err := exec.NewExec("")
 	if err != nil {
 		log.Fatal(err)
 	}
