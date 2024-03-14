@@ -60,6 +60,10 @@ type Exec struct {
 	// up the entire benchmarking process.
 	NextBenchmarkIsTheSame bool
 
+	// PreviousBenchmarkIsTheSame is set to true if the previous benchmark had the same
+	// config as this one. It allows us to skip the preparatory cleanup of the server.
+	PreviousBenchmarkIsTheSame bool
+
 	// Status defines the status of the execution (canceled, finished, failed, etc)
 	Status string
 
@@ -501,6 +505,23 @@ func GetFinishedExecution(client storage.SQLClient, gitRef, source, benchmarkTyp
 		}
 	}
 	return eUUID, nil
+}
+
+func IsLastExecutionFinished(client storage.SQLClient) (bool, error) {
+	query := "SELECT e.status FROM execution e ORDER BY e.started_at DESC LIMIT 1"
+	result, err := client.Select(query)
+	if err != nil {
+		return false, err
+	}
+	defer result.Close()
+	var status string
+	if result.Next() {
+		err = result.Scan(&status)
+		if err != nil {
+			return false, err
+		}
+	}
+	return status == StatusFinished, nil
 }
 
 // GetPreviousFromSourceMicrobenchmark gets the previous execution from the same source for microbenchmarks

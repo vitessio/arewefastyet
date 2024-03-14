@@ -26,7 +26,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/exec"
 )
 
-func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier, nextIsSame bool) (err error) {
+func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier, nextIsSame, lastIsSame bool) (err error) {
 	var e *exec.Exec
 	defer func() {
 		if e != nil {
@@ -57,6 +57,19 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	e.NextBenchmarkIsTheSame = nextIsSame
 	e.RepoDir = s.getVitessPath()
 
+	// Check if the previous benchmark is the same and if it is
+	// safe to execute this new benchmark without a preparatory cleanup phase.
+	e.PreviousBenchmarkIsTheSame = lastIsSame
+	if lastIsSame {
+		lastBenchmarkWasClean, err := exec.IsLastExecutionFinished(s.dbClient)
+		if err != nil {
+			return err
+		}
+		if !lastBenchmarkWasClean {
+			e.PreviousBenchmarkIsTheSame = false
+		}
+	}
+
 	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
 	err = e.Prepare()
 	if err != nil {
@@ -85,7 +98,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	return nil
 }
 
-func (s *Server) executeElement(element *executionQueueElement, nextIsSame bool) {
+func (s *Server) executeElement(element *executionQueueElement, nextIsSame bool, lastIsSame bool) {
 	if element.retry < 0 {
 		if _, found := queue[element.identifier]; found {
 			// removing the element from the queue since we are done with it
@@ -98,14 +111,18 @@ func (s *Server) executeElement(element *executionQueueElement, nextIsSame bool)
 	}
 
 	// execute with the given configuration file and exec identifier
-	err := s.executeSingle(element.config, element.identifier, nextIsSame)
+	err := s.executeSingle(element.config, element.identifier, nextIsSame, lastIsSame)
 	if err != nil {
 		slog.Error(err.Error())
 
 		// execution failed, we retry
 		element.retry -= 1
 		element.identifier.UUID = uuid.NewString()
-		s.executeElement(element, nextIsSame)
+
+		// Here we set lastIsSame as false since the previous benchmark has failed
+		// That allows us to avoid executing one more database request to check if
+		// the previous benchmark was successful or not.
+		s.executeElement(element, nextIsSame, false)
 		return
 	}
 
@@ -181,7 +198,6 @@ func (s *Server) getNumberOfBenchmarksInDB(identifier executionIdentifier) (int,
 
 func (s *Server) cronExecutionQueueWatcher() {
 	var lastExecutedId executionIdentifier
-
 	queueWatch := func() {
 		mtx.Lock()
 		defer mtx.Unlock()
@@ -190,6 +206,7 @@ func (s *Server) cronExecutionQueueWatcher() {
 		}
 
 		// Prioritize executing the same configuration of benchmark in a row
+		var lastBenchmarkIsTheSame bool
 		var nextExecuteElement *executionQueueElement
 		for _, element := range queue {
 			if element.Executing {
@@ -197,6 +214,7 @@ func (s *Server) cronExecutionQueueWatcher() {
 			}
 			if element.identifier.equalWithoutUUID(lastExecutedId) {
 				nextExecuteElement = element
+				lastBenchmarkIsTheSame = true
 				break
 			}
 		}
@@ -230,7 +248,7 @@ func (s *Server) cronExecutionQueueWatcher() {
 
 			// setting this element to `Executing = true`, so we do not execute it twice in the future
 			nextExecuteElement.Executing = true
-			go s.executeElement(nextExecuteElement, nextBenchmarkIsTheSame)
+			go s.executeElement(nextExecuteElement, nextBenchmarkIsTheSame, lastBenchmarkIsTheSame)
 			return
 		}
 	}
