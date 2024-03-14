@@ -11,6 +11,7 @@
 
 ---
 - hosts: all
+  when: arewefastyet_last_exec_is_same is not undefined
   tasks:
     - name: Ensure users are created
       include_role:
@@ -18,9 +19,11 @@
         tasks_from: create_users
 
 - name: Create Cluster
+  when: arewefastyet_last_exec_is_same is not undefined
   import_playbook: create_cluster.yml
 
 - name: Install and build sysbench
+  when: arewefastyet_last_exec_is_same is not undefined
   hosts:
     - all
   tasks:
@@ -30,6 +33,7 @@
         tasks_from: install
 
 - hosts: prometheus
+  when: arewefastyet_last_exec_is_same is not undefined
   become: yes
   become_user: root
   tags:
@@ -126,5 +130,5 @@
     - macrobench
 
 - name: Clean Post Macrobench
-  when: skip_post_cleanup is undefined or not skip_post_cleanup | bool
+  when: arewefastyet_next_exec_is_same is not undefined
   import_playbook: clean_macrobench.yml
