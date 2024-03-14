@@ -26,7 +26,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/exec"
 )
 
-func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier) (err error) {
+func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier, nextIsSame bool) (err error) {
 	var e *exec.Exec
 	defer func() {
 		if e != nil {
@@ -54,6 +54,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	e.PullNB = identifier.PullNb
 	e.PullBaseBranchRef = identifier.PullBaseRef
 	e.VitessVersion = identifier.Version
+	e.NextBenchmarkIsTheSame = nextIsSame
 	e.RepoDir = s.getVitessPath()
 
 	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
@@ -84,7 +85,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	return nil
 }
 
-func (s *Server) executeElement(element *executionQueueElement) {
+func (s *Server) executeElement(element *executionQueueElement, nextIsSame bool) {
 	if element.retry < 0 {
 		if _, found := queue[element.identifier]; found {
 			// removing the element from the queue since we are done with it
@@ -97,14 +98,14 @@ func (s *Server) executeElement(element *executionQueueElement) {
 	}
 
 	// execute with the given configuration file and exec identifier
-	err := s.executeSingle(element.config, element.identifier)
+	err := s.executeSingle(element.config, element.identifier, nextIsSame)
 	if err != nil {
 		slog.Error(err.Error())
 
 		// execution failed, we retry
 		element.retry -= 1
 		element.identifier.UUID = uuid.NewString()
-		s.executeElement(element)
+		s.executeElement(element, nextIsSame)
 		return
 	}
 
@@ -210,14 +211,26 @@ func (s *Server) cronExecutionQueueWatcher() {
 			}
 		}
 
-		// Execute the element if found
 		if nextExecuteElement != nil {
+			// Find out if there is another element in queue that match the one we want to execute
+			var nextBenchmarkIsTheSame bool
+			for _, element := range queue {
+				if element.Executing {
+					continue
+				}
+				if element.identifier.equalWithoutUUID(nextExecuteElement.identifier) {
+					nextBenchmarkIsTheSame = true
+					break
+				}
+			}
+
+			// Execute the element if found
 			currentCountExec++
 			lastExecutedId = nextExecuteElement.identifier
 
 			// setting this element to `Executing = true`, so we do not execute it twice in the future
 			nextExecuteElement.Executing = true
-			go s.executeElement(nextExecuteElement)
+			go s.executeElement(nextExecuteElement, nextBenchmarkIsTheSame)
 			return
 		}
 	}

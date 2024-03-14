@@ -55,6 +55,11 @@ type Exec struct {
 	VitessVersion     git.Version
 	VitessVersionName string
 
+	// NextBenchmarkIsTheSame is set to true if the next benchmark has the same config
+	// as the current one. This allows us to do some optimization in Ansible and speed
+	// up the entire benchmarking process.
+	NextBenchmarkIsTheSame bool
+
 	// Status defines the status of the execution (canceled, finished, failed, etc)
 	Status string
 
