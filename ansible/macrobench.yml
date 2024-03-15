@@ -11,35 +11,34 @@
 
 ---
 - hosts: all
-  when: arewefastyet_last_exec_is_same is not undefined
   tasks:
     - name: Ensure users are created
+      when: arewefastyet_last_exec_is_same is undefined
       include_role:
         name: vitess_build
         tasks_from: create_users
 
 - name: Create Cluster
-  when: arewefastyet_last_exec_is_same is not undefined
+  when: arewefastyet_last_exec_is_same is undefined
   import_playbook: create_cluster.yml
 
 - name: Install and build sysbench
-  when: arewefastyet_last_exec_is_same is not undefined
   hosts:
     - all
   tasks:
     - name: Install sysbench
+      when: arewefastyet_last_exec_is_same is undefined
       include_role:
         name: sysbench
         tasks_from: install
 
 - hosts: prometheus
-  when: arewefastyet_last_exec_is_same is not undefined
   become: yes
   become_user: root
   tags:
     - prometheus
   roles:
-    - { role: cloudalchemy.prometheus, when: stats_remote_db_host is defined }
+    - { role: cloudalchemy.prometheus, when: stats_remote_db_host is defined and arewefastyet_last_exec_is_same is undefined }
   vars:
     vitess_cluster: 'main'
     mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
@@ -125,10 +124,18 @@
     prometheus_external_labels:
       exec_uuid: "{{ arewefastyet_exec_uuid }}"
 
+- hosts: prometheus
+  tasks:
+    - name: Update Prometheus labels
+      when: arewefastyet_last_exec_is_same is defined
+      include_role:
+        name: prometheus
+        tasks_from: update_uuid
+
 - hosts: macrobench
   roles:
     - macrobench
 
 - name: Clean Post Macrobench
-  when: arewefastyet_next_exec_is_same is not undefined
+  when: arewefastyet_next_exec_is_same is undefined
   import_playbook: clean_macrobench.yml

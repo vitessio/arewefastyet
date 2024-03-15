@@ -20,6 +20,7 @@ package metrics
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -88,19 +89,25 @@ type (
 func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, startRun, startSysbench time.Time) (ExecutionMetrics, error) {
 	execMetrics := NewExecMetrics()
 
+	f, err := os.Create(fmt.Sprintf("/tmp/%s.txt", execUUID))
+	if err != nil {
+		return ExecutionMetrics{}, err
+	}
+
 	for _, component := range components {
 		// CPU time
 		endValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentEnd, client.Config.Database, execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
-
 		startValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentStart, client.Config.Database, time.Since(startSysbench).Seconds(), time.Since(startRun).Seconds(), execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
 		execMetrics.ComponentsCPUTime[component] = endValue - startValue
 		execMetrics.TotalComponentsCPUTime += execMetrics.ComponentsCPUTime[component]
+
+		cpuStart, cpuEnd := startValue, endValue
 
 		// Memory
 		endValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentEnd, client.Config.Database, execUUID, component))
@@ -115,6 +122,11 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, s
 
 		execMetrics.ComponentsMemStatsAllocBytes[component] = endValue - startValue
 		execMetrics.TotalComponentsMemStatsAllocBytes += execMetrics.ComponentsMemStatsAllocBytes[component]
+
+		_, err = f.WriteString(fmt.Sprintf("component: %s | CPU (start value: %f, end value: %f) Total: %f | Mem (start value: %f, env value: %f) Total: %f \n", component, cpuStart, cpuEnd, execMetrics.ComponentsCPUTime[component], startValue, endValue, execMetrics.ComponentsMemStatsAllocBytes[component]))
+		if err != nil {
+			return ExecutionMetrics{}, err
+		}
 	}
 
 	// Divide all metrics by the number of queries that were executed
