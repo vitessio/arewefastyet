@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
@@ -31,9 +30,10 @@ import (
 
 const (
 	cpuSecondsPerComponentStart = `from(bucket:"%s")
-			|> range(start: -%.0fs, stop: -%.0fs)
+			|> range(start: 0, stop: now())
 			|> filter(fn:(r) => r._measurement == "process_cpu_seconds_total" and r.exec_uuid == "%s" and r.component == "%s")
-			|> max()`
+			|> filter(fn: (r) => r._value > 0)
+			|> min()`
 
 	cpuSecondsPerComponentEnd = `from(bucket:"%s")
 			|> range(start: 0, stop: now())
@@ -41,9 +41,10 @@ const (
 			|> max()`
 
 	memAllocBytesPerComponentStart = `from(bucket:"%s")
-			|> range(start: -%.0fs, stop: -%.0fs)
+			|> range(start: 0, stop: now())
 			|> filter(fn:(r) => r._measurement == "go_memstats_alloc_bytes_total" and r.exec_uuid == "%s" and r.component == "%s")
-			|> max()`
+			|> filter(fn: (r) => r._value > 0)
+			|> min()`
 
 	memAllocBytesPerComponentEnd = `from(bucket:"%s")
 			|> range(start: 0, stop: now())
@@ -86,7 +87,7 @@ type (
 
 // GetExecutionMetrics fetches and computes a single execution's metrics.
 // Metrics are fetched using the given influxdb.Client and execUUID.
-func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, startRun, startSysbench time.Time) (ExecutionMetrics, error) {
+func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int) (ExecutionMetrics, error) {
 	execMetrics := NewExecMetrics()
 
 	f, err := os.Create(fmt.Sprintf("/tmp/%s.txt", execUUID))
@@ -100,7 +101,7 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, s
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
-		startValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentStart, client.Config.Database, time.Since(startSysbench).Seconds(), time.Since(startRun).Seconds(), execUUID, component))
+		startValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentStart, client.Config.Database, execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
@@ -115,7 +116,7 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, s
 			return ExecutionMetrics{}, err
 		}
 
-		startValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentStart, client.Config.Database, time.Since(startSysbench).Seconds(), time.Since(startRun).Seconds(), execUUID, component))
+		startValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentStart, client.Config.Database, execUUID, component))
 		if err != nil {
 			return ExecutionMetrics{}, err
 		}
@@ -142,6 +143,16 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int, s
 	}
 	return execMetrics, nil
 }
+
+/*
+component: vtgate | CPU (start value: 0.000000, end value: 407.950000) Total: 407.950000 | Mem (start value: 0.000000, env value: 50203869056.000000) Total: 50203869056.000000
+component: vttablet | CPU (start value: 0.000000, end value: 357.550000) Total: 357.550000 | Mem (start value: 0.000000, env value: 43620378848.000000) Total: 43620378848.000000
+
+component: vtgate | CPU (start value: 0.000000, end value: 899.300000) Total: 899.300000 | Mem (start value: 0.000000, env value: 110404773832.000000) Total: 110404773832.000000
+component: vttablet | CPU (start value: 0.680000, end value: 701.340000) Total: 700.660000 | Mem (start value: 40477976.000000, env value: 85443324760.000000) Total: 85402846784.000000
+
+
+*/
 
 func NewExecMetrics() ExecutionMetrics {
 	return ExecutionMetrics{
