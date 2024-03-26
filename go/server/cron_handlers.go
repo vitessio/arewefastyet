@@ -19,8 +19,6 @@
 package server
 
 import (
-	"log"
-
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
@@ -52,9 +50,7 @@ func (s *Server) branchCronHandler() {
 
 	execElements := append(mainBranchElements, releaseBranchElements...)
 	for _, elem := range execElements {
-		log.Println(elem.identifier)
 		s.addToQueue(elem)
-		log.Println(elem.identifier)
 	}
 }
 
