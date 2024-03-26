@@ -13,6 +13,7 @@
 - name: Install arewefastyet
   become: yes
   become_user: root
+  when: arewefastyet_last_exec_is_same is undefined
   block:
     - name: Remove old arewefastyet
       shell: |

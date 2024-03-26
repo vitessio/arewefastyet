@@ -47,6 +47,12 @@ const (
 	// server.
 	KeyBenchmarkSecretsPath = "arewefastyet_secrets_file_path"
 
+	// KeyLastIsSame is set to true if the previous execution has the same config as the current one.
+	KeyLastIsSame = "arewefastyet_last_exec_is_same"
+
+	// KeyNextIsSame is set to true if the next execution has the same config as the current one.
+	KeyNextIsSame = "arewefastyet_next_exec_is_same"
+
 	// Vitess related keys
 
 	// KeyVitessSchema is the path to the Vitess VSchema that will be used for this benchmark.

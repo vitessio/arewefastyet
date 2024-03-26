@@ -25,7 +25,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"time"
 
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
@@ -122,16 +121,10 @@ func Run(mabcfg Config) error {
 	newSteps := skipSteps(steps, mabcfg.SkipSteps)
 
 	// Execution
-	startSysbench := time.Now()
 	var resStr []byte
-	var startRun time.Time
 	for _, step := range newSteps {
 		args := buildSysbenchArgString(mabcfg.M, step.Name)
 		args = append(args, mabcfg.WorkloadPath, step.SysbenchName)
-
-		if step.Name == stepRun {
-			startRun = time.Now()
-		}
 
 		command := exec.Command(mabcfg.SysbenchExec, args...)
 		command.Dir = mabcfg.WorkingDirectory
@@ -144,19 +137,19 @@ func Run(mabcfg Config) error {
 		}
 	}
 
-	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID, startRun, startSysbench)
+	err = handleResults(mabcfg, resStr, sqlClient, metricsClient, macrobenchID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int, startRun, startSysbench time.Time) error {
+func handleResults(mabcfg Config, resStr []byte, sqlClient *psdb.Client, metricsClient *influxdb.Client, macrobenchID int) error {
 	sysbenchResults, err := handleSysBenchResults(resStr, sqlClient, macrobenchID)
 	if err != nil {
 		return err
 	}
-	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID, sysbenchResults.Queries, startRun, startSysbench)
+	err = handleMetricsResults(metricsClient, sqlClient, mabcfg.execUUID, sysbenchResults.Queries)
 	if err != nil {
 		return err
 	}
@@ -195,8 +188,8 @@ func handleVTGateResults(ports []string, sqlClient *psdb.Client, execUUID string
 	return insertVTGateQueryMapToMySQL(sqlClient, execUUID, plans, macrobenchID)
 }
 
-func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string, queries int, startRun, startSysbench time.Time) error {
-	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, queries, startRun, startSysbench)
+func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execUUID string, queries int) error {
+	execMetrics, err := metrics.GetExecutionMetrics(*client, execUUID, queries)
 	if err != nil {
 		return err
 	}
