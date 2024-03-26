@@ -20,7 +20,6 @@ package metrics
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/vitessio/arewefastyet/go/storage"
@@ -90,11 +89,6 @@ type (
 func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int) (ExecutionMetrics, error) {
 	execMetrics := NewExecMetrics()
 
-	f, err := os.Create(fmt.Sprintf("/tmp/%s.txt", execUUID))
-	if err != nil {
-		return ExecutionMetrics{}, err
-	}
-
 	for _, component := range components {
 		// CPU time
 		endValue, err := getSumFloatValueForQuery(client, fmt.Sprintf(cpuSecondsPerComponentEnd, client.Config.Database, execUUID, component))
@@ -107,8 +101,6 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int) (
 		}
 		execMetrics.ComponentsCPUTime[component] = endValue - startValue
 		execMetrics.TotalComponentsCPUTime += execMetrics.ComponentsCPUTime[component]
-
-		cpuStart, cpuEnd := startValue, endValue
 
 		// Memory
 		endValue, err = getSumFloatValueForQuery(client, fmt.Sprintf(memAllocBytesPerComponentEnd, client.Config.Database, execUUID, component))
@@ -123,11 +115,6 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int) (
 
 		execMetrics.ComponentsMemStatsAllocBytes[component] = endValue - startValue
 		execMetrics.TotalComponentsMemStatsAllocBytes += execMetrics.ComponentsMemStatsAllocBytes[component]
-
-		_, err = f.WriteString(fmt.Sprintf("component: %s | CPU (start value: %f, end value: %f) Total: %f | Mem (start value: %f, env value: %f) Total: %f \n", component, cpuStart, cpuEnd, execMetrics.ComponentsCPUTime[component], startValue, endValue, execMetrics.ComponentsMemStatsAllocBytes[component]))
-		if err != nil {
-			return ExecutionMetrics{}, err
-		}
 	}
 
 	// Divide all metrics by the number of queries that were executed
@@ -143,16 +130,6 @@ func GetExecutionMetrics(client influxdb.Client, execUUID string, queries int) (
 	}
 	return execMetrics, nil
 }
-
-/*
-component: vtgate | CPU (start value: 0.000000, end value: 407.950000) Total: 407.950000 | Mem (start value: 0.000000, env value: 50203869056.000000) Total: 50203869056.000000
-component: vttablet | CPU (start value: 0.000000, end value: 357.550000) Total: 357.550000 | Mem (start value: 0.000000, env value: 43620378848.000000) Total: 43620378848.000000
-
-component: vtgate | CPU (start value: 0.000000, end value: 899.300000) Total: 899.300000 | Mem (start value: 0.000000, env value: 110404773832.000000) Total: 110404773832.000000
-component: vttablet | CPU (start value: 0.680000, end value: 701.340000) Total: 700.660000 | Mem (start value: 40477976.000000, env value: 85443324760.000000) Total: 85402846784.000000
-
-
-*/
 
 func NewExecMetrics() ExecutionMetrics {
 	return ExecutionMetrics{
