@@ -141,6 +141,17 @@ type CompareMacrobench struct {
 	Diff macrobench.Comparison `json:"diff"`
 }
 
+func (s *Server) compareMacrobenchmarksV2(c *gin.Context) {
+	sc := macrobench.StatisticalComparison{
+		RightSHA:   c.Query("rtag"),
+		LeftSHA:    c.Query("ltag"),
+		Planner:    macrobench.Gen4Planner,
+		MacroTypes: s.benchmarkTypes,
+	}
+
+	sc.Compare(s.dbClient)
+}
+
 func (s *Server) compareMacrobenchmarks(c *gin.Context) {
 	rightSHA := c.Query("rtag")
 	leftSHA := c.Query("ltag")

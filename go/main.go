@@ -16,8 +16,19 @@ limitations under the License.
 
 package main
 
-import "github.com/vitessio/arewefastyet/go/cmd"
+import (
+	_ "math/rand"
+)
 
 func main() {
-	cmd.Execute()
+	// Example data for two independent samples
+	// Example data for two independent samples with a 20% difference
+	sample2 := []float64{75, 79, 82, 88, 72, 85, 92, 88, 78, 95, 81, 87, 90, 83, 91}
+
+	// Generate sample1 with values 20% higher than sample2
+	sample1 := make([]float64, len(sample2))
+	for i, val := range sample2 {
+		sample1[i] = val * 1.2
+	}
+
 }

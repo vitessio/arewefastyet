@@ -25,9 +25,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vitessio/arewefastyet/go/storage"
-
+	"github.com/aclements/go-moremath/stats"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
+	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 )
@@ -59,6 +59,37 @@ type (
 		Threads    float64 `json:"threads"`
 	}
 
+	qpsAsSlice struct {
+		total  []float64
+		reads  []float64
+		writes []float64
+		other  []float64
+	}
+
+	resultAsSlice struct {
+		qps        qpsAsSlice
+		tps        []float64
+		latency    []float64
+		errors     []float64
+		reconnects []float64
+		time       []int
+		threads    []float64
+	}
+
+	mannWhitneyUTestQPS struct {
+		total  *stats.MannWhitneyUTestResult
+		reads  *stats.MannWhitneyUTestResult
+		writes *stats.MannWhitneyUTestResult
+		other  *stats.MannWhitneyUTestResult
+	}
+
+	mannWhitneyUTestResult struct {
+		qps     mannWhitneyUTestQPS
+		tps     *stats.MannWhitneyUTestResult
+		latency *stats.MannWhitneyUTestResult
+		errors  *stats.MannWhitneyUTestResult
+	}
+
 	// BenchmarkID is used to identify a macro benchmark using its database's ID, the
 	// source from which the benchmark was triggered and its creation date.
 	BenchmarkID struct {
@@ -87,6 +118,11 @@ type (
 		Right, Left Details
 		Diff        Result
 		DiffMetrics metrics.ExecutionMetrics
+	}
+
+	BenchmarkResults struct {
+		Results ResultsArray
+		Metrics metrics.ExecutionMetricsArray
 	}
 
 	ResultsArray []Result
@@ -161,45 +197,37 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 	return compared
 }
 
+func (mrs ResultsArray) resultsArrayToSlice() resultAsSlice {
+	var ras resultAsSlice
+	for _, mr := range mrs {
+		ras.qps.total = append(ras.qps.total, mr.QPS.Total)
+		ras.qps.reads = append(ras.qps.reads, mr.QPS.Reads)
+		ras.qps.writes = append(ras.qps.writes, mr.QPS.Writes)
+		ras.qps.other = append(ras.qps.other, mr.QPS.Other)
+		ras.tps = append(ras.tps, mr.TPS)
+		ras.latency = append(ras.latency, mr.Latency)
+		ras.errors = append(ras.errors, mr.Errors)
+		ras.reconnects = append(ras.reconnects, mr.Reconnects)
+		ras.time = append(ras.time, mr.Time)
+		ras.threads = append(ras.threads, mr.Threads)
+	}
+	return ras
+}
+
 // mergeMedian will merge a ResultsArray into a single Result
 // by calculating the median of all elements in the array.
 func (mrs ResultsArray) mergeMedian() (mergedResult Result) {
-	inter := struct {
-		total      []float64
-		reads      []float64
-		writes     []float64
-		other      []float64
-		tps        []float64
-		latency    []float64
-		errors     []float64
-		reconnects []float64
-		time       []int
-		threads    []float64
-	}{}
-
-	for _, mr := range mrs {
-		inter.total = append(inter.total, mr.QPS.Total)
-		inter.reads = append(inter.reads, mr.QPS.Reads)
-		inter.writes = append(inter.writes, mr.QPS.Writes)
-		inter.other = append(inter.other, mr.QPS.Other)
-		inter.tps = append(inter.tps, mr.TPS)
-		inter.latency = append(inter.latency, mr.Latency)
-		inter.errors = append(inter.errors, mr.Errors)
-		inter.reconnects = append(inter.reconnects, mr.Reconnects)
-		inter.time = append(inter.time, mr.Time)
-		inter.threads = append(inter.threads, mr.Threads)
-	}
-
-	mergedResult.QPS.Total = awftmath.MedianFloat(inter.total)
-	mergedResult.QPS.Reads = awftmath.MedianFloat(inter.reads)
-	mergedResult.QPS.Writes = awftmath.MedianFloat(inter.writes)
-	mergedResult.QPS.Other = awftmath.MedianFloat(inter.other)
-	mergedResult.TPS = awftmath.MedianFloat(inter.tps)
-	mergedResult.Latency = awftmath.MedianFloat(inter.latency)
-	mergedResult.Errors = awftmath.MedianFloat(inter.errors)
-	mergedResult.Reconnects = awftmath.MedianFloat(inter.reconnects)
-	mergedResult.Time = int(awftmath.MedianInt(inter.time))
-	mergedResult.Threads = awftmath.MedianFloat(inter.threads)
+	ras := mrs.resultsArrayToSlice()
+	mergedResult.QPS.Total = awftmath.MedianFloat(ras.qps.total)
+	mergedResult.QPS.Reads = awftmath.MedianFloat(ras.qps.reads)
+	mergedResult.QPS.Writes = awftmath.MedianFloat(ras.qps.writes)
+	mergedResult.QPS.Other = awftmath.MedianFloat(ras.qps.other)
+	mergedResult.TPS = awftmath.MedianFloat(ras.tps)
+	mergedResult.Latency = awftmath.MedianFloat(ras.latency)
+	mergedResult.Errors = awftmath.MedianFloat(ras.errors)
+	mergedResult.Reconnects = awftmath.MedianFloat(ras.reconnects)
+	mergedResult.Time = int(awftmath.MedianInt(ras.time))
+	mergedResult.Threads = awftmath.MedianFloat(ras.threads)
 	return mergedResult
 }
 
@@ -229,6 +257,29 @@ func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
 		i = j
 	}
 	return reduceMabd
+}
+
+func GetBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (BenchmarkResults, error) {
+	results, err := GetResultsForGitRefAndPlanner(macroType, gitSHA, planner, client)
+	if err != nil {
+		return BenchmarkResults{}, err
+	}
+
+	if len(results) == 0 {
+		return BenchmarkResults{}, nil
+	}
+
+	var br BenchmarkResults
+	for _, result := range results {
+		br.Results = append(br.Results, result.Result)
+
+		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
+		if err != nil {
+			return BenchmarkResults{}, err
+		}
+		br.Metrics = append(br.Metrics, metricsResult)
+	}
+	return br, nil
 }
 
 func GetDetailsFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]Details, error) {

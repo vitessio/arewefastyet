@@ -21,8 +21,49 @@ package macrobench
 import (
 	"fmt"
 
+	"github.com/aclements/go-moremath/stats"
 	"github.com/vitessio/arewefastyet/go/storage"
 )
+
+type StatisticalComparison struct {
+	RightSHA   string
+	LeftSHA    string
+	Planner    PlannerVersion
+	MacroTypes []string
+}
+
+type StatisticalResults struct {
+}
+
+func (sc StatisticalComparison) Compare(client storage.SQLClient) error {
+	results := make(map[string]Details, len(sc.MacroTypes))
+	for _, macroType := range sc.MacroTypes {
+		leftResult, err := GetBenchmarkResults(client, macroType, sc.LeftSHA, sc.Planner)
+		if err != nil {
+			return err
+		}
+
+		rightResult, err := GetBenchmarkResults(client, macroType, sc.RightSHA, sc.Planner)
+		if err != nil {
+			return err
+		}
+
+		var result Details
+
+		leftResultsAsSlice := leftResult.Results.resultsArrayToSlice()
+		rightResultsAsSlice := rightResult.Results.resultsArrayToSlice()
+
+		var mannWhitneyResults mannWhitneyUTestResult
+
+		mannWhitneyResults.qps.total, _ = stats.MannWhitneyUTest(leftResultsAsSlice.qps.total, rightResultsAsSlice.qps.total, stats.LocationDiffers)
+		mannWhitneyResults.qps.reads, _ = stats.MannWhitneyUTest(leftResultsAsSlice.qps.reads, rightResultsAsSlice.qps.reads, stats.LocationDiffers)
+		mannWhitneyResults.qps.writes, _ = stats.MannWhitneyUTest(leftResultsAsSlice.qps.writes, rightResultsAsSlice.qps.writes, stats.LocationDiffers)
+		mannWhitneyResults.qps.other, _ = stats.MannWhitneyUTest(leftResultsAsSlice.qps.other, rightResultsAsSlice.qps.other, stats.LocationDiffers)
+
+		results[macroType] = result
+	}
+	return nil
+}
 
 // CompareMacroBenchmarks takes in 3 arguments, the database, and 2 SHAs. It reads from the database, the macrobenchmark
 // results for the 2 SHAs and compares them. The result is a map with the key being the macrobenchmark name.
