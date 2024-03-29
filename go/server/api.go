@@ -137,8 +137,8 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 }
 
 type CompareMacrobench struct {
-	Type string                `json:"type"`
-	Diff macrobench.Comparison `json:"diff"`
+	Type   string                               `json:"type"`
+	Result macrobench.StatisticalCompareResults `json:"result"`
 }
 
 func (s *Server) compareMacrobenchmarksV2(c *gin.Context) {
@@ -153,33 +153,33 @@ func (s *Server) compareMacrobenchmarksV2(c *gin.Context) {
 }
 
 func (s *Server) compareMacrobenchmarks(c *gin.Context) {
-	rightSHA := c.Query("rtag")
-	leftSHA := c.Query("ltag")
+	sc := macrobench.StatisticalComparison{
+		RightSHA:   c.Query("rtag"),
+		LeftSHA:    c.Query("ltag"),
+		Planner:    macrobench.Gen4Planner,
+		MacroTypes: s.benchmarkTypes,
+	}
 
-	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, rightSHA, leftSHA, macrobench.Gen4Planner, s.benchmarkTypes)
+	results, err := sc.Compare(s.dbClient)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
 
-	cmpMacros := make([]CompareMacrobench, 0, len(macrosMatrices))
-	for typeof, cmp := range macrosMatrices {
-		cmpMacro := CompareMacrobench{
-			Type: typeof,
-		}
-		if len(cmp) > 0 {
-			cmpMacro.Diff = cmp[0]
-		}
-		cmpMacros = append(cmpMacros, cmpMacro)
+	resultsSlice := make([]CompareMacrobench, 0, len(results))
+	for typeof, res := range results {
+		resultsSlice = append(resultsSlice, CompareMacrobench{
+			Type:   typeof,
+			Result: res,
+		})
 	}
 
-	sort.Slice(cmpMacros, func(i, j int) bool {
-		return cmpMacros[i].Type < cmpMacros[j].Type
+	sort.Slice(resultsSlice, func(i, j int) bool {
+		return resultsSlice[i].Type < resultsSlice[j].Type
 	})
 
-	c.JSON(http.StatusOK, cmpMacros)
+	c.JSON(http.StatusOK, resultsSlice)
 }
 
 func (s *Server) compareMicrobenchmarks(c *gin.Context) {

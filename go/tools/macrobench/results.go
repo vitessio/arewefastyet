@@ -25,7 +25,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aclements/go-moremath/stats"
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
@@ -66,28 +65,25 @@ type (
 		other  []float64
 	}
 
+	metricsAsSlice struct {
+		totalComponentsCPUTime []float64
+		componentsCPUTime      map[string][]float64
+
+		totalComponentsMemStatsAllocBytes []float64
+		componentsMemStatsAllocBytes      map[string][]float64
+	}
+
 	resultAsSlice struct {
-		qps        qpsAsSlice
+		qps qpsAsSlice
+
 		tps        []float64
 		latency    []float64
 		errors     []float64
 		reconnects []float64
 		time       []int
 		threads    []float64
-	}
 
-	mannWhitneyUTestQPS struct {
-		total  *stats.MannWhitneyUTestResult
-		reads  *stats.MannWhitneyUTestResult
-		writes *stats.MannWhitneyUTestResult
-		other  *stats.MannWhitneyUTestResult
-	}
-
-	mannWhitneyUTestResult struct {
-		qps     mannWhitneyUTestQPS
-		tps     *stats.MannWhitneyUTestResult
-		latency *stats.MannWhitneyUTestResult
-		errors  *stats.MannWhitneyUTestResult
+		metrics metricsAsSlice
 	}
 
 	// BenchmarkID is used to identify a macro benchmark using its database's ID, the
@@ -195,6 +191,30 @@ func CompareDetailsArrays(references, compares DetailsArray) (compared Compariso
 		compared = append(compared, emptyCmp)
 	}
 	return compared
+}
+
+func (br BenchmarkResults) asSlice() resultAsSlice {
+	s := br.Results.resultsArrayToSlice()
+	s.metrics = metricsToSlice(br.Metrics)
+	return s
+}
+
+func metricsToSlice(metrics metrics.ExecutionMetricsArray) metricsAsSlice {
+	var s metricsAsSlice
+	s.componentsCPUTime = make(map[string][]float64)
+	s.componentsMemStatsAllocBytes = make(map[string][]float64)
+	for _, metricRow := range metrics {
+		s.totalComponentsCPUTime = append(s.totalComponentsCPUTime, metricRow.TotalComponentsCPUTime)
+		for name, value := range metricRow.ComponentsCPUTime {
+			s.componentsCPUTime[name] = append(s.componentsCPUTime[name], value)
+		}
+
+		s.totalComponentsMemStatsAllocBytes = append(s.totalComponentsMemStatsAllocBytes, metricRow.TotalComponentsMemStatsAllocBytes)
+		for name, value := range metricRow.ComponentsMemStatsAllocBytes {
+			s.componentsMemStatsAllocBytes[name] = append(s.componentsMemStatsAllocBytes[name], value)
+		}
+	}
+	return s
 }
 
 func (mrs ResultsArray) resultsArrayToSlice() resultAsSlice {
