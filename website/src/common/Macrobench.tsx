@@ -205,7 +205,7 @@ export default function Macrobench({ data, gitRef, commits }) {
   );
 }
 
-function getRange(range) {
+export function getRange(range) {
   if (range.infinite == true) {
     return "∞"
   }

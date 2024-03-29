@@ -24,18 +24,18 @@ import SearchMacro from "./components/SearchMacro";
 
 export default function SearchPage() {
   const urlParams = new URLSearchParams(window.location.search);
-  const [gitRef, setGitRef] = useState(urlParams.get("git_ref") || "");
+  const [gitRef, setGitRef] = useState(urlParams.get("sha") || "");
 
   const {
     data: dataSearch,
     isLoading: isSearchLoading,
     error: searchError,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}search?git_ref=${gitRef}`);
+  } = useApiCall(`${import.meta.env.VITE_API_URL}search?sha=${gitRef}`);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`?git_ref=${gitRef}`);
+    navigate(`?sha=${gitRef}`);
   }, [gitRef]);
 
   return (

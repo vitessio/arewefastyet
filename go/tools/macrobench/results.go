@@ -246,6 +246,19 @@ func Search(client storage.SQLClient, sha string, types []string, planner Planne
 		if err != nil {
 			return nil, err
 		}
+		if len(result.Results) == 0 {
+			results[macroType] = StatisticalSingleResult{
+				ComponentsCPUTime: map[string]StatisticalSummary{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+				ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+			}
+			continue
+		}
 		results[macroType] = result.toStatisticalSingleResult()
 	}
 	return results, nil
