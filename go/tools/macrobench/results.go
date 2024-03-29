@@ -179,6 +179,42 @@ func Compare(client storage.SQLClient, old, new string, types []string, planner 
 	return results, nil
 }
 
+func Search(client storage.SQLClient, sha string, types []string, planner PlannerVersion) (map[string]StatisticalSingleResult, error) {
+	results := make(map[string]StatisticalSingleResult, len(types))
+	for _, macroType := range types {
+		result, err := getBenchmarkResults(client, macroType, sha, planner)
+		if err != nil {
+			return nil, err
+		}
+		resultSlice := result.asSlice()
+		ssr := StatisticalSingleResult{
+			ComponentsCPUTime:            map[string]StatisticalSummary{},
+			ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
+		}
+
+		ssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
+		ssr.ReadsQPS, _ = getSummary(resultSlice.qps.reads)
+		ssr.WritesQPS, _ = getSummary(resultSlice.qps.writes)
+		ssr.OtherQPS, _ = getSummary(resultSlice.qps.other)
+
+		ssr.TPS, _ = getSummary(resultSlice.tps)
+		ssr.Latency, _ = getSummary(resultSlice.latency)
+		ssr.Errors, _ = getSummary(resultSlice.errors)
+
+		ssr.TotalComponentsCPUTime, _ = getSummary(resultSlice.metrics.totalComponentsCPUTime)
+		for name, value := range resultSlice.metrics.componentsCPUTime {
+			ssr.ComponentsCPUTime[name], _ = getSummary(value)
+		}
+
+		ssr.TotalComponentsMemStatsAllocBytes, _ = getSummary(resultSlice.metrics.totalComponentsMemStatsAllocBytes)
+		for name, value := range resultSlice.metrics.componentsMemStatsAllocBytes {
+			ssr.ComponentsMemStatsAllocBytes[name], _ = getSummary(value)
+		}
+		results[macroType] = ssr
+	}
+	return results, nil
+}
+
 func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (BenchmarkResults, error) {
 	results, err := getResultsForGitRefAndPlanner(macroType, gitSHA, planner, client)
 	if err != nil {

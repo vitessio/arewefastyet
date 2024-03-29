@@ -196,13 +196,9 @@ type searchResult struct {
 }
 
 func (s *Server) searchBenchmark(c *gin.Context) {
-	ss := macrobench.StatisticalSample{
-		SHA:        c.Query("git_ref"),
-		Planner:    macrobench.Gen4Planner,
-		MacroTypes: s.benchmarkTypes,
-	}
+	sha := c.Query("git_ref")
 
-	results, err := ss.GetSummaries(s.dbClient)
+	results, err := macrobench.Search(s.dbClient, sha, s.benchmarkTypes, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
@@ -441,6 +437,8 @@ func (s *Server) deleteRun(c *gin.Context) {
 }
 
 func (s *Server) compareBenchmarkFKs(c *gin.Context) {
+	sha := c.Query("sha")
+
 	var mtypes []string
 	for _, benchmarkType := range s.benchmarkTypes {
 		if strings.Contains(benchmarkType, "TPCC") {
@@ -448,13 +446,7 @@ func (s *Server) compareBenchmarkFKs(c *gin.Context) {
 		}
 	}
 
-	ss := macrobench.StatisticalSample{
-		SHA:        c.Query("sha"),
-		Planner:    macrobench.Gen4Planner,
-		MacroTypes: mtypes,
-	}
-
-	results, err := ss.GetSummaries(s.dbClient)
+	results, err := macrobench.Search(s.dbClient, sha, mtypes, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)

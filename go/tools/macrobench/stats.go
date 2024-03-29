@@ -20,7 +20,6 @@ import (
 	"math"
 
 	"github.com/aclements/go-moremath/mathx"
-	"github.com/vitessio/arewefastyet/go/storage"
 	"golang.org/x/perf/benchmath"
 )
 
@@ -83,12 +82,6 @@ type (
 		TotalComponentsMemStatsAllocBytes statisticalResult            `json:"total_components_mem_stats_alloc_bytes"`
 		ComponentsMemStatsAllocBytes      map[string]statisticalResult `json:"components_mem_stats_alloc_bytes"`
 	}
-
-	StatisticalSample struct {
-		SHA        string
-		Planner    PlannerVersion
-		MacroTypes []string
-	}
 )
 
 var (
@@ -99,42 +92,6 @@ var (
 	// defaultConfidence sets the desired confidence interval when doing a summary of a sample.
 	defaultConfidence = 0.95
 )
-
-func (s StatisticalSample) GetSummaries(client storage.SQLClient) (map[string]StatisticalSingleResult, error) {
-	results := make(map[string]StatisticalSingleResult, len(s.MacroTypes))
-	for _, macroType := range s.MacroTypes {
-		result, err := getBenchmarkResults(client, macroType, s.SHA, s.Planner)
-		if err != nil {
-			return nil, err
-		}
-		resultSlice := result.asSlice()
-		ssr := StatisticalSingleResult{
-			ComponentsCPUTime:            map[string]StatisticalSummary{},
-			ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
-		}
-
-		ssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
-		ssr.ReadsQPS, _ = getSummary(resultSlice.qps.reads)
-		ssr.WritesQPS, _ = getSummary(resultSlice.qps.writes)
-		ssr.OtherQPS, _ = getSummary(resultSlice.qps.other)
-
-		ssr.TPS, _ = getSummary(resultSlice.tps)
-		ssr.Latency, _ = getSummary(resultSlice.latency)
-		ssr.Errors, _ = getSummary(resultSlice.errors)
-
-		ssr.TotalComponentsCPUTime, _ = getSummary(resultSlice.metrics.totalComponentsCPUTime)
-		for name, value := range resultSlice.metrics.componentsCPUTime {
-			ssr.ComponentsCPUTime[name], _ = getSummary(value)
-		}
-
-		ssr.TotalComponentsMemStatsAllocBytes, _ = getSummary(resultSlice.metrics.totalComponentsMemStatsAllocBytes)
-		for name, value := range resultSlice.metrics.componentsMemStatsAllocBytes {
-			ssr.ComponentsMemStatsAllocBytes[name], _ = getSummary(value)
-		}
-		results[macroType] = ssr
-	}
-	return results, nil
-}
 
 func getRangeFromSummary(s benchmath.Summary) Range {
 	if math.IsInf(s.Lo, 0) || math.IsInf(s.Hi, 0) {
