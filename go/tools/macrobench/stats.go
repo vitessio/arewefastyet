@@ -22,7 +22,7 @@ import (
 )
 
 type (
-	statisticalSummary struct {
+	StatisticalSummary struct {
 		Center     float64 `json:"center"`
 		Confidence float64 `json:"confidence"`
 	}
@@ -33,8 +33,26 @@ type (
 		P             float64            `json:"p"`
 		N1            int                `json:"n1"`
 		N2            int                `json:"n2"`
-		Old           statisticalSummary `json:"old"`
-		New           statisticalSummary `json:"new"`
+		Old           StatisticalSummary `json:"old"`
+		New           StatisticalSummary `json:"new"`
+	}
+
+	// StatisticalSingleResult represents a single benchmark's statistical summary.
+	StatisticalSingleResult struct {
+		TotalQPS  StatisticalSummary `json:"total_qps"`
+		ReadsQPS  StatisticalSummary `json:"reads_qps"`
+		WritesQPS StatisticalSummary `json:"writes_qps"`
+		OtherQPS  StatisticalSummary `json:"other_qps"`
+
+		TPS     StatisticalSummary `json:"tps"`
+		Latency StatisticalSummary `json:"latency"`
+		Errors  StatisticalSummary `json:"errors"`
+
+		TotalComponentsCPUTime StatisticalSummary            `json:"total_components_cpu_time"`
+		ComponentsCPUTime      map[string]StatisticalSummary `json:"components_cpu_time"`
+
+		TotalComponentsMemStatsAllocBytes StatisticalSummary            `json:"total_components_mem_stats_alloc_bytes"`
+		ComponentsMemStatsAllocBytes      map[string]StatisticalSummary `json:"components_mem_stats_alloc_bytes"`
 	}
 
 	// StatisticalCompareResults is the full representation of the results
@@ -62,6 +80,12 @@ type (
 		Planner    PlannerVersion
 		MacroTypes []string
 	}
+
+	StatisticalSample struct {
+		SHA        string
+		Planner    PlannerVersion
+		MacroTypes []string
+	}
 )
 
 var (
@@ -76,12 +100,12 @@ var (
 func (sc StatisticalCompare) Compare(client storage.SQLClient) (map[string]StatisticalCompareResults, error) {
 	results := make(map[string]StatisticalCompareResults, len(sc.MacroTypes))
 	for _, macroType := range sc.MacroTypes {
-		leftResult, err := GetBenchmarkResults(client, macroType, sc.LeftSHA, sc.Planner)
+		leftResult, err := getBenchmarkResults(client, macroType, sc.LeftSHA, sc.Planner)
 		if err != nil {
 			return nil, err
 		}
 
-		rightResult, err := GetBenchmarkResults(client, macroType, sc.RightSHA, sc.Planner)
+		rightResult, err := getBenchmarkResults(client, macroType, sc.RightSHA, sc.Planner)
 		if err != nil {
 			return nil, err
 		}
@@ -95,23 +119,59 @@ func (sc StatisticalCompare) Compare(client storage.SQLClient) (map[string]Stati
 	return results, nil
 }
 
+func (s StatisticalSample) GetSummaries(client storage.SQLClient) (map[string]StatisticalSingleResult, error) {
+	results := make(map[string]StatisticalSingleResult, len(s.MacroTypes))
+	for _, macroType := range s.MacroTypes {
+		result, err := getBenchmarkResults(client, macroType, s.SHA, s.Planner)
+		if err != nil {
+			return nil, err
+		}
+		resultSlice := result.asSlice()
+		ssr := StatisticalSingleResult{
+			ComponentsCPUTime:            map[string]StatisticalSummary{},
+			ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
+		}
+
+		ssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
+		ssr.ReadsQPS, _ = getSummary(resultSlice.qps.reads)
+		ssr.WritesQPS, _ = getSummary(resultSlice.qps.writes)
+		ssr.OtherQPS, _ = getSummary(resultSlice.qps.other)
+
+		ssr.TPS, _ = getSummary(resultSlice.tps)
+		ssr.Latency, _ = getSummary(resultSlice.latency)
+		ssr.Errors, _ = getSummary(resultSlice.errors)
+
+		ssr.TotalComponentsCPUTime, _ = getSummary(resultSlice.metrics.totalComponentsCPUTime)
+		for name, value := range resultSlice.metrics.componentsCPUTime {
+			ssr.ComponentsCPUTime[name], _ = getSummary(value)
+		}
+
+		ssr.TotalComponentsMemStatsAllocBytes, _ = getSummary(resultSlice.metrics.totalComponentsMemStatsAllocBytes)
+		for name, value := range resultSlice.metrics.componentsMemStatsAllocBytes {
+			ssr.ComponentsMemStatsAllocBytes[name], _ = getSummary(value)
+		}
+		results[macroType] = ssr
+	}
+	return results, nil
+}
+
+func getSummary(values []float64) (StatisticalSummary, *benchmath.Sample) {
+	sample := benchmath.NewSample(values, &defaultThresholds)
+	summary := benchmath.AssumeNothing.Summary(sample, defaultConfidence)
+	return StatisticalSummary{
+		Center:     summary.Center,
+		Confidence: summary.Confidence,
+	}, sample
+}
+
 func compare(old, new []float64) statisticalResult {
 	var sr statisticalResult
 
-	s1 := benchmath.NewSample(old, &defaultThresholds)
-	s2 := benchmath.NewSample(new, &defaultThresholds)
+	ssOld, s1 := getSummary(old)
+	ssNew, s2 := getSummary(new)
 
-	s1Summary := benchmath.AssumeNothing.Summary(s1, defaultConfidence)
-	s2Summary := benchmath.AssumeNothing.Summary(s2, defaultConfidence)
-
-	sr.Old = statisticalSummary{
-		Center:     s1Summary.Center,
-		Confidence: s1Summary.Confidence,
-	}
-	sr.New = statisticalSummary{
-		Center:     s2Summary.Center,
-		Confidence: s2Summary.Confidence,
-	}
+	sr.Old = ssOld
+	sr.New = ssNew
 
 	c := benchmath.AssumeNothing.Compare(s1, s2)
 	sr.P = c.P

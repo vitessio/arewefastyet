@@ -196,31 +196,25 @@ func (s *Server) compareMicrobenchmarks(c *gin.Context) {
 }
 
 type searchResult struct {
-	Macros map[string]macrobench.DetailsArray
-	Micro  microbench.DetailsArray
+	Macros map[string]macrobench.StatisticalSingleResult
 }
 
 func (s *Server) searchBenchmark(c *gin.Context) {
-	gitRef := c.Query("git_ref")
+	ss := macrobench.StatisticalSample{
+		SHA:        c.Query("git_ref"),
+		Planner:    macrobench.Gen4Planner,
+		MacroTypes: s.benchmarkTypes,
+	}
 
-	macros, err := macrobench.GetDetailsArraysFromAllTypes(gitRef, macrobench.Gen4Planner, s.dbClient, s.benchmarkTypes)
+	results, err := ss.GetSummaries(s.dbClient)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-
-	micro, err := microbench.GetResultsForGitRef(gitRef, s.dbClient)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-		slog.Error(err)
-		return
-	}
-	micro = micro.ReduceSimpleMedianByName()
 
 	var res searchResult
-	res.Macros = macros
-	res.Micro = micro
+	res.Macros = results
 
 	c.JSON(http.StatusOK, res)
 }

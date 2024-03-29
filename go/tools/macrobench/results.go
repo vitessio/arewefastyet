@@ -20,7 +20,6 @@ package macrobench
 
 import (
 	"errors"
-	"math"
 	"sort"
 	"strings"
 	"time"
@@ -148,51 +147,6 @@ func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects
 	return &Result{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
 }
 
-// CompareDetailsArrays compare two DetailsArray and return
-// their comparison in a ComparisonArray.
-func CompareDetailsArrays(references, compares DetailsArray) (compared ComparisonArray) {
-	emptyCmp := Comparison{
-		Right: Details{
-			Metrics: metrics.NewExecMetrics(),
-		},
-		Left: Details{
-			Metrics: metrics.NewExecMetrics(),
-		},
-		DiffMetrics: metrics.NewExecMetrics(),
-	}
-	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
-		cmp := emptyCmp
-		if i < len(references) {
-			cmp.Right = references[i]
-		}
-		if i < len(compares) {
-			cmp.Left = compares[i]
-		}
-		if cmp.Left.GitRef != "" && cmp.Right.GitRef != "" {
-			compareResult := cmp.Left.Result
-			referenceResult := cmp.Right.Result
-			cmp.Diff.QPS.Total = (referenceResult.QPS.Total - compareResult.QPS.Total) / compareResult.QPS.Total * 100
-			cmp.Diff.QPS.Reads = (referenceResult.QPS.Reads - compareResult.QPS.Reads) / compareResult.QPS.Reads * 100
-			cmp.Diff.QPS.Writes = (referenceResult.QPS.Writes - compareResult.QPS.Writes) / compareResult.QPS.Writes * 100
-			cmp.Diff.QPS.Other = (referenceResult.QPS.Other - compareResult.QPS.Other) / compareResult.QPS.Other * 100
-			cmp.Diff.TPS = (referenceResult.TPS - compareResult.TPS) / compareResult.TPS * 100
-			cmp.Diff.Latency = (compareResult.Latency - referenceResult.Latency) / referenceResult.Latency * 100
-			cmp.Diff.Reconnects = (compareResult.Reconnects - referenceResult.Reconnects) / referenceResult.Reconnects * 100
-			cmp.Diff.Errors = (compareResult.Errors - referenceResult.Errors) / referenceResult.Errors * 100
-			cmp.Diff.Time = int(float64(compareResult.Time) - (float64(referenceResult.Time))/float64(referenceResult.Time)*100)
-			cmp.Diff.Threads = (compareResult.Threads - referenceResult.Threads) / referenceResult.Threads * 100
-			awftmath.CheckForNaN(&cmp.Diff, 0)
-			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
-			cmp.DiffMetrics = metrics.CompareTwo(cmp.Left.Metrics, cmp.Right.Metrics)
-		}
-		compared = append(compared, cmp)
-	}
-	if len(compared) == 0 {
-		compared = append(compared, emptyCmp)
-	}
-	return compared
-}
-
 func (br BenchmarkResults) asSlice() resultAsSlice {
 	s := br.Results.resultsArrayToSlice()
 	s.metrics = metricsToSlice(br.Metrics)
@@ -279,29 +233,6 @@ func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
 	return reduceMabd
 }
 
-func GetBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (BenchmarkResults, error) {
-	results, err := GetResultsForGitRefAndPlanner(macroType, gitSHA, planner, client)
-	if err != nil {
-		return BenchmarkResults{}, err
-	}
-
-	if len(results) == 0 {
-		return BenchmarkResults{}, nil
-	}
-
-	var br BenchmarkResults
-	for _, result := range results {
-		br.Results = append(br.Results, result.Result)
-
-		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
-		if err != nil {
-			return BenchmarkResults{}, err
-		}
-		br.Metrics = append(br.Metrics, metricsResult)
-	}
-	return br, nil
-}
-
 func GetDetailsFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]Details, error) {
 	details, err := GetDetailsArraysFromAllTypes(sha, planner, dbclient, types)
 	if err != nil {
@@ -323,7 +254,7 @@ func GetDetailsFromAllTypes(sha string, planner PlannerVersion, dbclient storage
 func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]DetailsArray, error) {
 	macros := map[string]DetailsArray{}
 	for _, mtype := range types {
-		macro, err := GetResultsForGitRefAndPlanner(mtype, sha, planner, dbclient)
+		macro, err := getResultsForGitRefAndPlanner(mtype, sha, planner, dbclient)
 		if err != nil {
 			return nil, err
 		}
@@ -397,9 +328,32 @@ func GetSummaryForLastDays(macroType string, source string, planner PlannerVersi
 	return
 }
 
-// GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
+func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (BenchmarkResults, error) {
+	results, err := getResultsForGitRefAndPlanner(macroType, gitSHA, planner, client)
+	if err != nil {
+		return BenchmarkResults{}, err
+	}
+
+	if len(results) == 0 {
+		return BenchmarkResults{}, nil
+	}
+
+	var br BenchmarkResults
+	for _, result := range results {
+		br.Results = append(br.Results, result.Result)
+
+		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
+		if err != nil {
+			return BenchmarkResults{}, err
+		}
+		br.Metrics = append(br.Metrics, metricsResult)
+	}
+	return br, nil
+}
+
+// getResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
 // and macro benchmark Type.
-func GetResultsForGitRefAndPlanner(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
+func getResultsForGitRefAndPlanner(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
 	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(info.exec_uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
