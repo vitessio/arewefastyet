@@ -142,14 +142,10 @@ type CompareMacrobench struct {
 }
 
 func (s *Server) compareMacroBenchmarks(c *gin.Context) {
-	sc := macrobench.StatisticalCompare{
-		RightSHA:   c.Query("rtag"),
-		LeftSHA:    c.Query("ltag"),
-		Planner:    macrobench.Gen4Planner,
-		MacroTypes: s.benchmarkTypes,
-	}
+	oldSHA := c.Query("ltag")
+	newSHA := c.Query("rtag")
 
-	results, err := sc.Compare(s.dbClient)
+	results, err := macrobench.Compare(s.dbClient, oldSHA, newSHA, s.benchmarkTypes, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
@@ -445,8 +441,6 @@ func (s *Server) deleteRun(c *gin.Context) {
 }
 
 func (s *Server) compareBenchmarkFKs(c *gin.Context) {
-	sha := c.Query("sha")
-
 	var mtypes []string
 	for _, benchmarkType := range s.benchmarkTypes {
 		if strings.Contains(benchmarkType, "TPCC") {
@@ -454,11 +448,17 @@ func (s *Server) compareBenchmarkFKs(c *gin.Context) {
 		}
 	}
 
-	allBenchmarkResults, err := macrobench.GetDetailsFromAllTypes(sha, macrobench.Gen4Planner, s.dbClient, mtypes)
+	ss := macrobench.StatisticalSample{
+		SHA:        c.Query("sha"),
+		Planner:    macrobench.Gen4Planner,
+		MacroTypes: mtypes,
+	}
+
+	results, err := ss.GetSummaries(s.dbClient)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-	c.JSON(http.StatusOK, allBenchmarkResults)
+	c.JSON(http.StatusOK, results)
 }

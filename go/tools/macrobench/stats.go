@@ -84,13 +84,6 @@ type (
 		ComponentsMemStatsAllocBytes      map[string]statisticalResult `json:"components_mem_stats_alloc_bytes"`
 	}
 
-	StatisticalCompare struct {
-		RightSHA   string
-		LeftSHA    string
-		Planner    PlannerVersion
-		MacroTypes []string
-	}
-
 	StatisticalSample struct {
 		SHA        string
 		Planner    PlannerVersion
@@ -106,28 +99,6 @@ var (
 	// defaultConfidence sets the desired confidence interval when doing a summary of a sample.
 	defaultConfidence = 0.95
 )
-
-func (sc StatisticalCompare) Compare(client storage.SQLClient) (map[string]StatisticalCompareResults, error) {
-	results := make(map[string]StatisticalCompareResults, len(sc.MacroTypes))
-	for _, macroType := range sc.MacroTypes {
-		leftResult, err := getBenchmarkResults(client, macroType, sc.LeftSHA, sc.Planner)
-		if err != nil {
-			return nil, err
-		}
-
-		rightResult, err := getBenchmarkResults(client, macroType, sc.RightSHA, sc.Planner)
-		if err != nil {
-			return nil, err
-		}
-
-		leftResultsAsSlice := leftResult.asSlice()
-		rightResultsAsSlice := rightResult.asSlice()
-
-		scr := performAnalysis(leftResultsAsSlice, rightResultsAsSlice)
-		results[macroType] = scr
-	}
-	return results, nil
-}
 
 func (s StatisticalSample) GetSummaries(client storage.SQLClient) (map[string]StatisticalSingleResult, error) {
 	results := make(map[string]StatisticalSingleResult, len(s.MacroTypes))
