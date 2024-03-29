@@ -247,7 +247,7 @@ function Row({ title, oldVal, newVal, delta, insignificant, p, fmt }) {
         <span>{newValFmt} ({getRange(newVal.range)})</span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
-        <span>{p || "?"}%</span>
+        <span>{p || "?"}</span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
         <span>{fixed(delta, 3) || 0}%</span>
