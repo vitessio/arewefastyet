@@ -28,7 +28,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
-	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/github"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
@@ -308,20 +307,11 @@ func (s *Server) getDailySummary(c *gin.Context) {
 
 func (s *Server) getDaily(c *gin.Context) {
 	benchmarkType := c.Query("type")
-	data, err := macrobench.GetResultsForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
+	data, err := macrobench.SearchForLastDays(s.dbClient, benchmarkType, macrobench.Gen4Planner, 31)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
-	}
-	for i, d := range data {
-		m, err := metrics.GetExecutionMetricsSQL(s.dbClient, d.ExecUUID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-			slog.Error(err)
-			return
-		}
-		data[i].Metrics = m
 	}
 	c.JSON(http.StatusOK, data)
 }

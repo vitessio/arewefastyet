@@ -28,11 +28,24 @@ import (
 // and macro benchmark Type.
 func getResultsForGitRefAndPlanner(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
 	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(info.exec_uuid, ''), " +
+	query := "SELECT " +
+		"info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(info.exec_uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
-		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.git_ref = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ?"
+		"FROM " +
+		"execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE " +
+		"e.uuid = info.exec_uuid " +
+		"AND " +
+		"e.status = \"finished\" " +
+		"AND " +
+		"e.git_ref = ? " +
+		"AND " +
+		"info.vtgate_planner_version = ? " +
+		"AND " +
+		"info.macrobenchmark_id = results.macrobenchmark_id " +
+		"AND " +
+		"info.type = ?"
 
 	result, err := client.Select(query, ref, planner, upperMacroType)
 	if err != nil {
@@ -41,9 +54,23 @@ func getResultsForGitRefAndPlanner(macroType string, ref string, planner Planner
 	defer result.Close()
 	for result.Next() {
 		var res Details
-		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
-			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads,
-			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
+		err = result.Scan(
+			&res.ID,
+			&res.GitRef,
+			&res.Source,
+			&res.CreatedAt,
+			&res.ExecUUID,
+			&res.Result.TPS,
+			&res.Result.Latency,
+			&res.Result.Errors,
+			&res.Result.Reconnects,
+			&res.Result.Time,
+			&res.Result.Threads,
+			&res.Result.QPS.Total,
+			&res.Result.QPS.Reads,
+			&res.Result.QPS.Writes,
+			&res.Result.QPS.Other,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -52,19 +79,31 @@ func getResultsForGitRefAndPlanner(macroType string, ref string, planner Planner
 	return macrodetails, nil
 }
 
-// GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
-// The type can either be OLTP or TPCC. Using that type, the function will generate a query using
-// the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
+func getResultsLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
 	macrodetails = []Details{}
 	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
+	query := "SELECT " +
+		"info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
-		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
-		"ORDER BY e.finished_at "
+		"FROM " +
+		"execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE " +
+		"e.uuid = info.exec_uuid AND e.status = \"finished\" " +
+		"AND " +
+		"e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY " +
+		"AND " +
+		"DATE(NOW() + INTERVAL 1 DAY) " +
+		"AND " +
+		"e.source = ? " +
+		"AND " +
+		"info.vtgate_planner_version = ? " +
+		"AND " +
+		"info.macrobenchmark_id = results.macrobenchmark_id " +
+		"AND " +
+		"info.type = ? " +
+		"ORDER BY " +
+		"e.finished_at "
 
 	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
 	if err != nil {
@@ -73,9 +112,23 @@ func GetResultsForLastDays(macroType string, source string, planner PlannerVersi
 	defer result.Close()
 	for result.Next() {
 		var res Details
-		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
-			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads,
-			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
+		err = result.Scan(
+			&res.ID,
+			&res.GitRef,
+			&res.Source,
+			&res.CreatedAt,
+			&res.ExecUUID,
+			&res.Result.TPS,
+			&res.Result.Latency,
+			&res.Result.Errors,
+			&res.Result.Reconnects,
+			&res.Result.Time,
+			&res.Result.Threads,
+			&res.Result.QPS.Total,
+			&res.Result.QPS.Reads,
+			&res.Result.QPS.Writes,
+			&res.Result.QPS.Other,
+		)
 		if err != nil {
 			return nil, err
 		}

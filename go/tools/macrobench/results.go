@@ -122,6 +122,35 @@ func (br BenchmarkResults) asSlice() resultAsSlice {
 	return s
 }
 
+func (br BenchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
+	ssr := StatisticalSingleResult{
+		ComponentsCPUTime:            map[string]StatisticalSummary{},
+		ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
+	}
+
+	resultSlice := br.asSlice()
+
+	ssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
+	ssr.ReadsQPS, _ = getSummary(resultSlice.qps.reads)
+	ssr.WritesQPS, _ = getSummary(resultSlice.qps.writes)
+	ssr.OtherQPS, _ = getSummary(resultSlice.qps.other)
+
+	ssr.TPS, _ = getSummary(resultSlice.tps)
+	ssr.Latency, _ = getSummary(resultSlice.latency)
+	ssr.Errors, _ = getSummary(resultSlice.errors)
+
+	ssr.TotalComponentsCPUTime, _ = getSummary(resultSlice.metrics.totalComponentsCPUTime)
+	for name, value := range resultSlice.metrics.componentsCPUTime {
+		ssr.ComponentsCPUTime[name], _ = getSummary(value)
+	}
+
+	ssr.TotalComponentsMemStatsAllocBytes, _ = getSummary(resultSlice.metrics.totalComponentsMemStatsAllocBytes)
+	for name, value := range resultSlice.metrics.componentsMemStatsAllocBytes {
+		ssr.ComponentsMemStatsAllocBytes[name], _ = getSummary(value)
+	}
+	return ssr
+}
+
 func metricsToSlice(metrics metrics.ExecutionMetricsArray) metricsAsSlice {
 	var s metricsAsSlice
 	s.componentsCPUTime = make(map[string][]float64)
@@ -186,33 +215,22 @@ func Search(client storage.SQLClient, sha string, types []string, planner Planne
 		if err != nil {
 			return nil, err
 		}
-		resultSlice := result.asSlice()
-		ssr := StatisticalSingleResult{
-			ComponentsCPUTime:            map[string]StatisticalSummary{},
-			ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
-		}
-
-		ssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
-		ssr.ReadsQPS, _ = getSummary(resultSlice.qps.reads)
-		ssr.WritesQPS, _ = getSummary(resultSlice.qps.writes)
-		ssr.OtherQPS, _ = getSummary(resultSlice.qps.other)
-
-		ssr.TPS, _ = getSummary(resultSlice.tps)
-		ssr.Latency, _ = getSummary(resultSlice.latency)
-		ssr.Errors, _ = getSummary(resultSlice.errors)
-
-		ssr.TotalComponentsCPUTime, _ = getSummary(resultSlice.metrics.totalComponentsCPUTime)
-		for name, value := range resultSlice.metrics.componentsCPUTime {
-			ssr.ComponentsCPUTime[name], _ = getSummary(value)
-		}
-
-		ssr.TotalComponentsMemStatsAllocBytes, _ = getSummary(resultSlice.metrics.totalComponentsMemStatsAllocBytes)
-		for name, value := range resultSlice.metrics.componentsMemStatsAllocBytes {
-			ssr.ComponentsMemStatsAllocBytes[name], _ = getSummary(value)
-		}
-		results[macroType] = ssr
+		results[macroType] = result.toStatisticalSingleResult()
 	}
 	return results, nil
+}
+
+func SearchForLastDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int) ([]StatisticalSingleResult, error) {
+	var ssrs []StatisticalSingleResult
+	results, err := getBenchmarkResultsLastXDays(client, macroType, planner, days)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range results {
+		ssrs = append(ssrs, result.toStatisticalSingleResult())
+	}
+	return ssrs, nil
 }
 
 func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (BenchmarkResults, error) {
@@ -238,25 +256,50 @@ func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, pla
 	return br, nil
 }
 
-func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType, sha string, planner PlannerVersion, days int) (BenchmarkResults, error) {
-	results, err := GetResultsForLastDays(macroType, sha, planner, days, client)
+func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int) ([]BenchmarkResults, error) {
+	results, err := getResultsLastXDays(macroType, "cron", planner, days, client)
 	if err != nil {
-		return BenchmarkResults{}, err
+		return nil, err
 	}
 
 	if len(results) == 0 {
-		return BenchmarkResults{}, nil
+		return nil, nil
 	}
 
-	var br BenchmarkResults
-	for _, result := range results {
-		br.Results = append(br.Results, result.Result)
+	var brs []BenchmarkResults
+	macroIdMap := make(map[int]bool)
 
+	for i, result := range results {
+		if _, ok := macroIdMap[result.ID]; !ok {
+			macroIdMap[result.ID] = true
+		} else {
+			continue
+		}
+
+		var br BenchmarkResults
+		br.Results = append(br.Results, result.Result)
 		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
 		if err != nil {
-			return BenchmarkResults{}, err
+			return nil, err
 		}
 		br.Metrics = append(br.Metrics, metricsResult)
+
+		for j := i + 1; j < len(results); j++ {
+			tmpResult := results[j]
+			if _, ok := macroIdMap[tmpResult.ID]; ok {
+				continue
+			}
+			if tmpResult.GitRef == result.GitRef {
+				macroIdMap[tmpResult.ID] = true
+				br.Results = append(br.Results, tmpResult.Result)
+				metricsResult, err = metrics.GetExecutionMetricsSQL(client, tmpResult.ExecUUID)
+				if err != nil {
+					return nil, err
+				}
+				br.Metrics = append(br.Metrics, metricsResult)
+			}
+		}
+		brs = append(brs, br)
 	}
-	return br, nil
+	return brs, nil
 }
