@@ -3,6 +3,7 @@ module github.com/vitessio/arewefastyet
 go 1.21
 
 require (
+	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/apenella/go-ansible v1.1.7
 	github.com/dustin/go-humanize v1.0.1
 	github.com/frankban/quicktest v1.14.5
@@ -42,7 +43,6 @@ require (
 	github.com/DataDog/sketches-go v1.4.2 // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
-	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/apenella/go-common-utils/data v0.0.0-20221227202648-5452d804e940 // indirect
 	github.com/apenella/go-common-utils/error v0.0.0-20221227202648-5452d804e940 // indirect
