@@ -156,20 +156,6 @@ func (s *Server) compareElement(element *executionQueueElement) {
 				return
 			}
 			if comparerUUID != "" {
-				err := s.sendNotificationForRegression(
-					element.identifier.Source,
-					comparer.Source,
-					element.identifier.GitRef,
-					comparer.GitRef,
-					element.identifier.PlannerVersion,
-					element.identifier.BenchmarkType,
-					element.identifier.PullNb,
-					element.notifyAlways,
-				)
-				if err != nil {
-					slog.Error(err)
-					return
-				}
 				seen[comparer] = true
 				done++
 			}
