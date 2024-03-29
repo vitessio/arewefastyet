@@ -36,7 +36,7 @@ type (
 		Range      Range   `json:"range"`
 	}
 
-	statisticalResult struct {
+	StatisticalResult struct {
 		Insignificant bool               `json:"insignificant"`
 		Delta         float64            `json:"delta"`
 		P             float64            `json:"p"`
@@ -71,20 +71,20 @@ type (
 	// StatisticalCompareResults is the full representation of the results
 	// obtained by comparing two samples using the Mann Whitney U Test.
 	StatisticalCompareResults struct {
-		TotalQPS  statisticalResult `json:"total_qps"`
-		ReadsQPS  statisticalResult `json:"reads_qps"`
-		WritesQPS statisticalResult `json:"writes_qps"`
-		OtherQPS  statisticalResult `json:"other_qps"`
+		TotalQPS  StatisticalResult `json:"total_qps"`
+		ReadsQPS  StatisticalResult `json:"reads_qps"`
+		WritesQPS StatisticalResult `json:"writes_qps"`
+		OtherQPS  StatisticalResult `json:"other_qps"`
 
-		TPS     statisticalResult `json:"tps"`
-		Latency statisticalResult `json:"latency"`
-		Errors  statisticalResult `json:"errors"`
+		TPS     StatisticalResult `json:"tps"`
+		Latency StatisticalResult `json:"latency"`
+		Errors  StatisticalResult `json:"errors"`
 
-		TotalComponentsCPUTime statisticalResult            `json:"total_components_cpu_time"`
-		ComponentsCPUTime      map[string]statisticalResult `json:"components_cpu_time"`
+		TotalComponentsCPUTime StatisticalResult            `json:"total_components_cpu_time"`
+		ComponentsCPUTime      map[string]StatisticalResult `json:"components_cpu_time"`
 
-		TotalComponentsMemStatsAllocBytes statisticalResult            `json:"total_components_mem_stats_alloc_bytes"`
-		ComponentsMemStatsAllocBytes      map[string]statisticalResult `json:"components_mem_stats_alloc_bytes"`
+		TotalComponentsMemStatsAllocBytes StatisticalResult            `json:"total_components_mem_stats_alloc_bytes"`
+		ComponentsMemStatsAllocBytes      map[string]StatisticalResult `json:"components_mem_stats_alloc_bytes"`
 	}
 )
 
@@ -131,8 +131,8 @@ func getSummary(values []float64) (StatisticalSummary, *benchmath.Sample) {
 	}, sample
 }
 
-func compare(old, new []float64) statisticalResult {
-	var sr statisticalResult
+func compare(old, new []float64) StatisticalResult {
+	var sr StatisticalResult
 
 	ssOld, s1 := getSummary(old)
 	ssNew, s2 := getSummary(new)
@@ -160,8 +160,8 @@ func compare(old, new []float64) statisticalResult {
 
 func performAnalysis(old, new resultAsSlice) StatisticalCompareResults {
 	scr := StatisticalCompareResults{
-		ComponentsCPUTime:            map[string]statisticalResult{},
-		ComponentsMemStatsAllocBytes: map[string]statisticalResult{},
+		ComponentsCPUTime:            map[string]StatisticalResult{},
+		ComponentsMemStatsAllocBytes: map[string]StatisticalResult{},
 	}
 
 	scr.TotalQPS = compare(old.qps.total, new.qps.total)

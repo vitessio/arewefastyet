@@ -24,9 +24,9 @@ import (
 	"github.com/vitessio/arewefastyet/go/storage/mysql"
 )
 
-// getResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
+// getResultsForGitRefAndPlanner returns a slice of details based on the given git ref
 // and macro benchmark Type.
-func getResultsForGitRefAndPlanner(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
+func getResultsForGitRefAndPlanner(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails detailsArray, err error) {
 	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT " +
 		"info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(info.exec_uuid, ''), " +
@@ -46,7 +46,7 @@ func getResultsForGitRefAndPlanner(macroType string, ref string, planner Planner
 	}
 	defer result.Close()
 	for result.Next() {
-		var res Details
+		var res details
 		err = result.Scan(
 			&res.ID,
 			&res.GitRef,
@@ -72,8 +72,8 @@ func getResultsForGitRefAndPlanner(macroType string, ref string, planner Planner
 	return macrodetails, nil
 }
 
-func getResultsLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	macrodetails = []Details{}
+func getResultsLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails detailsArray, err error) {
+	macrodetails = []details{}
 	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT " +
 		"info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
@@ -95,7 +95,7 @@ func getResultsLastXDays(macroType string, source string, planner PlannerVersion
 	}
 	defer result.Close()
 	for result.Next() {
-		var res Details
+		var res details
 		err = result.Scan(
 			&res.ID,
 			&res.GitRef,
@@ -121,7 +121,7 @@ func getResultsLastXDays(macroType string, source string, planner PlannerVersion
 	return macrodetails, nil
 }
 
-func getSummaryLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (results DetailsArray, err error) {
+func getSummaryLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (results detailsArray, err error) {
 	upperMacroType := strings.ToUpper(macroType)
 	query := "SELECT " +
 		"info.macrobenchmark_id, e.git_ref, results.total_qps, IFNULL(e.uuid, '') " +
@@ -142,7 +142,7 @@ func getSummaryLastXDays(macroType string, source string, planner PlannerVersion
 	}
 	defer result.Close()
 	for result.Next() {
-		var res Details
+		var res details
 		err = result.Scan(&res.ID, &res.GitRef, &res.Result.QPS.Total, &res.ExecUUID)
 		if err != nil {
 			return nil, err
@@ -155,13 +155,13 @@ func getSummaryLastXDays(macroType string, source string, planner PlannerVersion
 // insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
 // The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
 // Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
-// The children table QPS is also inserted.
-func (mbr *Result) insertToMySQL(macrobenchmarkID int, client storage.SQLClient) error {
+// The children table qps is also inserted.
+func (mbr *result) insertToMySQL(macrobenchmarkID int, client storage.SQLClient) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
 
-	// insert Result
+	// insert result
 	queryResult := "INSERT INTO macrobenchmark_results(macrobenchmark_id, queries, tps, latency, errors, reconnects, time, threads, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 	_, err := client.Insert(queryResult, macrobenchmarkID, mbr.Queries, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
 	if err != nil {

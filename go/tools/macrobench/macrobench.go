@@ -200,22 +200,22 @@ func handleMetricsResults(client *influxdb.Client, sqlClient *psdb.Client, execU
 	return nil
 }
 
-func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchID int) (Result, error) {
+func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchID int) (result, error) {
 	// Parse results
-	var results []Result
+	var results []result
 	err := json.Unmarshal(resStr, &results)
 	if err != nil {
-		return Result{}, fmt.Errorf("unmarshal results: %+v\n", err)
+		return result{}, fmt.Errorf("unmarshal results: %+v\n", err)
 	}
 	if len(results) == 0 {
-		return Result{}, errors.New(ErrorNoSysBenchResult)
+		return result{}, errors.New(ErrorNoSysBenchResult)
 	}
 
 	// Save results
 	if sqlClient != nil {
 		err = results[0].insertToMySQL(macrobenchID, sqlClient)
 		if err != nil {
-			return Result{}, err
+			return result{}, err
 		}
 	}
 	return results[0], nil

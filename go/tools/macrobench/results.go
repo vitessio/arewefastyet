@@ -26,9 +26,9 @@ import (
 )
 
 type (
-	// QPS represents the QPS table. This table contains the raw
+	// qps represents the qps table. This table contains the raw
 	// results of a macro benchmark.
-	QPS struct {
+	qps struct {
 		ID     int
 		RefID  int
 		Total  float64 `json:"total"`
@@ -37,13 +37,13 @@ type (
 		Other  float64 `json:"other"`
 	}
 
-	// Result represents both OLTP and TPCC tables.
+	// result represents both OLTP and TPCC tables.
 	// The two tables share the same schema and can thus be grouped
 	// under an unique go struct.
-	Result struct {
+	result struct {
 		ID         int
 		Queries    int     `json:"queries"`
-		QPS        QPS     `json:"qps"`
+		QPS        qps     `json:"qps"`
 		TPS        float64 `json:"tps"`
 		Latency    float64 `json:"latency"`
 		Errors     float64 `json:"errors"`
@@ -51,6 +51,8 @@ type (
 		Time       int     `json:"time"`
 		Threads    float64 `json:"threads"`
 	}
+
+	resultsArray []result
 
 	qpsAsSlice struct {
 		total  []float64
@@ -80,49 +82,43 @@ type (
 		metrics metricsAsSlice
 	}
 
-	// BenchmarkID is used to identify a macro benchmark using its database's ID, the
+	benchmarkResults struct {
+		Results resultsArray
+		Metrics metrics.ExecutionMetricsArray
+	}
+
+	// benchmarkID is used to identify a macro benchmark using its database's ID, the
 	// source from which the benchmark was triggered and its creation date.
-	BenchmarkID struct {
+	benchmarkID struct {
 		ID        int
 		Source    string
 		CreatedAt *time.Time
 		ExecUUID  string
 	}
 
-	// Details represents the entire macro benchmark and its sub
-	// components. It has a BenchmarkID (ID, creation date, source of the benchmark),
-	// the git reference that was used, and its results represented by a Result.
+	// details represents the entire macro benchmark and its sub
+	// components. It has a benchmarkID (ID, creation date, source of the benchmark),
+	// the git reference that was used, and its results represented by a result.
 	// This struct encapsulates the "benchmark", "qps" and ("OLTP" or "TPCC") database tables.
-	Details struct {
-		BenchmarkID
+	details struct {
+		benchmarkID
 
 		// refers to commit
 		GitRef  string
-		Result  Result
+		Result  result
 		Metrics metrics.ExecutionMetrics
 	}
 
-	BenchmarkResults struct {
-		Results ResultsArray
-		Metrics metrics.ExecutionMetricsArray
-	}
-
-	ResultsArray []Result
-	DetailsArray []Details
-
-	DailySummary struct {
-		CreatedAt *time.Time
-		QPSTotal  float64
-	}
+	detailsArray []details
 )
 
-func (br BenchmarkResults) asSlice() resultAsSlice {
+func (br benchmarkResults) asSlice() resultAsSlice {
 	s := br.Results.resultsArrayToSlice()
 	s.metrics = metricsToSlice(br.Metrics)
 	return s
 }
 
-func (br BenchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
+func (br benchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
 	ssr := StatisticalSingleResult{
 		ComponentsCPUTime:            map[string]StatisticalSummary{},
 		ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
@@ -151,7 +147,7 @@ func (br BenchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
 	return ssr
 }
 
-func (br BenchmarkResults) toShortStatisticalSingleResult() ShortStatisticalSingleResult {
+func (br benchmarkResults) toShortStatisticalSingleResult() ShortStatisticalSingleResult {
 	var sssr ShortStatisticalSingleResult
 
 	resultSlice := br.asSlice()
@@ -178,7 +174,7 @@ func metricsToSlice(metrics metrics.ExecutionMetricsArray) metricsAsSlice {
 	return s
 }
 
-func (mrs ResultsArray) resultsArrayToSlice() resultAsSlice {
+func (mrs resultsArray) resultsArrayToSlice() resultAsSlice {
 	var ras resultAsSlice
 	for _, mr := range mrs {
 		ras.qps.total = append(ras.qps.total, mr.QPS.Total)
@@ -257,34 +253,34 @@ func SearchForLastDaysQPSOnly(client storage.SQLClient, types []string, planner 
 	return results, nil
 }
 
-func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (BenchmarkResults, error) {
+func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (benchmarkResults, error) {
 	results, err := getResultsForGitRefAndPlanner(macroType, gitSHA, planner, client)
 	if err != nil {
-		return BenchmarkResults{}, err
+		return benchmarkResults{}, err
 	}
 
 	if len(results) == 0 {
-		return BenchmarkResults{}, nil
+		return benchmarkResults{}, nil
 	}
 
-	var br BenchmarkResults
+	var br benchmarkResults
 	for _, result := range results {
 		br.Results = append(br.Results, result.Result)
 
 		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
 		if err != nil {
-			return BenchmarkResults{}, err
+			return benchmarkResults{}, err
 		}
 		br.Metrics = append(br.Metrics, metricsResult)
 	}
 	return br, nil
 }
 
-func (da DetailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignoreMetrics bool) ([]BenchmarkResults, error) {
-	var brs []BenchmarkResults
+func (da detailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignoreMetrics bool) ([]benchmarkResults, error) {
+	var brs []benchmarkResults
 	macroIdMap := make(map[int]bool)
 
-	getMetrics := func(br *BenchmarkResults, uuid string) error {
+	getMetrics := func(br *benchmarkResults, uuid string) error {
 		if ignoreMetrics {
 			return nil
 		}
@@ -303,7 +299,7 @@ func (da DetailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignor
 			continue
 		}
 
-		var br BenchmarkResults
+		var br benchmarkResults
 		br.Results = append(br.Results, result.Result)
 		if err := getMetrics(&br, result.ExecUUID); err != nil {
 			return nil, err
@@ -327,8 +323,8 @@ func (da DetailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignor
 	return brs, nil
 }
 
-func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int, short bool) ([]BenchmarkResults, error) {
-	var results DetailsArray
+func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int, short bool) ([]benchmarkResults, error) {
+	var results detailsArray
 	var err error
 
 	if short {
