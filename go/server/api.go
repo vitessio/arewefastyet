@@ -141,8 +141,8 @@ type CompareMacrobench struct {
 }
 
 func (s *Server) compareMacroBenchmarks(c *gin.Context) {
-	oldSHA := c.Query("ltag")
-	newSHA := c.Query("rtag")
+	oldSHA := c.Query("old")
+	newSHA := c.Query("new")
 
 	results, err := macrobench.Compare(s.dbClient, oldSHA, newSHA, s.benchmarkTypes, macrobench.Gen4Planner)
 	if err != nil {
@@ -195,7 +195,7 @@ type searchResult struct {
 }
 
 func (s *Server) searchBenchmark(c *gin.Context) {
-	sha := c.Query("git_ref")
+	sha := c.Query("sha")
 
 	results, err := macrobench.Search(s.dbClient, sha, s.benchmarkTypes, macrobench.Gen4Planner)
 	if err != nil {

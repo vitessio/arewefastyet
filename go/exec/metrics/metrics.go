@@ -24,7 +24,6 @@ import (
 
 	"github.com/vitessio/arewefastyet/go/storage"
 	"github.com/vitessio/arewefastyet/go/storage/influxdb"
-	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
 )
 
 const (
@@ -211,96 +210,4 @@ func getSumFloatValueForQuery(client influxdb.Client, query string) (float64, er
 		res += value["_value"].(float64)
 	}
 	return res, nil
-}
-
-// Median computes the median of the ExecutionMetricsArray.
-// It returns an ExecutionMetrics struct containing the medians.
-func (metricsArray ExecutionMetricsArray) Median() ExecutionMetrics {
-	interResults := struct {
-		totalComponentsCPUTime []float64
-		componentsCPUTime      map[string][]float64
-
-		totalComponentsMemStatsAllocBytes []float64
-		componentsMemStatsAllocBytes      map[string][]float64
-	}{
-		totalComponentsCPUTime: []float64{},
-		componentsCPUTime:      map[string][]float64{},
-
-		totalComponentsMemStatsAllocBytes: []float64{},
-		componentsMemStatsAllocBytes:      map[string][]float64{},
-	}
-
-	// Append all the metrics into interResults
-	for _, metrics := range metricsArray {
-		// If an execution is missing metrics, we do not count it toward
-		// the median of all execution.
-		interResults.totalComponentsCPUTime = append(interResults.totalComponentsCPUTime, metrics.TotalComponentsCPUTime)
-		for component, value := range metrics.ComponentsCPUTime {
-			interResults.componentsCPUTime[component] = append(interResults.componentsCPUTime[component], value)
-		}
-
-		interResults.totalComponentsMemStatsAllocBytes = append(interResults.totalComponentsMemStatsAllocBytes, metrics.TotalComponentsMemStatsAllocBytes)
-		for component, value := range metrics.ComponentsMemStatsAllocBytes {
-			interResults.componentsMemStatsAllocBytes[component] = append(interResults.componentsMemStatsAllocBytes[component], value)
-		}
-	}
-	result := ExecutionMetrics{
-		ComponentsCPUTime:            map[string]float64{},
-		ComponentsMemStatsAllocBytes: map[string]float64{},
-	}
-	result.TotalComponentsCPUTime = awftmath.MedianFloat(interResults.totalComponentsCPUTime)
-	for component, value := range interResults.componentsCPUTime {
-		result.ComponentsCPUTime[component] = awftmath.MedianFloat(value)
-	}
-
-	result.TotalComponentsMemStatsAllocBytes = awftmath.MedianFloat(interResults.totalComponentsMemStatsAllocBytes)
-	for component, value := range interResults.componentsMemStatsAllocBytes {
-		result.ComponentsMemStatsAllocBytes[component] = awftmath.MedianFloat(value)
-	}
-	return result
-}
-
-// CompareTwo computes the percentage decrease between left and right.
-// If left is equal to 20 and right is equal to 10, then the decrease will be 50%.
-// The percentage are returned through ExecutionMetrics.
-func CompareTwo(left, right ExecutionMetrics) ExecutionMetrics {
-	result := ExecutionMetrics{
-		ComponentsCPUTime:            map[string]float64{},
-		ComponentsMemStatsAllocBytes: map[string]float64{},
-	}
-	result.TotalComponentsCPUTime = compareSafe(left.TotalComponentsCPUTime, right.TotalComponentsCPUTime)
-	result.TotalComponentsMemStatsAllocBytes = compareSafe(left.TotalComponentsMemStatsAllocBytes, right.TotalComponentsMemStatsAllocBytes)
-	result.ComponentsCPUTime = compareSafeComponentMap(left.ComponentsCPUTime, right.ComponentsCPUTime)
-	result.ComponentsMemStatsAllocBytes = compareSafeComponentMap(left.ComponentsMemStatsAllocBytes, right.ComponentsMemStatsAllocBytes)
-	return result
-}
-
-func compareSafeComponentMap(left, right map[string]float64) map[string]float64 {
-	result := map[string]float64{}
-	for component := range left {
-		result[component] = 0
-		if _, ok := right[component]; !ok {
-			continue
-		}
-		result[component] = compareSafe(left[component], right[component])
-	}
-	for component := range right {
-		if _, ok := left[component]; ok {
-			continue
-		}
-		result[component] = compareSafe(0, right[component])
-	}
-	return result
-}
-
-// Compare the decrease between left and right.
-// The more decrease, the higher result will be.
-// Ex: left=100, right=50, we decreased by 1/2, thus result=50
-func compareSafe(left, right float64) (result float64) {
-	if left != 0 {
-		result = (left - right) / left * 100
-	} else if right > 0 {
-		result = -100
-	}
-	return
 }

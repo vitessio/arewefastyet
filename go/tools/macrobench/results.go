@@ -194,20 +194,20 @@ func (mrs resultsArray) resultsArrayToSlice() resultAsSlice {
 func Compare(client storage.SQLClient, old, new string, types []string, planner PlannerVersion) (map[string]StatisticalCompareResults, error) {
 	results := make(map[string]StatisticalCompareResults, len(types))
 	for _, macroType := range types {
-		leftResult, err := getBenchmarkResults(client, macroType, old, planner)
+		oldResult, err := getBenchmarkResults(client, macroType, old, planner)
 		if err != nil {
 			return nil, err
 		}
 
-		rightResult, err := getBenchmarkResults(client, macroType, new, planner)
+		newResult, err := getBenchmarkResults(client, macroType, new, planner)
 		if err != nil {
 			return nil, err
 		}
 
-		leftResultsAsSlice := leftResult.asSlice()
-		rightResultsAsSlice := rightResult.asSlice()
+		oldResultsAsSlice := oldResult.asSlice()
+		newResultsAsSlice := newResult.asSlice()
 
-		scr := performAnalysis(leftResultsAsSlice, rightResultsAsSlice)
+		scr := performAnalysis(oldResultsAsSlice, newResultsAsSlice)
 		results[macroType] = scr
 	}
 	return results, nil
