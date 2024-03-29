@@ -139,6 +139,13 @@ func compare(old, new []float64) StatisticalResult {
 	ssOld, s1 := getSummary(old)
 	ssNew, s2 := getSummary(new)
 
+	if math.IsNaN(ssOld.Center) {
+		ssOld.Center = 0.0
+	}
+	if math.IsNaN(ssNew.Center) {
+		ssNew.Center = 0.0
+	}
+
 	sr.Old = ssOld
 	sr.New = ssNew
 
@@ -162,8 +169,14 @@ func compare(old, new []float64) StatisticalResult {
 
 func performAnalysis(old, new resultAsSlice) StatisticalCompareResults {
 	scr := StatisticalCompareResults{
-		ComponentsCPUTime:            map[string]StatisticalResult{},
-		ComponentsMemStatsAllocBytes: map[string]StatisticalResult{},
+		ComponentsCPUTime: map[string]StatisticalResult{
+			"vtgate":   {Insignificant: true},
+			"vttablet": {Insignificant: true},
+		},
+		ComponentsMemStatsAllocBytes: map[string]StatisticalResult{
+			"vtgate":   {Insignificant: true},
+			"vttablet": {Insignificant: true},
+		},
 	}
 
 	scr.TotalQPS = compare(old.qps.total, new.qps.total)

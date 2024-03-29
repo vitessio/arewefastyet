@@ -26,13 +26,13 @@ export default function Hero(props: { gitRef: any; setGitRef: any }) {
       </h1>
       <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
         <ComparisonInput
-          name="left"
+          name="old"
           className="rounded-l-full"
           setGitRef={setGitRef}
           gitRef={gitRef}
         />
         <ComparisonInput
-          name="right"
+          name="new"
           className="rounded-r-full "
           setGitRef={setGitRef}
           gitRef={gitRef}
@@ -59,7 +59,7 @@ function ComparisonInput(props: {
         "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary"
       )}
       defaultValue={gitRef[name]}
-      placeholder={`${name} commit SHA`}
+      placeholder={`${name} SHA`}
       onChange={(event) =>
         setGitRef((p: any) => {
           return { ...p, [name]: event.target.value };

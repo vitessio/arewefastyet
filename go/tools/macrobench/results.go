@@ -19,6 +19,7 @@
 package macrobench
 
 import (
+	"sort"
 	"time"
 
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
@@ -190,6 +191,15 @@ func (mrs resultsArray) resultsArrayToSlice() resultAsSlice {
 		ras.time = append(ras.time, mr.Time)
 		ras.threads = append(ras.threads, mr.Threads)
 	}
+	sort.Float64s(ras.qps.total)
+	sort.Float64s(ras.qps.reads)
+	sort.Float64s(ras.qps.writes)
+	sort.Float64s(ras.qps.other)
+	sort.Float64s(ras.tps)
+	sort.Float64s(ras.latency)
+	sort.Float64s(ras.reconnects)
+	sort.Ints(ras.time)
+	sort.Float64s(ras.threads)
 	return ras
 }
 
@@ -204,6 +214,20 @@ func Compare(client storage.SQLClient, old, new string, types []string, planner 
 		newResult, err := getBenchmarkResults(client, macroType, new, planner)
 		if err != nil {
 			return nil, err
+		}
+
+		if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
+			results[macroType] = StatisticalCompareResults{
+				ComponentsCPUTime: map[string]StatisticalResult{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+				ComponentsMemStatsAllocBytes: map[string]StatisticalResult{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+			}
+			continue
 		}
 
 		oldResultsAsSlice := oldResult.asSlice()
