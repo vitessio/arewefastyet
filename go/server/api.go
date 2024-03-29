@@ -283,26 +283,15 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 
 }
 
-type dailySingleSummary struct {
-	Name string
-	Data []macrobench.DailySummary
-}
-
 func (s *Server) getDailySummary(c *gin.Context) {
-	var dailySummary []dailySingleSummary
-	for _, benchmarkType := range s.benchmarkTypes {
-		data, err := macrobench.GetSummaryForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-			slog.Error(err)
-			return
-		}
-		dailySummary = append(dailySummary, dailySingleSummary{
-			Name: benchmarkType,
-			Data: data,
-		})
+	results, err := macrobench.SearchForLastDaysQPSOnly(s.dbClient, s.benchmarkTypes, macrobench.Gen4Planner, 31)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
 	}
-	c.JSON(http.StatusOK, dailySummary)
+
+	c.JSON(http.StatusOK, results)
 }
 
 func (s *Server) getDaily(c *gin.Context) {

@@ -46,6 +46,10 @@ type (
 		New           StatisticalSummary `json:"new"`
 	}
 
+	ShortStatisticalSingleResult struct {
+		TotalQPS StatisticalSummary `json:"total_qps"`
+	}
+
 	// StatisticalSingleResult represents a single benchmark's statistical summary.
 	StatisticalSingleResult struct {
 		TotalQPS  StatisticalSummary `json:"total_qps"`

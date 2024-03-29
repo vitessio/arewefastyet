@@ -151,6 +151,15 @@ func (br BenchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
 	return ssr
 }
 
+func (br BenchmarkResults) toShortStatisticalSingleResult() ShortStatisticalSingleResult {
+	var sssr ShortStatisticalSingleResult
+
+	resultSlice := br.asSlice()
+
+	sssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
+	return sssr
+}
+
 func metricsToSlice(metrics metrics.ExecutionMetricsArray) metricsAsSlice {
 	var s metricsAsSlice
 	s.componentsCPUTime = make(map[string][]float64)
@@ -222,7 +231,7 @@ func Search(client storage.SQLClient, sha string, types []string, planner Planne
 
 func SearchForLastDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int) ([]StatisticalSingleResult, error) {
 	var ssrs []StatisticalSingleResult
-	results, err := getBenchmarkResultsLastXDays(client, macroType, planner, days)
+	results, err := getBenchmarkResultsLastXDays(client, macroType, planner, days, false)
 	if err != nil {
 		return nil, err
 	}
@@ -231,6 +240,21 @@ func SearchForLastDays(client storage.SQLClient, macroType string, planner Plann
 		ssrs = append(ssrs, result.toStatisticalSingleResult())
 	}
 	return ssrs, nil
+}
+
+func SearchForLastDaysQPSOnly(client storage.SQLClient, types []string, planner PlannerVersion, days int) (map[string][]ShortStatisticalSingleResult, error) {
+	results := make(map[string][]ShortStatisticalSingleResult)
+	for _, macroType := range types {
+		resultsForType, err := getBenchmarkResultsLastXDays(client, macroType, planner, days, true)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, result := range resultsForType {
+			results[macroType] = append(results[macroType], result.toShortStatisticalSingleResult())
+		}
+	}
+	return results, nil
 }
 
 func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (BenchmarkResults, error) {
@@ -256,20 +280,23 @@ func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, pla
 	return br, nil
 }
 
-func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int) ([]BenchmarkResults, error) {
-	results, err := getResultsLastXDays(macroType, "cron", planner, days, client)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(results) == 0 {
-		return nil, nil
-	}
-
+func (da DetailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignoreMetrics bool) ([]BenchmarkResults, error) {
 	var brs []BenchmarkResults
 	macroIdMap := make(map[int]bool)
 
-	for i, result := range results {
+	getMetrics := func(br *BenchmarkResults, uuid string) error {
+		if ignoreMetrics {
+			return nil
+		}
+		metricsResult, err := metrics.GetExecutionMetricsSQL(client, uuid)
+		if err != nil {
+			return err
+		}
+		br.Metrics = append(br.Metrics, metricsResult)
+		return nil
+	}
+
+	for i, result := range da {
 		if _, ok := macroIdMap[result.ID]; !ok {
 			macroIdMap[result.ID] = true
 		} else {
@@ -278,28 +305,44 @@ func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, pl
 
 		var br BenchmarkResults
 		br.Results = append(br.Results, result.Result)
-		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
-		if err != nil {
+		if err := getMetrics(&br, result.ExecUUID); err != nil {
 			return nil, err
 		}
-		br.Metrics = append(br.Metrics, metricsResult)
 
-		for j := i + 1; j < len(results); j++ {
-			tmpResult := results[j]
+		for j := i + 1; j < len(da); j++ {
+			tmpResult := da[j]
 			if _, ok := macroIdMap[tmpResult.ID]; ok {
 				continue
 			}
 			if tmpResult.GitRef == result.GitRef {
 				macroIdMap[tmpResult.ID] = true
 				br.Results = append(br.Results, tmpResult.Result)
-				metricsResult, err = metrics.GetExecutionMetricsSQL(client, tmpResult.ExecUUID)
-				if err != nil {
+				if err := getMetrics(&br, tmpResult.ExecUUID); err != nil {
 					return nil, err
 				}
-				br.Metrics = append(br.Metrics, metricsResult)
 			}
 		}
 		brs = append(brs, br)
 	}
 	return brs, nil
+}
+
+func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int, short bool) ([]BenchmarkResults, error) {
+	var results DetailsArray
+	var err error
+
+	if short {
+		results, err = getSummaryLastXDays(macroType, "cron", planner, days, client)
+	} else {
+		results, err = getResultsLastXDays(macroType, "cron", planner, days, client)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if len(results) == 0 {
+		return nil, nil
+	}
+
+	return results.toSliceOfBenchmarkResults(client, short)
 }

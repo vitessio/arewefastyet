@@ -32,20 +32,13 @@ func getResultsForGitRefAndPlanner(macroType string, ref string, planner Planner
 		"info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(info.exec_uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
-		"FROM " +
-		"execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE " +
-		"e.uuid = info.exec_uuid " +
-		"AND " +
-		"e.status = \"finished\" " +
-		"AND " +
-		"e.git_ref = ? " +
-		"AND " +
-		"info.vtgate_planner_version = ? " +
-		"AND " +
-		"info.macrobenchmark_id = results.macrobenchmark_id " +
-		"AND " +
-		"info.type = ?"
+		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE e.uuid = info.exec_uuid " +
+		"AND e.status = \"finished\" " +
+		"AND e.git_ref = ? " +
+		"AND info.vtgate_planner_version = ? " +
+		"AND info.macrobenchmark_id = results.macrobenchmark_id " +
+		"AND info.type = ?"
 
 	result, err := client.Select(query, ref, planner, upperMacroType)
 	if err != nil {
@@ -86,24 +79,15 @@ func getResultsLastXDays(macroType string, source string, planner PlannerVersion
 		"info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
 		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
 		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
-		"FROM " +
-		"execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE " +
-		"e.uuid = info.exec_uuid AND e.status = \"finished\" " +
-		"AND " +
-		"e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY " +
-		"AND " +
-		"DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND " +
-		"e.source = ? " +
-		"AND " +
-		"info.vtgate_planner_version = ? " +
-		"AND " +
-		"info.macrobenchmark_id = results.macrobenchmark_id " +
-		"AND " +
-		"info.type = ? " +
-		"ORDER BY " +
-		"e.finished_at "
+		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
+		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" " +
+		"AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY " +
+		"AND DATE(NOW() + INTERVAL 1 DAY) " +
+		"AND e.source = ? " +
+		"AND info.vtgate_planner_version = ? " +
+		"AND info.macrobenchmark_id = results.macrobenchmark_id " +
+		"AND info.type = ? " +
+		"ORDER BY e.finished_at "
 
 	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
 	if err != nil {
@@ -137,12 +121,19 @@ func getResultsLastXDays(macroType string, source string, planner PlannerVersion
 	return macrodetails, nil
 }
 
-func GetSummaryForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (dailySummary []DailySummary, err error) {
+func getSummaryLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (results DetailsArray, err error) {
 	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT e.finished_at, results.total_qps " +
+	query := "SELECT " +
+		"info.macrobenchmark_id, e.git_ref, results.total_qps, IFNULL(e.uuid, '') " +
 		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
+		"WHERE e.uuid = info.exec_uuid " +
+		"AND e.status = \"finished\" " +
+		"AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY " +
+		"AND DATE(NOW() + INTERVAL 1 DAY) " +
+		"AND e.source = ? " +
+		"AND info.vtgate_planner_version = ? " +
+		"AND info.macrobenchmark_id = results.macrobenchmark_id " +
+		"AND info.type = ? " +
 		"ORDER BY e.finished_at "
 
 	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
@@ -151,12 +142,12 @@ func GetSummaryForLastDays(macroType string, source string, planner PlannerVersi
 	}
 	defer result.Close()
 	for result.Next() {
-		var res DailySummary
-		err = result.Scan(&res.CreatedAt, &res.QPSTotal)
+		var res Details
+		err = result.Scan(&res.ID, &res.GitRef, &res.Result.QPS.Total, &res.ExecUUID)
 		if err != nil {
 			return nil, err
 		}
-		dailySummary = append(dailySummary, res)
+		results = append(results, res)
 	}
 	return
 }
