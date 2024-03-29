@@ -17,14 +17,24 @@ limitations under the License.
 package macrobench
 
 import (
+	"math"
+
+	"github.com/aclements/go-moremath/mathx"
 	"github.com/vitessio/arewefastyet/go/storage"
 	"golang.org/x/perf/benchmath"
 )
 
 type (
+	Range struct {
+		Infinite bool    `json:"infinite"`
+		Unknown  bool    `json:"unknown"`
+		Value    float64 `json:"value"`
+	}
+
 	StatisticalSummary struct {
 		Center     float64 `json:"center"`
 		Confidence float64 `json:"confidence"`
+		Range      Range   `json:"range"`
 	}
 
 	statisticalResult struct {
@@ -155,12 +165,37 @@ func (s StatisticalSample) GetSummaries(client storage.SQLClient) (map[string]St
 	return results, nil
 }
 
+func getRangeFromSummary(s benchmath.Summary) Range {
+	if math.IsInf(s.Lo, 0) || math.IsInf(s.Hi, 0) {
+		return Range{Infinite: true}
+	}
+
+	// If the signs of the bounds differ from the center, we can't
+	// render it as a percent.
+	var csign = mathx.Sign(s.Center)
+	if csign != mathx.Sign(s.Lo) || csign != mathx.Sign(s.Hi) {
+		return Range{Unknown: true}
+	}
+
+	// If center is 0, avoid dividing by zero. But we can only get
+	// here if lo and hi are also 0, in which case is seems
+	// reasonable to call this 0%.
+	if s.Center == 0 {
+		return Range{Value: 0.00}
+	}
+
+	// Phew. Compute the range percent.
+	v := math.Max(s.Hi/s.Center-1, 1-s.Lo/s.Center)
+	return Range{Value: v * 100}
+}
+
 func getSummary(values []float64) (StatisticalSummary, *benchmath.Sample) {
 	sample := benchmath.NewSample(values, &defaultThresholds)
 	summary := benchmath.AssumeNothing.Summary(sample, defaultConfidence)
 	return StatisticalSummary{
 		Center:     summary.Center,
 		Confidence: summary.Confidence,
+		Range:      getRangeFromSummary(summary),
 	}, sample
 }
 
