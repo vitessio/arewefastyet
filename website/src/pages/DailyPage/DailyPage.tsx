@@ -28,7 +28,7 @@ import { secondToMicrosecond } from "../../utils/Utils";
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState(
-    urlParams.get("type") == null ? "" : urlParams.get("type")
+    urlParams.get("type") == null ? "OLTP" : urlParams.get("type")
   );
 
   const {
@@ -115,76 +115,76 @@ export default function DailyPage() {
   ];
 
   for (const item of dataDaily) {
-    const xValue = item.GitRef.slice(0, 8);
+    const xValue = item.git_ref.slice(0, 8);
 
     // TPS Data
 
     TPSData[0].data.push({
       x: xValue,
-      y: item.Result.tps,
+      y: item.tps.center,
     });
 
     // QPS Data
 
     QPSData[0].data.push({
       x: xValue,
-      y: item.Result.qps.reads,
+      y: item.reads_qps.center,
     });
 
     QPSData[1].data.push({
       x: xValue,
-      y: item.Result.qps.total,
+      y: item.total_qps.center,
     });
 
     QPSData[2].data.push({
       x: xValue,
-      y: item.Result.qps.writes,
+      y: item.writes_qps.center,
     });
 
     QPSData[3].data.push({
       x: xValue,
-      y: item.Result.qps.other,
+      y: item.other_qps.center,
     });
 
     // Latency Data
 
     latencyData[0].data.push({
       x: xValue,
-      y: item.Result.latency,
+      y: item.latency.center,
     });
 
     // CPUTime Data
 
     CPUTimeData[0].data.push({
       x: xValue,
-      y: secondToMicrosecond(item.Metrics.TotalComponentsCPUTime),
+      y: secondToMicrosecond(item.total_components_cpu_time.center),
     });
 
     CPUTimeData[1].data.push({
       x: xValue,
-      y: secondToMicrosecond(item.Metrics.ComponentsCPUTime.vtgate),
+      y: secondToMicrosecond(item.components_cpu_time.vtgate.center),
     });
 
     CPUTimeData[2].data.push({
       x: xValue,
-      y: secondToMicrosecond(item.Metrics.ComponentsCPUTime.vttablet),
+      y: secondToMicrosecond(item.components_cpu_time.vttablet.center),
     });
 
     //MemStatsAllocBytes Data
 
     MemBytesData[0].data.push({
       x: xValue,
-      y: item.Metrics.TotalComponentsMemStatsAllocBytes,
+      y: item.total_components_mem_stats_alloc_bytes.center,
     });
 
     MemBytesData[1].data.push({
       x: xValue,
-      y: item.Metrics.ComponentsMemStatsAllocBytes.vtgate,
+      y: item.components_mem_stats_alloc_bytes.vtgate.center,
     });
 
     MemBytesData[2].data.push({
       x: xValue,
-      y: item.Metrics.ComponentsMemStatsAllocBytes.vttablet,
+      y: item.components_mem_stats_alloc_bytes.vttablet.center,
     });
   }
 

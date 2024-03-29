@@ -83,6 +83,7 @@ type (
 	}
 
 	benchmarkResults struct {
+		GitRef  string
 		Results resultsArray
 		Metrics metrics.ExecutionMetricsArray
 	}
@@ -120,6 +121,7 @@ func (br benchmarkResults) asSlice() resultAsSlice {
 
 func (br benchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
 	ssr := StatisticalSingleResult{
+		GitRef:                       br.GitRef,
 		ComponentsCPUTime:            map[string]StatisticalSummary{},
 		ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
 	}
@@ -299,7 +301,9 @@ func (da detailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignor
 			continue
 		}
 
-		var br benchmarkResults
+		br := benchmarkResults{
+			GitRef: result.GitRef,
+		}
 		br.Results = append(br.Results, result.Result)
 		if err := getMetrics(&br, result.ExecUUID); err != nil {
 			return nil, err

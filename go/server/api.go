@@ -282,6 +282,11 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, prInfo)
 }
 
+type dailySummaryResp struct {
+	Name string                                    `json:"name"`
+	Data []macrobench.ShortStatisticalSingleResult `json:"data"`
+}
+
 func (s *Server) getDailySummary(c *gin.Context) {
 	results, err := macrobench.SearchForLastDaysQPSOnly(s.dbClient, s.benchmarkTypes, macrobench.Gen4Planner, 31)
 	if err != nil {
@@ -289,8 +294,18 @@ func (s *Server) getDailySummary(c *gin.Context) {
 		slog.Error(err)
 		return
 	}
+	var resp []dailySummaryResp
+	for name, result := range results {
+		resp = append(resp, dailySummaryResp{
+			Name: name,
+			Data: result,
+		})
+	}
 
-	c.JSON(http.StatusOK, results)
+	sort.Slice(resp, func(i, j int) bool {
+		return resp[i].Name < resp[j].Name
+	})
+	c.JSON(http.StatusOK, resp)
 }
 
 func (s *Server) getDaily(c *gin.Context) {

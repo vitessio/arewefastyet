@@ -52,6 +52,8 @@ type (
 
 	// StatisticalSingleResult represents a single benchmark's statistical summary.
 	StatisticalSingleResult struct {
+		GitRef string `json:"git_ref"`
+
 		TotalQPS  StatisticalSummary `json:"total_qps"`
 		ReadsQPS  StatisticalSummary `json:"reads_qps"`
 		WritesQPS StatisticalSummary `json:"writes_qps"`

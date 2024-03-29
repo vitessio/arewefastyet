@@ -24,25 +24,25 @@ const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
 
   const transformedData = [];
 
-  if (data.Data !== null) {
+  if (data.data !== null) {
     transformedData.push({
       id: "QPSTotal",
-      data: data.Data.map((item) => ({
-        x: item.CreatedAt,
-        y: item.QPSTotal,
+      data: data.data.map((item) => ({
+        // x: item.CreatedAt,
+        y: item.total_qps.center,
       })),
     });
   }
 
   const getBenchmarkType = () => {
-    setBenchmarktype(data.Name);
+    setBenchmarktype(data.name);
   };
 
   return (
     <div
       className={twMerge(
         "flex flex-col border border-front rounded-xl w-[20vw] h-[15vh] cursor-pointer hover:bg-accent overflow-hidden duration-300 hover:scale-105",
-        benchmarkType === data.Name && "bg-accent brightness-125 border-2"
+        benchmarkType === data.name && "bg-accent brightness-125 border-2"
       )}
       onClick={() => {
         getBenchmarkType();
@@ -64,7 +64,7 @@ const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
       ) : null}
       <figure className="w-full border-b border-front"></figure>
       <div className="flex justify-between flex-1 p-3 items-center">
-        <h3 className="font-extralight">{data.Name}</h3>
+        <h3 className="font-extralight">{data.name}</h3>
         <i className="fa-solid fa-arrow-right daily--fa-arrow-right"></i>
       </div>
     </div>
@@ -73,8 +73,8 @@ const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
 
 DailySummary.propTypes = {
   data: PropTypes.shape({
-    Name: PropTypes.string.isRequired,
-    Data: PropTypes.array,
+    name: PropTypes.string.isRequired,
+    data: PropTypes.array,
   }),
   setBenchmarktype: PropTypes.func.isRequired,
   isSelected: PropTypes.bool,
