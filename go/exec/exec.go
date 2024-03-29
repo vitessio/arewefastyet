@@ -628,45 +628,6 @@ func CountMacroBenchmark(client storage.SQLClient, gitRef, source, typeOf, statu
 	return nb, nil
 }
 
-func ExistsMacrobenchmarkStartedToday(client storage.SQLClient, gitRef, source, typeOf, planner, status string) (bool, error) {
-	query := fmt.Sprintf("SELECT uuid FROM execution e, macrobenchmark m WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid AND e.started_at >= CURDATE()", status)
-	result, err := client.Select(query, gitRef, typeOf, source, planner)
-	if err != nil {
-		return false, err
-	}
-	exists := result.Next()
-	result.Close()
-	if exists {
-		return true, nil
-	}
-	query = fmt.Sprintf("SELECT uuid FROM execution e WHERE e.status = '%s' AND e.git_ref = ? AND e.type = ? AND e.source = ? AND e.started_at >= CURDATE()", status)
-	result, err = client.Select(query, gitRef, typeOf, source)
-	if err != nil {
-		return false, err
-	}
-	defer result.Close()
-	for result.Next() {
-		var exec_uuid string
-		err = result.Scan(&exec_uuid)
-		if err != nil {
-			return false, err
-		}
-		query = "SELECT exec_uuid FROM macrobenchmark m WHERE m.exec_uuid = ?"
-		resultMacro, err := client.Select(query, exec_uuid)
-		if err != nil {
-			return false, err
-		}
-		defer resultMacro.Close()
-
-		next := resultMacro.Next()
-		resultMacro.Close()
-		if !next {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
 func DeleteExecution(client storage.SQLClient, gitRef, UUID, source string) error {
 	query := fmt.Sprintf("DELETE FROM execution WHERE uuid LIKE '%%%s%%' AND git_ref LIKE '%%%s%%' AND source = '%s'", UUID, gitRef, source)
 	_, err := client.Select(query)

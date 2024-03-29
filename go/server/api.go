@@ -280,7 +280,6 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 	prInfo.Base = gitPRInfo.Main
 	prInfo.Head = gitPRInfo.PR
 	c.JSON(http.StatusOK, prInfo)
-
 }
 
 func (s *Server) getDailySummary(c *gin.Context) {
