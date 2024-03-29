@@ -16,7 +16,10 @@ limitations under the License.
 
 package macrobench
 
-import "golang.org/x/perf/benchmath"
+import (
+	"github.com/vitessio/arewefastyet/go/storage"
+	"golang.org/x/perf/benchmath"
+)
 
 type (
 	statisticalSummary struct {
@@ -34,6 +37,8 @@ type (
 		New           statisticalSummary `json:"new"`
 	}
 
+	// StatisticalCompareResults is the full representation of the results
+	// obtained by comparing two samples using the Mann Whitney U Test.
 	StatisticalCompareResults struct {
 		TotalQPS  statisticalResult `json:"total_qps"`
 		ReadsQPS  statisticalResult `json:"reads_qps"`
@@ -50,6 +55,13 @@ type (
 		TotalComponentsMemStatsAllocBytes statisticalResult            `json:"total_components_mem_stats_alloc_bytes"`
 		ComponentsMemStatsAllocBytes      map[string]statisticalResult `json:"components_mem_stats_alloc_bytes"`
 	}
+
+	StatisticalCompare struct {
+		RightSHA   string
+		LeftSHA    string
+		Planner    PlannerVersion
+		MacroTypes []string
+	}
 )
 
 var (
@@ -60,6 +72,28 @@ var (
 	// defaultConfidence sets the desired confidence interval when doing a summary of a sample.
 	defaultConfidence = 0.95
 )
+
+func (sc StatisticalCompare) Compare(client storage.SQLClient) (map[string]StatisticalCompareResults, error) {
+	results := make(map[string]StatisticalCompareResults, len(sc.MacroTypes))
+	for _, macroType := range sc.MacroTypes {
+		leftResult, err := GetBenchmarkResults(client, macroType, sc.LeftSHA, sc.Planner)
+		if err != nil {
+			return nil, err
+		}
+
+		rightResult, err := GetBenchmarkResults(client, macroType, sc.RightSHA, sc.Planner)
+		if err != nil {
+			return nil, err
+		}
+
+		leftResultsAsSlice := leftResult.asSlice()
+		rightResultsAsSlice := rightResult.asSlice()
+
+		scr := performAnalysis(leftResultsAsSlice, rightResultsAsSlice)
+		results[macroType] = scr
+	}
+	return results, nil
+}
 
 func compare(old, new []float64) statisticalResult {
 	var sr statisticalResult

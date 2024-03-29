@@ -142,7 +142,7 @@ type CompareMacrobench struct {
 }
 
 func (s *Server) compareMacroBenchmarks(c *gin.Context) {
-	sc := macrobench.StatisticalComparison{
+	sc := macrobench.StatisticalCompare{
 		RightSHA:   c.Query("rtag"),
 		LeftSHA:    c.Query("ltag"),
 		Planner:    macrobench.Gen4Planner,
