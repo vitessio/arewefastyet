@@ -88,9 +88,9 @@ func (s *Server) createCrons() error {
 		f        func()
 		name     string
 	}{
-		// {name: "branch", schedule: s.cronSchedule, f: s.branchCronHandler},
-		// {name: "pull_requests", schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
-		// {name: "tags", schedule: s.cronScheduleTags, f: s.tagsCronHandler},
+		{name: "branch", schedule: s.cronSchedule, f: s.branchCronHandler},
+		{name: "pull_requests", schedule: s.cronSchedulePullRequests, f: s.pullRequestsCronHandler},
+		{name: "tags", schedule: s.cronScheduleTags, f: s.tagsCronHandler},
 	}
 	for _, c := range crons {
 		if c.schedule == "none" {
@@ -103,7 +103,7 @@ func (s *Server) createCrons() error {
 		}
 
 		// Trigger CRONs upon creation of the server
-		// go c.f()
+		go c.f()
 	}
 	go s.cronExecutionQueueWatcher()
 	return nil

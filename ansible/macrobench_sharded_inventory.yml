@@ -13,12 +13,12 @@
 all:
   hosts:
     DEVICE_IP_0:
-#      storage_device:
-#        device: nvme0n1
-#        partition: nvme0n1p1
+      storage_device:
+        device: nvme0n1
+        partition: nvme0n1p1
   vars:
     arewefastyet_git_repo: "https://github.com/vitessio/arewefastyet.git"
-    arewefastyet_git_version: "implement-statistical-analysis"
+    arewefastyet_git_version: "main"
     cell: local
     keyspace: main
     provision: 1

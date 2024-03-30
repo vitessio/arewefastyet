@@ -45,8 +45,6 @@ func (s *Server) branchCronHandler() {
 		slog.Error(err.Error())
 		return
 	}
-	// TODO: WIP
-	releaseBranchElements = []*executionQueueElement{}
 
 	execElements := append(mainBranchElements, releaseBranchElements...)
 	for _, elem := range execElements {
