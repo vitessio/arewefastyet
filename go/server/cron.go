@@ -153,7 +153,7 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 		}
 
 		countInQueue := 0
-		for identifier, _ := range queue {
+		for identifier := range queue {
 			if identifier.equalWithoutUUID(element.identifier) {
 				countInQueue++
 			}
