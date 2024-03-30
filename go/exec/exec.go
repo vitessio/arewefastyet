@@ -153,7 +153,7 @@ type Exec struct {
 }
 
 const (
-	MaximumBenchmarkWithSameConfig = 7
+	MaximumBenchmarkWithSameConfig = 10
 
 	SourceCron            = "cron"
 	SourcePullRequest     = "cron_pr"
