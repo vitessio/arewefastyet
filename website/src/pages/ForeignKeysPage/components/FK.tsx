@@ -17,6 +17,7 @@ limitations under the License.
 import React from "react";
 import { formatByte, fixed, secondToMicrosecond } from "../../../utils/Utils";
 import {getRange} from "@/common/Macrobench";
+import PropTypes from "prop-types";
 
 export default function FK({ data }) {
   return (
@@ -175,3 +176,10 @@ function Row({ title, data, extract, fmt }) {
     </tr>
     );
 }
+
+Row.propTypes = {
+    title: PropTypes.string.isRequired,
+    extract: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired,
+    fmt: PropTypes.oneOf(['time', 'memory']),
+};

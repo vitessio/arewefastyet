@@ -19,6 +19,7 @@ import React from "react";
 import { formatByte, secondToMicrosecond } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
 import {getRange} from "@/common/Macrobench";
+import PropTypes from "prop-types";
 
 export default function SearchMacro({ data, gitRef }) {
   return (
@@ -130,3 +131,16 @@ function Row({ title, value, fmt }) {
     </tr>
     );
 }
+
+Row.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.shape({
+        center: PropTypes.number.isRequired,
+        range: PropTypes.shape({
+            infinite: PropTypes.bool.isRequired,
+            unknown: PropTypes.bool.isRequired,
+            value: PropTypes.number.isRequired,
+        }),
+    }).isRequired,
+    fmt: PropTypes.oneOf(['time', 'memory']),
+};
