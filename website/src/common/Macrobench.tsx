@@ -15,9 +15,11 @@ limitations under the License.
 */
 
 import React from "react";
+import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import { formatByte, fixed, secondToMicrosecond } from "../utils/Utils";
 import {twMerge} from "tailwind-merge";
+import {propTypes} from "react-json-pretty";
 
 export default function Macrobench({ data, gitRef, commits }) {
   return (
@@ -258,3 +260,27 @@ function Row({ title, oldVal, newVal, delta, insignificant, p, fmt }) {
     </tr>
   );
 }
+
+Row.propTypes = {
+  title: PropTypes.string.isRequired,
+  oldVal: PropTypes.shape({
+    center: PropTypes.number.isRequired,
+    range: PropTypes.shape({
+      infinite: PropTypes.bool.isRequired,
+      unknown: PropTypes.bool.isRequired,
+      value: PropTypes.number.isRequired,
+    }),
+  }).isRequired,
+  newVal: PropTypes.shape({
+    center: PropTypes.number.isRequired,
+    range: PropTypes.shape({
+      infinite: PropTypes.bool.isRequired,
+      unknown: PropTypes.bool.isRequired,
+      value: PropTypes.number.isRequired,
+    })
+  }).isRequired,
+  delta: PropTypes.number.isRequired,
+  insignificant: PropTypes.bool.isRequired,
+  p: PropTypes.string.isRequired,
+  fmt: PropTypes.oneOf(['none', 'time', 'memory']).isRequired,
+};
