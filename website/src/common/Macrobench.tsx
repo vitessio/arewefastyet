@@ -19,7 +19,6 @@ import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import { formatByte, fixed, secondToMicrosecond } from "../utils/Utils";
 import {twMerge} from "tailwind-merge";
-import {propTypes} from "react-json-pretty";
 
 export default function Macrobench({ data, gitRef, commits }) {
   return (
