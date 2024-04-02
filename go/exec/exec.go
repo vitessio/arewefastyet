@@ -49,6 +49,7 @@ const (
 
 type Exec struct {
 	UUID              uuid.UUID
+	RawUUID           string
 	AnsibleConfig     ansible.Config
 	Source            string
 	GitRef            string
@@ -456,31 +457,10 @@ func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	}
 	defer result.Close()
 	for result.Next() {
-		var eUUID string
 		exec := &Exec{}
-		err = result.Scan(&eUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.TypeOf, &exec.PullNB, &exec.GolangVersion)
+		err = result.Scan(&exec.RawUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.TypeOf, &exec.PullNB, &exec.GolangVersion)
 		if err != nil {
 			return nil, err
-		}
-		exec.UUID, err = uuid.Parse(eUUID)
-		if err != nil {
-			return nil, err
-		}
-		if exec.TypeOf != "micro" {
-			macroResult, err := client.Select("SELECT m.vtgate_planner_version FROM macrobenchmark m, execution e WHERE e.uuid = m.exec_uuid AND e.uuid = ? LIMIT 1", eUUID)
-			if err != nil {
-				return nil, err
-			}
-			defer macroResult.Close()
-
-			var plannerVersion string
-			if macroResult.Next() {
-				err = macroResult.Scan(&plannerVersion)
-				if err != nil {
-					return nil, err
-				}
-			}
-			exec.VtgatePlannerVersion = plannerVersion
 		}
 		res = append(res, exec)
 	}
