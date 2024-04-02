@@ -10,13 +10,5 @@
 # limitations under the License.
 
 ---
-- name: Stop prometheus
-  hosts:
-    - all
-  roles:
-    - role: prometheus
-      vars:
-        - prom_start: False
-
 - name: Teardown Cluster
   import_playbook: teardown_cluster.yml
