@@ -15,8 +15,10 @@ limitations under the License.
 */
 
 import React from "react";
+import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import { formatByte, fixed, secondToMicrosecond } from "../utils/Utils";
+import {twMerge} from "tailwind-merge";
 
 export default function Macrobench({ data, gitRef, commits }) {
   return (
@@ -27,7 +29,7 @@ export default function Macrobench({ data, gitRef, commits }) {
           Click
           <Link
             className="text-primary"
-            to={`/macrobench/queries/compare?ltag=${commits.left}&rtag=${commits.right}&type=${data.type}`}
+            to={`/macrobench/queries/compare?ltag=${commits.old}&rtag=${commits.new}&type=${data.type}`}
           >
             here
           </Link>
@@ -42,23 +44,29 @@ export default function Macrobench({ data, gitRef, commits }) {
             <th>
               <Link
                 target="_blank"
-                to={`https://github.com/vitessio/vitess/commit/${commits.left}`}
+                to={`https://github.com/vitessio/vitess/commit/${commits.old}`}
                 className="text-primary"
               >
-                {gitRef.left || "Left"}
+                {gitRef.old || "Old"}
               </Link>
             </th>
             <th>
               <Link
                 target="_blank"
-                to={`https://github.com/vitessio/vitess/commit/${commits.right}`}
+                to={`https://github.com/vitessio/vitess/commit/${commits.new}`}
                 className="text-primary"
               >
-                {gitRef.right || "Right"}
+                {gitRef.new || "New"}
               </Link>
             </th>
             <th>
-              <h4>Impoved by %</h4>
+              <h4>P</h4>
+            </th>
+            <th>
+              <h4>Delta</h4>
+            </th>
+            <th>
+              <h4>Significant</h4>
             </th>
           </tr>
         </thead>
@@ -66,152 +74,131 @@ export default function Macrobench({ data, gitRef, commits }) {
         <tbody>
           <Row
             title={"QPS Total"}
-            left={fixed(data.diff.Left.Result.qps.total, 2)}
-            right={fixed(data.diff.Right.Result.qps.total, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.total, 2)}
+            oldVal={data.result.total_qps.old}
+            newVal={data.result.total_qps.new}
+            delta={data.result.total_qps.delta}
+            insignificant={data.result.total_qps.insignificant}
+            p={fixed(data.result.total_qps.p, 3)}
+            fmt={"none"}
           />
           <Row
             title="QPS Reads"
-            left={fixed(data.diff.Left.Result.qps.reads, 2)}
-            right={fixed(data.diff.Right.Result.qps.reads, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.reads, 2)}
+            oldVal={data.result.reads_qps.old}
+            newVal={data.result.reads_qps.new}
+            delta={data.result.reads_qps.delta}
+            insignificant={data.result.reads_qps.insignificant}
+            p={fixed(data.result.reads_qps.p, 3)}
+            fmt={"none"}
           />
 
           <Row
             title="QPS Writes"
-            left={fixed(data.diff.Left.Result.qps.writes, 2)}
-            right={fixed(data.diff.Right.Result.qps.writes, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.writes, 2)}
+            oldVal={data.result.writes_qps.old}
+            newVal={data.result.writes_qps.new}
+            delta={data.result.writes_qps.delta}
+            insignificant={data.result.writes_qps.insignificant}
+            p={fixed(data.result.writes_qps.p, 3)}
+            fmt={"none"}
           />
 
           <Row
             title="QPS Other"
-            left={fixed(data.diff.Left.Result.qps.other, 2)}
-            right={fixed(data.diff.Right.Result.qps.other, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.other, 2)}
+            oldVal={data.result.other_qps.old}
+            newVal={data.result.other_qps.new}
+            delta={data.result.other_qps.delta}
+            insignificant={data.result.other_qps.insignificant}
+            p={fixed(data.result.other_qps.p, 3)}
+            fmt={"none"}
           />
 
           <Row
             title="TPS"
-            left={fixed(data.diff.Left.Result.tps, 2)}
-            right={fixed(data.diff.Right.Result.tps, 2)}
-            diffMetric={fixed(data.diff.Diff.tps, 2)}
+            oldVal={data.result.tps.old}
+            newVal={data.result.tps.new}
+            delta={data.result.tps.delta}
+            insignificant={data.result.tps.insignificant}
+            p={fixed(data.result.tps.p, 3)}
+            fmt={"none"}
           />
 
           <Row
             title="Latency"
-            left={fixed(data.diff.Left.Result.latency, 2)}
-            right={fixed(data.diff.Right.Result.latency, 2)}
-            diffMetric={fixed(data.diff.Diff.latency, 2)}
+            oldVal={data.result.latency.old}
+            newVal={data.result.latency.new}
+            delta={data.result.latency.delta}
+            insignificant={data.result.latency.insignificant}
+            p={fixed(data.result.latency.p, 3)}
+            fmt={"none"}
           />
 
           <Row
             title="Errors"
-            left={fixed(data.diff.Left.Result.errors, 2)}
-            right={fixed(data.diff.Right.Result.errors, 2)}
-            diffMetric={fixed(data.diff.Diff.errors, 2)}
-          />
-
-          <Row
-            title="Reconnects"
-            left={fixed(data.diff.Left.Result.reconnects, 2)}
-            right={fixed(data.diff.Right.Result.reconnects, 2)}
-            diffMetric={fixed(data.diff.Diff.reconnects, 2)}
-          />
-
-          <Row
-            title="Time"
-            left={fixed(data.diff.Left.Result.time, 2)}
-            right={fixed(data.diff.Right.Result.time, 2)}
-            diffMetric={fixed(data.diff.Diff.time, 2)}
-          />
-
-          <Row
-            title="Threads"
-            left={fixed(data.diff.Left.Result.threads, 2)}
-            right={fixed(data.diff.Right.Result.threads, 2)}
-            diffMetric={fixed(data.diff.Diff.threads, 2)}
+            oldVal={data.result.errors.old}
+            newVal={data.result.errors.new}
+            delta={data.result.errors.delta}
+            insignificant={data.result.errors.insignificant}
+            p={fixed(data.result.errors.p, 3)}
+            fmt={"none"}
           />
 
           <Row
             title="Total CPU / query"
-            left={secondToMicrosecond(
-              data.diff.Left.Metrics.TotalComponentsCPUTime
-            )}
-            right={secondToMicrosecond(
-              data.diff.Right.Metrics.TotalComponentsCPUTime
-            )}
-            diffMetric={fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}
+            oldVal={data.result.total_components_cpu_time.old}
+            newVal={data.result.total_components_cpu_time.new}
+            delta={data.result.total_components_cpu_time.delta}
+            insignificant={data.result.total_components_cpu_time.insignificant}
+            p={fixed(data.result.total_components_cpu_time.p, 3)}
+            fmt={"time"}
           />
 
           <Row
             title="CPU / query (vtgate)"
-            left={secondToMicrosecond(
-              data.diff.Left.Metrics.ComponentsCPUTime.vtgate
-            )}
-            right={secondToMicrosecond(
-              data.diff.Right.Metrics.ComponentsCPUTime.vtgate
-            )}
-            diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsCPUTime.vtgate,
-              2
-            )}
+            oldVal={data.result.components_cpu_time.vtgate.old}
+            newVal={data.result.components_cpu_time.vtgate.new}
+            delta={data.result.components_cpu_time.vtgate.delta}
+            insignificant={data.result.components_cpu_time.vtgate.insignificant}
+            p={fixed(data.result.components_cpu_time.vtgate.p, 3)}
+            fmt={"time"}
           />
 
           <Row
             title="CPU / query (vttablet)"
-            left={secondToMicrosecond(
-              data.diff.Left.Metrics.ComponentsCPUTime.vttablet
-            )}
-            right={secondToMicrosecond(
-              data.diff.Right.Metrics.ComponentsCPUTime.vttablet
-            )}
-            diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsCPUTime.vttablet,
-              2
-            )}
+            oldVal={data.result.components_cpu_time.vttablet.old}
+            newVal={data.result.components_cpu_time.vttablet.new}
+            delta={data.result.components_cpu_time.vttablet.delta}
+            insignificant={data.result.components_cpu_time.vttablet.insignificant}
+            p={fixed(data.result.components_cpu_time.vttablet.p, 3)}
+            fmt={"time"}
           />
 
           <Row
             title="Total Allocated / query"
-            left={formatByte(
-              data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
-            )}
-            right={formatByte(
-              data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes
-            )}
-            diffMetric={fixed(
-              data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes,
-              2
-            )}
+            oldVal={data.result.total_components_mem_stats_alloc_bytes.old}
+            newVal={data.result.total_components_mem_stats_alloc_bytes.new}
+            delta={data.result.total_components_mem_stats_alloc_bytes.delta}
+            insignificant={data.result.total_components_mem_stats_alloc_bytes.insignificant}
+            p={fixed(data.result.total_components_mem_stats_alloc_bytes.p, 3)}
+            fmt={"memory"}
           />
 
           <Row
             title="Allocated / query (vtgate)"
-            left={formatByte(
-              data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate
-            )}
-            right={formatByte(
-              data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate
-            )}
-            diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate,
-              2
-            )}
+            oldVal={data.result.components_mem_stats_alloc_bytes.vtgate.old}
+            newVal={data.result.components_mem_stats_alloc_bytes.vtgate.new}
+            delta={data.result.components_mem_stats_alloc_bytes.vtgate.delta}
+            insignificant={data.result.components_mem_stats_alloc_bytes.vtgate.insignificant}
+            p={fixed(data.result.components_mem_stats_alloc_bytes.vtgate.p, 3)}
+            fmt={"memory"}
           />
 
           <Row
             title="Allocated / query (vttablet)"
-            left={formatByte(
-              data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet
-            )}
-            right={formatByte(
-              data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vttablet
-            )}
-            diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet,
-              2
-            )}
+            oldVal={data.result.components_mem_stats_alloc_bytes.vttablet.old}
+            newVal={data.result.components_mem_stats_alloc_bytes.vttablet.new}
+            delta={data.result.components_mem_stats_alloc_bytes.vttablet.delta}
+            insignificant={data.result.components_mem_stats_alloc_bytes.vttablet.insignificant}
+            p={fixed(data.result.components_mem_stats_alloc_bytes.vttablet.p, 3)}
+            fmt={"memory"}
           />
         </tbody>
       </table>
@@ -219,21 +206,80 @@ export default function Macrobench({ data, gitRef, commits }) {
   );
 }
 
-function Row({ title, left, right, diffMetric }) {
+export function getRange(range) {
+  if (range.infinite == true) {
+    return "∞"
+  }
+  if (range.unknown == true) {
+    return "?"
+  }
+  return "±"+fixed(range.value, 1)+"%"
+}
+
+function Row({ title, oldVal, newVal, delta, insignificant, p, fmt }) {
+  let status = <span
+      className={twMerge(
+          "text-lg text-white px-4 rounded-full",
+          insignificant == true && "bg-[#dd1a2a]",
+          insignificant == false && "bg-[#00aa00]",
+      )}>
+      {insignificant == true ? "No" : "Yes"}
+  </span>
+
+  var oldValFmt = oldVal.center
+  var newValFmt = newVal.center
+  if (fmt == "time") {
+    oldValFmt = secondToMicrosecond(oldVal.center)
+    newValFmt = secondToMicrosecond(newVal.center)
+  } else if (fmt == "memory") {
+    oldValFmt = formatByte(oldVal.center)
+    newValFmt = formatByte(newVal.center)
+  }
+
   return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-2 px-4 justify-end border-r border-r-primary font-semibold text-end">
         <span>{title}</span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
-        <span>{left || 0}</span>
+        <span>{oldValFmt} ({getRange(oldVal.range)})</span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
-        <span>{right || 0}</span>
+        <span>{newValFmt} ({getRange(newVal.range)})</span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
-        <span>{diffMetric || 0}</span>
+        <span>{p || "?"}</span>
+      </td>
+      <td className="px-24 pt-4 pb-2 text-center">
+        <span>{fixed(delta, 3) || 0}%</span>
+      </td>
+      <td className="px-24 pt-4 pb-2 text-center">
+        {status}
       </td>
     </tr>
   );
 }
+
+Row.propTypes = {
+  title: PropTypes.string.isRequired,
+  oldVal: PropTypes.shape({
+    center: PropTypes.number.isRequired,
+    range: PropTypes.shape({
+      infinite: PropTypes.bool.isRequired,
+      unknown: PropTypes.bool.isRequired,
+      value: PropTypes.number.isRequired,
+    }),
+  }).isRequired,
+  newVal: PropTypes.shape({
+    center: PropTypes.number.isRequired,
+    range: PropTypes.shape({
+      infinite: PropTypes.bool.isRequired,
+      unknown: PropTypes.bool.isRequired,
+      value: PropTypes.number.isRequired,
+    })
+  }).isRequired,
+  delta: PropTypes.number.isRequired,
+  insignificant: PropTypes.bool.isRequired,
+  p: PropTypes.string.isRequired,
+  fmt: PropTypes.oneOf(['none', 'time', 'memory']).isRequired,
+};

@@ -16,6 +16,8 @@ limitations under the License.
 
 import React from "react";
 import { formatByte, fixed, secondToMicrosecond } from "../../../utils/Utils";
+import {getRange} from "@/common/Macrobench";
+import PropTypes from "prop-types";
 
 export default function FK({ data }) {
   return (
@@ -36,7 +38,7 @@ export default function FK({ data }) {
             title={"QPS Total"}
             data={data}
             extract={function ({ value }) {
-              return fixed(value.Result.qps.total, 2);
+              return value.total_qps;
             }}
           />
 
@@ -44,7 +46,7 @@ export default function FK({ data }) {
             title="QPS Reads"
             data={data}
             extract={function ({ value }) {
-              return fixed(value.Result.qps.reads, 2);
+              return value.reads_qps;
             }}
           />
 
@@ -52,7 +54,7 @@ export default function FK({ data }) {
             title="QPS Writes"
             data={data}
             extract={function ({ value }) {
-              return fixed(value.Result.qps.writes, 2);
+              return value.writes_qps;
             }}
           />
 
@@ -60,7 +62,7 @@ export default function FK({ data }) {
             title="QPS Other"
             data={data}
             extract={function ({ value }) {
-              return fixed(value.Result.qps.other, 2);
+              return value.other_qps;
             }}
           />
 
@@ -68,7 +70,7 @@ export default function FK({ data }) {
             title="TPS"
             data={data}
             extract={function ({ value }) {
-              return fixed(value.Result.tps, 2);
+              return value.tps;
             }}
           />
 
@@ -76,7 +78,7 @@ export default function FK({ data }) {
             title="Latency"
             data={data}
             extract={function ({ value }) {
-              return fixed(value.Result.latency, 2);
+              return value.latency;
             }}
           />
 
@@ -84,89 +86,61 @@ export default function FK({ data }) {
             title="Errors"
             data={data}
             extract={function ({ value }) {
-              return fixed(value.Result.errors, 2);
-            }}
-          />
-
-          <Row
-            title="Reconnects"
-            data={data}
-            extract={function ({ value }) {
-              return fixed(value.Result.reconnects, 2);
-            }}
-          />
-
-          <Row
-            title="Time"
-            data={data}
-            extract={function ({ value }) {
-              return fixed(value.Result.time, 2);
-            }}
-          />
-
-          <Row
-            title="Threads"
-            data={data}
-            extract={function ({ value }) {
-              return fixed(value.Result.threads, 2);
+              return value.errors;
             }}
           />
 
           <Row
             title="Total CPU / query"
+            fmt={"time"}
             data={data}
             extract={function ({ value }) {
-              return secondToMicrosecond(value.Metrics.TotalComponentsCPUTime);
+              return value.total_components_cpu_time;
             }}
           />
 
           <Row
             title="CPU / query (vtgate)"
+            fmt={"time"}
             data={data}
             extract={function ({ value }) {
-              return secondToMicrosecond(
-                value.Metrics.ComponentsCPUTime.vtgate
-              );
+              return value.components_cpu_time.vtgate;
             }}
           />
 
           <Row
             title="CPU / query (vttablet)"
+            fmt={"time"}
             data={data}
             extract={function ({ value }) {
-              return secondToMicrosecond(
-                value.Metrics.ComponentsCPUTime.vttablet
-              );
+              return value.components_cpu_time.vttablet;
             }}
           />
 
           <Row
             title="Total Allocated / query"
+            fmt={"memory"}
             data={data}
             extract={function ({ value }) {
-              return formatByte(
-                value.Metrics.TotalComponentsMemStatsAllocBytes
-              );
+              return value.total_components_mem_stats_alloc_bytes;
             }}
           />
 
           <Row
             title="Allocated / query (vtgate)"
+            fmt={"memory"}
             data={data}
             extract={function ({ value }) {
-              return formatByte(
-                value.Metrics.ComponentsMemStatsAllocBytes.vtgate
-              );
+              return value.components_mem_stats_alloc_bytes.vtgate;
             }}
           />
 
           <Row
             title="Allocated / query (vttablet)"
+            fmt={"memory"}
             data={data}
             extract={function ({ value }) {
-              return formatByte(
-                value.Metrics.ComponentsMemStatsAllocBytes.vttablet
-              );
+              return value.components_mem_stats_alloc_bytes.vttablet;
             }}
           />
         </tbody>
@@ -175,19 +149,37 @@ export default function FK({ data }) {
   );
 }
 
-function Row({ title, data, extract }) {
-  return (
+function fmtString(value, fmt) {
+    var valFmt = value.center
+    if (fmt == "time") {
+        valFmt = secondToMicrosecond(value.center)
+    } else if (fmt == "memory") {
+        valFmt = formatByte(value.center)
+    }
+    return valFmt
+}
+
+function Row({ title, data, extract, fmt }) {
+    return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-2 px-4 justify-end border-r border-r-primary font-semibold text-end">
         <span>{title}</span>
       </td>
       {Object.entries(data).map(([key, value]) => {
-        return (
+          var val = extract({value: value});
+          return (
           <td className="px-24 pt-4 pb-2 text-center">
-            <span>{extract({ value: value }) || 0}</span>
+            <span>{fmtString(val, fmt)} ({getRange(val.range)})</span>
           </td>
         );
       })}
     </tr>
-  );
+    );
 }
+
+Row.propTypes = {
+    title: PropTypes.string.isRequired,
+    extract: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired,
+    fmt: PropTypes.oneOf(['time', 'memory']),
+};

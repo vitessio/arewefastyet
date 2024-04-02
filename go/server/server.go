@@ -174,7 +174,7 @@ func (s *Server) Init() error {
 	}
 
 	s.benchmarkConfig = map[string]benchmarkConfig{
-		"micro":         {file: path.Join(s.benchmarkConfigPath, "micro.yaml"), v: viper.New(), skip: true},
+		// "micro":         {file: path.Join(s.benchmarkConfigPath, "micro.yaml"), v: viper.New(), skip: true},
 		"oltp":          {file: path.Join(s.benchmarkConfigPath, "oltp.yaml"), v: viper.New()},
 		"oltp-set":      {file: path.Join(s.benchmarkConfigPath, "oltp-set.yaml"), v: viper.New()},
 		"oltp-readonly": {file: path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"), v: viper.New()},
@@ -233,7 +233,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/queue", s.getExecutionsQueue)
 	s.router.GET("/api/vitess/refs", s.getLatestVitessGitRef)
 	s.router.GET("/api/fk/compare", s.compareBenchmarkFKs)
-	s.router.GET("/api/macrobench/compare", s.compareMacrobenchmarks)
+	s.router.GET("/api/macrobench/compare", s.compareMacroBenchmarks)
 	s.router.GET("/api/microbench/compare", s.compareMicrobenchmarks)
 	s.router.GET("/api/search", s.searchBenchmark)
 	s.router.GET("/api/macrobench/compare/queries", s.queriesCompareMacrobenchmarks)

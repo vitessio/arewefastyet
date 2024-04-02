@@ -15,10 +15,11 @@ limitations under the License.
 */
 
 import React from "react";
-import PropTypes from "prop-types";
 
-import { fixed, formatByte, secondToMicrosecond } from "../../../utils/Utils";
+import { formatByte, secondToMicrosecond } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
+import {getRange} from "@/common/Macrobench";
+import PropTypes from "prop-types";
 
 export default function SearchMacro({ data, gitRef }) {
   return (
@@ -37,116 +38,73 @@ export default function SearchMacro({ data, gitRef }) {
         <tbody>
           <Row
             title={"QPS Total"}
-            value={data[1] ? fixed(data[1][0].Result.qps.total, 2) : 0}
+            value={data[1].total_qps}
           />
 
           <Row
             title={"QPS Reads"}
-            value={data[1] ? fixed(data[1][0].Result.qps.reads, 2) : 0}
+            value={data[1].reads_qps}
           />
 
           <Row
             title={"QPS Writes"}
-            value={data[1] ? fixed(data[1][0].Result.qps.writes, 2) : 0}
+            value={data[1].writes_qps}
           />
 
           <Row
             title={"QPS Other"}
-            value={data[1] ? fixed(data[1][0].Result.qps.other, 2) : 0}
+            value={data[1].other_qps}
           />
 
           <Row
             title={"TPS"}
-            value={data[1] ? fixed(data[1][0].Result.tps, 2) : 0}
+            value={data[1].tps}
           />
 
           <Row
             title={"Latency"}
-            value={data[1] ? fixed(data[1][0].Result.latency, 2) : 0}
+            value={data[1].latency}
           />
 
           <Row
             title={"Errors"}
-            value={data[1] ? fixed(data[1][0].Result.errors, 2) : 0}
-          />
-
-          <Row
-            title={"Reconnects"}
-            value={data[1] ? fixed(data[1][0].Result.reconnects, 2) : 0}
-          />
-
-          <Row
-            title={"Time"}
-            value={data[1] ? fixed(data[1][0].Result.time, 2) : 0}
-          />
-
-          <Row
-            title={"Threads"}
-            value={data[1] ? fixed(data[1][0].Result.threads, 2) : 0}
+            value={data[1].errors}
           />
 
           <Row
             title={"Total CPU / query"}
-            value={
-              data[1]
-                ? secondToMicrosecond(data[1][0].Metrics.TotalComponentsCPUTime)
-                : 0
-            }
+            value={data[1].total_components_cpu_time}
+            fmt={"time"}
           />
 
           <Row
             title={"CPU / query (vtgate)"}
-            value={
-              data[1]
-                ? secondToMicrosecond(
-                    data[1][0].Metrics.ComponentsCPUTime.vtgate
-                  )
-                : 0
-            }
+            value={data[1].components_cpu_time.vtgate}
+            fmt={"time"}
           />
 
           <Row
             title={"CPU / query (vttablet)"}
-            value={
-              data[1]
-                ? secondToMicrosecond(
-                    data[1][0].Metrics.ComponentsCPUTime.vttablet
-                  )
-                : 0
-            }
+            value={data[1].components_cpu_time.vttablet}
+            fmt={"time"}
           />
 
           <Row
             title={"Total Allocated / query"}
-            value={
-              data[1]
-                ? formatByte(
-                    data[1][0].Metrics.TotalComponentsMemStatsAllocBytes
-                  )
-                : 0
-            }
+            value={data[1].total_components_mem_stats_alloc_bytes}
+            fmt={"memory"}
           />
 
           <Row
             title={"Allocated / query (vtgate)"}
-            value={
-              data[1]
-                ? formatByte(
-                    data[1][0].Metrics.ComponentsMemStatsAllocBytes.vtgate
-                  )
-                : 0
-            }
+            value={data[1].components_mem_stats_alloc_bytes.vtgate}
+            fmt={"memory"}
           />
 
           <Row
             title={"Allocated / query (vttablet)"}
-            value={
-              data[1]
-                ? formatByte(
-                    data[1][0].Metrics.ComponentsMemStatsAllocBytes.vttablet
-                  )
-                : 0
-            }
+            value={data[1].components_mem_stats_alloc_bytes.vttablet}
+            fmt={"memory"}
           />
         </tbody>
       </table>
@@ -154,53 +112,35 @@ export default function SearchMacro({ data, gitRef }) {
   );
 }
 
-function Row({ title, value }) {
-  return (
+function Row({ title, value, fmt }) {
+    var valFmt = value.center
+    if (fmt == "time") {
+        valFmt = secondToMicrosecond(value.center)
+    } else if (fmt == "memory") {
+        valFmt = formatByte(value.center)
+    }
+
+    return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-1 px-4 text-lg justify-end border-r border-r-primary font-bold">
         <span>{title}</span>
       </td>
       <td className="px-24 pt-4 pb-1 text-center">
-        <span>{value || 0}</span>
+        <span>{valFmt} ({getRange(value.range)})</span>
       </td>
     </tr>
-  );
+    );
 }
 
-SearchMacro.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.arrayOf(
-        PropTypes.shape({
-          Result: PropTypes.shape({
-            qps: PropTypes.shape({
-              total: PropTypes.number.isRequired,
-              reads: PropTypes.number.isRequired,
-              writes: PropTypes.number.isRequired,
-              other: PropTypes.number.isRequired,
-            }).isRequired,
-            tps: PropTypes.number.isRequired,
-            latency: PropTypes.number.isRequired,
-            errors: PropTypes.number.isRequired,
-            reconnects: PropTypes.number.isRequired,
-            time: PropTypes.number.isRequired,
-            threads: PropTypes.number.isRequired,
-          }).isRequired,
-          Metrics: PropTypes.shape({
-            TotalComponentsCPUTime: PropTypes.number.isRequired,
-            ComponentsCPUTime: PropTypes.shape({
-              vtgate: PropTypes.number.isRequired,
-              vttablet: PropTypes.number.isRequired,
-            }).isRequired,
-            TotalComponentsMemStatsAllocBytes: PropTypes.number.isRequired,
-            ComponentsMemStatsAllocBytes: PropTypes.shape({
-              vtgate: PropTypes.number.isRequired,
-              vttablet: PropTypes.number.isRequired,
-            }).isRequired,
-          }).isRequired,
-        })
-      ),
-    ])
-  ).isRequired,
+Row.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.shape({
+        center: PropTypes.number.isRequired,
+        range: PropTypes.shape({
+            infinite: PropTypes.bool.isRequired,
+            unknown: PropTypes.bool.isRequired,
+            value: PropTypes.number.isRequired,
+        }),
+    }).isRequired,
+    fmt: PropTypes.oneOf(['time', 'memory']),
 };

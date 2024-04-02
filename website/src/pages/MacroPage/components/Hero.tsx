@@ -32,10 +32,10 @@ export default function Hero(props: {
             className="w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
             defaultIndex={refs
               .map((r: { Name: any }) => r.Name)
-              .indexOf(gitRef.left)}
+              .indexOf(gitRef.old)}
             onChange={(event: { value: any }) => {
               setGitRef((p: any) => {
-                return { ...p, left: event.value };
+                return { ...p, old: event.value };
               });
             }}
           >
@@ -57,10 +57,10 @@ export default function Hero(props: {
             className="w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
             defaultIndex={refs
               .map((r: { Name: any }) => r.Name)
-              .indexOf(gitRef.right)}
+              .indexOf(gitRef.new)}
             onChange={(event: { value: any }) => {
               setGitRef((p: any) => {
-                return { ...p, right: event.value };
+                return { ...p, new: event.value };
               });
             }}
           >

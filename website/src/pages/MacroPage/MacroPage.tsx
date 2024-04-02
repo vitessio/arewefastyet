@@ -27,10 +27,10 @@ const Macro = () => {
   const urlParams = new URLSearchParams(window.location.search);
 
   const [gitRef, setGitRef] = useState({
-    left: urlParams.get("ltag") || "Left",
-    right: urlParams.get("rtag") || "Right",
+    old: urlParams.get("old") || "",
+    new: urlParams.get("new") || "",
   });
-  const [commits, setCommits] = useState({ left: "", right: "" });
+  const [commits, setCommits] = useState({ old: "", new: "" });
 
   const [dataRefs, setDataRefs] = useState();
   const [dataMacrobench, setDataMacrobench] = useState([]);
@@ -51,17 +51,17 @@ const Macro = () => {
 
   async function loadData() {
     const commits = {
-      left: dataRefs.filter((r) => r.Name === gitRef.left)[0].CommitHash,
-      right: dataRefs.filter((r) => r.Name === gitRef.right)[0].CommitHash,
+      old: dataRefs.filter((r) => r.Name === gitRef.old)[0].CommitHash,
+      new: dataRefs.filter((r) => r.Name === gitRef.new)[0].CommitHash,
     };
     setCommits(commits);
 
     setLoading(true);
     try {
       const responseMacrobench = await fetch(
-        `${import.meta.env.VITE_API_URL}macrobench/compare?ltag=${
-          commits.left
-        }&rtag=${commits.right}`
+        `${import.meta.env.VITE_API_URL}macrobench/compare?old=${
+          commits.old
+        }&new=${commits.new}`
       );
       const jsonDataMacrobench = await responseMacrobench.json();
       setDataMacrobench(jsonDataMacrobench);
@@ -79,10 +79,10 @@ const Macro = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    navigate(`?ltag=${gitRef.left}&rtag=${gitRef.right}`);
+    navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
 
     dataRefs && loadData();
-  }, [gitRef.left, gitRef.right, dataRefs]);
+  }, [gitRef.old, gitRef.new, dataRefs]);
 
   return (
     <>
@@ -101,8 +101,8 @@ const Macro = () => {
 
         {!loading && dataMacrobench && (
           <div className="flex flex-col gap-y-20 ">
-            {gitRef.left &&
-              gitRef.right &&
+            {gitRef.old &&
+              gitRef.new &&
               dataMacrobench.map((macro, index) => {
                 return (
                   <div key={index}>
