@@ -60,7 +60,7 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 	recentExecs := make([]RecentExecutions, 0, len(execs))
 	for _, e := range execs {
 		recentExecs = append(recentExecs, RecentExecutions{
-			UUID:          e.UUID.String(),
+			UUID:          e.RawUUID,
 			Source:        e.Source,
 			GitRef:        e.GitRef,
 			Status:        e.Status,
