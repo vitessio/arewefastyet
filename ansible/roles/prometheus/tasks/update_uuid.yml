@@ -12,18 +12,13 @@
 ---
 - name: Replace prometheus exec_uuid label value
   with_items:
-    - 'gateways.yml'
-    - 'mysqld.yml'
-    - 'nodes.yml'
-    - 'tablets.yml'
-    - 'vtctld.yml'
+    - 'prometheus.yml'
+    - 'file_sd/gateways.yml'
+    - 'file_sd/mysqld.yml'
+    - 'file_sd/nodes.yml'
+    - 'file_sd/tablets.yml'
+    - 'file_sd/vtctld.yml'
   lineinfile:
-    path: '/etc/prometheus/file_sd/{{ item }}'
+    path: '/etc/prometheus/{{ item }}'
     regexp: '^(.*)exec_uuid:(.*)$'
     line: '    exec_uuid: {{arewefastyet_exec_uuid}}'
-
-- name: Restart prometheus service
-  service:
-    name: prometheus
-    state: restarted
-    enabled: yes
