@@ -10,13 +10,6 @@
 # limitations under the License.
 
 ---
-- hosts: prometheus
-  tasks:
-    - name: Update Prometheus labels
-      include_role:
-        name: prometheus
-        tasks_from: update_uuid
-
 - hosts: all
   tasks:
     - name: Ensure users are created
@@ -28,6 +21,13 @@
 - name: Create Cluster
   when: arewefastyet_last_exec_is_same is undefined
   import_playbook: create_cluster.yml
+
+- hosts: prometheus
+  tasks:
+    - name: Update Prometheus labels
+      include_role:
+        name: prometheus
+        tasks_from: update_uuid
 
 - name: Install and build sysbench
   hosts:
