@@ -48,7 +48,23 @@ func (s *Server) branchCronHandler() {
 
 	execElements := append(mainBranchElements, releaseBranchElements...)
 	for _, elem := range execElements {
+		s.removeBranchElementFromQueue(elem)
 		s.addToQueue(elem)
+	}
+}
+
+func (s *Server) removeBranchElementFromQueue(newElem *executionQueueElement) {
+	mtx.Lock()
+	defer mtx.Unlock()
+
+	for identifier, element := range queue {
+		if element.Executing {
+			continue
+		}
+		if identifier.PlannerVersion == newElem.identifier.PlannerVersion && identifier.BenchmarkType == newElem.identifier.BenchmarkType && identifier.Source == newElem.identifier.Source && identifier.GitRef != newElem.identifier.GitRef {
+			slog.Infof("%+v is removed from the queue", identifier)
+			delete(queue, identifier)
+		}
 	}
 }
 
