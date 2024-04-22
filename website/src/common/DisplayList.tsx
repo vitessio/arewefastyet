@@ -19,32 +19,54 @@ export default function DisplayList(props) {
   const { data } = props;
 
   return (
-    <table className="flex-1">
-      <thead>
-        <tr>
-          {Object.keys(data[0]).map((item, key) => (
-            <th
-              className="border-b min-w-[150px] text-left font-semibold py-2 border-front"
-              key={key}
-            >
-              {item}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((val, key) => {
-          return (
-            <tr key={key} className="hover:bg-accent cursor-default">
-              {Object.keys(val).map((item, key) => (
-                <td className="border-b py-3 text-left" key={key}>
-                  {val[item]}
-                </td>
+    <div className="flex-1 w-full max-w-full overflow-x-auto">
+      <div className="widescreen:hidden">
+        {data.map((val, key) => (
+          <div
+            key={key}
+            className="cursor-default mb-4 p-4 rounded-lg border border-front border-[1px]"
+          >
+            {Object.keys(val).map((item, itemKey) => (
+              <div
+                key={itemKey}
+                className="flex justify-between border-b py-2 last:border-b-0 hover:bg-accent "
+              >
+                <span className="font-semibold">{item}</span>
+                <span>{val[item]}</span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="hidden widescreen:block">
+        <table className="flex-1">
+          <thead>
+            <tr>
+              {Object.keys(data[0]).map((item, key) => (
+                <th
+                  className="border-b min-w-[150px] text-left font-semibold py-2 border-front"
+                  key={key}
+                >
+                  {item}
+                </th>
               ))}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          </thead>
+          <tbody>
+            {data.map((val, key) => {
+              return (
+                <tr key={key} className="hover:bg-accent cursor-default">
+                  {Object.keys(val).map((item, key) => (
+                    <td className="border-b py-3 text-left" key={key}>
+                      {val[item]}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
