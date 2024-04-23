@@ -72,7 +72,7 @@ export default function StatusPage() {
       <div>
         <label>
           Type:
-          <select name="type" value={filters.type} onChange={handleFilterChange} className="bg-accent">
+          <select name="type" value={filters.type} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
             <option value="">All</option>
             {[...new Set(filteredData.map((item) => item.type_of))].map((type) => (
               <option key={type} value={type}>
@@ -84,7 +84,7 @@ export default function StatusPage() {
 
         <label>
           Source:
-          <select name="source" value={filters.source} onChange={handleFilterChange} className="bg-accent">
+          <select name="source" value={filters.source} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
             <option value="">All</option>
             {[...new Set(filteredData.map((item) => item.source))].map((source) => (
               <option key={source} value={source}>
@@ -96,7 +96,7 @@ export default function StatusPage() {
 
         <label>
           Status:
-          <select name="status" value={filters.status} onChange={handleFilterChange} className="bg-accent">
+          <select name="status" value={filters.status} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
             <option value="">All</option>
             {[...new Set(filteredData.map((item) => item.status))].map((status) => (
               <option key={status} value={status}>
