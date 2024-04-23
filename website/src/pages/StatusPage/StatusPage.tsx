@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import React, { useState } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
 
@@ -32,15 +32,84 @@ export default function StatusPage() {
     `${import.meta.env.VITE_API_URL}recent`
   );
 
+  const [filters, setFilters] = useState({
+    type: '',
+    status: '',
+    source: '',
+  });
+
+  const filterData = (data) => {
+    return data.filter((item) => {
+      const itemType = item.type_of ? item.type_of.toString() : '';
+      const itemSource = item.source ? item.source.toString() : '';
+      const itemStatus = item.status ? item.status.toString() : '';
+
+      const matchesType =
+        filters.type === '' || filters.type === undefined || itemType === filters.type;
+      const matchesSource =
+        filters.source === '' || filters.source === undefined || itemSource === filters.source;
+      const matchesStatus =
+        filters.status === '' || filters.status === undefined || itemStatus === filters.status;
+
+      return matchesType && matchesSource && matchesStatus;
+    });
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+  };
+
+  const filteredData = filterData(dataQueue);
+
   return (
     <>
       <Hero />
 
       <div className="border-accent border mt-5" />
 
+      {/* FILTERS OPTIONS*/}
+      <div>
+        <label>
+          Type:
+          <select name="type" value={filters.type} onChange={handleFilterChange} className="bg-accent">
+            <option value="">All</option>
+            {[...new Set(filteredData.map((item) => item.type_of))].map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Source:
+          <select name="source" value={filters.source} onChange={handleFilterChange} className="bg-accent">
+            <option value="">All</option>
+            {[...new Set(filteredData.map((item) => item.source))].map((source) => (
+              <option key={source} value={source}>
+                {source}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Status:
+          <select name="status" value={filters.status} onChange={handleFilterChange} className="bg-accent">
+            <option value="">All</option>
+            {[...new Set(filteredData.map((item) => item.status))].map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       {/* EXECUTION QUEUE */}
       {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
-        <ExecutionQueue data={dataQueue} title={"Execution Queue"} />
+        <ExecutionQueue data={filteredData} title={"Execution Queue"} />
       )}
 
       {/* PREVIOUS EXECUTIONS */}
@@ -48,7 +117,7 @@ export default function StatusPage() {
         dataPreviousExe &&
         dataPreviousExe.length > 0 && (
           <PreviousExecutions
-            data={dataPreviousExe}
+            data={filteredData}
             title={"Previous Executions"}
           />
         )}
