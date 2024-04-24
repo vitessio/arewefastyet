@@ -44,7 +44,7 @@ export default function DisplayList(props) {
             <tr>
               {Object.keys(data[0]).map((item, key) => (
                 <th
-                  className="border-b min-w-[150px] text-left font-semibold py-2 border-front"
+                  className="border-b min-w-[184px] text-left font-semibold py-2 border-front"
                   key={key}
                 >
                   {item}
