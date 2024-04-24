@@ -19,7 +19,7 @@ export default function DisplayList(props) {
   const { data } = props;
 
   return (
-    <div className="flex-1 w-full max-w-full overflow-x-auto">
+    <div className="">
       <div className="widescreen:hidden">
         {data.map((val, key) => (
           <div
@@ -38,13 +38,13 @@ export default function DisplayList(props) {
           </div>
         ))}
       </div>
-      <div className="hidden widescreen:block">
-        <table className="flex-1">
+      <div className="w-full overflow-x-auto">
+        <table className="w-full">
           <thead>
             <tr>
               {Object.keys(data[0]).map((item, key) => (
                 <th
-                  className="border-b min-w-[184px] text-left font-semibold py-2 border-front"
+                  className="border-b min-w-[150px] text-left font-semibold py-2 border-front"
                   key={key}
                 >
                   {item}
