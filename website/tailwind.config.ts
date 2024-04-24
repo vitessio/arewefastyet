@@ -81,7 +81,8 @@ const config = {
       },
       screens: {
         mobile: { max: "780px" },
-        widescreen: { min: "780px" },
+        midscreen: { max: "1280px"},
+        widescreen: { min: "1280px" },
       },
       transitionDuration: {
         inherit: "inherit",
