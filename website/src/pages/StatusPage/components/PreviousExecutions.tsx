@@ -22,123 +22,68 @@ import DisplayList from "../../../common/DisplayList";
 export default function PreviousExecutions(props) {
   const { data, title } = props;
 
-  // const [previousExecutions, setPreviousExecutions] = useState([]);
+  const [previousExecutions, setPreviousExecutions] = useState([]);
 
-  // useEffect(() => {
-  //   for (const entry of data) {
-  //     const newData = {};
+  useEffect(() => {
+    const transformedData = data.map((entry) => {
+      const newData = {};
 
-  //     newData["UUID"] = entry.uuid.slice(0, 8);
+      newData["UUID"] = entry.uuid.slice(0, 8);
 
-  //     newData["SHA"] = (
-  //       <Link
-  //         target="__blank"
-  //         rel="noopener noreferrer"
-  //         className="text-primary text"
-  //         to={`https://github.com/vitessio/vitess/commit/${entry.git_ref}`}
-  //       >
-  //         {entry.git_ref.slice(0, 6)}
-  //       </Link>
-  //     );
-
-  //     newData["Source"] = entry.source;
-
-  //     newData["Started"] = formatDate(entry.started_at) || "N/A";
-
-  //     newData["Finished"] = formatDate(entry.finished_at) || "N/A";
-
-  //     newData["Type"] = entry.type_of;
-
-  //     if (entry.pull_nb) {
-  //       newData["PR"] = (
-  //         <Link
-  //           target="__blank"
-  //           rel="noopener noreferrer"
-  //           className="text-primary"
-  //           to={`https://github.com/vitessio/vitess/pull/${entry.pull_nb}`}
-  //         >
-  //           {entry.pull_nb}
-  //         </Link>
-  //       );
-  //     } else {
-  //       newData["PR"] = <span></span>;
-  //     }
-
-  //     newData["Go version"] = entry.golang_version;
-
-  //     newData["Status"] = (
-  //       <span
-  //         className={twMerge(
-  //           "text-lg text-white px-4 rounded-full",
-  //           entry.status === "failed" && "bg-[#dd1a2a]",
-  //           entry.status === "finished" && "bg-[#00aa00]",
-  //           entry.status === "started" && "bg-[#3a3aed]"
-  //         )}
-  //       >
-  //         {entry.status}
-  //       </span>
-  //     );
-
-  //     setPreviousExecutions((p) => [...p, newData]);
-  //   }
-  // }, []);
-
-  const previousExecutions = data.map((entry) => {
-    const newData = {};
-
-    newData["UUID"] = entry.uuid.slice(0, 8);
-
-    newData["SHA"] = (
-      <Link
-        target="__blank"
-        rel="noopener noreferrer"
-        className="text-primary text"
-        to={`https://github.com/vitessio/vitess/commit/${entry.git_ref}`}
-      >
-        {entry.git_ref.slice(0, 6)}
-      </Link>
-    );
-
-    newData["Source"] = entry.source;
-
-    newData["Started"] = formatDate(entry.started_at) || "N/A";
-
-    newData["Finished"] = formatDate(entry.finished_at) || "N/A";
-
-    newData["Type"] = entry.type_of;
-
-    if (entry.pull_nb) {
-      newData["PR"] = (
+      newData["SHA"] = (
         <Link
           target="__blank"
           rel="noopener noreferrer"
-          className="text-primary"
-          to={`https://github.com/vitessio/vitess/pull/${entry.pull_nb}`}
+          className="text-primary text"
+          to={`https://github.com/vitessio/vitess/commit/${entry.git_ref}`}
         >
-          {entry.pull_nb}
+          {entry.git_ref.slice(0, 6)}
         </Link>
       );
-    } else {
-      newData["PR"] = <span></span>;
-    }
 
-    newData["Go version"] = entry.golang_version;
+      newData["Source"] = entry.source;
 
-    newData["Status"] = (
-      <span
-        className={twMerge(
-          "text-lg text-white px-4 rounded-full",
-          entry.status === "failed" && "bg-[#dd1a2a]",
-          entry.status === "finished" && "bg-[#00aa00]",
-          entry.status === "started" && "bg-[#3a3aed]"
-        )}
-      >
-        {entry.status}
-      </span>
-    );
+      newData["Started"] = formatDate(entry.started_at) || "N/A";
 
-    return newData;
-  });
+      newData["Finished"] = formatDate(entry.finished_at) || "N/A";
+
+      newData["Type"] = entry.type_of;
+
+      if (entry.pull_nb) {
+        newData["PR"] = (
+          <Link
+            target="__blank"
+            rel="noopener noreferrer"
+            className="text-primary"
+            to={`https://github.com/vitessio/vitess/pull/${entry.pull_nb}`}
+          >
+            {entry.pull_nb}
+          </Link>
+        );
+      } else {
+        newData["PR"] = <span></span>;
+      }
+
+      newData["Go version"] = entry.golang_version;
+
+      newData["Status"] = (
+        <span
+          className={twMerge(
+            "text-lg text-white px-4 rounded-full",
+            entry.status === "failed" && "bg-[#dd1a2a]",
+            entry.status === "finished" && "bg-[#00aa00]",
+            entry.status === "started" && "bg-[#3a3aed]"
+          )}
+        >
+          {entry.status}
+        </span>
+      );
+
+      return newData;
+    });
+
+    setPreviousExecutions(transformedData);
+  }, [data]);
 
   return (
     <section className="p-page mt-20 flex flex-col overflow-y-scroll">

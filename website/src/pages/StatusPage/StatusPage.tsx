@@ -21,7 +21,18 @@ import useApiCall from "../../utils/Hook";
 import Hero from "./components/Hero";
 import ExecutionQueue from "./components/PreviousExecutions";
 import PreviousExecutions from "./components/PreviousExecutions";
-import data from "./data.json"
+
+interface dataTypes {
+  uuid: string;
+  git_ref: string;
+  source: string;
+  started_at: string;
+  finished_at: string;
+  type_of: string;
+  pull_nb?: number;
+  golang_version: string;
+  status: string;
+}
 
 export default function StatusPage() {
   const {
@@ -39,7 +50,7 @@ export default function StatusPage() {
     source: '',
   });
 
-  const filterData = (data) => {
+  const filterData = (data: dataTypes[]) => {
     return data.filter((item) => {
       const itemType = item.type_of ? item.type_of.toString() : '';
       const itemSource = item.source ? item.source.toString() : '';
@@ -58,12 +69,13 @@ export default function StatusPage() {
     });
   };
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
-  const filteredData = filterData(data);
+  const filteredDataQueue = filterData(dataQueue) as dataTypes[]; 
+  const filteredPreviousDataExe = filterData(dataPreviousExe) as dataTypes[];
 
   return (
     <>
@@ -77,11 +89,11 @@ export default function StatusPage() {
           Type:
           <select name="type" value={filters.type} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
             <option value="">All</option>
-            {[...new Set(data.map((item) => item.type_of))].map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
+            {[...new Set(dataPreviousExe.map((item: any) => item.type_of))].map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
           </select>
         </label>
 
@@ -89,7 +101,7 @@ export default function StatusPage() {
           Source:
           <select name="source" value={filters.source} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
             <option value="">All</option>
-            {[...new Set(data.map((item) => item.source))].map((source) => (
+            {[...new Set(dataPreviousExe.map((item: any) => item.source))].map((source) => (
               <option key={source} value={source}>
                 {source}
               </option>
@@ -101,7 +113,7 @@ export default function StatusPage() {
           Status:
           <select name="status" value={filters.status} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
             <option value="">All</option>
-            {[...new Set(data.map((item) => item.status))].map((status) => (
+            {[...new Set(dataPreviousExe.map((item: any) => item.status))].map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
@@ -111,24 +123,19 @@ export default function StatusPage() {
       </div>
 
       {/* EXECUTION QUEUE */}
-      {/* {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
-        <ExecutionQueue data={filteredData} title={"Execution Queue"} />
-      )} */}
-      <ExecutionQueue data={filteredData} title={"Execution Queue"} />
+      {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
+        <ExecutionQueue data={filteredDataQueue} title={"Execution Queue"} />
+      )}
 
       {/* PREVIOUS EXECUTIONS */}
-      {/* {!isLoadingPreviousExe &&
+      {!isLoadingPreviousExe &&
         dataPreviousExe &&
         dataPreviousExe.length > 0 && (
           <PreviousExecutions
-            data={filteredData}
+            data={filteredPreviousDataExe}
             title={"Previous Executions"}
           />
-        )} */}
-        <PreviousExecutions
-            data={filteredData}
-            title={"Previous Executions"}
-          />
+        )}
 
       {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}
       {(isLoadingPreviousExe || isLoadingQueue) && (
@@ -141,9 +148,9 @@ export default function StatusPage() {
         </div>
       )}
 
-      {/* {errorQueue && (
+      {errorQueue && (
         <div className="my-10 text-center text-red-500">{errorQueue}</div>
-      )} */}
+      )}
     </>
   );
 }
