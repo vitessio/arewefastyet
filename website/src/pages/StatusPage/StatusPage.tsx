@@ -21,6 +21,15 @@ import useApiCall from "../../utils/Hook";
 import Hero from "./components/Hero";
 import ExecutionQueue from "./components/PreviousExecutions";
 import PreviousExecutions from "./components/PreviousExecutions";
+import datas from "./data.json";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface dataTypes {
   uuid: string;
@@ -45,36 +54,42 @@ export default function StatusPage() {
   );
 
   const [filters, setFilters] = useState({
-    type: '',
-    status: '',
-    source: '',
+    type: "",
+    status: "",
+    source: "",
   });
 
   const filterData = (data: dataTypes[]) => {
     return data.filter((item) => {
-      const itemType = item.type_of ? item.type_of.toString() : '';
-      const itemSource = item.source ? item.source.toString() : '';
-      const itemStatus = item.status ? item.status.toString() : '';
+      const itemType = item.type_of ? item.type_of.toString() : "";
+      const itemSource = item.source ? item.source.toString() : "";
+      const itemStatus = item.status ? item.status.toString() : "";
 
       const matchesType =
-        filters.type === '' || filters.type === undefined || itemType === filters.type;
+        filters.type === "" ||
+        filters.type === "All" ||
+        itemType === filters.type;
       const matchesSource =
-        filters.source === '' || filters.source === undefined || itemSource === filters.source;
+        filters.source === "" ||
+        filters.source === "All" ||
+        itemSource === filters.source;
       const matchesStatus =
-        filters.status === '' || filters.status === undefined || itemStatus === filters.status;
+        filters.status === "" ||
+        filters.status === "All" ||
+        itemStatus === filters.status;
 
-      return (matchesType || filters.type === '' || filters.type === undefined) &&
-      (matchesSource || filters.source === '' || filters.source === undefined) &&
-      (matchesStatus || filters.status === '' || filters.status === undefined);
+      return matchesType && matchesSource && matchesStatus;
     });
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+  const handleFilterChange = (name: string, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value === "" ? "" : value,
+    }));
   };
 
-  const filteredDataQueue = filterData(dataQueue) as dataTypes[]; 
+  const filteredDataQueue = filterData(dataQueue) as dataTypes[];
   const filteredPreviousDataExe = filterData(dataPreviousExe) as dataTypes[];
 
   return (
@@ -84,42 +99,64 @@ export default function StatusPage() {
       <div className="border-accent border mt-5" />
 
       {/* FILTERS OPTIONS*/}
-      <div>
-        <label>
-          Type:
-          <select name="type" value={filters.type} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
-            <option value="">All</option>
-            {[...new Set(dataPreviousExe.map((item: any) => item.type_of))].map((type) => (
-                <option key={type} value={type}>
+
+      <div className="flex p-5 gap-4 lg:pl-20">
+        <Select
+          value={filters.type}
+          onValueChange={(value) => handleFilterChange("type", value)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All</SelectItem>
+            {[...new Set(datas.map((item: any) => item.type_of))].map(
+              (type) => (
+                <SelectItem key={type} value={type}>
                   {type}
-                </option>
-              ))}
-          </select>
-        </label>
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
 
-        <label>
-          Source:
-          <select name="source" value={filters.source} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
-            <option value="">All</option>
-            {[...new Set(dataPreviousExe.map((item: any) => item.source))].map((source) => (
-              <option key={source} value={source}>
-                {source}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          onValueChange={(value) => handleFilterChange("source", value)}
+          value={filters.source}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Sources" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All</SelectItem>
+            {[...new Set(datas.map((item: any) => item.source))].map(
+              (source) => (
+                <SelectItem key={source} value={source}>
+                  {source}
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
 
-        <label>
-          Status:
-          <select name="status" value={filters.status} onChange={handleFilterChange} className="bg-accent rounded-xl p-1">
-            <option value="">All</option>
-            {[...new Set(dataPreviousExe.map((item: any) => item.status))].map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          onValueChange={(value) => handleFilterChange("status", value)}
+          value={filters.status}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All</SelectItem>
+            {[...new Set(datas.map((item: any) => item.status))].map(
+              (status) => (
+                <SelectItem key={status} value={status}>
+                  {status}
+                </SelectItem>
+              )
+            )}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* EXECUTION QUEUE */}
