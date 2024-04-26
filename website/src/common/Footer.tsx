@@ -16,11 +16,8 @@ limitations under the License.
 
 import React from "react";
 
-import {
-  AiFillGithub,
-  AiFillSlackCircle,
-  AiFillTwitterCircle,
-} from "react-icons/ai";
+import { AiFillGithub, AiFillSlackCircle } from "react-icons/ai";
+import { FaSquareXTwitter } from "react-icons/fa6";
 import { BsStackOverflow } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
@@ -28,7 +25,7 @@ const Footer = () => {
   const socials = [
     { url: "https://github.com/vitessio/arewefastyet", icon: AiFillGithub },
     { url: "https://vitess.io/slack", icon: AiFillSlackCircle },
-    { url: "https://twitter.com/vitessio", icon: AiFillTwitterCircle },
+    { url: "https://twitter.com/vitessio", icon: FaSquareXTwitter },
     { url: "https://stackoverflow.com/search?q=vitess", icon: BsStackOverflow },
   ];
 
