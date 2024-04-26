@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/Utils";
 import { twMerge } from "tailwind-merge";
 import DisplayList from "../../../common/DisplayList";
+import { Badge, badgeVariants } from "@/components/ui/badge";
 
 export default function PreviousExecutions(props) {
   const { data, title } = props;
@@ -67,16 +68,18 @@ export default function PreviousExecutions(props) {
       newData["Go version"] = entry.golang_version;
 
       newData["Status"] = (
-        <span
-          className={twMerge(
-            "text-lg text-white px-4 rounded-full",
-            entry.status === "failed" && "bg-[#dd1a2a]",
-            entry.status === "finished" && "bg-[#00aa00]",
-            entry.status === "started" && "bg-[#3a3aed]"
-          )}
+        <Badge
+          variant={
+            entry.status === "failed"
+              ? "destructive"
+              : entry.status === "finished"
+              ? "secondary"
+              : "default"
+          }
+          className="text-lg px-4 rounded-full text-center"
         >
           {entry.status}
-        </span>
+        </Badge>
       );
 
       setPreviousExecutions((p) => [...p, newData]);
