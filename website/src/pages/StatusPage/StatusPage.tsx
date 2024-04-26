@@ -21,7 +21,6 @@ import useApiCall from "../../utils/Hook";
 import Hero from "./components/Hero";
 import ExecutionQueue from "./components/PreviousExecutions";
 import PreviousExecutions from "./components/PreviousExecutions";
-import datas from "./data.json";
 
 import {
   Select,
@@ -110,7 +109,7 @@ export default function StatusPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All</SelectItem>
-            {[...new Set(datas.map((item: any) => item.type_of))].map(
+            {[...new Set(dataPreviousExe.map((item: any) => item.type_of))].map(
               (type) => (
                 <SelectItem key={type} value={type}>
                   {type}
@@ -129,7 +128,7 @@ export default function StatusPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All</SelectItem>
-            {[...new Set(datas.map((item: any) => item.source))].map(
+            {[...new Set(dataPreviousExe.map((item: any) => item.source))].map(
               (source) => (
                 <SelectItem key={source} value={source}>
                   {source}
@@ -148,7 +147,7 @@ export default function StatusPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All</SelectItem>
-            {[...new Set(datas.map((item: any) => item.status))].map(
+            {[...new Set(dataPreviousExe.map((item: any) => item.status))].map(
               (status) => (
                 <SelectItem key={status} value={status}>
                   {status}
