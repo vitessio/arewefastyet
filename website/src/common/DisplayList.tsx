@@ -46,7 +46,7 @@ export default function DisplayList(props) {
           </div>
         ))}
       </div>
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto hidden widescreen:block">
         <Table>
           <TableHeader>
             <TableRow>
