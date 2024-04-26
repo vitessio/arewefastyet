@@ -21,13 +21,14 @@ import useApiCall from "../../utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
 import PRTable from "./components/PRTable";
+import { prDataTypes } from "@/types";
 
 export default function PRsPage() {
   const {
     data: dataPRList,
     isLoading: isPRListLoading,
     error: PRListError,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}pr/list`, []);
+  } = useApiCall<prDataTypes>(`${import.meta.env.VITE_API_URL}pr/list`);
 
   return (
     <>

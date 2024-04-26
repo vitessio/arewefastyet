@@ -15,3 +15,70 @@ limitations under the License.
 */
 
 export type Theme = "default" | "dark";
+
+export type statusDataTypes = {
+    uuid: string;
+    git_ref: string;
+    source: string;
+    started_at: string;
+    finished_at: string;
+    type_of: string;
+    pull_nb?: number;
+    golang_version: string;
+    status: string;
+}
+
+export type prDataTypes = {
+    ID: number;
+    Author: string;
+    Title: string;
+    CreatedAt: string;
+    Base: string;
+    Head: string;
+    error?: any
+}
+
+export interface Range {
+    infinite: boolean;
+    unknown: boolean;
+    value: number;
+}
+  
+export interface MacroDataValue {
+  center: number;
+  confidence: number;
+  range: Range;
+}
+
+export interface ComponentsCpuTime {
+  vtgate: MacroDataValue;
+  vttablet: MacroDataValue;
+}
+
+export interface ComponentsMemStatsAllocBytes {
+  vtgate: MacroDataValue;
+  vttablet: MacroDataValue;
+}
+
+export interface MacroData {
+  git_ref: string;
+  total_qps: MacroDataValue;
+  reads_qps: MacroDataValue;
+  writes_qps: MacroDataValue;
+  other_qps: MacroDataValue;
+  tps: MacroDataValue;
+  latency: MacroDataValue;
+  errors: MacroDataValue;
+  total_components_cpu_time: MacroDataValue;
+  components_cpu_time: ComponentsCpuTime;
+  total_components_mem_stats_alloc_bytes: MacroDataValue;
+  components_mem_stats_alloc_bytes: ComponentsMemStatsAllocBytes;
+}
+
+export interface MacrosData {
+  [key: string]: MacroData;
+}
+
+export interface SearchData {
+  Macros: MacrosData;
+}
