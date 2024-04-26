@@ -14,6 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function DisplayList(props) {
   const { data } = props;
@@ -39,33 +47,24 @@ export default function DisplayList(props) {
         ))}
       </div>
       <div className="w-full overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr>
+        <Table>
+          <TableHeader>
+            <TableRow>
               {Object.keys(data[0]).map((item, key) => (
-                <th
-                  className="border-b min-w-[150px] text-left font-semibold py-2 border-front"
-                  key={key}
-                >
-                  {item}
-                </th>
+                <TableHead key={key}>{item}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((val, key) => {
-              return (
-                <tr key={key} className="hover:bg-accent cursor-default">
-                  {Object.keys(val).map((item, key) => (
-                    <td className="border-b py-3 text-left" key={key}>
-                      {val[item]}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((val, key) => (
+              <TableRow key={key} className="hover:bg-accent cursor-default">
+                {Object.keys(val).map((item, key) => (
+                  <TableCell key={key}>{val[item]}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
