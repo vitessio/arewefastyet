@@ -42,7 +42,9 @@ export default function SearchPage() {
     <>
       <Hero setGitRef={setGitRef} />
 
-      {searchError && <div className="text-red-500 text-center my-2">{searchError}</div>}
+      {searchError && (
+        <div className="text-red-500 text-center my-2">{searchError}</div>
+      )}
 
       {isSearchLoading && (
         <div className="flex my-10 justify-center items-center">
@@ -55,14 +57,17 @@ export default function SearchPage() {
           <div className="w-1/2 flex flex-col gap-y-16">
             {dataSearch.Macros &&
               typeof dataSearch.Macros === "object" &&
-              Object.entries(dataSearch.Macros).map(function (
-                searchMacro,
-                index
-              ) {
-                return (
-                  <SearchMacro key={index} data={searchMacro} gitRef={gitRef} />
-                );
-              })}
+              Object.entries(dataSearch.Macros).map(
+                function (searchMacro, index) {
+                  return (
+                    <SearchMacro
+                      key={index}
+                      data={searchMacro}
+                      gitRef={gitRef}
+                    />
+                  );
+                },
+              )}
           </div>
         </section>
       )}

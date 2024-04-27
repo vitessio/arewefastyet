@@ -48,8 +48,8 @@ const Microbench = ({ data, className, gitRefLeft, gitRefRight }) => {
               data.Diff.Ops <= -5
                 ? "negatif--Micro"
                 : data.Diff.Ops >= 5
-                ? "positif--Micro"
-                : ""
+                  ? "positif--Micro"
+                  : ""
             }`}
           >
             {data.Diff.Ops.toFixed(2)}
@@ -63,8 +63,8 @@ const Microbench = ({ data, className, gitRefLeft, gitRefRight }) => {
               data.Diff.Ops <= -10
                 ? "negatif--Micro"
                 : data.Diff.Ops >= 10
-                ? "positif--Micro"
-                : ""
+                  ? "positif--Micro"
+                  : ""
             }`}
           >
             {data.Diff.NSPerOp.toFixed(2)}
@@ -91,8 +91,8 @@ const Microbench = ({ data, className, gitRefLeft, gitRefRight }) => {
               data.Diff.Ops <= -5
                 ? "negatif--Micro"
                 : data.Diff.Ops >= 5
-                ? "positif--Micro"
-                : ""
+                  ? "positif--Micro"
+                  : ""
             }`}
           >
             {data.Diff.Ops.toFixed(2)}
@@ -107,8 +107,8 @@ const Microbench = ({ data, className, gitRefLeft, gitRefRight }) => {
               data.Diff.Ops <= -10
                 ? "negatif--Micro"
                 : data.Diff.Ops >= 10
-                ? "positif--Micro"
-                : ""
+                  ? "positif--Micro"
+                  : ""
             }`}
           >
             {data.Diff.NSPerOp.toFixed(2)}
@@ -123,8 +123,8 @@ const Microbench = ({ data, className, gitRefLeft, gitRefRight }) => {
               data.Diff.Ops <= -10
                 ? "negatif--Micro"
                 : data.Diff.Ops >= 10
-                ? "positif--Micro"
-                : ""
+                  ? "positif--Micro"
+                  : ""
             }`}
           >
             {data.Diff.BytesPerOp.toFixed(2)}
@@ -139,8 +139,8 @@ const Microbench = ({ data, className, gitRefLeft, gitRefRight }) => {
               data.Diff.Ops <= -10
                 ? "negatif--Micro"
                 : data.Diff.Ops >= 10
-                ? "positif--Micro"
-                : ""
+                  ? "positif--Micro"
+                  : ""
             }`}
           >
             {data.Diff.MBPerSec.toFixed(2)}
@@ -155,8 +155,8 @@ const Microbench = ({ data, className, gitRefLeft, gitRefRight }) => {
               data.Diff.Ops <= -10
                 ? "negatif--Micro"
                 : data.Diff.Ops >= 10
-                ? "positif--Micro"
-                : ""
+                  ? "positif--Micro"
+                  : ""
             }`}
           >
             {data.Diff.AllocsPerOp.toFixed(2)}

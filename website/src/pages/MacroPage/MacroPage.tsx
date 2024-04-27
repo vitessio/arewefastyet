@@ -40,7 +40,7 @@ const Macro = () => {
   async function loadRefs() {
     try {
       const responseRefs = await fetch(
-        `${import.meta.env.VITE_API_URL}vitess/refs`
+        `${import.meta.env.VITE_API_URL}vitess/refs`,
       );
       const jsonDataRefs = await responseRefs.json();
       setDataRefs(jsonDataRefs);
@@ -61,7 +61,7 @@ const Macro = () => {
       const responseMacrobench = await fetch(
         `${import.meta.env.VITE_API_URL}macrobench/compare?old=${
           commits.old
-        }&new=${commits.new}`
+        }&new=${commits.new}`,
       );
       const jsonDataMacrobench = await responseMacrobench.json();
       setDataMacrobench(jsonDataMacrobench);

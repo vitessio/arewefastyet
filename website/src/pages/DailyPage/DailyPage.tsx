@@ -28,7 +28,7 @@ import { secondToMicrosecond } from "../../utils/Utils";
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState(
-    urlParams.get("type") == null ? "OLTP" : urlParams.get("type")
+    urlParams.get("type") == null ? "OLTP" : urlParams.get("type"),
   );
 
   const {

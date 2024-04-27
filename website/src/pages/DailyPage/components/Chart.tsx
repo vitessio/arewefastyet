@@ -123,9 +123,9 @@ ResponsiveChart.propTypes = {
         PropTypes.shape({
           x: PropTypes.string.isRequired,
           y: PropTypes.number.isRequired,
-        })
+        }),
       ).isRequired,
-    })
+    }),
   ).isRequired,
   title: PropTypes.string.isRequired,
   colors: PropTypes.arrayOf(PropTypes.string).isRequired,

@@ -98,12 +98,16 @@ export default function MicroAndMacro() {
       <div className="flex justify-between mt-12">
         {items.map((item, key) => (
           <div key={key} className="w-[48%] border border-primary rounded-lg">
-            <h3 className="text-center my-4 text-primary font-semibold text-lg">{item.title}</h3>
+            <h3 className="text-center my-4 text-primary font-semibold text-lg">
+              {item.title}
+            </h3>
             <ul className="list-none p-4">
               {item.points.map((point, i) => (
                 <li key={i} className="m-4">
                   <h5 className="font-medium my-1">{point.title}</h5>
-                  <p className="text-xs text-front text-opacity-80">{point.content}</p>
+                  <p className="text-xs text-front text-opacity-80">
+                    {point.content}
+                  </p>
                 </li>
               ))}
             </ul>

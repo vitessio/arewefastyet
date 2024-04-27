@@ -51,7 +51,9 @@ export default function PRPage() {
           </div>
         )}
 
-        {singlePrError && <div className="text-red-500 text-center my-2">{errorApi}</div>}
+        {singlePrError && (
+          <div className="text-red-500 text-center my-2">{errorApi}</div>
+        )}
 
         {!singlePrLoading && dataSinglePr && (
           <div className="flex flex-col border border-front rounded-3xl w-11/12 bg-foreground bg-opacity-5">

@@ -26,7 +26,7 @@ function Container(props) {
 
   let items = React.Children.map(
     props.children,
-    (child) => `${child.props.children}`
+    (child) => `${child.props.children}`,
   );
 
   useClickOutside(ref, () => setOpen(false));
@@ -50,7 +50,7 @@ function Container(props) {
         onClick={() => setOpen(!open)}
         className={twMerge(
           "flex items-center justify-center duration-inherit",
-          props.className
+          props.className,
         )}
       >
         {`${items[selectedIndex] || props.placeholder}`}
@@ -58,14 +58,14 @@ function Container(props) {
           icon="expand_more"
           className={twMerge(
             "pt-[3px] ml-2 scale-150 duration-300",
-            open && "rotate-180"
+            open && "rotate-180",
           )}
         />
       </button>
       <>
         <div
           className={twMerge(
-            "flex flex-col left-1/2 -translate-x-1/2 z-10 duration-300 absolute top-full"
+            "flex flex-col left-1/2 -translate-x-1/2 z-10 duration-300 absolute top-full",
           )}
           style={{
             clipPath: !open

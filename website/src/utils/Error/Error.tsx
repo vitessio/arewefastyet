@@ -14,28 +14,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import ErrorImage from '../../assets/error.png';
+import React from "react";
+import { Link } from "react-router-dom";
+import ErrorImage from "../../assets/error.png";
 
-import '../Error/error.css'
-
+import "../Error/error.css";
 
 const Error = () => {
-    return (
-        <div className='error'>
-            <div>
-                <h1>404</h1>
-            </div>
-            <div className="errorImg">
-                <img src={ErrorImage} alt='error' />
-            </div>
-            <div>
-                <h2>OOPS! Something went wrong</h2>
-                <Link to='/home'><button className='goHome'>Go Back</button> </Link>
-            </div>
-        </div>
-    );
+  return (
+    <div className="error">
+      <div>
+        <h1>404</h1>
+      </div>
+      <div className="errorImg">
+        <img src={ErrorImage} alt="error" />
+      </div>
+      <div>
+        <h2>OOPS! Something went wrong</h2>
+        <Link to="/home">
+          <button className="goHome">Go Back</button>{" "}
+        </Link>
+      </div>
+    </div>
+  );
 };
 
 export default Error;

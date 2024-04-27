@@ -18,7 +18,7 @@ import React from "react";
 
 import { formatByte, secondToMicrosecond } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
-import {getRange} from "@/common/Macrobench";
+import { getRange } from "@/common/Macrobench";
 import PropTypes from "prop-types";
 
 export default function SearchMacro({ data, gitRef }) {
@@ -36,40 +36,19 @@ export default function SearchMacro({ data, gitRef }) {
       </div>
       <table>
         <tbody>
-          <Row
-            title={"QPS Total"}
-            value={data[1].total_qps}
-          />
+          <Row title={"QPS Total"} value={data[1].total_qps} />
 
-          <Row
-            title={"QPS Reads"}
-            value={data[1].reads_qps}
-          />
+          <Row title={"QPS Reads"} value={data[1].reads_qps} />
 
-          <Row
-            title={"QPS Writes"}
-            value={data[1].writes_qps}
-          />
+          <Row title={"QPS Writes"} value={data[1].writes_qps} />
 
-          <Row
-            title={"QPS Other"}
-            value={data[1].other_qps}
-          />
+          <Row title={"QPS Other"} value={data[1].other_qps} />
 
-          <Row
-            title={"TPS"}
-            value={data[1].tps}
-          />
+          <Row title={"TPS"} value={data[1].tps} />
 
-          <Row
-            title={"Latency"}
-            value={data[1].latency}
-          />
+          <Row title={"Latency"} value={data[1].latency} />
 
-          <Row
-            title={"Errors"}
-            value={data[1].errors}
-          />
+          <Row title={"Errors"} value={data[1].errors} />
 
           <Row
             title={"Total CPU / query"}
@@ -113,34 +92,36 @@ export default function SearchMacro({ data, gitRef }) {
 }
 
 function Row({ title, value, fmt }) {
-    var valFmt = value.center
-    if (fmt == "time") {
-        valFmt = secondToMicrosecond(value.center)
-    } else if (fmt == "memory") {
-        valFmt = formatByte(value.center)
-    }
+  var valFmt = value.center;
+  if (fmt == "time") {
+    valFmt = secondToMicrosecond(value.center);
+  } else if (fmt == "memory") {
+    valFmt = formatByte(value.center);
+  }
 
-    return (
+  return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-1 px-4 text-lg justify-end border-r border-r-primary font-bold">
         <span>{title}</span>
       </td>
       <td className="px-24 pt-4 pb-1 text-center">
-        <span>{valFmt} ({getRange(value.range)})</span>
+        <span>
+          {valFmt} ({getRange(value.range)})
+        </span>
       </td>
     </tr>
-    );
+  );
 }
 
 Row.propTypes = {
-    title: PropTypes.string.isRequired,
-    value: PropTypes.shape({
-        center: PropTypes.number.isRequired,
-        range: PropTypes.shape({
-            infinite: PropTypes.bool.isRequired,
-            unknown: PropTypes.bool.isRequired,
-            value: PropTypes.number.isRequired,
-        }),
-    }).isRequired,
-    fmt: PropTypes.oneOf(['time', 'memory']),
+  title: PropTypes.string.isRequired,
+  value: PropTypes.shape({
+    center: PropTypes.number.isRequired,
+    range: PropTypes.shape({
+      infinite: PropTypes.bool.isRequired,
+      unknown: PropTypes.bool.isRequired,
+      value: PropTypes.number.isRequired,
+    }),
+  }).isRequired,
+  fmt: PropTypes.oneOf(["time", "memory"]),
 };

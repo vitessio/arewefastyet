@@ -32,10 +32,10 @@ import Microbench from "./components/Microbench/Microbench";
 export default function MicroPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [gitRefLeft, setGitRefLeft] = useState(
-    urlParams.get("ltag") == null ? "Left" : urlParams.get("ltag")
+    urlParams.get("ltag") == null ? "Left" : urlParams.get("ltag"),
   );
   const [gitRefRight, setGitRefRight] = useState(
-    urlParams.get("rtag") == null ? "Right" : urlParams.get("rtag")
+    urlParams.get("rtag") == null ? "Right" : urlParams.get("rtag"),
   );
   const [openDropDownLeft, setOpenDropDownLeft] = useState(closeDropDownValue);
   const [openDropDownRight, setOpenDropDownRight] =
@@ -52,7 +52,7 @@ export default function MicroPage() {
     const fetchData = async () => {
       try {
         const responseRefs = await fetch(
-          `${import.meta.env.VITE_API_URL}vitess/refs`
+          `${import.meta.env.VITE_API_URL}vitess/refs`,
         );
 
         const jsonDataRefs = await responseRefs.json();
@@ -81,7 +81,7 @@ export default function MicroPage() {
           const responseMicrobench = await fetch(
             `${
               import.meta.env.VITE_API_URL
-            }microbench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`
+            }microbench/compare?rtag=${commitHashRight}&ltag=${commitHashLeft}`,
           );
           const jsonDataMicrobench = await responseMicrobench.json();
           setDataMicrobench(jsonDataMicrobench);
@@ -130,7 +130,7 @@ export default function MicroPage() {
                           ref,
                           setGitRefLeft,
                           setCommitHashLeft,
-                          setOpenDropDownLeft
+                          setOpenDropDownLeft,
                         );
                       }}
                     >
@@ -164,7 +164,7 @@ export default function MicroPage() {
                           ref,
                           setGitRefRight,
                           setCommitHashRight,
-                          setOpenDropDownRight
+                          setOpenDropDownRight,
                         )
                       }
                     >
