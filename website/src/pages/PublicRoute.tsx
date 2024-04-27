@@ -17,7 +17,7 @@ limitations under the License.
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Error from "../utils/Error/Error";
+import Error from "../utils/Error";
 import Layout from "../pages/Layout";
 import MacroPage from "./MacroPage/MacroPage";
 import ComparePage from "./ComparePage/ComparePage";
@@ -43,7 +43,10 @@ const PublicRoute = () => {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/macro" element={<MacroPage />} />
-        <Route path="/macrobench/queries/compare" element={<MacroQueriesComparePage />} />
+        <Route
+          path="/macrobench/queries/compare"
+          element={<MacroQueriesComparePage />}
+        />
         <Route path="/micro" element={<MicroPage />} />
         <Route path="/pr" element={<PRsPage />} />
         <Route path="/pr/:pull_nb" element={<PRPage />} />
