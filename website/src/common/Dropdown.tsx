@@ -51,7 +51,7 @@ function Container(props) {
         variant="outline"
         onClick={() => setOpen(!open)}
         className={twMerge(
-          "flex items-center h-full justify-center duration-inherit hover:bg-transparent",
+          "flex text-black dark:text-white items-center h-full justify-center duration-inherit hover:bg-transparent",
           props.className
         )}
       >
