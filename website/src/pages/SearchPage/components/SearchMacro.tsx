@@ -21,7 +21,25 @@ import { Link } from "react-router-dom";
 import {getRange} from "@/common/Macrobench";
 import PropTypes from "prop-types";
 
-export default function SearchMacro({ data, gitRef }) {
+interface SearchMacroProps {
+  gitRef: string;
+  data: Array<string | any>;
+}
+
+interface RowProps {
+  title: string;
+  value: {
+    center: string | number;
+    range: {
+      infinite: boolean;
+      unknown: boolean;
+      value: number;
+    };
+  };
+  fmt?: string;
+}
+
+export default function SearchMacro({ data, gitRef }: SearchMacroProps) {
   return (
     <div className="flex flex-col border border-primary relative rounded-xl bg-background bg-opacity-5 shadow-xl">
       <div className="p-5">
@@ -112,7 +130,7 @@ export default function SearchMacro({ data, gitRef }) {
   );
 }
 
-function Row({ title, value, fmt }) {
+function Row({ title, value, fmt }:RowProps) {
     var valFmt = value.center
     if (fmt == "time") {
         valFmt = secondToMicrosecond(value.center)
