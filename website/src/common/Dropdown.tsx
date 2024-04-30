@@ -17,6 +17,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
 import Icon from "../common/Icon";
 import { twMerge } from "tailwind-merge";
+import { Button } from "@/components/ui/button";
 
 function Container(props) {
   const [open, setOpen] = useState(false);
@@ -45,12 +46,15 @@ function Container(props) {
   }, [selectedIndex]);
 
   return (
-    <div ref={ref} className="relative">
-      <button
+    <div ref={ref} className="relative flex gap-2">
+      <Button
+        variant="outline"
         onClick={() => setOpen(!open)}
         className={twMerge(
-          "flex items-center justify-center duration-inherit",
-          props.className,
+
+          "flex items-center h-full justify-center duration-inherit hover:bg-transparent",
+          props.className
+
         )}
       >
         {`${items[selectedIndex] || props.placeholder}`}
@@ -61,7 +65,8 @@ function Container(props) {
             open && "rotate-180",
           )}
         />
-      </button>
+      </Button>
+
       <>
         <div
           className={twMerge(
@@ -89,12 +94,12 @@ function Container(props) {
 
 function Option(props) {
   return (
-    <button
-      className={twMerge("", props.className, props.isSelected && "bg-primary")}
+    <Button
+      className={twMerge("dark:text-white text-black", props.className, props.isSelected && "bg-primary")}
       onClick={props.onClick}
     >
       {props.children}
-    </button>
+    </Button>
   );
 }
 

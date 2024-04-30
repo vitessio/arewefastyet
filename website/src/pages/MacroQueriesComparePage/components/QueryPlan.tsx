@@ -21,6 +21,7 @@ import "react-json-pretty/themes/monikai.css";
 import { twMerge } from "tailwind-merge";
 import useModal from "../../../hooks/useModal";
 import Icon from "../../../common/Icon";
+import { Button } from "@/components/ui/button";
 
 export default function QueryPlan({ data }) {
   const modal = useModal();
@@ -76,12 +77,13 @@ function DetailsModal({ data }) {
 
   return (
     <div className="w-[80vw] h-[80vh] overflow-y-auto overflow-x-hidden p-5 rounded-xl bg-background border border-front flex flex-col overscroll-contain relative pb-10">
-      <button
+      <Button
+        variant="outline"
         className="sticky self-end top-2 right-2 w-max duration-300 hover:scale-125 hover:text-primary text-3xl"
         onClick={modal.hide}
       >
         <Icon icon="close" />
-      </button>
+      </Button>
 
       <div className="flex flex-col items-center gap-y-6">
         <h3 className="text-primary text-3xl my-2 font-medium">Statistics</h3>
