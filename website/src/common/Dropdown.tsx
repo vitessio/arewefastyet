@@ -51,7 +51,7 @@ function Container(props) {
         variant="outline"
         onClick={() => setOpen(!open)}
         className={twMerge(
-          "flex text-black dark:text-white items-center h-full justify-center duration-inherit hover:bg-transparent",
+          "flex items-center h-full justify-center duration-inherit hover:bg-transparent",
           props.className
         )}
       >
@@ -93,7 +93,7 @@ function Container(props) {
 function Option(props) {
   return (
     <Button
-      className={twMerge("", props.className, props.isSelected && "bg-primary")}
+      className={twMerge("dark:text-white text-black", props.className, props.isSelected && "bg-primary")}
       onClick={props.onClick}
     >
       {props.children}
