@@ -17,7 +17,7 @@ limitations under the License.
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Error from "../utils/Error/Error";
+import Error from "../utils/Error";
 import Layout from "../pages/Layout";
 import MacroPage from "./MacroPage/MacroPage";
 import ComparePage from "./ComparePage/ComparePage";

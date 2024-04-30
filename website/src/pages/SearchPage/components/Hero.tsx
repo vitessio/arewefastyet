@@ -15,7 +15,11 @@ limitations under the License.
 */
 import React from "react";
 
-export default function Hero({ setGitRef }) {
+interface HeroProps {
+  setGitRef: (value: string) => void;
+}
+
+export default function Hero({ setGitRef }: HeroProps) {
   return (
     <section className="h-[30vh] pt-[5vh] flex justify-center items-center">
       <div className="p-[3px] bg-gradient-to-br from-primary to-theme rounded-full w-1/2 duration-300 focus-within:p-[1px]">

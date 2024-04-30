@@ -21,7 +21,25 @@ import { Link } from "react-router-dom";
 import { getRange } from "@/common/Macrobench";
 import PropTypes from "prop-types";
 
-export default function SearchMacro({ data, gitRef }) {
+interface SearchMacroProps {
+  gitRef: string;
+  data: Array<string | any>;
+}
+
+interface RowProps {
+  title: string;
+  value: {
+    center: string | number;
+    range: {
+      infinite: boolean;
+      unknown: boolean;
+      value: number;
+    };
+  };
+  fmt?: string;
+}
+
+export default function SearchMacro({ data, gitRef }: SearchMacroProps) {
   return (
     <div className="flex flex-col border border-primary relative rounded-xl bg-background bg-opacity-5 shadow-xl">
       <div className="p-5">
@@ -91,6 +109,7 @@ export default function SearchMacro({ data, gitRef }) {
   );
 }
 
+<<<<<<< HEAD
 function Row({ title, value, fmt }) {
   var valFmt = value.center;
   if (fmt == "time") {
@@ -98,6 +117,15 @@ function Row({ title, value, fmt }) {
   } else if (fmt == "memory") {
     valFmt = formatByte(value.center);
   }
+=======
+function Row({ title, value, fmt }:RowProps) {
+    var valFmt = value.center
+    if (fmt == "time") {
+        valFmt = secondToMicrosecond(value.center)
+    } else if (fmt == "memory") {
+        valFmt = formatByte(value.center)
+    }
+>>>>>>> 85cc5af151fab94e3a4fbf022d03bf596ae36e8f
 
   return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
@@ -114,6 +142,7 @@ function Row({ title, value, fmt }) {
 }
 
 Row.propTypes = {
+<<<<<<< HEAD
   title: PropTypes.string.isRequired,
   value: PropTypes.shape({
     center: PropTypes.number.isRequired,
@@ -124,4 +153,16 @@ Row.propTypes = {
     }),
   }).isRequired,
   fmt: PropTypes.oneOf(["time", "memory"]),
+=======
+    title: PropTypes.string.isRequired,
+    value: PropTypes.shape({
+        center: PropTypes.number.isRequired,
+        range: PropTypes.shape({
+            infinite: PropTypes.bool.isRequired,
+            unknown: PropTypes.bool.isRequired,
+            value: PropTypes.number.isRequired,
+        }),
+    }).isRequired,
+    fmt: PropTypes.oneOf(['time', 'memory']),
+>>>>>>> 85cc5af151fab94e3a4fbf022d03bf596ae36e8f
 };
