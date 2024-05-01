@@ -59,7 +59,7 @@ function Badge({ type, content }) {
         "px-5 py-1 rounded-full w-max text-sm text-white font-medium",
         type === "error" && "bg-red-600",
         type === "warning" && "bg-purple-700",
-        type === "info" && "bg-sky-600"
+        type === "info" && "bg-sky-600",
       )}
     >
       {content}
@@ -145,7 +145,7 @@ function DetailsModal({ data }) {
         <div
           className={twMerge(
             "px-10 self-center text-center py-2 rounded-full w-max my-5",
-            arePlansDifferent ? "bg-red-700" : "bg-green-600"
+            arePlansDifferent ? "bg-red-700" : "bg-green-600",
           )}
         >
           <span>

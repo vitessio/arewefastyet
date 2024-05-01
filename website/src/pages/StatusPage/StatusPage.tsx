@@ -29,7 +29,7 @@ export default function StatusPage() {
     error: errorQueue,
   } = useApiCall(`${import.meta.env.VITE_API_URL}queue`);
   const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
-    `${import.meta.env.VITE_API_URL}recent`
+    `${import.meta.env.VITE_API_URL}recent`,
   );
 
   return (

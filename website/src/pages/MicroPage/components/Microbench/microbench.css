@@ -14,60 +14,59 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.microbench{
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0px;
-    text-align: center;
-    border-top: 1px solid #B5ADAD;
-    overflow: hidden;
-    transition: 0.8s;
-    font-weight: 200;
+.microbench {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0px;
+  text-align: center;
+  border-top: 1px solid #b5adad;
+  overflow: hidden;
+  transition: 0.8s;
+  font-weight: 200;
 }
 
-.name{
-    word-wrap: break-word;
-    width: 30%;
+.name {
+  word-wrap: break-word;
+  width: 30%;
 }
 
-.microbench__bottom{
-    border: #B5ADAD 1px solid;
-    width: 75%;
-    max-width: 800px;
-    margin: auto;
-    padding: 15px;
-    margin-top: 30px;
-    
+.microbench__bottom {
+  border: #b5adad 1px solid;
+  width: 75%;
+  max-width: 800px;
+  margin: auto;
+  padding: 15px;
+  margin-top: 30px;
 }
 
-.microbench__bottom__line{
-    border-bottom:#B5ADAD solid 2px;
-    margin: 10px 0px;
+.microbench__bottom__line {
+  border-bottom: #b5adad solid 2px;
+  margin: 10px 0px;
 }
 
-.microbenchMore{
-    padding: 10px 0px;
-    font-weight: 200;
+.microbenchMore {
+  padding: 10px 0px;
+  font-weight: 200;
 }
 
-.positif--Micro{
-    background-color: green;
-    border-radius: 20px;
-    padding: 5px 0px;
+.positif--Micro {
+  background-color: green;
+  border-radius: 20px;
+  padding: 5px 0px;
 }
 
-.negatif--Micro{
-    background-color: red;
-    border-radius: 20px;
-    padding: 5px 0px;
+.negatif--Micro {
+  background-color: red;
+  border-radius: 20px;
+  padding: 5px 0px;
 }
 
 /* MEDIA QUERIES FOR TABLETS */
 @media only screen and (max-width: 767px) {
-    .microbench__bottom{
-        width: 98%;
-    }
-    .name{
-        width: 50%;
-    }
+  .microbench__bottom {
+    width: 98%;
+  }
+  .name {
+    width: 50%;
+  }
 }

@@ -72,7 +72,7 @@ export default function PreviousExecutions(props) {
             "text-lg text-white px-4 rounded-full",
             entry.status === "failed" && "bg-[#dd1a2a]",
             entry.status === "finished" && "bg-[#00aa00]",
-            entry.status === "started" && "bg-[#3a3aed]"
+            entry.status === "started" && "bg-[#3a3aed]",
           )}
         >
           {entry.status}

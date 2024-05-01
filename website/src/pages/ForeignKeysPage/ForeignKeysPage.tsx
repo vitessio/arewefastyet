@@ -18,7 +18,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
 
-
 import { errorApi } from "../../utils/Utils";
 import Hero from "./components/Hero";
 import FK from "./components/FK";
@@ -38,7 +37,7 @@ const ForeignKeys = () => {
   async function loadRefs() {
     try {
       const responseRefs = await fetch(
-        `${import.meta.env.VITE_API_URL}vitess/refs`
+        `${import.meta.env.VITE_API_URL}vitess/refs`,
       );
       const jsonDataRefs = await responseRefs.json();
       setDataRefs(jsonDataRefs);
@@ -55,9 +54,7 @@ const ForeignKeys = () => {
     setLoading(true);
     try {
       const responseFK = await fetch(
-        `${import.meta.env.VITE_API_URL}fk/compare?sha=${
-          commits.tag
-        }`
+        `${import.meta.env.VITE_API_URL}fk/compare?sha=${commits.tag}`,
       );
       const jsonDataFKs = await responseFK.json();
       setDataFKs(jsonDataFKs);
@@ -97,9 +94,7 @@ const ForeignKeys = () => {
 
         {!loading && dataFKs && (
           <div className="flex flex-col gap-y-20 ">
-            <FK
-              data={dataFKs}
-            />
+            <FK data={dataFKs} />
           </div>
         )}
       </div>

@@ -71,7 +71,7 @@ export default function Hero(props: {
                     className={twMerge(
                       "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 font-medium hover:bg-accent",
                       key === 0 && "rounded-t border-t-front",
-                      key === refs.length - 1 && "rounded-b"
+                      key === refs.length - 1 && "rounded-b",
                     )}
                   >
                     {ref.Name}

@@ -56,7 +56,7 @@ function ComparisonInput(props: {
       name={name}
       className={twMerge(
         className,
-        "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary"
+        "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary",
       )}
       defaultValue={gitRef[name]}
       placeholder={`${name} SHA`}

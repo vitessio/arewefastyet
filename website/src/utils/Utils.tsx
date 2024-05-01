@@ -83,7 +83,7 @@ export const valueDropDown = (
   setDropDown,
   setCommitHash,
   setOpenDropDown,
-  setChangeUrl
+  setChangeUrl,
 ) => {
   setDropDown(ref.Name);
   setCommitHash(ref.CommitHash);

@@ -36,7 +36,7 @@ export default function Compare() {
     textLoading: macrobenchTextLoading,
     error: macrobenchError,
   } = useApiCall(
-    `${import.meta.env.VITE_API_URL}macrobench/compare?new=${gitRef.new}&old=${gitRef.old}`
+    `${import.meta.env.VITE_API_URL}macrobench/compare?new=${gitRef.new}&old=${gitRef.old}`,
   );
 
   const navigate = useNavigate();
