@@ -99,7 +99,7 @@ export default function StatusPage() {
 
       {/* FILTERS OPTIONS*/}
 
-      <div className="flex p-5 gap-4 lg:pl-20">
+      <div className="flex p-5 gap-4 lg:pl-28">
         <Select
           value={filters.type}
           onValueChange={(value) => handleFilterChange("type", value)}
