@@ -50,12 +50,7 @@ export interface MacroDataValue {
   range: Range;
 }
 
-export interface ComponentsCpuTime {
-  vtgate: MacroDataValue;
-  vttablet: MacroDataValue;
-}
-
-export interface ComponentsMemStatsAllocBytes {
+export interface ComponentStats {
   vtgate: MacroDataValue;
   vttablet: MacroDataValue;
 }
@@ -70,9 +65,9 @@ export interface MacroData {
   latency: MacroDataValue;
   errors: MacroDataValue;
   total_components_cpu_time: MacroDataValue;
-  components_cpu_time: ComponentsCpuTime;
+  components_cpu_time: ComponentStats;
   total_components_mem_stats_alloc_bytes: MacroDataValue;
-  components_mem_stats_alloc_bytes: ComponentsMemStatsAllocBytes;
+  components_mem_stats_alloc_bytes: ComponentStats;
 }
 
 export interface MacrosData {
@@ -81,4 +76,33 @@ export interface MacrosData {
 
 export interface SearchData {
   Macros: MacrosData;
+}
+
+export interface Range {
+  infinite: boolean;
+  unknown: boolean;
+  value: number;
+}
+
+export interface ComparedValue {
+  insignificant: boolean;
+  delta: number;
+  p: number;
+  n1: number;
+  n2: number;
+  old: MacroDataValue;
+  new: MacroDataValue;
+}
+
+export interface CompareResult {
+  total_qps: ComparedValue;
+  reads_qps: ComparedValue;
+  writes_qps: ComparedValue;
+  other_qps: ComparedValue;
+  tps: ComparedValue;
+}
+
+export interface CompareData {
+  type: string;
+  result: CompareResult;
 }

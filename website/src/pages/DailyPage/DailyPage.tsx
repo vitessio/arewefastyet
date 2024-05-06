@@ -22,26 +22,32 @@ import useApiCall from "../../utils/Hook";
 import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
 import Hero from "./components/Hero";
+import { MacroData, MacroDataValue } from "@/types";
 
 import { secondToMicrosecond } from "../../utils/Utils";
 
+interface DailySummarydata {
+  name: string;
+  data : { total_qps: MacroDataValue }[];
+}
+
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
-  const [benchmarkType, setBenchmarktype] = useState(
-    urlParams.get("type") == null ? "OLTP" : urlParams.get("type")
+  const [benchmarkType, setBenchmarktype] = useState<string>(
+    urlParams.get("type") ?? "OLTP"
   );
 
   const {
     data: dataDailySummary,
     isLoading: isLoadingDailySummary,
     error: errorDailySummary,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}daily/summary`);
+  } = useApiCall<DailySummarydata>(`${import.meta.env.VITE_API_URL}daily/summary`);
 
   const {
     data: dataDaily,
     error: dailyError,
     textLoading: dailyTextLoading,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`);
+  } = useApiCall<MacroData>(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`);
 
   const navigate = useNavigate();
 
@@ -49,14 +55,14 @@ export default function DailyPage() {
     navigate(`?type=${benchmarkType}`);
   }, [benchmarkType]);
 
-  const TPSData = [
+  const TPSData: { id: string; data: { x: string; y: number }[] }[] = [
     {
       id: "TPS",
       data: [],
     },
   ];
 
-  const QPSData = [
+  const QPSData: { id: string; data: { x: string; y: number }[] }[] = [
     {
       id: "Reads",
       data: [],
@@ -77,14 +83,14 @@ export default function DailyPage() {
     },
   ];
 
-  const latencyData = [
+  const latencyData: { id: string; data: { x: string; y: number }[] }[] = [
     {
       id: "Latency",
       data: [],
     },
   ];
 
-  const CPUTimeData = [
+  const CPUTimeData : { id: string; data: { x: string; y: number }[] }[]= [
     {
       id: "Total",
       data: [],
@@ -99,7 +105,7 @@ export default function DailyPage() {
     },
   ];
 
-  const MemBytesData = [
+  const MemBytesData: { id: string; data: { x: string; y: number }[] }[] = [
     {
       id: "Total",
       data: [],
@@ -188,7 +194,11 @@ export default function DailyPage() {
     });
   }
 
-  const allChartData = [
+  const allChartData: {
+    data: { id: string; data: { x: string; y: number }[] }[];
+    title: string;
+    colors: string[];
+  }[] = [
     {
       data: QPSData,
       title: "QPS (Queries per second)",
@@ -234,9 +244,9 @@ export default function DailyPage() {
         </div>
       )}
 
-      {!errorDailySummary && dataDailySummary && (
+      {!errorDailySummary && dataDailySummary && dataDailySummary.length > 0 &&(
         <>
-          <section className="flex p-page justify-center flex-wrap gap-10 py-10">
+          <section className="flex p-page justif-center flex-wrap gap-10 py-10">
             {dataDailySummary.map((dailySummary, index) => {
               return (
                 <DailySummary

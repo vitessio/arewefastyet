@@ -20,8 +20,8 @@ import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
 import Hero from "./components/Hero";
 import Macrobench from "../../common/Macrobench";
-import Microbench from "../MicroPage/components/Microbench/Microbench";
-
+import { CompareData } from '@/types'
+ 
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -31,11 +31,11 @@ export default function Compare() {
   });
 
   const {
-    data: dataMacrobench,
+    data: compareData,
     isLoading: isMacrobenchLoading,
     textLoading: macrobenchTextLoading,
     error: macrobenchError,
-  } = useApiCall(
+  } = useApiCall<CompareData>(
     `${import.meta.env.VITE_API_URL}macrobench/compare?new=${gitRef.new}&old=${gitRef.old}`
   );
 
@@ -62,11 +62,11 @@ export default function Compare() {
         </div>
       )}
 
-      {!isMacrobenchLoading && !macrobenchTextLoading && dataMacrobench && (
+      {!isMacrobenchLoading && !macrobenchTextLoading && compareData && compareData.length > 0 && (
         <section className="flex flex-col items-center">
           <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
           <div className="flex flex-col gap-y-20">
-            {dataMacrobench.map((macro, index) => {
+            {compareData.map((macro, index) => {
               return (
                 <div key={index}>
                   <Macrobench
