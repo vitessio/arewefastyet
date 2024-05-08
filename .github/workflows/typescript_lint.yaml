@@ -1,4 +1,5 @@
 name: PR Workflow
+
 on:
   pull_request:
     types: [opened, reopened, synchronize]
@@ -13,24 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: cd website && echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache Node dependencies
-        uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: yarn list
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -38,9 +21,12 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+        working-directory: website
+
 
       - name: Linting and Formatting checks
         run: yarn run lint
+        working-directory: website
 
       - name: Type checking
         run: yarn run typecheck
@@ -55,34 +41,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache Node dependencies
-        uses: actions/cache@v4
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - if: ${{ steps.yarn-cache.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: yarn list
-
-      - name: Cache Next Build
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -93,3 +51,5 @@ jobs:
 
       - name: Build
         run: yarn run build
+
+    # Additional steps for the build job...
