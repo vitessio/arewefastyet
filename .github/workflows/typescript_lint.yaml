@@ -1,4 +1,4 @@
-name: PR Workflow
+name: Typescript Lint, Format and Type check workflow
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   linting_and_type-checking:
-    name: Linting, Formatting and Type checking
+    name: Typescript Linting, Formatting and Type checking
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,7 +22,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
         working-directory: website
-
 
       - name: Linting and Formatting checks
         run: yarn run lint
