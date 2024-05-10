@@ -17,7 +17,7 @@ import React from "react";
 import useModal from "../hooks/useModal";
 import { twMerge } from "tailwind-merge";
 
-export default function Modal() {
+export default function Modal(): JSX.Element {
   const modal = useModal();
 
   return (
