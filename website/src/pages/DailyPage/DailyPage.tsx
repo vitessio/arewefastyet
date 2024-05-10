@@ -30,6 +30,10 @@ interface DailySummarydata {
   name: string;
   data : { total_qps: MacroDataValue }[];
 }
+ interface dataXY {
+  x: string;
+  y: number;
+ }
 
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -55,14 +59,14 @@ export default function DailyPage() {
     navigate(`?type=${benchmarkType}`);
   }, [benchmarkType]);
 
-  const TPSData: { id: string; data: { x: string; y: number }[] }[] = [
+  const TPSData: { id: string; data: dataXY[] }[] = [
     {
       id: "TPS",
       data: [],
     },
   ];
 
-  const QPSData: { id: string; data: { x: string; y: number }[] }[] = [
+  const QPSData: { id: string; data: dataXY[] }[] = [
     {
       id: "Reads",
       data: [],
@@ -83,14 +87,14 @@ export default function DailyPage() {
     },
   ];
 
-  const latencyData: { id: string; data: { x: string; y: number }[] }[] = [
+  const latencyData: { id: string; data: dataXY[] }[] = [
     {
       id: "Latency",
       data: [],
     },
   ];
 
-  const CPUTimeData : { id: string; data: { x: string; y: number }[] }[]= [
+  const CPUTimeData : { id: string; data: dataXY[] }[]= [
     {
       id: "Total",
       data: [],
@@ -105,7 +109,7 @@ export default function DailyPage() {
     },
   ];
 
-  const MemBytesData: { id: string; data: { x: string; y: number }[] }[] = [
+  const MemBytesData: { id: string; data: dataXY[] }[] = [
     {
       id: "Total",
       data: [],
@@ -195,7 +199,7 @@ export default function DailyPage() {
   }
 
   const allChartData: {
-    data: { id: string; data: { x: string; y: number }[] }[];
+    data: { id: string; data: dataXY[] }[];
     title: string;
     colors: string[];
   }[] = [
