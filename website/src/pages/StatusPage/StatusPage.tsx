@@ -21,6 +21,7 @@ import useApiCall from "../../utils/Hook";
 import Hero from "./components/Hero";
 import ExecutionQueue from "./components/PreviousExecutions";
 import PreviousExecutions from "./components/PreviousExecutions";
+import datas from "./data.json";
 
 import {
   Select,
@@ -98,95 +99,96 @@ export default function StatusPage() {
       <div className="border-accent border mt-5" />
 
       {/* FILTERS OPTIONS*/}
-
-      <div className="flex p-5 gap-4 lg:pl-28">
-        <Select
-          value={filters.type}
-          onValueChange={(value) => handleFilterChange("type", value)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All</SelectItem>
-            {[...new Set(dataPreviousExe.map((item: any) => item.type_of))].map(
-              (type) => (
+      <div className="flex flex-col items-center">
+        <div className="flex p-5 gap-4 ">
+          <Select
+            value={filters.type}
+            onValueChange={(value) => handleFilterChange("type", value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              {[
+                ...new Set(dataPreviousExe.map((item: any) => item.type_of)),
+              ].map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
                 </SelectItem>
-              )
-            )}
-          </SelectContent>
-        </Select>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select
-          onValueChange={(value) => handleFilterChange("source", value)}
-          value={filters.source}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Sources" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All</SelectItem>
-            {[...new Set(dataPreviousExe.map((item: any) => item.source))].map(
-              (source) => (
+          <Select
+            onValueChange={(value) => handleFilterChange("source", value)}
+            value={filters.source}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Sources" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              {[
+                ...new Set(dataPreviousExe.map((item: any) => item.source)),
+              ].map((source) => (
                 <SelectItem key={source} value={source}>
                   {source}
                 </SelectItem>
-              )
-            )}
-          </SelectContent>
-        </Select>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select
-          onValueChange={(value) => handleFilterChange("status", value)}
-          value={filters.status}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All</SelectItem>
-            {[...new Set(dataPreviousExe.map((item: any) => item.status))].map(
-              (status) => (
+          <Select
+            onValueChange={(value) => handleFilterChange("status", value)}
+            value={filters.status}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              {[
+                ...new Set(dataPreviousExe.map((item: any) => item.status)),
+              ].map((status) => (
                 <SelectItem key={status} value={status}>
                   {status}
                 </SelectItem>
-              )
-            )}
-          </SelectContent>
-        </Select>
-      </div>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* EXECUTION QUEUE */}
-      {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
-        <ExecutionQueue data={filteredDataQueue} title={"Execution Queue"} />
-      )}
-
-      {/* PREVIOUS EXECUTIONS */}
-      {!isLoadingPreviousExe &&
-        dataPreviousExe &&
-        dataPreviousExe.length > 0 && (
-          <PreviousExecutions
-            data={filteredPreviousDataExe}
-            title={"Previous Executions"}
-          />
+        {/* EXECUTION QUEUE */}
+        {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
+          <ExecutionQueue data={filteredDataQueue} title={"Execution Queue"} />
         )}
 
-      {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}
-      {(isLoadingPreviousExe || isLoadingQueue) && (
-        <div className="flex justify-center w-full my-16">
-          <RingLoader
-            loading={isLoadingPreviousExe || isLoadingQueue}
-            color="#E77002"
-            size={300}
-          />
-        </div>
-      )}
+        {/* PREVIOUS EXECUTIONS */}
+        {!isLoadingPreviousExe &&
+          dataPreviousExe &&
+          dataPreviousExe.length > 0 && (
+            <PreviousExecutions
+              data={filteredPreviousDataExe}
+              title={"Previous Executions"}
+            />
+          )}
 
-      {errorQueue && (
-        <div className="my-10 text-center text-red-500">{errorQueue}</div>
-      )}
+        {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}
+        {(isLoadingPreviousExe || isLoadingQueue) && (
+          <div className="flex justify-center w-full my-16">
+            <RingLoader
+              loading={isLoadingPreviousExe || isLoadingQueue}
+              color="#E77002"
+              size={300}
+            />
+          </div>
+        )}
+
+        {errorQueue && (
+          <div className="my-10 text-center text-red-500">{errorQueue}</div>
+        )}
+      </div>
     </>
   );
 }
