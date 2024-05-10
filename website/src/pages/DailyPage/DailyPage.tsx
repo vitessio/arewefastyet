@@ -30,10 +30,13 @@ interface DailySummarydata {
   name: string;
   data : { total_qps: MacroDataValue }[];
 }
- interface dataXY {
-  x: string;
-  y: number;
- }
+
+type NumberDataPoint = { x: string; y: number};
+type StringDataPoint = { x: string; y: string };
+
+type ChartDataItem =
+  | { id: string; data: NumberDataPoint[] }
+  | { id: string; data: StringDataPoint[] };
 
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -59,14 +62,14 @@ export default function DailyPage() {
     navigate(`?type=${benchmarkType}`);
   }, [benchmarkType]);
 
-  const TPSData: { id: string; data: dataXY[] }[] = [
+  const TPSData: { id: string; data: NumberDataPoint[] }[] = [
     {
       id: "TPS",
       data: [],
     },
   ];
 
-  const QPSData: { id: string; data: dataXY[] }[] = [
+  const QPSData: { id: string; data: NumberDataPoint[] }[] = [
     {
       id: "Reads",
       data: [],
@@ -87,14 +90,14 @@ export default function DailyPage() {
     },
   ];
 
-  const latencyData: { id: string; data: dataXY[] }[] = [
+  const latencyData: { id: string; data: NumberDataPoint[] }[] = [
     {
       id: "Latency",
       data: [],
     },
   ];
 
-  const CPUTimeData : { id: string; data: dataXY[] }[]= [
+  const CPUTimeData : { id: string; data: StringDataPoint[] }[]= [
     {
       id: "Total",
       data: [],
@@ -109,7 +112,7 @@ export default function DailyPage() {
     },
   ];
 
-  const MemBytesData: { id: string; data: dataXY[] }[] = [
+  const MemBytesData: { id: string; data: NumberDataPoint[] }[] = [
     {
       id: "Total",
       data: [],
@@ -199,7 +202,7 @@ export default function DailyPage() {
   }
 
   const allChartData: {
-    data: { id: string; data: dataXY[] }[];
+    data: ChartDataItem[];
     title: string;
     colors: string[];
   }[] = [
@@ -272,7 +275,7 @@ export default function DailyPage() {
               {allChartData.map((chartData, index) => (
                 <div key={index} className="relative w-full h-[500px]">
                   <ResponsiveChart
-                    data={chartData.data}
+                    data={chartData.data as any}
                     title={chartData.title}
                     colors={chartData.colors}
                     isFirstChart={index === 0}

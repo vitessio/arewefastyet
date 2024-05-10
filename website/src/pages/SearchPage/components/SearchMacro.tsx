@@ -119,7 +119,7 @@ export default function SearchMacro({ macroName, macroData, gitRef }: SearchMacr
   );
 }
 
-function Row({ title, value, fmt }:RowProps) {
+function Row({ title, value, fmt }) {
     var valFmt = value.center
     if (fmt == "time") {
         valFmt = secondToMicrosecond(value.center)
