@@ -165,7 +165,6 @@ limitations under the License.
 }
 
 @keyframes translateUpDown {
-
   0%,
   100% {
     transform: translateY(0);
