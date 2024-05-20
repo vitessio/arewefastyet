@@ -34,7 +34,7 @@ const Macro = () => {
 
   const [dataRefs, setDataRefs] = useState();
   const [dataMacrobench, setDataMacrobench] = useState([]);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
 
   async function loadRefs() {

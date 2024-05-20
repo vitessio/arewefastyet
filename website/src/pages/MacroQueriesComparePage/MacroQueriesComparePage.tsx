@@ -22,7 +22,7 @@ import Hero from "./components/Hero";
 import RingLoader from "react-spinners/RingLoader";
 
 export default function MacroQueriesComparePage() {
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<null|string>(null);
   const [loading, setLoading] = useState(true);
 
   const urlParams = new URLSearchParams(window.location.search);
