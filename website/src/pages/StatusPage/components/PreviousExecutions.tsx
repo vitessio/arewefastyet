@@ -31,7 +31,7 @@ export default function PreviousExecutions({
   const [previousExecutions, setPreviousExecutions] = useState([]);
 
   useEffect(() => {
-    for (const entry of data) {
+    const transformedData = data.map((entry) => {
       const newData: { [key: string]: any } = {};
 
       newData["UUID"] = entry.uuid.slice(0, 8);
@@ -85,9 +85,11 @@ export default function PreviousExecutions({
         </span>
       );
 
-      setPreviousExecutions((p) => [...p, newData]);
-    }
-  }, []);
+      return newData;
+    });
+
+    setPreviousExecutions(transformedData);
+  }, [data]);
 
   return (
     <section className="p-page mt-20 flex flex-col overflow-y-scroll">

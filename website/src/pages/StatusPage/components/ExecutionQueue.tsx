@@ -23,7 +23,7 @@ export default function ExecutionQueue(props) {
   const [executionQueue, setExecutionQueue] = useState([]);
 
   useEffect(() => {
-    for (const entry of data) {
+    const transformedData = data.map((entry) => {
       const newData = {};
 
       newData["SHA"] = (
@@ -55,10 +55,11 @@ export default function ExecutionQueue(props) {
       } else {
         newData["PR"] = <span></span>;
       }
+      return newData;
+    })
 
-      setExecutionQueue((p) => [...p, newData]);
-    }
-  }, []);
+    setExecutionQueue(transformedData);
+  },[data])
 
   return (
     <section className="p-page mt-20 flex flex-col">
