@@ -19,14 +19,20 @@ import { formatDate } from "../../../utils/Utils";
 import { twMerge } from "tailwind-merge";
 import DisplayList from "../../../common/DisplayList";
 
-export default function PreviousExecutions(props) {
-  const { data, title } = props;
+interface PreviousExecutionsProps {
+  data: any;
+  title: string;
+}
 
+export default function PreviousExecutions({
+  data,
+  title,
+}: PreviousExecutionsProps) {
   const [previousExecutions, setPreviousExecutions] = useState([]);
 
   useEffect(() => {
     for (const entry of data) {
-      const newData = {};
+      const newData: { [key: string]: any } = {};
 
       newData["UUID"] = entry.uuid.slice(0, 8);
 
