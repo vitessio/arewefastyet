@@ -32,7 +32,7 @@ const ForeignKeys = () => {
 
   const [dataRefs, setDataRefs] = useState();
   const [dataFKs, setDataFKs] = useState([]);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
 
   async function loadRefs() {
