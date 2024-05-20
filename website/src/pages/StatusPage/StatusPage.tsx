@@ -17,6 +17,7 @@ limitations under the License.
 import React, { useState } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
+import { statusDataTypes } from "@/types";
 
 import Hero from "./components/Hero";
 import ExecutionQueue from "./components/PreviousExecutions";
@@ -43,12 +44,13 @@ interface dataTypes {
   status: string;
 }
 
+
 export default function StatusPage() {
   const {
     data: dataQueue,
     isLoading: isLoadingQueue,
     error: errorQueue,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}queue`);
+  } = useApiCall<statusDataTypes>(`${import.meta.env.VITE_API_URL}queue`);
   const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
     `${import.meta.env.VITE_API_URL}recent`
   );

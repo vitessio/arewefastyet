@@ -18,8 +18,8 @@ import { useState, useEffect } from "react";
 
 import { errorApi } from "./Utils";
 
-const useApiCall = (url: string) => {
-  const [data, setData] = useState([]);
+const useApiCall = <T,>(url: string) : { data: T[], isLoading: boolean, error: string | null, textLoading: boolean } => {
+  const [data, setData] = useState<T[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [textLoading, setTextLoading] = useState(true);

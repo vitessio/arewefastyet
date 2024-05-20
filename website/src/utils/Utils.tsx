@@ -59,7 +59,8 @@ export const secondToMicrosecond = (value) => {
 };
 
 //ERROR API MESSAGE ERROR
-export const errorApi =
+
+export const errorApi: string =
   "An error occurred while retrieving data from the API. Please try again.";
 
 //NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN

@@ -21,6 +21,7 @@ import useApiCall from "../../utils/Hook";
 
 import Hero from "./components/Hero";
 import SearchMacro from "./components/SearchMacro";
+import { SearchData } from "@/types";
 
 export default function SearchPage() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -30,7 +31,9 @@ export default function SearchPage() {
     data: dataSearch,
     isLoading: isSearchLoading,
     error: searchError,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}search?sha=${gitRef}`);
+  } = useApiCall<SearchData>(
+    `${import.meta.env.VITE_API_URL}search?sha=${gitRef}`
+  );
 
   const navigate = useNavigate();
 
@@ -42,7 +45,9 @@ export default function SearchPage() {
     <>
       <Hero setGitRef={setGitRef} />
 
-      {searchError && <div className="text-red-500 text-center my-2">{searchError}</div>}
+      {searchError && (
+        <div className="text-red-500 text-center my-2">{searchError}</div>
+      )}
 
       {isSearchLoading && (
         <div className="flex my-10 justify-center items-center">
@@ -50,19 +55,25 @@ export default function SearchPage() {
         </div>
       )}
 
-      {!isSearchLoading && dataSearch && (
+      {!isSearchLoading && dataSearch && dataSearch.length > 0 && (
         <section className="flex flex-col items-center p-page">
           <div className="w-1/2 flex flex-col gap-y-16">
-            {dataSearch.Macros &&
-              typeof dataSearch.Macros === "object" &&
-              Object.entries(dataSearch.Macros).map(function (
-                searchMacro,
-                index
-              ) {
-                return (
-                  <SearchMacro key={index} data={searchMacro} gitRef={gitRef} />
-                );
-              })}
+            {dataSearch.map((searchData, index) => (
+              <div key={index}>
+                {searchData.Macros &&
+                  typeof searchData.Macros === "object" &&
+                  Object.entries(searchData.Macros).map(
+                    ([macroName, macroData], idx) => (
+                      <SearchMacro
+                        key={`${index}-${idx}`}
+                        macroName={macroName}
+                        macroData={macroData}
+                        gitRef={gitRef}
+                      />
+                    )
+                  )}
+              </div>
+            ))}
           </div>
         </section>
       )}
