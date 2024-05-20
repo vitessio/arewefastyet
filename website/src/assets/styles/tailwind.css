@@ -118,3 +118,19 @@ limitations under the License.
     @apply after:content-[counter(num)];
   }
 }
+
+.errorImgAnimation {
+  animation: translateUpDown 2s infinite alternate;
+}
+
+@keyframes translateUpDown {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-0.7cm);
+  }
+}
