@@ -17,23 +17,36 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-
+import { MacrosData } from '@/types'
 
 import { errorApi } from "../../utils/Utils";
 import Hero from "./components/Hero";
 import FK from "./components/FK";
 
-const ForeignKeys = () => {
+interface Ref {
+  Name: string;
+  CommitHash: string;
+  Version: {
+    Major: number;
+    Minor: number;
+    Patch: number;
+  };
+  RCnumber: number;
+}
+
+interface ForeignKeysProps {}
+
+const ForeignKeys: React.FC<ForeignKeysProps> = () => {
   const urlParams = new URLSearchParams(window.location.search);
 
-  const [gitRef, setGitRef] = useState({
+  const [gitRef, setGitRef] = useState<{ tag: string }>({
     tag: urlParams.get("tag") || "",
   });
 
-  const [dataRefs, setDataRefs] = useState();
-  const [dataFKs, setDataFKs] = useState([]);
-  const [error, setError] = useState<null | string>(null);
-  const [loading, setLoading] = useState(true);
+  const [dataRefs, setDataRefs] = useState<Ref[] | undefined>();
+  const [dataFKs, setDataFKs] = useState<MacrosData[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   async function loadRefs() {
     try {
@@ -49,7 +62,7 @@ const ForeignKeys = () => {
 
   async function loadData() {
     const commits = {
-      tag: dataRefs.filter((r) => r.Name === gitRef.tag)[0].CommitHash,
+      tag: dataRefs?.filter((r) => r.Name === gitRef.tag)[0]?.CommitHash || "",
     };
 
     setLoading(true);

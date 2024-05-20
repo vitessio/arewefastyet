@@ -20,30 +20,19 @@ import { formatByte, secondToMicrosecond } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
 import {getRange} from "@/common/Macrobench";
 import PropTypes from "prop-types";
+import { MacroData } from "@/types";
 
 interface SearchMacroProps {
+  macroName: string;
+  macroData: MacroData;
   gitRef: string;
-  data: Array<string | any>;
 }
 
-interface RowProps {
-  title: string;
-  value: {
-    center: string | number;
-    range: {
-      infinite: boolean;
-      unknown: boolean;
-      value: number;
-    };
-  };
-  fmt?: string;
-}
-
-export default function SearchMacro({ data, gitRef }: SearchMacroProps) {
+export default function SearchMacro({ macroName, macroData, gitRef }: SearchMacroProps) {
   return (
     <div className="flex flex-col border border-primary relative rounded-xl bg-background bg-opacity-5 shadow-xl">
       <div className="p-5">
-        <h3 className="text-xl font-semibold">{data[0]}</h3>
+        <h3 className="text-xl font-semibold">{macroName}</h3>
         <Link
           target="_blank"
           className="text-primary"
@@ -56,72 +45,72 @@ export default function SearchMacro({ data, gitRef }: SearchMacroProps) {
         <tbody>
           <Row
             title={"QPS Total"}
-            value={data[1].total_qps}
+            value={macroData.total_qps}
           />
 
           <Row
             title={"QPS Reads"}
-            value={data[1].reads_qps}
+            value={macroData.reads_qps}
           />
 
           <Row
             title={"QPS Writes"}
-            value={data[1].writes_qps}
+            value={macroData.writes_qps}
           />
 
           <Row
             title={"QPS Other"}
-            value={data[1].other_qps}
+            value={macroData.other_qps}
           />
 
           <Row
             title={"TPS"}
-            value={data[1].tps}
+            value={macroData.tps}
           />
 
           <Row
             title={"Latency"}
-            value={data[1].latency}
+            value={macroData.latency}
           />
 
           <Row
             title={"Errors"}
-            value={data[1].errors}
+            value={macroData.errors}
           />
 
           <Row
             title={"Total CPU / query"}
-            value={data[1].total_components_cpu_time}
+            value={macroData.total_components_cpu_time}
             fmt={"time"}
           />
 
           <Row
             title={"CPU / query (vtgate)"}
-            value={data[1].components_cpu_time.vtgate}
+            value={macroData.components_cpu_time.vtgate}
             fmt={"time"}
           />
 
           <Row
             title={"CPU / query (vttablet)"}
-            value={data[1].components_cpu_time.vttablet}
+            value={macroData.components_cpu_time.vttablet}
             fmt={"time"}
           />
 
           <Row
             title={"Total Allocated / query"}
-            value={data[1].total_components_mem_stats_alloc_bytes}
+            value={macroData.total_components_mem_stats_alloc_bytes}
             fmt={"memory"}
           />
 
           <Row
             title={"Allocated / query (vtgate)"}
-            value={data[1].components_mem_stats_alloc_bytes.vtgate}
+            value={macroData.components_mem_stats_alloc_bytes.vtgate}
             fmt={"memory"}
           />
 
           <Row
             title={"Allocated / query (vttablet)"}
-            value={data[1].components_mem_stats_alloc_bytes.vttablet}
+            value={macroData.components_mem_stats_alloc_bytes.vttablet}
             fmt={"memory"}
           />
         </tbody>
@@ -130,7 +119,7 @@ export default function SearchMacro({ data, gitRef }: SearchMacroProps) {
   );
 }
 
-function Row({ title, value, fmt }:RowProps) {
+function Row({ title, value, fmt }) {
     var valFmt = value.center
     if (fmt == "time") {
         valFmt = secondToMicrosecond(value.center)

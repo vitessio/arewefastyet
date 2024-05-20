@@ -20,6 +20,7 @@ import useApiCall from "../../utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
 import { formatDate, errorApi } from "../../utils/Utils";
+import { prDataTypes } from "@/types";
 
 export default function PRPage() {
   const { pull_nb } = useParams();
@@ -28,13 +29,15 @@ export default function PRPage() {
     data: dataSinglePr,
     isLoading: singlePrLoading,
     error: singlePrError,
-  } = useApiCall(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`, []);
+  } = useApiCall<prDataTypes>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
+
+  const singlePrData = dataSinglePr.length > 0 ? dataSinglePr[0] : null;
 
   const isComparisonAvailable =
-    dataSinglePr.Base !== "" && dataSinglePr.Head !== "";
+    singlePrData?.Base !== "" && singlePrData?.Head !== "";
 
   if (
-    dataSinglePr.error ==
+    singlePrData?.error ==
     "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
   ) {
     return (
@@ -65,11 +68,11 @@ export default function PRPage() {
                   >
                     [#{pull_nb}]
                   </Link>{" "}
-                  {dataSinglePr.Title}
+                  {singlePrData?.Title}
                 </h2>
                 <span>
-                  By {dataSinglePr.Author} at{" "}
-                  {formatDate(dataSinglePr.CreatedAt)}{" "}
+                  By {singlePrData?.Author} at{" "}
+                  {formatDate(singlePrData?.CreatedAt)}{" "}
                 </span>
               </div>
 
@@ -77,7 +80,7 @@ export default function PRPage() {
                 <div className="flex justify-center items-center">
                   <Link
                     className="text-primary p-6 border border-primary rounded-xl duration-300 hover:bg-primary hover:bg-opacity-20 hover:scale-105 whitespace-nowrap"
-                    to={`/compare?ltag=${dataSinglePr.Base}&rtag=${dataSinglePr.Head}`}
+                    to={`/compare?ltag=${singlePrData?.Base}&rtag=${singlePrData?.Head}`}
                   >
                     Compare with base commit
                   </Link>
@@ -87,8 +90,8 @@ export default function PRPage() {
             <div className="flex flex-col justify-between p-5 text-lg leading-loose">
               {isComparisonAvailable ? (
                 <>
-                  <span>Base: {dataSinglePr.Base}</span>
-                  <span>Head: {dataSinglePr.Head}</span>
+                  <span>Base: {singlePrData?.Base}</span>
+                  <span>Head: {singlePrData?.Head}</span>
                 </>
               ) : (
                 <div>
@@ -96,7 +99,7 @@ export default function PRPage() {
                   pull request.
                 </div>
               )}
-              <span>{dataSinglePr.error}</span>
+              <span>{singlePrData?.error}</span>
             </div>
           </div>
         )}
