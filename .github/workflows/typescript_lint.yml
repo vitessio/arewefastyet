@@ -2,7 +2,6 @@ name: Typescript Lint, Format and Type check workflow
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
     paths:
       - "website/**"
 
