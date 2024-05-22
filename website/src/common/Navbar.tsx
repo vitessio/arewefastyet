@@ -1,19 +1,3 @@
-/*
-Copyright 2024 The Vitess Authors.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 import { Link, NavLink } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -42,15 +26,15 @@ export default function Navbar() {
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[49] flex justify-between md:justify-center p-page py-4 border-b border-border"
+          "w-full bg-background z-[49] flex justify-between lg:justify-center p-page py-4 border-b border-border"
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
           <img src="/logo.png" className="h-[2em]" alt="logo" />
-          <h1 className="font-semilight text-lg md:text-2xl">arewefastyet</h1>
+          <h1 className="font-semilight text-lg lg:text-2xl">arewefastyet</h1>
         </Link>
 
-        <div className="hidden md:flex gap-x-10 items-center">
+        <div className="hidden lg:flex gap-x-10 items-center">
           {navItems.map((item, key) => (
             <NavLink
               key={key}
@@ -79,7 +63,7 @@ export default function Navbar() {
               <Button
                 variant={"ghost"}
                 size={"icon"}
-                className="relative md:hidden text-3xl flex items-center"
+                className="relative lg:hidden text-3xl flex items-center"
               >
                 <span className="sr-only">Open Menu</span>
                 <svg
