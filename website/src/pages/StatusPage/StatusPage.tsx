@@ -98,16 +98,16 @@ export default function StatusPage() {
     <>
       <Hero />
 
-      <div className="border-accent border mt-5" />
+      <div className="border-accent border mt-10" />
 
       {/* FILTERS OPTIONS*/}
-      <div className="flex flex-col items-center">
-        <div className="flex p-5 gap-4 ">
+      <div className="flex flex-col items-center px-4 md:px-8">
+        <div className="flex flex-col md:flex-row p-5 gap-4 w-full justify-center items-center">
           <Select
             value={filters.type}
             onValueChange={(value) => handleFilterChange("type", value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full md:w-48">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
@@ -126,7 +126,7 @@ export default function StatusPage() {
             onValueChange={(value) => handleFilterChange("source", value)}
             value={filters.source}
           >
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-full md:w-48">
               <SelectValue placeholder="Sources" />
             </SelectTrigger>
             <SelectContent>
@@ -145,7 +145,7 @@ export default function StatusPage() {
             onValueChange={(value) => handleFilterChange("status", value)}
             value={filters.status}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full md:w-48">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>

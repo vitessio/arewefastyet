@@ -42,7 +42,7 @@ export default function Navbar() {
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[49] flex justify-between md:justify-center p-page py-4 border-b border-border"
+          "w-full bg-background z-[49] flex justify-between lg:justify-center p-page py-4 border-b border-border"
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
@@ -50,7 +50,7 @@ export default function Navbar() {
           <h1 className="font-semilight text-lg md:text-2xl">arewefastyet</h1>
         </Link>
 
-        <div className="hidden md:flex gap-x-10 items-center">
+        <div className="hidden lg:flex gap-x-6 justify-end items-center">
           {navItems.map((item, key) => (
             <NavLink
               key={key}
@@ -71,7 +71,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="flex-1 flex gap-3 justify-end items-center">
+        <div className="flex justify-end items-center lg:justify-end lg:gap-x-4 lg:flex-shrink-0 lg:gap-x-2 ml-8">
           <ModeToggle />
 
           <Sheet>
@@ -79,7 +79,7 @@ export default function Navbar() {
               <Button
                 variant={"ghost"}
                 size={"icon"}
-                className="relative md:hidden text-3xl flex items-center"
+                className="relative lg:hidden text-3xl flex items-center"
               >
                 <span className="sr-only">Open Menu</span>
                 <svg
