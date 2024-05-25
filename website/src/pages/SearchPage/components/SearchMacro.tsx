@@ -20,11 +20,11 @@ import PropTypes from "prop-types";
 import { fixed, formatByteForGB } from "../../../utils";
 import { Link } from "react-router-dom";
 
-export default function SearchMacro({ data, gitRef }: any) {
+export default function SearchMacro({ data, macroName, gitRef }: any) {
   return (
     <div className="flex flex-col border border-primary relative rounded-xl bg-foreground bg-opacity-5 shadow-xl">
       <div className="p-5">
-        <h3 className="text-xl font-semibold">{data[0]}</h3>
+        <h3 className="text-xl font-semibold">{macroName}</h3>
         <Link
           target="_blank"
           className="text-primary"

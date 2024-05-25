@@ -32,7 +32,7 @@ const Macro = () => {
   });
   const [commits, setCommits] = useState({ left: "", right: "" });
 
-  const [refs] = useApiCall("/vitess/refs");
+  const [refs, refsLoading, refsError] = useApiCall("/vitess/refs");
   const [macrobench, loading, error] = useApiCall("/macrobench/compare", {
     params: { ltag: commits.left, rtag: commits.right },
   });
@@ -41,14 +41,14 @@ const Macro = () => {
   useEffect(() => {
     navigate(`?ltag=${gitRef.left}&rtag=${gitRef.right}`);
 
-    if (refs) {
-      const commits = {
-        left: refs.filter((r) => r.Name === gitRef.left)[0].CommitHash,
-        right: refs.filter((r) => r.Name === gitRef.right)[0].CommitHash,
-      };
-      setCommits(commits);
+    if (refs && refs.length > 0) {
+      const leftRef = refs.find((ref) => ref.Name === gitRef.left);
+      const rightRef = refs.find((ref) => ref.Name === gitRef.right);
+      if (leftRef && rightRef) {
+        setCommits({ left: leftRef.CommitHash, right: rightRef.CommitHash });
+      }
     }
-  }, [gitRef.left, gitRef.right, refs]);
+  }, [gitRef.left, gitRef.right, refs, navigate]);
 
   return (
     <>
@@ -59,27 +59,29 @@ const Macro = () => {
       </div>
 
       <div className="flex flex-col items-center py-20">
+        {refsError && (
+          <div className="text-sm w-1/2 text-red-500 text-center">
+            {refsError}
+          </div>
+        )}
+        {refsLoading && (
+          <RingLoader loading={refsLoading} color="#E77002" size={300} />
+        )}
+
         {error && (
           <div className="text-sm w-1/2 text-red-500 text-center">{error}</div>
         )}
-
         {loading && <RingLoader loading={loading} color="#E77002" size={300} />}
 
         {!loading && macrobench && (
           <div className="flex flex-col gap-y-20 ">
             {gitRef.left &&
               gitRef.right &&
-              macrobench.map((macro, index) => {
-                return (
-                  <div key={index}>
-                    <Macrobench
-                      data={macro}
-                      gitRef={gitRef}
-                      commits={commits}
-                    />
-                  </div>
-                );
-              })}
+              macrobench.map((macro, index) => (
+                <div key={index}>
+                  <Macrobench data={macro} gitRef={gitRef} commits={commits} />
+                </div>
+              ))}
           </div>
         )}
       </div>

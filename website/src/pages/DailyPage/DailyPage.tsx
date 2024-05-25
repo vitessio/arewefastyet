@@ -244,32 +244,13 @@ export default function DailyPage() {
               return (
                 <DailySummary
                   key={index}
-                  data={summary}
+                  data={dailySummary}
                   setBenchmarkType={setBenchmarkType}
                   benchmarkType={benchmarkType}
                 />
               );
             })}
           </section>
-
-          <figure className="p-page w-full">
-            <div className="border-front border" />
-          </figure>
-
-          {!loading && benchmarkType !== "" && (
-            <section className="p-page mt-12 flex flex-col gap-y-8">
-              {allChartData.map((chartData, index) => (
-                <div key={index} className="relative w-full h-[500px]">
-                  <ResponsiveChart
-                    /* @ts-ignore */
-                    data={chartData.data}
-                    title={chartData.title}
-                    colors={chartData.colors}
-                  />
-                </div>
-              ))}
-            </section>
-          )}
         </>
       )}
 

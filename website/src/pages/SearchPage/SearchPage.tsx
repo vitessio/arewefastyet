@@ -50,13 +50,16 @@ export default function SearchPage() {
       {!loading && data && (
         <section className="flex flex-col items-center p-page">
           <div className="w-1/2 flex flex-col gap-y-16">
-            {data.Macros &&
-              typeof data.Macros === "object" &&
-              Object.entries(data.Macros).map(function (searchMacro, index) {
-                return (
-                  <SearchMacro key={index} data={searchMacro} gitRef={gitRef} />
-                );
-              })}
+            {Object.entries(data.Macros).map(
+              ([macroName, macroData], index) => (
+                <SearchMacro
+                  key={index}
+                  data={macroData}
+                  macroName={macroName}
+                  gitRef={gitRef}
+                />
+              )
+            )}
           </div>
         </section>
       )}
