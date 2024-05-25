@@ -23,6 +23,7 @@ export default function useApiCall<T extends ApiEndpoint>(
         },
         ...config,
       });
+      console.log(`Response from ${uri}:`, response.data);
 
       setData(response.data);
     } catch (err: any) {

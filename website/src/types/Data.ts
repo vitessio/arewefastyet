@@ -99,28 +99,49 @@ export interface MacrobenchDiff {
   DiffMetrics: Metrics;
 }
 
-export type MacrobenchComparison = [
-  {
-    type: "OLTP";
-    diff: MacrobenchDiff;
-  },
-  {
-    type: "OLTP-READONLY";
-    diff: MacrobenchDiff;
-  },
-  {
-    type: "OLTP-READONLY-OLAP";
-    diff: MacrobenchDiff;
-  },
-  {
-    type: "OLTP-SET";
-    diff: MacrobenchDiff;
-  },
-  {
-    type: "TPCC";
-    diff: MacrobenchDiff;
-  }
-];
+export interface MacrobenchComparison {
+  type: string;
+  result: MacrobenchResult;
+}
+export interface MacrobenchResult {
+  total_qps: BenchmarkMetric;
+  reads_qps: BenchmarkMetric;
+  writes_qps: BenchmarkMetric;
+  other_qps: BenchmarkMetric;
+  tps: BenchmarkMetric;
+  latency: BenchmarkMetric;
+  errors: BenchmarkMetric;
+  total_components_cpu_time: BenchmarkMetric;
+  components_cpu_time: {
+    vtgate: BenchmarkMetric;
+    vttablet: BenchmarkMetric;
+  };
+  total_components_mem_stats_alloc_bytes: BenchmarkMetric;
+  components_mem_stats_alloc_bytes: {
+    vtgate: BenchmarkMetric;
+    vttablet: BenchmarkMetric;
+  };
+}
+
+export interface BenchmarkMetric {
+  insignificant: boolean;
+  delta: number;
+  p: number;
+  n1: number;
+  n2: number;
+  old: MetricDetail;
+  new: MetricDetail;
+}
+
+export interface MetricDetail {
+  center: number;
+  confidence: number;
+  range: {
+    infinite: boolean;
+    unknown: boolean;
+    value: number;
+  };
+}
 
 export type DailySummary = [
   {

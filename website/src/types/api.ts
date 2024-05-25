@@ -45,7 +45,7 @@ type ApiEndpoints = [
   },
   {
     uri: "/macrobench/compare";
-    response: MacrobenchComparison;
+    response: MacrobenchComparison[];
     params: { ltag: string; rtag: string };
   },
   {

@@ -19,7 +19,7 @@ import { formatByteForGB, fixed } from "../utils";
 import { MacrobenchComparison } from "../types";
 
 interface MacrobenchProps {
-  data: MacrobenchComparison[number];
+  data: MacrobenchComparison;
   gitRef: { left: string; right: string };
   commits: { left: string; right: string };
 }
@@ -73,55 +73,55 @@ export default function Macrobench(props: MacrobenchProps) {
         <tbody>
           <Row
             title={"QPS Total"}
-            left={fixed(data.diff.Left.Result.qps.total, 2)}
-            right={fixed(data.diff.Right.Result.qps.total, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.total, 2)}
+            left={fixed(data.result.total_qps.old.center, 2)}
+            right={fixed(data.result.total_qps.new.center, 2)}
+            diffMetric={fixed(data.result.total_qps.delta, 2)}
           />
           <Row
             title="QPS Reads"
-            left={fixed(data.diff.Left.Result.qps.reads, 2)}
-            right={fixed(data.diff.Right.Result.qps.reads, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.reads, 2)}
+            left={fixed(data.result.reads_qps.old.center, 2)}
+            right={fixed(data.result.reads_qps.new.center, 2)}
+            diffMetric={fixed(data.result.reads_qps.delta, 2)}
           />
 
           <Row
             title="QPS Writes"
-            left={fixed(data.diff.Left.Result.qps.writes, 2)}
-            right={fixed(data.diff.Right.Result.qps.writes, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.writes, 2)}
+            left={fixed(data.result.writes_qps.old.center, 2)}
+            right={fixed(data.result.writes_qps.new.center, 2)}
+            diffMetric={fixed(data.result.writes_qps.delta, 2)}
           />
 
           <Row
             title="QPS Other"
-            left={fixed(data.diff.Left.Result.qps.other, 2)}
-            right={fixed(data.diff.Right.Result.qps.other, 2)}
-            diffMetric={fixed(data.diff.Diff.qps.other, 2)}
+            left={fixed(data.result.other_qps.old.center, 2)}
+            right={fixed(data.result.other_qps.new.center, 2)}
+            diffMetric={fixed(data.result.other_qps.delta, 2)}
           />
 
           <Row
             title="TPS"
-            left={fixed(data.diff.Left.Result.tps, 2)}
-            right={fixed(data.diff.Right.Result.tps, 2)}
-            diffMetric={fixed(data.diff.Diff.tps, 2)}
+            left={fixed(data.result.tps.old.center, 2)}
+            right={fixed(data.result.tps.new.center, 2)}
+            diffMetric={fixed(data.result.tps.delta, 2)}
           />
 
           <Row
             title="Latency"
-            left={fixed(data.diff.Left.Result.latency, 2)}
-            right={fixed(data.diff.Right.Result.latency, 2)}
-            diffMetric={fixed(data.diff.Diff.latency, 2)}
+            left={fixed(data.result.latency.old.center, 2)}
+            right={fixed(data.result.latency.new.center, 2)}
+            diffMetric={fixed(data.result.latency.delta, 2)}
           />
 
           <Row
             title="Errors"
-            left={fixed(data.diff.Left.Result.errors, 2)}
-            right={fixed(data.diff.Right.Result.errors, 2)}
-            diffMetric={fixed(data.diff.Diff.errors, 2)}
+            left={fixed(data.result.errors.old.center, 2)}
+            right={fixed(data.result.errors.new.center, 2)}
+            diffMetric={fixed(data.result.errors.delta, 2)}
           />
 
-          <Row
+          {/* <Row
             title="Reconnects"
-            left={fixed(data.diff.Left.Result.reconnects, 2)}
+            left={fixed(data.result., 2)}
             right={fixed(data.diff.Right.Result.reconnects, 2)}
             diffMetric={fixed(data.diff.Diff.reconnects, 2)}
           />
@@ -138,31 +138,31 @@ export default function Macrobench(props: MacrobenchProps) {
             left={fixed(data.diff.Left.Result.threads, 2)}
             right={fixed(data.diff.Right.Result.threads, 2)}
             diffMetric={fixed(data.diff.Diff.threads, 2)}
-          />
+          /> */}
 
           <Row
             title="Total CPU time"
-            left={fixed(data.diff.Left.Metrics.TotalComponentsCPUTime, 2)}
-            right={fixed(data.diff.Right.Metrics.TotalComponentsCPUTime, 2)}
-            diffMetric={fixed(data.diff.DiffMetrics.TotalComponentsCPUTime, 2)}
+            left={fixed(data.result.total_components_cpu_time.old.center, 2)}
+            right={fixed(data.result.total_components_cpu_time.new.center, 2)}
+            diffMetric={fixed(data.result.total_components_cpu_time.delta, 2)}
           />
 
           <Row
             title="CPU time vtgate"
-            left={fixed(data.diff.Left.Metrics.ComponentsCPUTime.vtgate, 2)}
-            right={fixed(data.diff.Right.Metrics.ComponentsCPUTime.vtgate, 2)}
-            diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsCPUTime.vtgate,
-              2
-            )}
+            left={fixed(data.result.components_cpu_time.vtgate.old.center, 2)}
+            right={fixed(data.result.components_cpu_time.vtgate.new.center, 2)}
+            diffMetric={fixed(data.result.components_cpu_time.vtgate.delta, 2)}
           />
 
           <Row
             title="CPU time vttablet"
-            left={fixed(data.diff.Left.Metrics.ComponentsCPUTime.vttablet, 2)}
-            right={fixed(data.diff.Right.Metrics.ComponentsCPUTime.vttablet, 2)}
+            left={fixed(data.result.components_cpu_time.vttablet.old.center, 2)}
+            right={fixed(
+              data.result.components_cpu_time.vttablet.new.center,
+              2
+            )}
             diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsCPUTime.vttablet,
+              data.result.components_cpu_time.vttablet.delta,
               2
             )}
           />
@@ -170,13 +170,13 @@ export default function Macrobench(props: MacrobenchProps) {
           <Row
             title="Total Allocs bytes"
             left={formatByteForGB(
-              data.diff.Left.Metrics.TotalComponentsMemStatsAllocBytes
+              data.result.total_components_mem_stats_alloc_bytes.old.center
             )}
             right={formatByteForGB(
-              data.diff.Right.Metrics.TotalComponentsMemStatsAllocBytes
+              data.result.total_components_mem_stats_alloc_bytes.new.center
             )}
             diffMetric={fixed(
-              data.diff.DiffMetrics.TotalComponentsMemStatsAllocBytes,
+              data.result.total_components_mem_stats_alloc_bytes.old.center,
               2
             )}
           />
@@ -184,13 +184,13 @@ export default function Macrobench(props: MacrobenchProps) {
           <Row
             title="Allocs bytes vtgate"
             left={formatByteForGB(
-              data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vtgate
+              data.result.components_mem_stats_alloc_bytes.vtgate.old.center
             )}
             right={formatByteForGB(
-              data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vtgate
+              data.result.components_mem_stats_alloc_bytes.vtgate.new.center
             )}
             diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vtgate,
+              data.result.components_mem_stats_alloc_bytes.vtgate.delta,
               2
             )}
           />
@@ -198,13 +198,13 @@ export default function Macrobench(props: MacrobenchProps) {
           <Row
             title="Allocs bytes vttablet"
             left={formatByteForGB(
-              data.diff.Left.Metrics.ComponentsMemStatsAllocBytes.vttablet
+              data.result.components_mem_stats_alloc_bytes.vttablet.old.center
             )}
             right={formatByteForGB(
-              data.diff.Right.Metrics.ComponentsMemStatsAllocBytes.vttablet
+              data.result.components_mem_stats_alloc_bytes.vttablet.new.center
             )}
             diffMetric={fixed(
-              data.diff.DiffMetrics.ComponentsMemStatsAllocBytes.vttablet,
+              data.result.components_mem_stats_alloc_bytes.vtgate.delta,
               2
             )}
           />
