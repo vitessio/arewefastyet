@@ -23,7 +23,7 @@ export default function Admin() {
   const navigate = useNavigate();
 
   if (!admin.isAuthed()) {
-    navigate("/admin/auth/login");
+    // navigate("/admin/auth/login");
   }
 
   return (
