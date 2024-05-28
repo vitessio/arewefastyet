@@ -127,6 +127,7 @@ export default function DailyPage() {
     },
   ];
 
+try{
   for (const item of dataDaily) {
     const xValue = item.git_ref.slice(0, 8);
 
@@ -199,6 +200,9 @@ export default function DailyPage() {
       x: xValue,
       y: item.components_mem_stats_alloc_bytes.vttablet.center,
     });
+  }
+} catch(error){
+    console.log(error);
   }
 
   const allChartData: {
