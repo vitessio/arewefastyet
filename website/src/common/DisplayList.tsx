@@ -16,12 +16,12 @@ limitations under the License.
 
 import React from "react";
 
-interface DisplayLisTypes  {
+interface DisplayListTypes  {
   [key: string]: string | React.ReactNode | null;
 };
 
 interface DisplayListProps {
-  data: DisplayLisTypes[];
+  data: DisplayListTypes[];
 }
 
 /**
