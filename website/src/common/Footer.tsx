@@ -20,16 +20,32 @@ import { AiFillGithub, AiFillSlackCircle } from "react-icons/ai";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { BsStackOverflow } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { IconType } from "react-icons";
+
+interface Social {
+  url: string;
+  icon: IconType;
+}
+
+interface LinkItem {
+  title: string;
+  to: string;
+}
+
+interface FooterItem {
+  title: string;
+  links: LinkItem[];
+}
 
 const Footer = () => {
-  const socials = [
+  const socials: Social[] = [
     { url: "https://github.com/vitessio/arewefastyet", icon: AiFillGithub },
     { url: "https://vitess.io/slack", icon: AiFillSlackCircle },
     { url: "https://twitter.com/vitessio", icon: FaSquareXTwitter },
     { url: "https://stackoverflow.com/search?q=vitess", icon: BsStackOverflow },
   ];
 
-  const items = [
+  const items: FooterItem[] = [
     {
       title: "Benchmarks",
       links: [

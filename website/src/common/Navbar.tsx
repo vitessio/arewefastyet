@@ -27,7 +27,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const navItems = [
+interface NavItem {
+  to: string;
+  title: string;
+}
+
+const navItems: NavItem[] = [
   { to: "/status", title: "Status" },
   { to: "/daily", title: "Daily" },
   { to: "/compare", title: "Compare" },

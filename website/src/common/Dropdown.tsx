@@ -13,26 +13,52 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React, { useEffect, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
 import Icon from "../common/Icon";
 import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
 
-function Container(props) {
+interface ContainerProps {
+  children: React.ReactNode;
+  defaultIndex?: number;
+  onChange: (selected: { value: string }) => void;
+  className?: string;
+  placeholder?: string;
+}
+
+interface OptionProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  isSelected?: boolean;
+}
+
+interface OptionElementProps extends OptionProps {
+  index: number;
+}
+
+function Container({
+  children,
+  defaultIndex = 0,
+  onChange,
+  className,
+  placeholder = "Select an option",
+}: ContainerProps) {
+
   const [open, setOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(props.defaultIndex || 0);
+  const [selectedIndex, setSelectedIndex] = useState(defaultIndex || 0);
 
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement | null>(null);
 
-  let items = React.Children.map(
-    props.children,
-    (child) => `${child.props.children}`
+  let items = React.Children.map(children, (child) => `${child}`) || [];
+
+  useClickOutside(ref as React.MutableRefObject<HTMLElement>, () =>
+    setOpen(false)
   );
 
-  useClickOutside(ref, () => setOpen(false));
-
-  function handleOptionClick(index) {
+  function handleOptionClick(index: number) {
     setOpen(false);
     setSelectedIndex(index);
   }
@@ -42,7 +68,7 @@ function Container(props) {
   }, [selectedIndex]);
 
   useEffect(() => {
-    props.onChange({ value: items[selectedIndex] });
+    onChange({ value: items[selectedIndex] });
   }, [selectedIndex]);
 
   return (
@@ -52,10 +78,10 @@ function Container(props) {
         onClick={() => setOpen(!open)}
         className={twMerge(
           "flex items-center h-full justify-center duration-inherit hover:bg-transparent",
-          props.className
+          className
         )}
       >
-        {`${items[selectedIndex] || props.placeholder}`}
+        {`${items[selectedIndex] || placeholder}`}
         <Icon
           icon="expand_more"
           className={twMerge(
@@ -76,13 +102,13 @@ function Container(props) {
               : "polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%)",
           }}
         >
-          {React.Children.map(props.children, (child, index) => {
+          {React.Children.map(children, (child, index) => {
             if (React.isValidElement(child) && child.type === Option)
               return React.cloneElement(child, {
                 index,
                 onClick: () => handleOptionClick(index),
                 isSelected: index === selectedIndex,
-              });
+              } as OptionElementProps);
           })}
         </div>
       </>
@@ -90,13 +116,17 @@ function Container(props) {
   );
 }
 
-function Option(props) {
+function Option({ children, className, onClick, isSelected }: OptionProps) {
   return (
     <Button
-      className={twMerge("dark:text-white text-black", props.className, props.isSelected && "bg-primary")}
-      onClick={props.onClick}
+      className={twMerge(
+        "dark:text-white text-black",
+        className,
+        isSelected && "bg-primary"
+      )}
+      onClick={onClick}
     >
-      {props.children}
+      {children}
     </Button>
   );
 }
