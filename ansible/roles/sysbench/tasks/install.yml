@@ -16,7 +16,7 @@
   git:
     repo: https://github.com/planetscale/sysbench
     dest: /src/sysbench
-    version: master
+    version: main
     depth: 1
     force: 1
 
