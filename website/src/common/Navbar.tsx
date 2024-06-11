@@ -27,7 +27,20 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const navItems = [
+/**
+ * @description Defines the structure of a navigation item.
+ *
+ * @typedef {Object} NavItem
+ * @param {string} to - The URL path for the navigation link.
+ * @param {string} title - The title of the navigation link.
+ */
+
+type NavItem = {  
+  to: string;
+  title: string;
+ }
+
+const navItems: NavItem[] = [
   { to: "/status", title: "Status" },
   { to: "/daily", title: "Daily" },
   { to: "/compare", title: "Compare" },
@@ -37,7 +50,7 @@ const navItems = [
   { to: "/pr", title: "PR" },
 ];
 
-export default function Navbar() {
+export default function Navbar(): JSX.Element {
   return (
     <nav className="flex flex-col relative">
       <div

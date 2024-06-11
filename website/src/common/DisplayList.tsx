@@ -15,7 +15,23 @@ limitations under the License.
 */
 import React from "react";
 
-export default function DisplayList(props) {
+interface DataItem {
+  [key: string]: string;
+}
+
+interface DisplayListProps {
+  data: DataItem[];
+}
+
+/**
+ * Component to display a list of data items in a table or grid layout
+ * depending on the screen size.
+ *
+ * @param {DisplayListProps} props - The component props containing the data to be displayed.
+ * @returns {JSX.Element} The rendered component.
+ */
+
+const DisplayList: React.FC<DisplayListProps> = (props) => {
   const { data } = props;
 
   return (
@@ -70,3 +86,4 @@ export default function DisplayList(props) {
     </div>
   );
 }
+ export default DisplayList;
