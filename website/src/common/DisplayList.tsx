@@ -13,34 +13,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React from "react";
 
-interface DataItem {
-  [key: string]: string;
+interface DisplayList {
+  [key: string]: string | React.ReactNode | null;
 }
 
 interface DisplayListProps {
-  data: DataItem[];
+  data: DisplayList[];
 }
 
 /**
- * Component to display a list of data items in a table or grid layout
- * depending on the screen size.
- *
+ * Displays a list of data items in either a table or grid layout, based on screen size.
  * @param {DisplayListProps} props - The component props containing the data to be displayed.
  * @returns {JSX.Element} The rendered component.
  */
 
-const DisplayList: React.FC<DisplayListProps> = (props) => {
-  const { data } = props;
-
+export default function DisplayList({ data }: DisplayListProps): JSX.Element {
   return (
     <div className="">
       <div className="widescreen:hidden">
         {data.map((val, key) => (
           <div
             key={key}
-            className="cursor-default mb-4 p-4 rounded-lg border border-front border-[1px]"
+            className="cursor-default mb-4 p-4 rounded-lg border border-front"
           >
             {Object.keys(val).map((item, itemKey) => (
               <div
@@ -86,4 +83,3 @@ const DisplayList: React.FC<DisplayListProps> = (props) => {
     </div>
   );
 }
- export default DisplayList;

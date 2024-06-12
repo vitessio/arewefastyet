@@ -13,17 +13,33 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React from "react";
 import Dropdown from "../../../common/Dropdown";
 import { twMerge } from "tailwind-merge";
+import { RefsType } from "@/types";
 
-export default function Hero(props: {
-  refs: any;
-  gitRef: any;
-  setGitRef: any;
-}) {
-  const { refs, gitRef, setGitRef } = props;
+type gitRefType = {
+  tag: string;
+};
 
+interface HeroProps {
+  refs: RefsType[];
+  gitRef: gitRefType;
+  setGitRef: React.Dispatch<React.SetStateAction<gitRefType>>;
+}
+
+/**
+ * Hero component displays information about foreign keys and provides a dropdown to select a git reference.
+ * @param {HeroProps} props - The props for the Hero component.
+ * @returns {JSX.Element} - The rendered JSX element.
+ */
+
+export default function Hero({
+  refs,
+  gitRef,
+  setGitRef,
+}: HeroProps): JSX.Element {
   return (
     <section className="flex h-[60vh] pt-[10vh] items-center p-page">
       <div className="flex basis-1/2 flex-col">
@@ -56,16 +72,12 @@ export default function Hero(props: {
             <div className="flex gap-x-24">
               <Dropdown.Container
                 className="w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
-                defaultIndex={refs
-                  .map((r: { Name: any }) => r.Name)
-                  .indexOf(gitRef.tag)}
-                onChange={(event: { value: any }) => {
-                  setGitRef((p: any) => {
-                    return { ...p, tag: event.value };
-                  });
+                defaultIndex={refs.findIndex((r) => r.Name === gitRef.tag)}
+                onChange={(event) => {
+                  setGitRef({ tag: event.value });
                 }}
               >
-                {refs.map((ref: { Name: any }, key: number) => (
+                {refs.map((ref, key) => (
                   <Dropdown.Option
                     key={key}
                     className={twMerge(

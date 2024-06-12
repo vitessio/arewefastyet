@@ -18,7 +18,7 @@ import React from "react";
 
 import { formatByte, secondToMicrosecond } from "../../../utils/Utils";
 import { Link } from "react-router-dom";
-import {getRange} from "@/common/Macrobench";
+import { getRange } from "@/common/Macrobench";
 import PropTypes from "prop-types";
 import { MacroData } from "@/types";
 
@@ -28,7 +28,26 @@ interface SearchMacroProps {
   gitRef: string;
 }
 
-export default function SearchMacro({ macroName, macroData, gitRef }: SearchMacroProps) {
+interface RowProps {
+  title: string;
+  value: {
+    center: number | string;
+    range: { infinite: boolean; unknown: boolean; value: number };
+  };
+  fmt?: "time" | "memory";
+}
+
+/**
+ * Displays detailed information about a specific macro benchmark.
+ * @param {SearchMacroProps} props - The props for the SearchMacro component.
+ * @returns {JSX.Element} - The rendered JSX element.
+ */
+
+export default function SearchMacro({
+  macroName,
+  macroData,
+  gitRef,
+}: SearchMacroProps) {
   return (
     <div className="flex flex-col border border-primary relative rounded-xl bg-background bg-opacity-5 shadow-xl">
       <div className="p-5">
@@ -43,40 +62,19 @@ export default function SearchMacro({ macroName, macroData, gitRef }: SearchMacr
       </div>
       <table>
         <tbody>
-          <Row
-            title={"QPS Total"}
-            value={macroData.total_qps}
-          />
+          <Row title={"QPS Total"} value={macroData.total_qps} />
 
-          <Row
-            title={"QPS Reads"}
-            value={macroData.reads_qps}
-          />
+          <Row title={"QPS Reads"} value={macroData.reads_qps} />
 
-          <Row
-            title={"QPS Writes"}
-            value={macroData.writes_qps}
-          />
+          <Row title={"QPS Writes"} value={macroData.writes_qps} />
 
-          <Row
-            title={"QPS Other"}
-            value={macroData.other_qps}
-          />
+          <Row title={"QPS Other"} value={macroData.other_qps} />
 
-          <Row
-            title={"TPS"}
-            value={macroData.tps}
-          />
+          <Row title={"TPS"} value={macroData.tps} />
 
-          <Row
-            title={"Latency"}
-            value={macroData.latency}
-          />
+          <Row title={"Latency"} value={macroData.latency} />
 
-          <Row
-            title={"Errors"}
-            value={macroData.errors}
-          />
+          <Row title={"Errors"} value={macroData.errors} />
 
           <Row
             title={"Total CPU / query"}
@@ -119,35 +117,43 @@ export default function SearchMacro({ macroName, macroData, gitRef }: SearchMacr
   );
 }
 
-function Row({ title, value, fmt }) {
-    var valFmt = value.center
-    if (fmt == "time") {
-        valFmt = secondToMicrosecond(value.center)
-    } else if (fmt == "memory") {
-        valFmt = formatByte(value.center)
-    }
+/**
+ * Represents a row in the table displaying macro benchmark data.
+ * @param {RowProps} props - The props for the Row component.
+ * @returns {JSX.Element} - The rendered JSX element.
+ */
 
-    return (
+function Row({ title, value, fmt }: RowProps): JSX.Element {
+  var valFmt = value.center;
+  if (fmt == "time") {
+    valFmt = secondToMicrosecond(value.center as number);
+  } else if (fmt == "memory") {
+    valFmt = formatByte(value.center as number);
+  }
+
+  return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-1 px-4 text-lg justify-end border-r border-r-primary font-bold">
         <span>{title}</span>
       </td>
       <td className="px-24 pt-4 pb-1 text-center">
-        <span>{valFmt} ({getRange(value.range)})</span>
+        <span>
+          {valFmt} ({getRange(value.range)})
+        </span>
       </td>
     </tr>
-    );
+  );
 }
 
 Row.propTypes = {
-    title: PropTypes.string.isRequired,
-    value: PropTypes.shape({
-        center: PropTypes.number.isRequired,
-        range: PropTypes.shape({
-            infinite: PropTypes.bool.isRequired,
-            unknown: PropTypes.bool.isRequired,
-            value: PropTypes.number.isRequired,
-        }),
-    }).isRequired,
-    fmt: PropTypes.oneOf(['time', 'memory']),
+  title: PropTypes.string.isRequired,
+  value: PropTypes.shape({
+    center: PropTypes.number.isRequired,
+    range: PropTypes.shape({
+      infinite: PropTypes.bool.isRequired,
+      unknown: PropTypes.bool.isRequired,
+      value: PropTypes.number.isRequired,
+    }),
+  }).isRequired,
+  fmt: PropTypes.oneOf(["time", "memory"]),
 };

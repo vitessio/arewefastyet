@@ -16,60 +16,61 @@ limitations under the License.
 
 import bytes from "bytes";
 
-// BACKGROUND STATUS
-export const getStatusClass = (status) => {
-  if (status != "finished" && status != "failed" && status != "started") {
+// Types for the status of background
+type BackgroundStatus = "finished" | "failed" | "started" | "default";
+
+export const getStatusClass = (status: BackgroundStatus): BackgroundStatus => {
+  if (status !== "finished" && status !== "failed" && status !== "started") {
     return "default";
   }
   return status;
 };
+export const formatDate = (date: string | undefined): string | null => {
+  if (!date) return null;
 
-// FORMATDATE
-export const formatDate = (date) => {
-  if (!date || date === 0) return null;
-
-  date = new Date(date);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const parsedDate = new Date(date);
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  const hours = String(parsedDate.getHours()).padStart(2, "0");
+  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
 
   return `${month}/${day}/${year} ${hours}:${minutes}`;
 };
 
-//FORMATTING BYTES TO Bytes
-export const formatByte = (byte) => {
+// Formatting BYTES TO Bytes
+export const formatByte = (byte: number): string => {
   const byteValue = bytes(byte);
   if (byteValue === null) {
     return "0";
   }
-  return byteValue.toString("B");
+  return byteValue.toString();
 };
 
-export const fixed = (value, f) => {
+export const fixed = (value: number | null, f: number): string => {
   if (value === null || typeof value === "undefined") {
     return "0";
   }
   return value.toFixed(f);
 };
 
-export const secondToMicrosecond = (value) => {
+export const secondToMicrosecond = (value: number): string => {
   return fixed(value * 1000000, 2) + "μs";
 };
 
-//ERROR API MESSAGE ERROR
-
+// Error API message
 export const errorApi: string =
   "An error occurred while retrieving data from the API. Please try again.";
 
-//NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN
-export const openDropDownValue = 1000;
-export const closeDropDownValue = 58;
+// Number of pixels to open and close the drop-down
+export const openDropDownValue: number = 1000;
+export const closeDropDownValue: number = 58;
 
-// OPEN DROP DOWN
-
-export const openDropDown = (currentValue, setOpenDropDown) => {
+// Open Drop Open
+export const openDropDown = (
+  currentValue: number,
+  setOpenDropDown: React.Dispatch<React.SetStateAction<number>>
+): void => {
   if (currentValue === closeDropDownValue) {
     setOpenDropDown(openDropDownValue);
   } else {
@@ -77,26 +78,29 @@ export const openDropDown = (currentValue, setOpenDropDown) => {
   }
 };
 
-// CHANGE VALUE DROPDOWN
-
+// Change Value Dropdown
 export const valueDropDown = (
-  ref,
-  setDropDown,
-  setCommitHash,
-  setOpenDropDown,
-  setChangeUrl
-) => {
+  ref: { Name: string; CommitHash: string },
+  setDropDown: React.Dispatch<React.SetStateAction<string>>,
+  setCommitHash: React.Dispatch<React.SetStateAction<string | null>>,
+  setOpenDropDown: React.Dispatch<React.SetStateAction<number>>,
+  setChangeUrl?: React.Dispatch<React.SetStateAction<boolean>>
+): void => {
   setDropDown(ref.Name);
   setCommitHash(ref.CommitHash);
   setOpenDropDown(closeDropDownValue);
 };
 
 // updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
-export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
+export const updateCommitHash = (
+  gitRef: string,
+  setCommitHash: React.Dispatch<React.SetStateAction<string | null>>,
+  jsonDataRefs: { Name: string; CommitHash: string }[]
+): void => {
   const obj = jsonDataRefs.find((item) => item.Name === gitRef);
   setCommitHash(obj ? obj.CommitHash : null);
 };
 
-////THE NUMBER OF PIXELS THAT ARE USED TO OPEN AND CLOSE THE PREVIOUS EXECUTIONS AND MICROBENCH TABLES
-export const openTables = 400;
-export const closeTables = 70;
+// Number of pixels to open and close the previous executions and microbench tables
+export const openTables: number = 400;
+export const closeTables: number = 70;

@@ -17,32 +17,45 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-
 import Macrobench from "../../common/Macrobench";
-
 import { errorApi } from "../../utils/Utils";
 import Hero from "./components/Hero";
+
+interface Ref {
+  CommitHash: string;
+  Name: string;
+  RCnumber: number;
+  Version: {
+    Major: number;
+    Minor: number;
+    Patch: number;
+  };
+}
+interface Commit {
+  old: string;
+  new: string;
+}
 
 const Macro = () => {
   const urlParams = new URLSearchParams(window.location.search);
 
-  const [gitRef, setGitRef] = useState({
+  const [gitRef, setGitRef] = useState<Commit>({
     old: urlParams.get("old") || "",
     new: urlParams.get("new") || "",
   });
-  const [commits, setCommits] = useState({ old: "", new: "" });
+  const [commits, setCommits] = useState<Commit>({ old: "", new: "" });
 
-  const [dataRefs, setDataRefs] = useState();
-  const [dataMacrobench, setDataMacrobench] = useState([]);
-  const [error, setError] = useState<null | string>(null);
-  const [loading, setLoading] = useState(true);
+  const [dataRefs, setDataRefs] = useState<Ref[] | undefined>();
+  const [dataMacrobench, setDataMacrobench] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   async function loadRefs() {
     try {
       const responseRefs = await fetch(
         `${import.meta.env.VITE_API_URL}vitess/refs`
       );
-      const jsonDataRefs = await responseRefs.json();
+      const jsonDataRefs: Ref[] = await responseRefs.json();
       setDataRefs(jsonDataRefs);
     } catch (error) {
       setError(errorApi);
@@ -50,9 +63,15 @@ const Macro = () => {
   }
 
   async function loadData() {
-    const commits = {
-      old: dataRefs.filter((r) => r.Name === gitRef.old)[0].CommitHash,
-      new: dataRefs.filter((r) => r.Name === gitRef.new)[0].CommitHash,
+    if (!dataRefs) return;
+
+    const commitOld = dataRefs.find((r) => r.Name === gitRef.old);
+    const commitNew = dataRefs.find((r) => r.Name === gitRef.new);
+    if (!commitOld || !commitNew) return;
+
+    const commits: Commit = {
+      old: commitOld.CommitHash,
+      new: commitNew.CommitHash,
     };
     setCommits(commits);
 
@@ -80,13 +99,14 @@ const Macro = () => {
   const navigate = useNavigate();
   useEffect(() => {
     navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
-
-    dataRefs && loadData();
-  }, [gitRef.old, gitRef.new, dataRefs]);
+    loadData();
+  }, [gitRef, dataRefs]);
 
   return (
     <>
-      <Hero refs={dataRefs} gitRef={gitRef} setGitRef={setGitRef} />
+      {dataRefs && (
+        <Hero refs={dataRefs} gitRef={gitRef} setGitRef={setGitRef} />
+      )}
 
       <div className="p-page">
         <div className="border border-front" />

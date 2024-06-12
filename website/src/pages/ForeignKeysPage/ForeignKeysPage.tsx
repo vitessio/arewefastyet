@@ -17,21 +17,21 @@ limitations under the License.
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-import { MacrosData } from '@/types'
+import { MacrosData } from "@/types";
 
 import { errorApi } from "../../utils/Utils";
 import Hero from "./components/Hero";
 import FK from "./components/FK";
 
-interface Ref {
-  Name: string;
+interface RefsType {
   CommitHash: string;
+  Name: string;
+  RCnumber: number;
   Version: {
     Major: number;
     Minor: number;
     Patch: number;
   };
-  RCnumber: number;
 }
 
 interface ForeignKeysProps {}
@@ -43,7 +43,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
     tag: urlParams.get("tag") || "",
   });
 
-  const [dataRefs, setDataRefs] = useState<Ref[] | undefined>();
+  const [dataRefs, setDataRefs] = useState<RefsType[] | undefined>();
   const [dataFKs, setDataFKs] = useState<MacrosData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -68,9 +68,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
     setLoading(true);
     try {
       const responseFK = await fetch(
-        `${import.meta.env.VITE_API_URL}fk/compare?sha=${
-          commits.tag
-        }`
+        `${import.meta.env.VITE_API_URL}fk/compare?sha=${commits.tag}`
       );
       const jsonDataFKs = await responseFK.json();
       setDataFKs(jsonDataFKs);
@@ -95,7 +93,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
 
   return (
     <>
-      <Hero refs={dataRefs} gitRef={gitRef} setGitRef={setGitRef} />
+      <Hero refs={dataRefs || []} gitRef={gitRef} setGitRef={setGitRef} />
 
       <div className="p-page">
         <div className="border border-front" />
@@ -110,9 +108,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
 
         {!loading && dataFKs && (
           <div className="flex flex-col gap-y-20 ">
-            <FK
-              data={dataFKs}
-            />
+            <FK data={dataFKs} />
           </div>
         )}
       </div>
