@@ -19,6 +19,8 @@
 package server
 
 import (
+	"strings"
+
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
@@ -115,13 +117,15 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 		ref := release.CommitHash
 		source := exec.SourceReleaseBranch + release.Name
 		lastPatchRelease, err := git.GetLastPatchReleaseAndCommitHash(vitesLocalPath, release.Version)
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "could not find the latest patch release") {
 			slog.Warn(err.Error())
 			continue
 		}
-
-		currVersion := lastPatchRelease.Version
-		currVersion.Patch += 1
+		currVersion := release.Version
+		if lastPatchRelease != nil {
+			currVersion = lastPatchRelease.Version
+			currVersion.Patch += 1
+		}
 
 		for configType, config := range configs {
 			if config.skip {
