@@ -24,16 +24,16 @@ export default function Hero(props: { gitRef: any; setGitRef: any }) {
       <h1 className="mb-3 text-front text-opacity-70">
         Enter SHAs to compare commits
       </h1>
-      <div className="flex flex-col md:flex-row gap-4 overflow-hidden">
+      <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full m-4">
         <ComparisonInput
           name="old"
-          className="text-xl px-6 py-4 bg-background border-2 border-gray-300 rounded-full focus:border-primary  focus:outline-none"
+          className="rounded-l-full"
           setGitRef={setGitRef}
           gitRef={gitRef}
         />
         <ComparisonInput
           name="new"
-          className="text-xl px-6 py-4 bg-background border-2 border-gray-300 rounded-full focus:border-primary focus:outline-none"
+          className="rounded-r-full "
           setGitRef={setGitRef}
           gitRef={gitRef}
         />
@@ -56,7 +56,7 @@ function ComparisonInput(props: {
       name={name}
       className={twMerge(
         className,
-        "relative text-xl bg-transparent"
+        "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary w-full sm:w-48 md:w-64 lg:w-80"
       )}
       defaultValue={gitRef[name]}
       placeholder={`${name} SHA`}
