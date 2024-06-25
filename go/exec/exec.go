@@ -48,13 +48,12 @@ const (
 )
 
 type Exec struct {
-	UUID              uuid.UUID
-	RawUUID           string
-	AnsibleConfig     ansible.Config
-	Source            string
-	GitRef            string
-	VitessVersion     git.Version
-	VitessVersionName string
+	UUID          uuid.UUID
+	RawUUID       string
+	AnsibleConfig ansible.Config
+	Source        string
+	GitRef        string
+	VitessVersion git.Version
 
 	// NextBenchmarkIsTheSame is set to true if the next benchmark has the same config
 	// as the current one. This allows us to do some optimization in Ansible and speed
@@ -161,9 +160,6 @@ const (
 	SourcePullRequestBase = "cron_pr_base"
 	SourceTag             = "cron_tags_"
 	SourceReleaseBranch   = "cron_"
-
-	VitessLatestVersion   = "latest"
-	VitessPreviousVersion = "v_"
 )
 
 // NewExec creates a new *Exec given the string representation of an uuid.UUID.
@@ -308,11 +304,6 @@ func (e *Exec) Prepare() error {
 		return err
 	}
 
-	err = e.defineVersionNameOfVitess()
-	if err != nil {
-		return err
-	}
-
 	err = prepareVitessConfiguration(e.rawVitessConfig, e.VitessVersion, &e.vitessConfig)
 	if err != nil {
 		return err
@@ -400,7 +391,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 		e.AnsibleConfig.AddExtraVar(ansible.KeyVitessVersionPRNumber, e.PullNB)
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVtgatePlanner, e.VtgatePlannerVersion)
-	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessVersionName, e.VitessVersionName)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessMajorVersion, e.VitessVersion.Major)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessSchema, e.vitessSchemaPath)
 	e.vitessConfig.addToAnsible(&e.AnsibleConfig)
 
@@ -430,22 +421,6 @@ func (e *Exec) handleStepEnd(err error) {
 	if err != nil {
 		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFailed, e.UUID.String())
 	}
-}
-
-func (e *Exec) defineVersionNameOfVitess() error {
-	release, err := git.GetLastReleaseAndCommitHash(e.RepoDir)
-	if err != nil {
-		return err
-	}
-
-	// Main branch
-	if e.Source == SourceCron || release.Version.Major <= e.VitessVersion.Major {
-		e.VitessVersionName = VitessLatestVersion
-		return nil
-	}
-
-	e.VitessVersionName = fmt.Sprintf("%s%d", VitessPreviousVersion, e.VitessVersion.Major)
-	return nil
 }
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
