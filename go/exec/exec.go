@@ -391,6 +391,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 		e.AnsibleConfig.AddExtraVar(ansible.KeyVitessVersionPRNumber, e.PullNB)
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVtgatePlanner, e.VtgatePlannerVersion)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessMajorVersion, e.VitessVersion.Major)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessSchema, e.vitessSchemaPath)
 	e.vitessConfig.addToAnsible(&e.AnsibleConfig)
 

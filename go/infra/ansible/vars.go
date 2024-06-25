@@ -70,6 +70,10 @@ const (
 	// number that the execution will benchmark.
 	KeyVitessVersionPRNumber = "vitess_git_version_pr_nb"
 
+	// KeyVitessMajorVersion corresponding value in the map is an int set to the major
+	// release increment of Vitess.
+	KeyVitessMajorVersion = "vitess_major_version"
+
 	// KeyVtgatePlanner corresponding value in the map is the query planner version
 	// that will be used to execute the benchmark.
 	KeyVtgatePlanner = "vitess_planner_version"
