@@ -21,7 +21,7 @@ import useApiCall from "../../utils/Hook";
 import Hero from "./components/Hero";
 import Macrobench from "../../common/Macrobench";
 import { CompareData } from '@/types'
- 
+
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -63,12 +63,12 @@ export default function Compare() {
       )}
 
       {!isMacrobenchLoading && !macrobenchTextLoading && compareData && compareData.length > 0 && (
-        <section className="flex flex-col items-center">
-          <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
+        <section>
+          <h3 className="my-6 flex justify-center text-primary text-2xl">Macro Benchmarks</h3>
           <div className="flex flex-col gap-y-20">
             {compareData.map((macro, index) => {
               return (
-                <div key={index}>
+                <div key={index} className="mb-20">
                   <Macrobench
                     data={macro}
                     gitRef={{

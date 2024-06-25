@@ -19,11 +19,12 @@ import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import { formatByte, fixed, secondToMicrosecond } from "../utils/Utils";
 import {twMerge} from "tailwind-merge";
+import { Table, TableBody, TableHead, TableHeader,TableRow, } from "../components/ui/table";
 
 export default function Macrobench({ data, gitRef, commits }) {
   return (
     <div className="w-full border border-primary rounded-xl relative shadow-lg">
-      <div className="p-5 flex flex-col gap-y-3">
+      <div className="pt-2 pl-2 md:p-4 flex flex-col gap-y-3">
         <h3 className="text-start text-3xl font-medium">{data.type}</h3>
         <span className="flex gap-x-1">
           Click
@@ -33,45 +34,46 @@ export default function Macrobench({ data, gitRef, commits }) {
           >
             here
           </Link>
-          to see the query plans comparison for this benchmark.
+          to see the query plans comparison
+          <span className="hidden md:block">
+                for this benchmark.
+          </span>
+        </span>
+         <span className="md:hidden">
+            for this benchmark.
         </span>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th />
-            <th>
+      <Table className="text-base">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-center">
+              <h1>{" "}</h1>
+            </TableHead>
+            <TableHead className="text-center">
               <Link
                 target="_blank"
                 to={`https://github.com/vitessio/vitess/commit/${commits.old}`}
-                className="text-primary"
+                className="text-primary font-bold"
               >
                 {gitRef.old || "Old"}
               </Link>
-            </th>
-            <th>
+            </TableHead>
+            <TableHead className="text-center font-medium">
               <Link
                 target="_blank"
                 to={`https://github.com/vitessio/vitess/commit/${commits.new}`}
-                className="text-primary"
+                className="text-primary font-bold"
               >
                 {gitRef.new || "New"}
               </Link>
-            </th>
-            <th>
-              <h4>P</h4>
-            </th>
-            <th>
-              <h4>Delta</h4>
-            </th>
-            <th>
-              <h4>Significant</h4>
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
+            </TableHead>
+            <TableHead className="text-center text-white font-bold"><h4>P</h4></TableHead>
+            <TableHead className="text-center text-white font-bold"><h4>Delta</h4></TableHead>
+            <TableHead className="text-center text-white font-bold "><h4>Significant</h4></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           <Row
             title={"QPS Total"}
             oldVal={data.result.total_qps.old}
@@ -200,8 +202,8 @@ export default function Macrobench({ data, gitRef, commits }) {
             p={fixed(data.result.components_mem_stats_alloc_bytes.vttablet.p, 3)}
             fmt={"memory"}
           />
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }
