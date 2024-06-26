@@ -1,5 +1,8 @@
 GOMAXPROCS={{ (ansible_processor_vcpus > vttablet_max_goproc) | ternary(vttablet_max_goproc,ansible_processor_vcpus) }}
 GOGC=500
+{% if vitess_major_version >= 19 %}
+GOMEMLIMIT=128MiB
+{% endif %}
 
 VTROOT={{ tablet.root | default(vitess_root) }}
 
