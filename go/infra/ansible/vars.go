@@ -47,6 +47,12 @@ const (
 	// server.
 	KeyBenchmarkSecretsPath = "arewefastyet_secrets_file_path"
 
+	// KeyLastIsSame is set to true if the previous execution has the same config as the current one.
+	KeyLastIsSame = "arewefastyet_last_exec_is_same"
+
+	// KeyNextIsSame is set to true if the next execution has the same config as the current one.
+	KeyNextIsSame = "arewefastyet_next_exec_is_same"
+
 	// Vitess related keys
 
 	// KeyVitessSchema is the path to the Vitess VSchema that will be used for this benchmark.
@@ -64,10 +70,9 @@ const (
 	// number that the execution will benchmark.
 	KeyVitessVersionPRNumber = "vitess_git_version_pr_nb"
 
-	// KeyVitessVersionName corresponding value in the map is the name of the vitess
-	// version on which the benchmarks will be executed. For instance: 'latest', '14',
-	// '13', ...
-	KeyVitessVersionName = "vitess_version_name"
+	// KeyVitessMajorVersion corresponding value in the map is an int set to the major
+	// release increment of Vitess.
+	KeyVitessMajorVersion = "vitess_major_version"
 
 	// KeyVtgatePlanner corresponding value in the map is the query planner version
 	// that will be used to execute the benchmark.
@@ -88,15 +93,6 @@ const (
 	// KeyGoVersion corresponding value in the map is the golang version to use for
 	// the execution of the benchmark.
 	KeyGoVersion = "golang_gover"
-
-	// Previous execution keys
-
-	// KeyCleanPreviousExec tells whether the previous execution was a clean benchmark or not
-	// this is useful when doing optimization to skip certain steps of the setup
-	KeyCleanPreviousExec = "clean_previous_exec"
-
-	// KeyCommitPreviousExec is the commit SHA of the previous execution.
-	KeyCommitPreviousExec = "commit_previous_exec"
 
 	// Stats database related keys
 

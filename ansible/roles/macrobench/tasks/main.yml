@@ -13,7 +13,13 @@
 - name: Install arewefastyet
   become: yes
   become_user: root
+  when: arewefastyet_last_exec_is_same is undefined
   block:
+    - name: Remove old arewefastyet
+      shell: |
+        rm -Rf /go/src/github.com/vitessio/arewefastyet
+      changed_when: false
+
     - name: git clone arewefastyet
       git:
         repo: "{{ arewefastyet_git_repo }}"

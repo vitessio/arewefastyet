@@ -22,7 +22,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/robfig/cron/v3"
+	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"golang.org/x/exp/slices"
 )
@@ -41,6 +43,7 @@ type (
 		PullNb                                        int
 		PullBaseRef                                   string
 		Version                                       git.Version
+		UUID                                          string
 	}
 
 	executionQueue map[executionIdentifier]*executionQueueElement
@@ -56,6 +59,12 @@ var (
 	mtx              sync.RWMutex
 	queue            executionQueue
 )
+
+func (ei executionIdentifier) equalWithoutUUID(id executionIdentifier) bool {
+	ei.UUID = ""
+	id.UUID = ""
+	return ei == id
+}
 
 func createIndividualCRON(schedule string, job func()) error {
 	if schedule == "" {
@@ -122,6 +131,7 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 		mtx.Unlock()
 	}()
 
+	// Check if the benchmark we are trying to add is part of exclusion rules
 	if len(s.sourceFilter) > 0 && !slices.Contains(s.sourceFilter, element.identifier.Source) {
 		return
 	}
@@ -129,21 +139,51 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 		return
 	}
 
-	_, found := queue[element.identifier]
+	// Duplication mechanism to multiply the execution queue element depending
+	// on how many times we want to execute the same benchmark and on how many
+	// times it already exists in the database.
+	var execElements []*executionQueueElement
+	if element.identifier.BenchmarkType == "micro" {
+		execElements = append(execElements, element)
+	} else {
+		nb, err := s.getNumberOfBenchmarksInDB(element.identifier)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
 
-	if found {
-		return
-	}
-	exists, err := s.checkIfExecutionExists(element.identifier)
-	if err != nil {
-		slog.Error(err.Error())
-		return
-	}
-	if !exists {
-		queue[element.identifier] = element
-		slog.Infof("%+v is added to the queue", element.identifier)
+		countInQueue := 0
+		for identifier := range queue {
+			if identifier.equalWithoutUUID(element.identifier) {
+				countInQueue++
+			}
+		}
 
-		// we sleep here to avoid adding too many similar elements to the queue at the same time.
-		time.Sleep(2 * time.Second)
+		multiplyFactor := exec.MaximumBenchmarkWithSameConfig - nb - countInQueue
+		if multiplyFactor <= 0 {
+			slog.Infof("not adding %+v to the queue, already full", element.identifier)
+			return
+		}
+		for i := 0; i < multiplyFactor; i++ {
+			newElement := *element
+			newElement.identifier.UUID = uuid.NewString()
+			execElements = append(execElements, &newElement)
+		}
+	}
+
+	// Add all the elements to the queue
+	for _, execElement := range execElements {
+		// Check if the exact same benchmark is already in the queue
+		_, found := queue[execElement.identifier]
+		if found {
+			slog.Infof("not adding %+v, already in the queue", execElement.identifier)
+			return
+		}
+
+		queue[execElement.identifier] = execElement
+		slog.Infof("%+v is added to the queue", execElement.identifier)
+
+		// We sleep here to avoid adding too many similar elements to the queue at the same time.
+		time.Sleep(100 * time.Millisecond)
 	}
 }

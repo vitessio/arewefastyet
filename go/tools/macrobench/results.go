@@ -19,23 +19,17 @@
 package macrobench
 
 import (
-	"errors"
-	"math"
 	"sort"
-	"strings"
 	"time"
 
-	"github.com/vitessio/arewefastyet/go/storage"
-
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
-	"github.com/vitessio/arewefastyet/go/storage/mysql"
-	awftmath "github.com/vitessio/arewefastyet/go/tools/math"
+	"github.com/vitessio/arewefastyet/go/storage"
 )
 
 type (
-	// QPS represents the QPS table. This table contains the raw
+	// qps represents the qps table. This table contains the raw
 	// results of a macro benchmark.
-	QPS struct {
+	qps struct {
 		ID     int
 		RefID  int
 		Total  float64 `json:"total"`
@@ -44,13 +38,13 @@ type (
 		Other  float64 `json:"other"`
 	}
 
-	// Result represents both OLTP and TPCC tables.
+	// result represents both OLTP and TPCC tables.
 	// The two tables share the same schema and can thus be grouped
 	// under an unique go struct.
-	Result struct {
+	result struct {
 		ID         int
 		Queries    int     `json:"queries"`
-		QPS        QPS     `json:"qps"`
+		QPS        qps     `json:"qps"`
 		TPS        float64 `json:"tps"`
 		Latency    float64 `json:"latency"`
 		Errors     float64 `json:"errors"`
@@ -59,315 +53,333 @@ type (
 		Threads    float64 `json:"threads"`
 	}
 
-	// BenchmarkID is used to identify a macro benchmark using its database's ID, the
-	// source from which the benchmark was triggered and its creation date.
-	BenchmarkID struct {
-		ID        int
-		Source    string
-		CreatedAt *time.Time
-		ExecUUID  string
+	resultsArray []result
+
+	qpsAsSlice struct {
+		total  []float64
+		reads  []float64
+		writes []float64
+		other  []float64
 	}
 
-	// Details represents the entire macro benchmark and its sub
-	// components. It has a BenchmarkID (ID, creation date, source of the benchmark),
-	// the git reference that was used, and its results represented by a Result.
-	// This struct encapsulates the "benchmark", "qps" and ("OLTP" or "TPCC") database tables.
-	Details struct {
-		BenchmarkID
+	metricsAsSlice struct {
+		totalComponentsCPUTime []float64
+		componentsCPUTime      map[string][]float64
 
-		// refers to commit
-		GitRef  string
-		Result  Result
-		Metrics metrics.ExecutionMetrics
+		totalComponentsMemStatsAllocBytes []float64
+		componentsMemStatsAllocBytes      map[string][]float64
 	}
 
-	// Comparison contains two Details and their difference in a
-	// Result field.
-	Comparison struct {
-		Right, Left Details
-		Diff        Result
-		DiffMetrics metrics.ExecutionMetrics
-	}
+	resultAsSlice struct {
+		qps qpsAsSlice
 
-	ResultsArray []Result
-	DetailsArray []Details
-
-	ComparisonArray []Comparison
-
-	DailySummary struct {
-		CreatedAt *time.Time
-		QPSTotal  float64
-	}
-)
-
-func newBenchmarkID(ID int, source string, createdAt *time.Time) *BenchmarkID {
-	return &BenchmarkID{ID: ID, Source: source, CreatedAt: createdAt}
-}
-
-func newDetails(benchmarkID BenchmarkID, gitRef string, result Result, metrics metrics.ExecutionMetrics) *Details {
-	return &Details{BenchmarkID: benchmarkID, GitRef: gitRef, Result: result, Metrics: metrics}
-}
-
-func newQPS(total float64, reads float64, writes float64, other float64) *QPS {
-	return &QPS{Total: total, Reads: reads, Writes: writes, Other: other}
-}
-
-func newResult(QPS QPS, TPS float64, latency float64, errors float64, reconnects float64, time int, threads float64) *Result {
-	return &Result{QPS: QPS, TPS: TPS, Latency: latency, Errors: errors, Reconnects: reconnects, Time: time, Threads: threads}
-}
-
-// CompareDetailsArrays compare two DetailsArray and return
-// their comparison in a ComparisonArray.
-func CompareDetailsArrays(references, compares DetailsArray) (compared ComparisonArray) {
-	emptyCmp := Comparison{
-		Right: Details{
-			Metrics: metrics.NewExecMetrics(),
-		},
-		Left: Details{
-			Metrics: metrics.NewExecMetrics(),
-		},
-		DiffMetrics: metrics.NewExecMetrics(),
-	}
-	for i := 0; i < int(math.Max(float64(len(references)), float64(len(compares)))); i++ {
-		cmp := emptyCmp
-		if i < len(references) {
-			cmp.Right = references[i]
-		}
-		if i < len(compares) {
-			cmp.Left = compares[i]
-		}
-		if cmp.Left.GitRef != "" && cmp.Right.GitRef != "" {
-			compareResult := cmp.Left.Result
-			referenceResult := cmp.Right.Result
-			cmp.Diff.QPS.Total = (referenceResult.QPS.Total - compareResult.QPS.Total) / compareResult.QPS.Total * 100
-			cmp.Diff.QPS.Reads = (referenceResult.QPS.Reads - compareResult.QPS.Reads) / compareResult.QPS.Reads * 100
-			cmp.Diff.QPS.Writes = (referenceResult.QPS.Writes - compareResult.QPS.Writes) / compareResult.QPS.Writes * 100
-			cmp.Diff.QPS.Other = (referenceResult.QPS.Other - compareResult.QPS.Other) / compareResult.QPS.Other * 100
-			cmp.Diff.TPS = (referenceResult.TPS - compareResult.TPS) / compareResult.TPS * 100
-			cmp.Diff.Latency = (compareResult.Latency - referenceResult.Latency) / referenceResult.Latency * 100
-			cmp.Diff.Reconnects = (compareResult.Reconnects - referenceResult.Reconnects) / referenceResult.Reconnects * 100
-			cmp.Diff.Errors = (compareResult.Errors - referenceResult.Errors) / referenceResult.Errors * 100
-			cmp.Diff.Time = int(float64(compareResult.Time) - (float64(referenceResult.Time))/float64(referenceResult.Time)*100)
-			cmp.Diff.Threads = (compareResult.Threads - referenceResult.Threads) / referenceResult.Threads * 100
-			awftmath.CheckForNaN(&cmp.Diff, 0)
-			awftmath.CheckForNaN(&cmp.Diff.QPS, 0)
-			cmp.DiffMetrics = metrics.CompareTwo(cmp.Left.Metrics, cmp.Right.Metrics)
-		}
-		compared = append(compared, cmp)
-	}
-	if len(compared) == 0 {
-		compared = append(compared, emptyCmp)
-	}
-	return compared
-}
-
-// mergeMedian will merge a ResultsArray into a single Result
-// by calculating the median of all elements in the array.
-func (mrs ResultsArray) mergeMedian() (mergedResult Result) {
-	inter := struct {
-		total      []float64
-		reads      []float64
-		writes     []float64
-		other      []float64
 		tps        []float64
 		latency    []float64
 		errors     []float64
 		reconnects []float64
 		time       []int
 		threads    []float64
-	}{}
 
+		metrics metricsAsSlice
+	}
+
+	benchmarkResults struct {
+		GitRef  string
+		Results resultsArray
+		Metrics metrics.ExecutionMetricsArray
+	}
+
+	// benchmarkID is used to identify a macro benchmark using its database's ID, the
+	// source from which the benchmark was triggered and its creation date.
+	benchmarkID struct {
+		ID        int
+		Source    string
+		CreatedAt *time.Time
+		ExecUUID  string
+	}
+
+	// details represents the entire macro benchmark and its sub
+	// components. It has a benchmarkID (ID, creation date, source of the benchmark),
+	// the git reference that was used, and its results represented by a result.
+	// This struct encapsulates the "benchmark", "qps" and ("OLTP" or "TPCC") database tables.
+	details struct {
+		benchmarkID
+
+		// refers to commit
+		GitRef  string
+		Result  result
+		Metrics metrics.ExecutionMetrics
+	}
+
+	detailsArray []details
+)
+
+func (br benchmarkResults) asSlice() resultAsSlice {
+	s := br.Results.resultsArrayToSlice()
+	s.metrics = metricsToSlice(br.Metrics)
+	return s
+}
+
+func (br benchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
+	ssr := StatisticalSingleResult{
+		GitRef:                       br.GitRef,
+		ComponentsCPUTime:            map[string]StatisticalSummary{},
+		ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{},
+	}
+
+	resultSlice := br.asSlice()
+
+	ssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
+	ssr.ReadsQPS, _ = getSummary(resultSlice.qps.reads)
+	ssr.WritesQPS, _ = getSummary(resultSlice.qps.writes)
+	ssr.OtherQPS, _ = getSummary(resultSlice.qps.other)
+
+	ssr.TPS, _ = getSummary(resultSlice.tps)
+	ssr.Latency, _ = getSummary(resultSlice.latency)
+	ssr.Errors, _ = getSummary(resultSlice.errors)
+
+	ssr.TotalComponentsCPUTime, _ = getSummary(resultSlice.metrics.totalComponentsCPUTime)
+	for name, value := range resultSlice.metrics.componentsCPUTime {
+		ssr.ComponentsCPUTime[name], _ = getSummary(value)
+	}
+
+	ssr.TotalComponentsMemStatsAllocBytes, _ = getSummary(resultSlice.metrics.totalComponentsMemStatsAllocBytes)
+	for name, value := range resultSlice.metrics.componentsMemStatsAllocBytes {
+		ssr.ComponentsMemStatsAllocBytes[name], _ = getSummary(value)
+	}
+	return ssr
+}
+
+func (br benchmarkResults) toShortStatisticalSingleResult() ShortStatisticalSingleResult {
+	var sssr ShortStatisticalSingleResult
+
+	resultSlice := br.asSlice()
+
+	sssr.TotalQPS, _ = getSummary(resultSlice.qps.total)
+	return sssr
+}
+
+func metricsToSlice(metrics metrics.ExecutionMetricsArray) metricsAsSlice {
+	var s metricsAsSlice
+	s.componentsCPUTime = make(map[string][]float64)
+	s.componentsMemStatsAllocBytes = make(map[string][]float64)
+	for _, metricRow := range metrics {
+		s.totalComponentsCPUTime = append(s.totalComponentsCPUTime, metricRow.TotalComponentsCPUTime)
+		for name, value := range metricRow.ComponentsCPUTime {
+			s.componentsCPUTime[name] = append(s.componentsCPUTime[name], value)
+		}
+
+		s.totalComponentsMemStatsAllocBytes = append(s.totalComponentsMemStatsAllocBytes, metricRow.TotalComponentsMemStatsAllocBytes)
+		for name, value := range metricRow.ComponentsMemStatsAllocBytes {
+			s.componentsMemStatsAllocBytes[name] = append(s.componentsMemStatsAllocBytes[name], value)
+		}
+	}
+	return s
+}
+
+func (mrs resultsArray) resultsArrayToSlice() resultAsSlice {
+	var ras resultAsSlice
 	for _, mr := range mrs {
-		inter.total = append(inter.total, mr.QPS.Total)
-		inter.reads = append(inter.reads, mr.QPS.Reads)
-		inter.writes = append(inter.writes, mr.QPS.Writes)
-		inter.other = append(inter.other, mr.QPS.Other)
-		inter.tps = append(inter.tps, mr.TPS)
-		inter.latency = append(inter.latency, mr.Latency)
-		inter.errors = append(inter.errors, mr.Errors)
-		inter.reconnects = append(inter.reconnects, mr.Reconnects)
-		inter.time = append(inter.time, mr.Time)
-		inter.threads = append(inter.threads, mr.Threads)
+		ras.qps.total = append(ras.qps.total, mr.QPS.Total)
+		ras.qps.reads = append(ras.qps.reads, mr.QPS.Reads)
+		ras.qps.writes = append(ras.qps.writes, mr.QPS.Writes)
+		ras.qps.other = append(ras.qps.other, mr.QPS.Other)
+		ras.tps = append(ras.tps, mr.TPS)
+		ras.latency = append(ras.latency, mr.Latency)
+		ras.errors = append(ras.errors, mr.Errors)
+		ras.reconnects = append(ras.reconnects, mr.Reconnects)
+		ras.time = append(ras.time, mr.Time)
+		ras.threads = append(ras.threads, mr.Threads)
 	}
-
-	mergedResult.QPS.Total = awftmath.MedianFloat(inter.total)
-	mergedResult.QPS.Reads = awftmath.MedianFloat(inter.reads)
-	mergedResult.QPS.Writes = awftmath.MedianFloat(inter.writes)
-	mergedResult.QPS.Other = awftmath.MedianFloat(inter.other)
-	mergedResult.TPS = awftmath.MedianFloat(inter.tps)
-	mergedResult.Latency = awftmath.MedianFloat(inter.latency)
-	mergedResult.Errors = awftmath.MedianFloat(inter.errors)
-	mergedResult.Reconnects = awftmath.MedianFloat(inter.reconnects)
-	mergedResult.Time = int(awftmath.MedianInt(inter.time))
-	mergedResult.Threads = awftmath.MedianFloat(inter.threads)
-	return mergedResult
+	sort.Float64s(ras.qps.total)
+	sort.Float64s(ras.qps.reads)
+	sort.Float64s(ras.qps.writes)
+	sort.Float64s(ras.qps.other)
+	sort.Float64s(ras.tps)
+	sort.Float64s(ras.latency)
+	sort.Float64s(ras.reconnects)
+	sort.Ints(ras.time)
+	sort.Float64s(ras.threads)
+	return ras
 }
 
-// ReduceSimpleMedian reduces the given DetailsArray by
-// merging altogether the elements that share the same GitRef.
-// During the reduce, the math.MedianFloat and math.MedianInt methods
-// are applied on the different Result.
-func (mabd DetailsArray) ReduceSimpleMedian() (reduceMabd DetailsArray) {
-	sort.SliceStable(mabd, func(i, j int) bool {
-		return mabd[i].GitRef < mabd[j].GitRef
-	})
-	for i := 0; i < len(mabd); {
-		var j int
-		interResults := ResultsArray{}
-		interMetrics := metrics.ExecutionMetricsArray{}
-		for j = i; j < len(mabd) && mabd[i].GitRef == mabd[j].GitRef; j++ {
-			interResults = append(interResults, mabd[j].Result)
-			interMetrics = append(interMetrics, mabd[j].Metrics)
-		}
-
-		reducedResult := interResults.mergeMedian()
-		reduceMabd = append(reduceMabd, Details{
-			GitRef:  mabd[i].GitRef,
-			Result:  reducedResult,
-			Metrics: interMetrics.Median(),
-		})
-		i = j
-	}
-	return reduceMabd
-}
-
-func GetDetailsFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]Details, error) {
-	details, err := GetDetailsArraysFromAllTypes(sha, planner, dbclient, types)
-	if err != nil {
-		return nil, err
-	}
-	result := make(map[string]Details, len(details))
-	for s, array := range details {
-		var d Details
-		d.Metrics = metrics.NewExecMetrics()
-		if len(array) == 1 {
-			d = array[0]
-		}
-		result[s] = d
-	}
-	return result, nil
-}
-
-// GetDetailsArraysFromAllTypes returns a slice of Details based on the given git ref and Types.
-func GetDetailsArraysFromAllTypes(sha string, planner PlannerVersion, dbclient storage.SQLClient, types []string) (map[string]DetailsArray, error) {
-	macros := map[string]DetailsArray{}
-	for _, mtype := range types {
-		macro, err := GetResultsForGitRefAndPlanner(mtype, sha, planner, dbclient)
+func Compare(client storage.SQLClient, old, new string, types []string, planner PlannerVersion) (map[string]StatisticalCompareResults, error) {
+	results := make(map[string]StatisticalCompareResults, len(types))
+	for _, macroType := range types {
+		oldResult, err := getBenchmarkResults(client, macroType, old, planner)
 		if err != nil {
 			return nil, err
 		}
 
-		// Get the execution metrics of each macrobenchmark details
-		for i, details := range macro {
-			macro[i].Metrics, err = metrics.GetExecutionMetricsSQL(dbclient, details.ExecUUID)
-			if err != nil {
-				return nil, err
+		newResult, err := getBenchmarkResults(client, macroType, new, planner)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
+			results[macroType] = StatisticalCompareResults{
+				ComponentsCPUTime: map[string]StatisticalResult{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+				ComponentsMemStatsAllocBytes: map[string]StatisticalResult{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+			}
+			continue
+		}
+
+		oldResultsAsSlice := oldResult.asSlice()
+		newResultsAsSlice := newResult.asSlice()
+
+		scr := performAnalysis(oldResultsAsSlice, newResultsAsSlice)
+		results[macroType] = scr
+	}
+	return results, nil
+}
+
+func Search(client storage.SQLClient, sha string, types []string, planner PlannerVersion) (map[string]StatisticalSingleResult, error) {
+	results := make(map[string]StatisticalSingleResult, len(types))
+	for _, macroType := range types {
+		result, err := getBenchmarkResults(client, macroType, sha, planner)
+		if err != nil {
+			return nil, err
+		}
+		if len(result.Results) == 0 {
+			results[macroType] = StatisticalSingleResult{
+				ComponentsCPUTime: map[string]StatisticalSummary{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+				ComponentsMemStatsAllocBytes: map[string]StatisticalSummary{
+					"vtgate":   {},
+					"vttablet": {},
+				},
+			}
+			continue
+		}
+		results[macroType] = result.toStatisticalSingleResult()
+	}
+	return results, nil
+}
+
+func SearchForLastDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int) ([]StatisticalSingleResult, error) {
+	var ssrs []StatisticalSingleResult
+	results, err := getBenchmarkResultsLastXDays(client, macroType, planner, days, false)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, result := range results {
+		ssrs = append(ssrs, result.toStatisticalSingleResult())
+	}
+	return ssrs, nil
+}
+
+func SearchForLastDaysQPSOnly(client storage.SQLClient, types []string, planner PlannerVersion, days int) (map[string][]ShortStatisticalSingleResult, error) {
+	results := make(map[string][]ShortStatisticalSingleResult)
+	for _, macroType := range types {
+		resultsForType, err := getBenchmarkResultsLastXDays(client, macroType, planner, days, true)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, result := range resultsForType {
+			results[macroType] = append(results[macroType], result.toShortStatisticalSingleResult())
+		}
+	}
+	return results, nil
+}
+
+func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (benchmarkResults, error) {
+	results, err := getResultsForGitRefAndPlanner(macroType, gitSHA, planner, client)
+	if err != nil {
+		return benchmarkResults{}, err
+	}
+
+	if len(results) == 0 {
+		return benchmarkResults{}, nil
+	}
+
+	var br benchmarkResults
+	for _, result := range results {
+		br.Results = append(br.Results, result.Result)
+
+		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
+		if err != nil {
+			return benchmarkResults{}, err
+		}
+		br.Metrics = append(br.Metrics, metricsResult)
+	}
+	return br, nil
+}
+
+func (da detailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignoreMetrics bool) ([]benchmarkResults, error) {
+	var brs []benchmarkResults
+	macroIdMap := make(map[int]bool)
+
+	getMetrics := func(br *benchmarkResults, uuid string) error {
+		if ignoreMetrics {
+			return nil
+		}
+		metricsResult, err := metrics.GetExecutionMetricsSQL(client, uuid)
+		if err != nil {
+			return err
+		}
+		br.Metrics = append(br.Metrics, metricsResult)
+		return nil
+	}
+
+	for i, result := range da {
+		if _, ok := macroIdMap[result.ID]; !ok {
+			macroIdMap[result.ID] = true
+		} else {
+			continue
+		}
+
+		br := benchmarkResults{
+			GitRef: result.GitRef,
+		}
+		br.Results = append(br.Results, result.Result)
+		if err := getMetrics(&br, result.ExecUUID); err != nil {
+			return nil, err
+		}
+
+		for j := i + 1; j < len(da); j++ {
+			tmpResult := da[j]
+			if _, ok := macroIdMap[tmpResult.ID]; ok {
+				continue
+			}
+			if tmpResult.GitRef == result.GitRef {
+				macroIdMap[tmpResult.ID] = true
+				br.Results = append(br.Results, tmpResult.Result)
+				if err := getMetrics(&br, tmpResult.ExecUUID); err != nil {
+					return nil, err
+				}
 			}
 		}
-
-		macros[mtype] = macro.ReduceSimpleMedian()
+		brs = append(brs, br)
 	}
-	return macros, nil
+	return brs, nil
 }
 
-// GetResultsForLastDays returns a slice Details based on a given macro benchmark type.
-// The type can either be OLTP or TPCC. Using that type, the function will generate a query using
-// the *mysql.Client. The query will select only results that were added between now and lastDays.
-func GetResultsForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	macrodetails = []Details{}
-	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
-		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
-		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
-		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
-		"ORDER BY e.finished_at "
+func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int, short bool) ([]benchmarkResults, error) {
+	var results detailsArray
+	var err error
 
-	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
+	if short {
+		results, err = getSummaryLastXDays(macroType, "cron", planner, days, client)
+	} else {
+		results, err = getResultsLastXDays(macroType, "cron", planner, days, client)
+	}
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
-	for result.Next() {
-		var res Details
-		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
-			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads,
-			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
-		if err != nil {
-			return nil, err
-		}
-		macrodetails = append(macrodetails, res)
-	}
-	return macrodetails, nil
-}
 
-func GetSummaryForLastDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (dailySummary []DailySummary, err error) {
-	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT e.finished_at, results.total_qps " +
-		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND e.source = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ? " +
-		"ORDER BY e.finished_at "
-
-	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
-	if err != nil {
-		return nil, err
-	}
-	defer result.Close()
-	for result.Next() {
-		var res DailySummary
-		err = result.Scan(&res.CreatedAt, &res.QPSTotal)
-		if err != nil {
-			return nil, err
-		}
-		dailySummary = append(dailySummary, res)
-	}
-	return
-}
-
-// GetResultsForGitRefAndPlanner returns a slice of Details based on the given git ref
-// and macro benchmark Type.
-func GetResultsForGitRefAndPlanner(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (macrodetails DetailsArray, err error) {
-	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(info.exec_uuid, ''), " +
-		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
-		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
-		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" AND e.git_ref = ? AND info.vtgate_planner_version = ? AND info.macrobenchmark_id = results.macrobenchmark_id AND info.type = ?"
-
-	result, err := client.Select(query, ref, planner, upperMacroType)
-	if err != nil {
-		return nil, err
-	}
-	defer result.Close()
-	for result.Next() {
-		var res Details
-		err = result.Scan(&res.ID, &res.GitRef, &res.Source, &res.CreatedAt, &res.ExecUUID, &res.Result.TPS, &res.Result.Latency,
-			&res.Result.Errors, &res.Result.Reconnects, &res.Result.Time, &res.Result.Threads,
-			&res.Result.QPS.Total, &res.Result.QPS.Reads, &res.Result.QPS.Writes, &res.Result.QPS.Other)
-		if err != nil {
-			return nil, err
-		}
-		macrodetails = append(macrodetails, res)
-	}
-	return macrodetails, nil
-}
-
-// insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
-// The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
-// Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
-// The children table QPS is also inserted.
-func (mbr *Result) insertToMySQL(macrobenchmarkID int, client storage.SQLClient) error {
-	if client == nil {
-		return errors.New(mysql.ErrorClientConnectionNotInitialized)
+	if len(results) == 0 {
+		return nil, nil
 	}
 
-	// insert Result
-	queryResult := "INSERT INTO macrobenchmark_results(macrobenchmark_id, queries, tps, latency, errors, reconnects, time, threads, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-	_, err := client.Insert(queryResult, macrobenchmarkID, mbr.Queries, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
-	if err != nil {
-		return err
-	}
-	return nil
+	return results.toSliceOfBenchmarkResults(client, short)
 }

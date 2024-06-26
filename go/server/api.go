@@ -28,7 +28,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vitessio/arewefastyet/go/exec"
-	"github.com/vitessio/arewefastyet/go/exec/metrics"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/github"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
@@ -61,7 +60,7 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 	recentExecs := make([]RecentExecutions, 0, len(execs))
 	for _, e := range execs {
 		recentExecs = append(recentExecs, RecentExecutions{
-			UUID:          e.UUID.String(),
+			UUID:          e.RawUUID,
 			Source:        e.Source,
 			GitRef:        e.GitRef,
 			Status:        e.Status,
@@ -137,38 +136,34 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 }
 
 type CompareMacrobench struct {
-	Type string                `json:"type"`
-	Diff macrobench.Comparison `json:"diff"`
+	Type   string                               `json:"type"`
+	Result macrobench.StatisticalCompareResults `json:"result"`
 }
 
-func (s *Server) compareMacrobenchmarks(c *gin.Context) {
-	rightSHA := c.Query("rtag")
-	leftSHA := c.Query("ltag")
+func (s *Server) compareMacroBenchmarks(c *gin.Context) {
+	oldSHA := c.Query("old")
+	newSHA := c.Query("new")
 
-	// Compare Macrobenchmarks for the two given SHAs.
-	macrosMatrices, err := macrobench.CompareMacroBenchmarks(s.dbClient, rightSHA, leftSHA, macrobench.Gen4Planner, s.benchmarkTypes)
+	results, err := macrobench.Compare(s.dbClient, oldSHA, newSHA, s.benchmarkTypes, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
 
-	cmpMacros := make([]CompareMacrobench, 0, len(macrosMatrices))
-	for typeof, cmp := range macrosMatrices {
-		cmpMacro := CompareMacrobench{
-			Type: typeof,
-		}
-		if len(cmp) > 0 {
-			cmpMacro.Diff = cmp[0]
-		}
-		cmpMacros = append(cmpMacros, cmpMacro)
+	resultsSlice := make([]CompareMacrobench, 0, len(results))
+	for typeof, res := range results {
+		resultsSlice = append(resultsSlice, CompareMacrobench{
+			Type:   typeof,
+			Result: res,
+		})
 	}
 
-	sort.Slice(cmpMacros, func(i, j int) bool {
-		return cmpMacros[i].Type < cmpMacros[j].Type
+	sort.Slice(resultsSlice, func(i, j int) bool {
+		return resultsSlice[i].Type < resultsSlice[j].Type
 	})
 
-	c.JSON(http.StatusOK, cmpMacros)
+	c.JSON(http.StatusOK, resultsSlice)
 }
 
 func (s *Server) compareMicrobenchmarks(c *gin.Context) {
@@ -196,31 +191,21 @@ func (s *Server) compareMicrobenchmarks(c *gin.Context) {
 }
 
 type searchResult struct {
-	Macros map[string]macrobench.DetailsArray
-	Micro  microbench.DetailsArray
+	Macros map[string]macrobench.StatisticalSingleResult
 }
 
 func (s *Server) searchBenchmark(c *gin.Context) {
-	gitRef := c.Query("git_ref")
+	sha := c.Query("sha")
 
-	macros, err := macrobench.GetDetailsArraysFromAllTypes(gitRef, macrobench.Gen4Planner, s.dbClient, s.benchmarkTypes)
+	results, err := macrobench.Search(s.dbClient, sha, s.benchmarkTypes, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-
-	micro, err := microbench.GetResultsForGitRef(gitRef, s.dbClient)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-		slog.Error(err)
-		return
-	}
-	micro = micro.ReduceSimpleMedianByName()
 
 	var res searchResult
-	res.Macros = macros
-	res.Micro = micro
+	res.Macros = results
 
 	c.JSON(http.StatusOK, res)
 }
@@ -295,47 +280,41 @@ func (s *Server) getPullRequestInfo(c *gin.Context) {
 	prInfo.Base = gitPRInfo.Main
 	prInfo.Head = gitPRInfo.PR
 	c.JSON(http.StatusOK, prInfo)
-
 }
 
-type dailySingleSummary struct {
-	Name string
-	Data []macrobench.DailySummary
+type dailySummaryResp struct {
+	Name string                                    `json:"name"`
+	Data []macrobench.ShortStatisticalSingleResult `json:"data"`
 }
 
 func (s *Server) getDailySummary(c *gin.Context) {
-	var dailySummary []dailySingleSummary
-	for _, benchmarkType := range s.benchmarkTypes {
-		data, err := macrobench.GetSummaryForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-			slog.Error(err)
-			return
-		}
-		dailySummary = append(dailySummary, dailySingleSummary{
-			Name: benchmarkType,
-			Data: data,
-		})
-	}
-	c.JSON(http.StatusOK, dailySummary)
-}
-
-func (s *Server) getDaily(c *gin.Context) {
-	benchmarkType := c.Query("type")
-	data, err := macrobench.GetResultsForLastDays(benchmarkType, "cron", macrobench.Gen4Planner, 31, s.dbClient)
+	results, err := macrobench.SearchForLastDaysQPSOnly(s.dbClient, s.benchmarkTypes, macrobench.Gen4Planner, 31)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-	for i, d := range data {
-		m, err := metrics.GetExecutionMetricsSQL(s.dbClient, d.ExecUUID)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-			slog.Error(err)
-			return
-		}
-		data[i].Metrics = m
+	var resp []dailySummaryResp
+	for name, result := range results {
+		resp = append(resp, dailySummaryResp{
+			Name: name,
+			Data: result,
+		})
+	}
+
+	sort.Slice(resp, func(i, j int) bool {
+		return resp[i].Name < resp[j].Name
+	})
+	c.JSON(http.StatusOK, resp)
+}
+
+func (s *Server) getDaily(c *gin.Context) {
+	benchmarkType := c.Query("type")
+	data, err := macrobench.SearchForLastDays(s.dbClient, benchmarkType, macrobench.Gen4Planner, 31)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
 	}
 	c.JSON(http.StatusOK, data)
 }
@@ -460,11 +439,11 @@ func (s *Server) compareBenchmarkFKs(c *gin.Context) {
 		}
 	}
 
-	allBenchmarkResults, err := macrobench.GetDetailsFromAllTypes(sha, macrobench.Gen4Planner, s.dbClient, mtypes)
+	results, err := macrobench.Search(s.dbClient, sha, mtypes, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
-	c.JSON(http.StatusOK, allBenchmarkResults)
+	c.JSON(http.StatusOK, results)
 }

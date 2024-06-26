@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,79 @@ limitations under the License.
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+
+    --primary: 29 98% 46%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+
+    --front: 0 0% 10%;
+    --back: 0 0% 100%;
+
+    --radius: 0.5rem;
+    --theme: 48 100% 50%;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 29 98% 46%;
+    --primary-foreground: 0 0% 9%;
+
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+
+    --front: 0 0% 100%;
+    --back: 0 0% 10%;
+
+    --theme: 48 100% 50%;
+  }
+}
+
+@layer base {
   /* setting default background, text color and font */
   html {
     @apply bg-background text-front font-opensans scroll-smooth;
@@ -27,30 +100,6 @@ limitations under the License.
   /* removing any margin and padding from body for future updates to tailwind base */
   body {
     @apply m-0 p-0;
-  }
-
-  :root {
-    @apply duration-700;
-  }
-
-  /* Declaring Themes */
-  :root {
-    --color-primary: 231 112 2;
-    --color-secondary: ;
-    --color-accent: 255 205 2;
-    --color-foreground: 26 26 26;
-    --color-background: 255 255 255;
-    --color-front: 26 26 26;
-    --color-back: 255 255 255;
-  }
-  :root[data-theme="dark"] {
-    --color-primary: 231 112 2;
-    --color-secondary: ;
-    --color-accent: 255 205 2;
-    --color-foreground: 255 255 255;
-    --color-background: 0 0 0;
-    --color-front: 255 255 255;
-    --color-back: 26 26 26;
   }
 }
 
@@ -67,5 +116,21 @@ limitations under the License.
     transition: --num 4s ease-out;
     counter-set: num var(--num);
     @apply after:content-[counter(num)];
+  }
+}
+
+.errorImgAnimation {
+  animation: translateUpDown 2s infinite alternate;
+}
+
+@keyframes translateUpDown {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-0.7cm);
   }
 }

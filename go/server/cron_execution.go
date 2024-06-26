@@ -22,10 +22,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/vitessio/arewefastyet/go/exec"
 )
 
-func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier) (err error) {
+func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdentifier, nextIsSame, lastIsSame bool) (err error) {
 	var e *exec.Exec
 	defer func() {
 		if e != nil {
@@ -40,7 +41,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 		}
 	}()
 
-	e, err = exec.NewExecWithConfig(config.file)
+	e, err = exec.NewExecWithConfig(config.file, identifier.UUID)
 
 	if err != nil {
 		nErr := fmt.Errorf(fmt.Sprintf("new exec error: %v", err))
@@ -53,7 +54,21 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	e.PullNB = identifier.PullNb
 	e.PullBaseBranchRef = identifier.PullBaseRef
 	e.VitessVersion = identifier.Version
+	e.NextBenchmarkIsTheSame = nextIsSame
 	e.RepoDir = s.getVitessPath()
+
+	// Check if the previous benchmark is the same and if it is
+	// safe to execute this new benchmark without a preparatory cleanup phase.
+	e.PreviousBenchmarkIsTheSame = lastIsSame
+	if lastIsSame {
+		lastBenchmarkWasClean, err := exec.IsLastExecutionFinished(s.dbClient)
+		if err != nil {
+			return err
+		}
+		if !lastBenchmarkWasClean {
+			e.PreviousBenchmarkIsTheSame = false
+		}
+	}
 
 	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
 	err = e.Prepare()
@@ -83,7 +98,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	return nil
 }
 
-func (s *Server) executeElement(element *executionQueueElement) {
+func (s *Server) executeElement(element *executionQueueElement, nextIsSame bool, lastIsSame bool) {
 	if element.retry < 0 {
 		if _, found := queue[element.identifier]; found {
 			// removing the element from the queue since we are done with it
@@ -96,13 +111,18 @@ func (s *Server) executeElement(element *executionQueueElement) {
 	}
 
 	// execute with the given configuration file and exec identifier
-	err := s.executeSingle(element.config, element.identifier)
+	err := s.executeSingle(element.config, element.identifier, nextIsSame, lastIsSame)
 	if err != nil {
 		slog.Error(err.Error())
 
 		// execution failed, we retry
 		element.retry -= 1
-		s.executeElement(element)
+		element.identifier.UUID = uuid.NewString()
+
+		// Here we set lastIsSame as false since the previous benchmark has failed
+		// That allows us to avoid executing one more database request to check if
+		// the previous benchmark was successful or not.
+		s.executeElement(element, nextIsSame, false)
 		return
 	}
 
@@ -136,20 +156,6 @@ func (s *Server) compareElement(element *executionQueueElement) {
 				return
 			}
 			if comparerUUID != "" {
-				err := s.sendNotificationForRegression(
-					element.identifier.Source,
-					comparer.Source,
-					element.identifier.GitRef,
-					comparer.GitRef,
-					element.identifier.PlannerVersion,
-					element.identifier.BenchmarkType,
-					element.identifier.PullNb,
-					element.notifyAlways,
-				)
-				if err != nil {
-					slog.Error(err)
-					return
-				}
 				seen[comparer] = true
 				done++
 			}
@@ -157,50 +163,84 @@ func (s *Server) compareElement(element *executionQueueElement) {
 	}
 }
 
-func (s *Server) checkIfExecutionExists(identifier executionIdentifier) (bool, error) {
-	checkStatus := []struct {
-		status string
-	}{
-		{status: exec.StatusFinished},
-	}
-	for _, status := range checkStatus {
+func (s *Server) getNumberOfBenchmarksInDB(identifier executionIdentifier) (int, error) {
+	var nb int
+	var err error
+	if identifier.BenchmarkType == "micro" {
 		var exists bool
-		var err error
-		if identifier.BenchmarkType == "micro" {
-			exists, err = exec.Exists(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, status.status)
-		} else {
-			exists, err = exec.ExistsMacrobenchmark(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, status.status, identifier.PlannerVersion)
-		}
-		if err != nil {
-			slog.Error(err)
-			return false, err
-		}
+		exists, err = exec.Exists(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, exec.StatusFinished)
 		if exists {
-			return true, nil
+			nb = 1
 		}
+	} else {
+		nb, err = exec.CountMacroBenchmark(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, exec.StatusFinished, identifier.PlannerVersion)
 	}
-	return false, nil
+	if err != nil {
+		slog.Error(err)
+		return 0, err
+	}
+	return nb, nil
 }
 
 func (s *Server) cronExecutionQueueWatcher() {
-	for {
-		time.Sleep(time.Second * 1)
+	var lastExecutedId executionIdentifier
+	queueWatch := func() {
 		mtx.Lock()
+		defer mtx.Unlock()
 		if currentCountExec >= maxConcurJob {
-			mtx.Unlock()
-			continue
+			return
 		}
-		for _, element := range queue {
-			if !element.Executing {
-				currentCountExec++
 
-				// setting this element to `Executing = true`, so we do not execute it twice in the future
-				element.Executing = true
-				go s.executeElement(element)
+		// Prioritize executing the same configuration of benchmark in a row
+		var lastBenchmarkIsTheSame bool
+		var nextExecuteElement *executionQueueElement
+		for _, element := range queue {
+			if element.Executing {
+				continue
+			}
+			if element.identifier.equalWithoutUUID(lastExecutedId) {
+				nextExecuteElement = element
+				lastBenchmarkIsTheSame = true
 				break
 			}
 		}
-		mtx.Unlock()
+
+		// If we did not find any matching element just go to the first one which is not executing
+		if nextExecuteElement == nil {
+			for _, element := range queue {
+				if !element.Executing {
+					nextExecuteElement = element
+					break
+				}
+			}
+		}
+
+		if nextExecuteElement != nil {
+			// Find out if there is another element in queue that match the one we want to execute
+			var nextBenchmarkIsTheSame bool
+			for _, element := range queue {
+				if element.Executing {
+					continue
+				}
+				if element.identifier.equalWithoutUUID(nextExecuteElement.identifier) {
+					nextBenchmarkIsTheSame = true
+					break
+				}
+			}
+
+			// Execute the element if found
+			currentCountExec++
+			lastExecutedId = nextExecuteElement.identifier
+
+			// setting this element to `Executing = true`, so we do not execute it twice in the future
+			nextExecuteElement.Executing = true
+			go s.executeElement(nextExecuteElement, nextBenchmarkIsTheSame, lastBenchmarkIsTheSame)
+			return
+		}
+	}
+
+	for {
+		queueWatch()
 	}
 }
 
