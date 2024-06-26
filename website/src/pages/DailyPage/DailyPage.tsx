@@ -28,10 +28,10 @@ import { secondToMicrosecond } from "../../utils/Utils";
 
 interface DailySummarydata {
   name: string;
-  data : { total_qps: MacroDataValue }[];
+  data: { total_qps: MacroDataValue }[];
 }
 
-type NumberDataPoint = { x: string; y: number};
+type NumberDataPoint = { x: string; y: number };
 type StringDataPoint = { x: string; y: string };
 
 type ChartDataItem =
@@ -40,21 +40,26 @@ type ChartDataItem =
 
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
+
   const [benchmarkType, setBenchmarktype] = useState<string>(
-    urlParams.get("type") ?? "OLTP"
+    urlParams.get("type") ?? "OLTP",
   );
 
   const {
     data: dataDailySummary,
     isLoading: isLoadingDailySummary,
     error: errorDailySummary,
-  } = useApiCall<DailySummarydata>(`${import.meta.env.VITE_API_URL}daily/summary`);
+  } = useApiCall<DailySummarydata>(
+    `${import.meta.env.VITE_API_URL}daily/summary`,
+  );
 
   const {
     data: dataDaily,
     error: dailyError,
     textLoading: dailyTextLoading,
-  } = useApiCall<MacroData>(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`);
+  } = useApiCall<MacroData>(
+    `${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`,
+  );
 
   const navigate = useNavigate();
 
@@ -97,7 +102,7 @@ export default function DailyPage() {
     },
   ];
 
-  const CPUTimeData : { id: string; data: StringDataPoint[] }[]= [
+  const CPUTimeData: { id: string; data: StringDataPoint[] }[] = [
     {
       id: "Total",
       data: [],
@@ -251,41 +256,43 @@ export default function DailyPage() {
         </div>
       )}
 
-      {!errorDailySummary && dataDailySummary && dataDailySummary.length > 0 &&(
-        <>
-          <section className="flex p-page justif-center flex-wrap gap-10 py-10">
-            {dataDailySummary.map((dailySummary, index) => {
-              return (
-                <DailySummary
-                  key={index}
-                  data={dailySummary}
-                  setBenchmarktype={setBenchmarktype}
-                  benchmarkType={benchmarkType}
-                />
-              );
-            })}
-          </section>
-
-          <figure className="p-page w-full">
-            <div className="border-front border" />
-          </figure>
-
-          {!dailyTextLoading && benchmarkType !== "" && (
-            <section className="p-page mt-12 flex flex-col gap-y-8">
-              {allChartData.map((chartData, index) => (
-                <div key={index} className="relative w-full h-[500px]">
-                  <ResponsiveChart
-                    data={chartData.data as any}
-                    title={chartData.title}
-                    colors={chartData.colors}
-                    isFirstChart={index === 0}
+      {!errorDailySummary &&
+        dataDailySummary &&
+        dataDailySummary.length > 0 && (
+          <>
+            <section className="flex p-page justif-center flex-wrap gap-10 py-10">
+              {dataDailySummary.map((dailySummary, index) => {
+                return (
+                  <DailySummary
+                    key={index}
+                    data={dailySummary}
+                    setBenchmarktype={setBenchmarktype}
+                    benchmarkType={benchmarkType}
                   />
-                </div>
-              ))}
+                );
+              })}
             </section>
-          )}
-        </>
-      )}
+
+            <figure className="p-page w-full">
+              <div className="border-front border" />
+            </figure>
+
+            {!dailyTextLoading && benchmarkType !== "" && (
+              <section className="p-page mt-12 flex flex-col gap-y-8">
+                {allChartData.map((chartData, index) => (
+                  <div key={index} className="relative w-full h-[500px]">
+                    <ResponsiveChart
+                      data={chartData.data as any}
+                      title={chartData.title}
+                      colors={chartData.colors}
+                      isFirstChart={index === 0}
+                    />
+                  </div>
+                ))}
+              </section>
+            )}
+          </>
+        )}
 
       {(errorDailySummary || dailyError) && (
         <div className="text-red-500 text-center my-10">{dailyError}</div>

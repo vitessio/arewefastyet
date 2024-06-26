@@ -20,8 +20,8 @@ import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
 import Hero from "./components/Hero";
 import Macrobench from "../../common/Macrobench";
-import { CompareData } from '@/types'
- 
+import { CompareData } from "@/types";
+
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -36,7 +36,9 @@ export default function Compare() {
     textLoading: macrobenchTextLoading,
     error: macrobenchError,
   } = useApiCall<CompareData>(
-    `${import.meta.env.VITE_API_URL}macrobench/compare?new=${gitRef.new}&old=${gitRef.old}`
+    `${import.meta.env.VITE_API_URL}macrobench/compare?new=${gitRef.new}&old=${
+      gitRef.old
+    }`,
   );
 
   const navigate = useNavigate();
@@ -62,27 +64,30 @@ export default function Compare() {
         </div>
       )}
 
-      {!isMacrobenchLoading && !macrobenchTextLoading && compareData && compareData.length > 0 && (
-        <section className="flex flex-col items-center">
-          <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
-          <div className="flex flex-col gap-y-20">
-            {compareData.map((macro, index) => {
-              return (
-                <div key={index}>
-                  <Macrobench
-                    data={macro}
-                    gitRef={{
-                      old: gitRef.old.slice(0, 8),
-                      new: gitRef.new.slice(0, 8),
-                    }}
-                    commits={{ old: gitRef.old, new: gitRef.new }}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+      {!isMacrobenchLoading &&
+        !macrobenchTextLoading &&
+        compareData &&
+        compareData.length > 0 && (
+          <section className="flex flex-col items-center">
+            <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
+            <div className="flex flex-col gap-y-20">
+              {compareData.map((macro, index) => {
+                return (
+                  <div key={index}>
+                    <Macrobench
+                      data={macro}
+                      gitRef={{
+                        old: gitRef.old.slice(0, 8),
+                        new: gitRef.new.slice(0, 8),
+                      }}
+                      commits={{ old: gitRef.old, new: gitRef.new }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
     </>
   );
 }

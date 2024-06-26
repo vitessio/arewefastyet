@@ -40,7 +40,9 @@ export default function PRsPage() {
         </div>
       )}
 
-      {PRListError ? <div className="text-red-500 text-center my-2">{PRListError}</div> : null}
+      {PRListError ? (
+        <div className="text-red-500 text-center my-2">{PRListError}</div>
+      ) : null}
 
       {!isPRListLoading && dataPRList && <PRTable data={dataPRList} />}
     </>

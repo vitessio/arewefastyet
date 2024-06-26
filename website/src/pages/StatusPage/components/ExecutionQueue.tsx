@@ -56,10 +56,10 @@ export default function ExecutionQueue(props) {
         newData["PR"] = <span></span>;
       }
       return newData;
-    })
+    });
 
     setExecutionQueue(transformedData);
-  },[data])
+  }, [data]);
 
   return (
     <section className="p-page mt-20 flex flex-col">

@@ -55,7 +55,7 @@ export default function Navbar(): JSX.Element {
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[49] flex justify-between md:justify-center p-page py-4 border-b border-border"
+          "w-full bg-background z-[49] flex justify-between md:justify-center p-page py-4 border-b border-border",
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
@@ -74,8 +74,8 @@ export default function Navbar(): JSX.Element {
                   isPending
                     ? "pointer-events-none opacity-50"
                     : isActive
-                    ? "text-primary"
-                    : ""
+                      ? "text-primary"
+                      : "",
                 )
               }
             >
@@ -128,8 +128,8 @@ export default function Navbar(): JSX.Element {
                           isPending
                             ? "pointer-events-none "
                             : isActive
-                            ? "text-foreground"
-                            : ""
+                              ? "text-foreground"
+                              : "",
                         )
                       }
                     >
@@ -145,8 +145,8 @@ export default function Navbar(): JSX.Element {
                             isPending
                               ? "pointer-events-none "
                               : isActive
-                              ? "text-foreground"
-                              : ""
+                                ? "text-foreground"
+                                : "",
                           )
                         }
                       >

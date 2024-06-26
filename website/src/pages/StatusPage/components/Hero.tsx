@@ -25,7 +25,7 @@ const info = [
 
 export default function Hero() {
   const { data: dataStatusStats } = useApiCall<statusDataTypes>(
-    `${import.meta.env.VITE_API_URL}status/stats`
+    `${import.meta.env.VITE_API_URL}status/stats`,
   );
 
   return (

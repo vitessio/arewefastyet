@@ -44,7 +44,6 @@ interface dataTypes {
   status: string;
 }
 
-
 export default function StatusPage() {
   const {
     data: dataQueue,
@@ -52,7 +51,7 @@ export default function StatusPage() {
     error: errorQueue,
   } = useApiCall<statusDataTypes>(`${import.meta.env.VITE_API_URL}queue`);
   const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
-    `${import.meta.env.VITE_API_URL}recent`
+    `${import.meta.env.VITE_API_URL}recent`,
   );
 
   const [filters, setFilters] = useState({

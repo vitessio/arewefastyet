@@ -22,7 +22,7 @@ import Hero from "./components/Hero";
 import RingLoader from "react-spinners/RingLoader";
 
 export default function MacroQueriesComparePage() {
-  const [error, setError] = useState<null|string>(null);
+  const [error, setError] = useState<null | string>(null);
   const [loading, setLoading] = useState(true);
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -46,7 +46,7 @@ export default function MacroQueriesComparePage() {
       const responseQueryPlan = await fetch(
         `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
           commits.left
-        }&rtag=${commits.right}&type=${type}`
+        }&rtag=${commits.right}&type=${type}`,
       );
 
       const jsonDataQueryPlan = await responseQueryPlan.json();
@@ -71,7 +71,7 @@ export default function MacroQueriesComparePage() {
       type === "null"
     ) {
       setError(
-        "Error: Some URL parameters are missing. Please provide both 'ltag', 'rtag' and type parameters."
+        "Error: Some URL parameters are missing. Please provide both 'ltag', 'rtag' and type parameters.",
       );
     } else {
       loadData();

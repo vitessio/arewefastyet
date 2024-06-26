@@ -16,7 +16,7 @@ limitations under the License.
 
 import React from "react";
 import { formatByte, fixed, secondToMicrosecond } from "../../../utils/Utils";
-import {getRange} from "@/common/Macrobench";
+import { getRange } from "@/common/Macrobench";
 import PropTypes from "prop-types";
 
 export default function FK({ data }) {
@@ -150,36 +150,38 @@ export default function FK({ data }) {
 }
 
 function fmtString(value, fmt) {
-    var valFmt = value.center
-    if (fmt == "time") {
-        valFmt = secondToMicrosecond(value.center)
-    } else if (fmt == "memory") {
-        valFmt = formatByte(value.center)
-    }
-    return valFmt
+  var valFmt = value.center;
+  if (fmt == "time") {
+    valFmt = secondToMicrosecond(value.center);
+  } else if (fmt == "memory") {
+    valFmt = formatByte(value.center);
+  }
+  return valFmt;
 }
 
 function Row({ title, data, extract, fmt }) {
-    return (
+  return (
     <tr className="border-t border-front border-opacity-70 duration-150 hover:bg-accent">
       <td className="flex pt-4 pb-2 px-4 justify-end border-r border-r-primary font-semibold text-end">
         <span>{title}</span>
       </td>
       {Object.entries(data).map(([key, value]) => {
-          var val = extract({value: value});
-          return (
+        var val = extract({ value: value });
+        return (
           <td className="px-24 pt-4 pb-2 text-center">
-            <span>{fmtString(val, fmt)} ({getRange(val.range)})</span>
+            <span>
+              {fmtString(val, fmt)} ({getRange(val.range)})
+            </span>
           </td>
         );
       })}
     </tr>
-    );
+  );
 }
 
 Row.propTypes = {
-    title: PropTypes.string.isRequired,
-    extract: PropTypes.func.isRequired,
-    data: PropTypes.object.isRequired,
-    fmt: PropTypes.oneOf(['time', 'memory']),
+  title: PropTypes.string.isRequired,
+  extract: PropTypes.func.isRequired,
+  data: PropTypes.object.isRequired,
+  fmt: PropTypes.oneOf(["time", "memory"]),
 };

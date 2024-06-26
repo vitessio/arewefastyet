@@ -42,7 +42,7 @@ const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
     <div
       className={twMerge(
         "flex flex-col border border-front rounded-xl w-[20vw] h-[15vh] cursor-pointer hover:bg-accent overflow-hidden duration-300 hover:scale-105",
-        benchmarkType === data.name && "bg-accent brightness-125 border-2"
+        benchmarkType === data.name && "bg-accent brightness-125 border-2",
       )}
       onClick={() => {
         getBenchmarkType();
