@@ -13,9 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React, { useEffect, useRef } from "react";
 
-const items = [
+interface WorkItem {
+  title: string;
+  content: string;
+}
+
+const items: WorkItem[] = [
   {
     title: "The Execution Engine",
     content:
@@ -52,11 +58,14 @@ export default function HowItWorks() {
   );
 }
 
-function HowItWorksCard(props) {
-  const cardRef = useRef();
-  const glowRef = useRef();
+function HowItWorksCard({ title, content }: WorkItem) {
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  function glowWithMouse(event) {
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  function glowWithMouse(event: { x: number; y: number }) {
+    if (!cardRef.current || !glowRef.current) return;
+
     const cardRect = cardRef.current.getBoundingClientRect();
     glowRef.current.style.setProperty("--x", `${event.x - cardRect.x}px`);
     glowRef.current.style.setProperty("--y", `${event.y - cardRect.y}px`);
@@ -87,8 +96,8 @@ function HowItWorksCard(props) {
         className="absolute bg-white bg-opacity-10 z-1 md:top-[var(--y)] md:left-[var(--x)] blur-3xl
       md:w-[20vw] w-full h-[20vw] rounded-full -translate-x-1/2 -translate-y-1/2"
       />
-      <h3 className="text-2xl font-semibold">{props.title}</h3>
-      <p className="text-sm mt-2 text-white text-opacity-70">{props.content}</p>
+      <h3 className="text-2xl font-semibold">{title}</h3>
+      <p className="text-sm mt-2 text-white text-opacity-70">{content}</p>
     </div>
   );
 }

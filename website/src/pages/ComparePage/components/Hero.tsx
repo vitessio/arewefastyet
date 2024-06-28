@@ -13,12 +13,35 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
-export default function Hero(props: { gitRef: any; setGitRef: any }) {
-  const { gitRef, setGitRef } = props;
+interface GitRef {
+  old: string;
+  new: string;
+}
 
+interface CompareDataType {
+  gitRef: GitRef;
+  setGitRef: React.Dispatch<React.SetStateAction<GitRef>>;
+}
+
+interface ComparisonInputDataType extends CompareDataType {
+  className: string;
+  name: "old" | "new";
+}
+
+/**
+ * Renders a section for comparing Git SHAs.
+ * @param {CompareDataType} props - The props containing the git reference and reference setter function.
+ * @returns {JSX.Element} Render hero component to compare git sha.
+ */
+
+export default function Hero({
+  gitRef,
+  setGitRef,
+}: CompareDataType): JSX.Element {
   return (
     <section className="flex flex-col h-[32vh] pt-[8vh] justify-center items-center">
       <h1 className="mb-3 text-front text-opacity-70">
@@ -42,14 +65,18 @@ export default function Hero(props: { gitRef: any; setGitRef: any }) {
   );
 }
 
-function ComparisonInput(props: {
-  className: any;
-  gitRef: any;
-  setGitRef: any;
-  name: any;
-}) {
-  const { className, gitRef, setGitRef, name } = props;
+/**
+ * Comparison Input component for inputting Git SHA values.
+ * @param {ComparisonInputDataType} props - The props containing the git reference and reference setter function, className and Input name..
+ * @returns {JSX.Element} The input element component.
+ */
 
+function ComparisonInput({
+  className,
+  gitRef,
+  setGitRef,
+  name,
+}: ComparisonInputDataType): JSX.Element {
   return (
     <input
       type="text"

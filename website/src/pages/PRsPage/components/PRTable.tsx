@@ -13,20 +13,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/Utils";
 import DisplayList from "../../../common/DisplayList";
 import Icon from "../../../common/Icon";
+import { PRTableType, prDataTypes } from "@/types";
 
-export default function PRTable(props) {
-  const { data } = props;
+/**
+ * Displays a table of pull requests (PRs).
+ * @param {Object} props - The props for the PRTable component.
+ * @param {prDataTypes[]} props.data - The array of pull request data.
+ * @returns {JSX.Element} - The rendered JSX element.
+ */
 
-  const [PRList, setPRList] = useState([]);
+export default function PRTable({ data }: { data: prDataTypes[] }): JSX.Element {
+  const [PRList, setPRList] = useState<PRTableType[]>([]);
 
   useEffect(() => {
-    for (const entry of data) {
-      const newData = {};
+    const updatedPRList = data.map((entry) => {
+      const newData: PRTableType = {};
 
       newData["#"] = (
         <Link
@@ -61,9 +68,11 @@ export default function PRTable(props) {
         </Link>
       );
 
-      setPRList((p) => [...p, newData]);
-    }
-  }, []);
+      return newData;
+    });
+
+    setPRList(updatedPRList);
+  }, [data]);
 
   return (
     <section className="p-page mt-20 flex flex-col overflow-y-scroll">

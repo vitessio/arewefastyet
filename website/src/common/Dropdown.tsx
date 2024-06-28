@@ -13,36 +13,73 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { useEffect, useRef, useState } from "react";
+
+import React, { useEffect, useRef, useState, ReactNode } from "react";
 import useClickOutside from "../hooks/useClickOutside";
 import Icon from "../common/Icon";
 import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
 
-function Container(props) {
+interface ContainerProps {
+  className?: string;
+  defaultIndex?: number;
+  placeholder?: string;
+  onChange: (value: { value: string }) => void;
+  children: ReactNode;
+}
+
+interface OptionProps {
+  className?: string;
+  isSelected?: boolean;
+  onClick?: () => void;
+  children: ReactNode;
+}
+
+/**
+ * Dropdown container component that manages the state and rendering of the dropdown menu.
+ *
+ * @param {Object} props - The properties for the Container component.
+ * @param {string} [props.className] - Additional class names for styling.
+ * @param {number} [props.defaultIndex=0] - The default selected index.
+ * @param {string} [props.placeholder] - The placeholder text when no item is selected.
+ * @param {(value: { value: string }) => void} props.onChange - Callback function called when the selected item changes.
+ * @param {React.ReactNode} props.children - The dropdown options as children.
+ * @returns {JSX.Element} The rendered Dropdown component.
+ */
+
+function Container({
+  className,
+  defaultIndex = 0,
+  placeholder,
+  onChange,
+  children,
+}: ContainerProps): JSX.Element {
   const [open, setOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(props.defaultIndex || 0);
+  const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
 
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>(null);
 
-  let items = React.Children.map(
-    props.children,
-    (child) => `${child.props.children}`
+  let items =
+    React.Children.map(
+      children,
+      (child) => `${(child as React.ReactElement).props.children}`
+    ) || [];
+
+  useClickOutside(ref as React.MutableRefObject<HTMLElement>, () =>
+    setOpen(false)
   );
 
-  useClickOutside(ref, () => setOpen(false));
-
-  function handleOptionClick(index) {
+  function handleOptionClick(index: number) {
     setOpen(false);
     setSelectedIndex(index);
   }
 
   useEffect(() => {
-    selectedIndex < 0 && setSelectedIndex(0);
+    if (selectedIndex < 0) setSelectedIndex(0);
   }, [selectedIndex]);
 
   useEffect(() => {
-    props.onChange({ value: items[selectedIndex] });
+    onChange({ value: items[selectedIndex] });
   }, [selectedIndex]);
 
   return (
@@ -52,10 +89,10 @@ function Container(props) {
         onClick={() => setOpen(!open)}
         className={twMerge(
           "flex items-center h-full justify-center duration-inherit hover:bg-transparent",
-          props.className
+          className
         )}
       >
-        {`${items[selectedIndex] || props.placeholder}`}
+        {`${items[selectedIndex] || placeholder}`}
         <Icon
           icon="expand_more"
           className={twMerge(
@@ -76,13 +113,13 @@ function Container(props) {
               : "polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%)",
           }}
         >
-          {React.Children.map(props.children, (child, index) => {
+          {React.Children.map(children, (child, index) => {
             if (React.isValidElement(child) && child.type === Option)
               return React.cloneElement(child, {
                 index,
                 onClick: () => handleOptionClick(index),
                 isSelected: index === selectedIndex,
-              });
+              } as Partial<OptionProps>);
           })}
         </div>
       </>
@@ -90,13 +127,33 @@ function Container(props) {
   );
 }
 
-function Option(props) {
+/**
+ * Dropdown option component that renders an individual dropdown item.
+ *
+ * @param {Object} props - The properties for the Option component.
+ * @param {string} [props.className] - Additional class names for styling.
+ * @param {boolean} [props.isSelected] - Whether the option is currently selected.
+ * @param {() => void} [props.onClick] - Click handler for the option.
+ * @param {React.ReactNode} props.children - The content of the option.
+ * @returns {JSX.Element} The rendered Option component.
+ */
+
+function Option({
+  className,
+  isSelected,
+  onClick,
+  children,
+}: OptionProps): JSX.Element {
   return (
     <Button
-      className={twMerge("dark:text-white text-black", props.className, props.isSelected && "bg-primary")}
-      onClick={props.onClick}
+      className={twMerge(
+        "dark:text-white text-black",
+        className,
+        isSelected && "bg-primary"
+      )}
+      onClick={onClick}
     >
-      {props.children}
+      {children}
     </Button>
   );
 }

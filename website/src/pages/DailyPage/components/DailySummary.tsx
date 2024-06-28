@@ -19,12 +19,53 @@ import PropTypes from "prop-types";
 import { ResponsiveLine } from "@nivo/line";
 import { twMerge } from "tailwind-merge";
 
-const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
+type DailySummaryDataType = {
+  data: {
+    total_qps: {
+      center: number;
+      confidence: number;
+      range: {
+        infinite: boolean;
+        unknown: boolean;
+        value: number;
+      };
+    };
+  }[];
+  name: string;
+};
+
+enum BenchmarkType {
+  TPCC_UNSHARDED = "TPCC_UNSHARDED",
+  OLTP_SET = "OLTP-SET",
+  OLTP = "OLTP",
+  "OLTP-READONLY" = "OLTP-READONLY",
+  TPCC = "TPCC",
+  TPCC_FK = "TPCC_FK",
+  TPCC_FK_UNMANAGED = "TPCC_FK_UNMANAGED",
+}
+
+interface HeroDailySummaryPropsType {
+  data: DailySummaryDataType;
+  benchmarkType: BenchmarkType;
+  setBenchmarktype: React.Dispatch<React.SetStateAction<BenchmarkType>>;
+}
+
+/**
+ * A component that renders a daily summary chart.
+ * @param {HeroDailySummaryPropsType} props - The props required are data, benchmarkType and setter function for benchmarkType .
+ * @returns {JSX.Element} - Render hero component for daily summary
+ */
+
+const DailySummary = ({
+  data,
+  setBenchmarktype,
+  benchmarkType,
+}: HeroDailySummaryPropsType): JSX.Element => {
   const orange = "#E77002";
 
   const transformedData = [];
 
-  if (data.data !== null) {
+  if (data !== null) {
     transformedData.push({
       id: "QPSTotal",
       data: data.data.map((item) => ({
@@ -35,7 +76,7 @@ const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
   }
 
   const getBenchmarkType = () => {
-    setBenchmarktype(data.name);
+    setBenchmarktype(data.name as BenchmarkType);
   };
 
   return (
@@ -53,7 +94,6 @@ const DailySummary = ({ data, setBenchmarktype, benchmarkType }) => {
           <ResponsiveLine
             data={transformedData}
             margin={{ top: 20, right: 30, bottom: 50, left: 10 }}
-            height={300}
             enableGridX={false}
             enableGridY={false}
             colors={orange}

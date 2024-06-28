@@ -17,33 +17,32 @@ limitations under the License.
 export type Theme = "default" | "dark";
 
 export type statusDataTypes = {
-    uuid: string;
-    git_ref: string;
-    source: string;
-    started_at: string;
-    finished_at: string;
-    type_of: string;
-    pull_nb?: number;
-    golang_version: string;
-    status: string;
-}
+  uuid: string;
+  git_ref: string;
+  source: string;
+  started_at: string;
+  finished_at: string;
+  type_of: string;
+  pull_nb?: number;
+  golang_version: string;
+  status: string;
+};
 
 export type prDataTypes = {
-    ID: number;
-    Author: string;
-    Title: string;
-    CreatedAt: string;
-    Base: string;
-    Head: string;
-    error?: any
-}
+  ID: number;
+  Author: string;
+  Title: string;
+  CreatedAt: string;
+  Base: string;
+  Head: string;
+  error?: any;
+};
 
 export interface Range {
-    infinite: boolean;
-    unknown: boolean;
-    value: number;
+  infinite: boolean;
+  unknown: boolean;
+  value: number;
 }
-  
 export interface MacroDataValue {
   center: number;
   confidence: number;
@@ -105,4 +104,27 @@ export interface CompareResult {
 export interface CompareData {
   type: string;
   result: CompareResult;
+}
+
+export interface RefsType {
+  CommitHash: string;
+  Name: string;
+  RCnumber: number;
+  Version: {
+    Major: number;
+    Minor: number;
+    Patch: number;
+  };
+}
+export interface PRTableType {
+  [key: string]: string | React.ReactNode | null;
+}
+
+export interface RowProps {
+  title: string;
+  value: {
+    center: number | string;
+    range: { infinite: boolean; unknown: boolean; value: number };
+  };
+  fmt?: "time" | "memory";
 }

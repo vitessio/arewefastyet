@@ -16,9 +16,26 @@ limitations under the License.
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function Hero(props: { commits: { left: any; right: any } }) {
-  const { left, right } = props.commits;
+interface CommitType {
+  left: string;
+  right: string;
+}
 
+/**
+ * Hero component to display a comparison of query plans for benchmarks.
+ *
+ * @param {commits} props - The properties for the Hero component.
+ * @param {string} props.left - The commit hash for the first benchmark (A).
+ * @param {string} props.right - The commit hash for the second benchmark (B).
+ *
+ * @returns {JSX.Element} renders Hero component.
+ */
+
+export default function Hero({
+  commits,
+}: {
+  commits: CommitType;
+}): JSX.Element {
   return (
     <section className="flex flex-col h-[50vh] pt-[10vh] items-center justify-evenly cursor-default">
       <h2 className="text-5xl font-bold">Compare Query Plans</h2>
@@ -30,9 +47,9 @@ export default function Hero(props: { commits: { left: any; right: any } }) {
         <Link
           className="text-primary text-xl"
           target="_blank"
-          to={`https://github.com/vitessio/vitess/commit/${left}`}
+          to={`https://github.com/vitessio/vitess/commit/${commits.left}`}
         >
-          {left.slice(0, 8)}
+          {commits.left.slice(0, 8)}
         </Link>{" "}
         using the Gen4 query planner.
       </span>
@@ -41,9 +58,9 @@ export default function Hero(props: { commits: { left: any; right: any } }) {
         <Link
           className="text-primary text-xl"
           target="_blank"
-          to={`https://github.com/vitessio/vitess/commit/${right}`}
+          to={`https://github.com/vitessio/vitess/commit/${commits.right}`}
         >
-          {right.slice(0, 8)}
+          {commits.right.slice(0, 8)}
         </Link>{" "}
         using the Gen4 query planner.
       </span>

@@ -23,7 +23,56 @@ import useModal from "../../../hooks/useModal";
 import Icon from "../../../common/Icon";
 import { Button } from "@/components/ui/button";
 
-export default function QueryPlan({ data }) {
+interface ValueType {
+  QueryType: string;
+  Original: string;
+  Instructions: string;
+  ExecCount: number;
+  ExecTime: number;
+  ShardQueries: number;
+  RowsReturned: number;
+  RowsAffected: number;
+  Errors: number;
+  TablesUsed: any;
+}
+
+interface QueryPlanData {
+  Left: {
+    Key: string;
+    Value: ValueType;
+  };
+  Right: {
+    Key: string;
+    Value: ValueType;
+  };
+  SamePlan: boolean;
+  Key: string;
+  ExecCountDiff: number;
+  ExecTimeDiff: number;
+  RowsReturnedDiff: number;
+  ErrorsDiff: number;
+}
+
+interface BadgeProps {
+  type: "error" | "warning" | "info";
+  content: string;
+}
+
+/**
+ * Renders a component displaying a comparison of query plans.
+ * Clicking on this component opens a modal with detailed information.
+ *
+ * @param {object} props - The properties for the QueryPlan component.
+ * @param {QueryPlanData} props.data - The query plan data to display.
+ *
+ * @returns {JSX.Element} The QueryPlan component.
+ */
+
+export default function QueryPlan({
+  data,
+}: {
+  data: QueryPlanData;
+}): JSX.Element {
   const modal = useModal();
 
   return (
@@ -52,7 +101,16 @@ export default function QueryPlan({ data }) {
   );
 }
 
-function Badge({ type, content }) {
+/**
+ * Renders a badge component.
+ *
+ * @param {Object} props - The properties for the badge component.
+ * @param {"error" | "warning" | "info"} props.type - The type of the badge: "error", "warning", or "info".
+ * @param {string} props.content - The content of the badge.
+ * @returns {JSX.Element} The badge component.
+ */
+
+function Badge({ type, content }: BadgeProps): JSX.Element {
   return (
     <p
       className={twMerge(
@@ -67,7 +125,15 @@ function Badge({ type, content }) {
   );
 }
 
-function DetailsModal({ data }) {
+/**
+ * Renders a modal for displaying details of a query plan.
+ *
+ * @param {Object} props - The properties for the details modal component.
+ * @param {QueryPlanData} props.data - The data containing details of the query plan.
+ * @returns {JSX.Element} The details modal component.
+ */
+
+function DetailsModal({ data }: { data: QueryPlanData }): JSX.Element {
   const bothPlansExist = data.Left && data.Right;
   const arePlansDifferent =
     bothPlansExist &&

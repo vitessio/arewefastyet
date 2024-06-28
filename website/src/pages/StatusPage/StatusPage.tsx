@@ -18,11 +18,9 @@ import React, { useState } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
 import { statusDataTypes } from "@/types";
-
 import Hero from "./components/Hero";
 import ExecutionQueue from "./components/PreviousExecutions";
 import PreviousExecutions from "./components/PreviousExecutions";
-import datas from "./data.json";
 
 import {
   Select,
@@ -32,28 +30,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface dataTypes {
-  uuid: string;
-  git_ref: string;
-  source: string;
-  started_at: string;
-  finished_at: string;
-  type_of: string;
-  pull_nb?: number;
-  golang_version: string;
-  status: string;
-}
+/**
+ * StatusPage component displays the status page including execution queue and previous executions.
+ * @returns {JSX.Element} The rendered JSX element.
+ */
 
-
-export default function StatusPage() {
+export default function StatusPage(): JSX.Element {
   const {
     data: dataQueue,
     isLoading: isLoadingQueue,
     error: errorQueue,
   } = useApiCall<statusDataTypes>(`${import.meta.env.VITE_API_URL}queue`);
-  const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
-    `${import.meta.env.VITE_API_URL}recent`
-  );
+  const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } =
+    useApiCall<statusDataTypes>(`${import.meta.env.VITE_API_URL}recent`);
 
   const [filters, setFilters] = useState({
     type: "",
@@ -61,7 +50,7 @@ export default function StatusPage() {
     source: "",
   });
 
-  const filterData = (data: dataTypes[]) => {
+  const filterData = (data: statusDataTypes[]) => {
     return data.filter((item) => {
       const itemType = item.type_of ? item.type_of.toString() : "";
       const itemSource = item.source ? item.source.toString() : "";
@@ -91,8 +80,8 @@ export default function StatusPage() {
     }));
   };
 
-  const filteredDataQueue = filterData(dataQueue) as dataTypes[];
-  const filteredPreviousDataExe = filterData(dataPreviousExe) as dataTypes[];
+  const filteredDataQueue = filterData(dataQueue || []);
+  const filteredPreviousDataExe = filterData(dataPreviousExe || []);
 
   return (
     <>

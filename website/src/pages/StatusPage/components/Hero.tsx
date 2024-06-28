@@ -13,9 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React from "react";
-import useApiCall from "../../../utils/Hook";
-import { statusDataTypes } from "@/types";
+import useApiCall from "@/utils/Hook";
+interface DataStatusStatsType {
+  Total: number;
+  Finished: number;
+  Last30Days: number;
+}
 
 const info = [
   { title: "Total Benchmarks", content: "Total" },
@@ -24,7 +29,7 @@ const info = [
 ];
 
 export default function Hero() {
-  const { data: dataStatusStats } = useApiCall<statusDataTypes>(
+  const { data: dataStatusStats } = useApiCall<DataStatusStatsType>(
     `${import.meta.env.VITE_API_URL}status/stats`
   );
 
