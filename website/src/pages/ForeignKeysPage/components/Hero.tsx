@@ -17,19 +17,15 @@ import React from "react";
 import Dropdown from "../../../common/Dropdown";
 import { twMerge } from "tailwind-merge";
 
-export default function Hero(props: {
-  refs: any;
-  gitRef: any;
-  setGitRef: any;
-}) {
+export default function Hero(props: { refs: any; gitRef: any; setGitRef: any }) {
   const { refs, gitRef, setGitRef } = props;
 
   return (
-    <section className="flex h-[60vh] pt-[10vh] items-center p-page">
-      <div className="flex basis-1/2 flex-col">
+    <section className="flex h-[60vh] pt-[30vh] md:pt-[15vh] lg:pt-[15vh] items-center p-page">
+      <div className="flex basis-full md:basis-1/2 flex-col">
         <h2 className="text-8xl text-primary">Foreign Keys</h2>
-        <p className="my-6 leading-loose">
-          Support for Foreign Keys have been added to Vitess in v18.0.0. We want
+        <p className="my-6 leading-loose text-sm md:text-base lg:text-lg">
+          Support for Foreign Keys has been added to Vitess in v18.0.0. We want
           to be able to compare the performance of Vitess with and without
           Foreign Keys.
           <br />
@@ -39,9 +35,9 @@ export default function Hero(props: {
           <br />
           - TPCC_UNSHARDED, with an unsharded keyspace
           <br />
-          - TPCC_FK, with Foreign Keys enabled and set to vitess managed
+          - TPCC_FK, with Foreign Keys enabled and set to Vitess managed
           <br />
-          - TPCC_FK_UNMANAGED, with Foreign Keys enabled and set to vitess
+          - TPCC_FK_UNMANAGED, with Foreign Keys enabled and set to Vitess
           unmanaged
           <br />
           Use the dropdown on the right to select which version of Vitess you
@@ -55,7 +51,7 @@ export default function Hero(props: {
           {refs && refs.length > 0 && (
             <div className="flex gap-x-24">
               <Dropdown.Container
-                className="w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
+                className="w-full md:w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
                 defaultIndex={refs
                   .map((r: { Name: any }) => r.Name)
                   .indexOf(gitRef.tag)}
@@ -69,7 +65,7 @@ export default function Hero(props: {
                   <Dropdown.Option
                     key={key}
                     className={twMerge(
-                      "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 font-medium hover:bg-accent",
+                      "w-full md:w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 font-medium hover:bg-accent",
                       key === 0 && "rounded-t border-t-front",
                       key === refs.length - 1 && "rounded-b"
                     )}
