@@ -48,6 +48,7 @@ const navItems: NavItem[] = [
   { to: "/macro", title: "Macro" },
   { to: "/fk", title: "Foreign Keys" },
   { to: "/pr", title: "PR" },
+  { to: "/history", title: "History" },
 ];
 
 export default function Navbar(): JSX.Element {
@@ -63,14 +64,17 @@ export default function Navbar(): JSX.Element {
           <h1 className="font-semilight text-lg md:text-2xl">arewefastyet</h1>
         </Link>
 
-        <div className="hidden md:flex gap-x-10 items-center">
+
+
+        <div className="flex-1 flex gap-6 justify-end items-center">
+        <div className="hidden md:flex gap-x-6 items-center">
           {navItems.map((item, key) => (
             <NavLink
               key={key}
               to={item.to}
               className={({ isActive, isPending }) =>
                 twMerge(
-                  "text-lg",
+                  "text-lg foreground",
                   isPending
                     ? "pointer-events-none opacity-50"
                     : isActive
@@ -83,8 +87,6 @@ export default function Navbar(): JSX.Element {
             </NavLink>
           ))}
         </div>
-
-        <div className="flex-1 flex gap-3 justify-end items-center">
           <ModeToggle />
 
           <Sheet>
