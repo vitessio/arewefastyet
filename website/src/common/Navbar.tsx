@@ -56,25 +56,23 @@ export default function Navbar(): JSX.Element {
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[49] flex justify-between md:justify-center p-page py-4 border-b border-border"
+          "w-full bg-background z-[49] flex justify-between lg:justify-center p-page py-4 border-b border-border"
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
           <img src="/logo.png" className="h-[2em]" alt="logo" />
-          <h1 className="font-semilight text-lg md:text-2xl">arewefastyet</h1>
+          <h1 className="font-semilight text-lg md:hidden lg:block">arewefastyet</h1>
         </Link>
 
-
-
-        <div className="flex-1 flex gap-6 justify-end items-center">
-        <div className="hidden md:flex gap-x-6 items-center">
+        <div className="flex justify-end items-center gap-x-4 lg:justify-end lg:flex-shrink-0 ml-8">
+        <div className="hidden md:flex gap-x-4 justify-center items-center">
           {navItems.map((item, key) => (
             <NavLink
               key={key}
               to={item.to}
               className={({ isActive, isPending }) =>
                 twMerge(
-                  "text-lg foreground",
+                  "text-lg text-foreground/80 hover:text-primary/80",
                   isPending
                     ? "pointer-events-none opacity-50"
                     : isActive
@@ -126,11 +124,11 @@ export default function Navbar(): JSX.Element {
                       to={"/"}
                       className={({ isActive, isPending }) =>
                         twMerge(
-                          "text-xl text-left font-medium py-3 w-full",
+                          "text-xl text-left font-medium py-3 w-full text-foreground/80 hover:text-primary/80",
                           isPending
                             ? "pointer-events-none "
                             : isActive
-                            ? "text-foreground"
+                            ? "text-primary"
                             : ""
                         )
                       }
@@ -143,11 +141,11 @@ export default function Navbar(): JSX.Element {
                         to={item.to}
                         className={({ isActive, isPending }) =>
                           twMerge(
-                            "text-xl text-left font-medium py-3 w-full",
+                            "text-xl text-left font-medium py-3 w-full text-foreground/80 hover:text-primary/80",
                             isPending
                               ? "pointer-events-none "
                               : isActive
-                              ? "text-foreground"
+                              ? "text-primary"
                               : ""
                           )
                         }
