@@ -35,10 +35,10 @@ import {
  * @param {string} title - The title of the navigation link.
  */
 
-type NavItem = {  
+type NavItem = {
   to: string;
   title: string;
- }
+};
 
 const navItems: NavItem[] = [
   { to: "/status", title: "Status" },
@@ -48,6 +48,7 @@ const navItems: NavItem[] = [
   { to: "/macro", title: "Macro" },
   { to: "/fk", title: "Foreign Keys" },
   { to: "/pr", title: "PR" },
+  { to: "/history", title: "History" },
 ];
 
 export default function Navbar(): JSX.Element {
@@ -55,36 +56,37 @@ export default function Navbar(): JSX.Element {
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[49] flex justify-between md:justify-center p-page py-4 border-b border-border"
+          "w-full bg-background z-[49] flex justify-between lg:justify-center p-4 border-b border-border"
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
-          <img src="/logo.png" className="h-[2em]" alt="logo" />
-          <h1 className="font-semilight text-lg md:text-2xl">arewefastyet</h1>
+          <img src="/logo.png" className="h-[2em] shrink-0" alt="logo" />
+          <h1 className="font-semilight text-lg md:hidden lg:block">
+            arewefastyet
+          </h1>
         </Link>
 
-        <div className="hidden md:flex gap-x-10 items-center">
-          {navItems.map((item, key) => (
-            <NavLink
-              key={key}
-              to={item.to}
-              className={({ isActive, isPending }) =>
-                twMerge(
-                  "text-lg",
-                  isPending
-                    ? "pointer-events-none opacity-50"
-                    : isActive
-                    ? "text-primary"
-                    : ""
-                )
-              }
-            >
-              {item.title}
-            </NavLink>
-          ))}
-        </div>
-
-        <div className="flex-1 flex gap-3 justify-end items-center">
+        <div className="flex justify-end items-center gap-x-4 lg:justify-end lg:flex-shrink-0 ml-8">
+          <div className="hidden md:flex md:gap-x-3 gap-x-4 justify-center items-center">
+            {navItems.map((item, key) => (
+              <NavLink
+                key={key}
+                to={item.to}
+                className={({ isActive, isPending }) =>
+                  twMerge(
+                    "text-lg text-foreground/80 hover:text-primary/80",
+                    isPending
+                      ? "pointer-events-none opacity-50"
+                      : isActive
+                        ? "text-primary"
+                        : ""
+                  )
+                }
+              >
+                {item.title}
+              </NavLink>
+            ))}
+          </div>
           <ModeToggle />
 
           <Sheet>
@@ -124,12 +126,12 @@ export default function Navbar(): JSX.Element {
                       to={"/"}
                       className={({ isActive, isPending }) =>
                         twMerge(
-                          "text-xl text-left font-medium py-3 w-full",
+                          "text-xl text-left font-medium py-3 w-full text-foreground/80 hover:text-primary/80",
                           isPending
                             ? "pointer-events-none "
                             : isActive
-                            ? "text-foreground"
-                            : ""
+                              ? "text-primary"
+                              : ""
                         )
                       }
                     >
@@ -141,12 +143,12 @@ export default function Navbar(): JSX.Element {
                         to={item.to}
                         className={({ isActive, isPending }) =>
                           twMerge(
-                            "text-xl text-left font-medium py-3 w-full",
+                            "text-xl text-left font-medium py-3 w-full text-foreground/80 hover:text-primary/80",
                             isPending
                               ? "pointer-events-none "
                               : isActive
-                              ? "text-foreground"
-                              : ""
+                                ? "text-primary"
+                                : ""
                           )
                         }
                       >

@@ -30,6 +30,7 @@ import PRPage from "./PRPage/PRPage";
 import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
 import MicroPage from "./MicroPage/MicroPage";
 import ForeignKeysPage from "./ForeignKeysPage/ForeignKeysPage";
+import HistoryPage from "./HistoryPage/HistoryPage";
 
 const PublicRoute = () => {
   return (
@@ -48,6 +49,7 @@ const PublicRoute = () => {
         <Route path="/pr" element={<PRsPage />} />
         <Route path="/pr/:pull_nb" element={<PRPage />} />
         <Route path="/fk" element={<ForeignKeysPage />} />
+        <Route path="/history" element={<HistoryPage />} />
 
         <Route path="*" element={<Error />} />
       </Route>
