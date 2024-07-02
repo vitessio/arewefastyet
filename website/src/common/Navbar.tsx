@@ -56,18 +56,18 @@ export default function Navbar(): JSX.Element {
     <nav className="flex flex-col relative">
       <div
         className={twMerge(
-          "w-full bg-background z-[49] flex justify-between lg:justify-center p-page py-4 border-b border-border"
+          "w-full bg-background z-[49] flex justify-between lg:justify-center p-4 border-b border-border"
         )}
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
-          <img src="/logo.png" className="h-[2em]" alt="logo" />
+          <img src="/logo.png" className="h-[2em] shrink-0" alt="logo" />
           <h1 className="font-semilight text-lg md:hidden lg:block">
             arewefastyet
           </h1>
         </Link>
 
         <div className="flex justify-end items-center gap-x-4 lg:justify-end lg:flex-shrink-0 ml-8">
-          <div className="hidden md:flex md:gap-x-2 gap-x-4 justify-center items-center">
+          <div className="hidden md:flex md:gap-x-3 gap-x-4 justify-center items-center">
             {navItems.map((item, key) => (
               <NavLink
                 key={key}
