@@ -35,10 +35,10 @@ import {
  * @param {string} title - The title of the navigation link.
  */
 
-type NavItem = {  
+type NavItem = {
   to: string;
   title: string;
- }
+};
 
 const navItems: NavItem[] = [
   { to: "/status", title: "Status" },
@@ -61,30 +61,32 @@ export default function Navbar(): JSX.Element {
       >
         <Link to="/" className="flex flex-1 gap-x-2 items-center">
           <img src="/logo.png" className="h-[2em]" alt="logo" />
-          <h1 className="font-semilight text-lg md:hidden lg:block">arewefastyet</h1>
+          <h1 className="font-semilight text-lg md:hidden lg:block">
+            arewefastyet
+          </h1>
         </Link>
 
         <div className="flex justify-end items-center gap-x-4 lg:justify-end lg:flex-shrink-0 ml-8">
-        <div className="hidden md:flex gap-x-4 justify-center items-center">
-          {navItems.map((item, key) => (
-            <NavLink
-              key={key}
-              to={item.to}
-              className={({ isActive, isPending }) =>
-                twMerge(
-                  "text-lg text-foreground/80 hover:text-primary/80",
-                  isPending
-                    ? "pointer-events-none opacity-50"
-                    : isActive
-                    ? "text-primary"
-                    : ""
-                )
-              }
-            >
-              {item.title}
-            </NavLink>
-          ))}
-        </div>
+          <div className="hidden md:flex md:gap-x-2 gap-x-4 justify-center items-center">
+            {navItems.map((item, key) => (
+              <NavLink
+                key={key}
+                to={item.to}
+                className={({ isActive, isPending }) =>
+                  twMerge(
+                    "text-lg text-foreground/80 hover:text-primary/80",
+                    isPending
+                      ? "pointer-events-none opacity-50"
+                      : isActive
+                        ? "text-primary"
+                        : ""
+                  )
+                }
+              >
+                {item.title}
+              </NavLink>
+            ))}
+          </div>
           <ModeToggle />
 
           <Sheet>
@@ -128,8 +130,8 @@ export default function Navbar(): JSX.Element {
                           isPending
                             ? "pointer-events-none "
                             : isActive
-                            ? "text-primary"
-                            : ""
+                              ? "text-primary"
+                              : ""
                         )
                       }
                     >
@@ -145,8 +147,8 @@ export default function Navbar(): JSX.Element {
                             isPending
                               ? "pointer-events-none "
                               : isActive
-                              ? "text-primary"
-                              : ""
+                                ? "text-primary"
+                                : ""
                           )
                         }
                       >
