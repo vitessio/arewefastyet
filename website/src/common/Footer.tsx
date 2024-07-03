@@ -62,14 +62,14 @@ const Footer: React.FC = () => {
         { title: "Blog", to: "https://vitess.io/blog" },
         { title: "Community", to: "https://vitess.io/community" },
       ],
-    }
+    },
   ];
 
   return (
-    <footer className="m-auto w-full md:w-4/5 border-border/40 lg:px-60 md:px-auto sm:px-12 py-12 text-foreground border-t">
+    <footer className="m-auto w-full border-border/40 lg:px-60 md:px-12 sm:px-6 py-12 text-foreground border-t">
       <div className="flex flex-col gap-8 lg:gap-28 lg:flex-row md:justify-center text-sm font-light tracking-tight lg:pr-64">
         <div className="md:flex m-auto lg:m-0 flex-col gap-y-4 lg:gap-y-12 lg:order-1 order-2">
-          <div className={`flex gap-x-2 items-center`}>
+          <div className="flex gap-x-2 items-center">
             <img
               src="/logo.png"
               alt="vitess logo"
@@ -87,7 +87,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex order-1 md:gap-[12em] gap-[6em] md:pl-24 m-auto md:justify-center">
+        <div className="flex order-1 md:gap-[12em] gap-[6em] xl:pl-24 m-auto md:justify-center">
           {items.map((item, key) => (
             <div key={key} className="flex flex-col">
               <h5 className="font-bold md:text-lg text-base">{item.title}</h5>
