@@ -21,7 +21,7 @@ import useApiCall from "../../utils/Hook";
 
 import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
-import Hero from "./components/Hero";
+import Hero, { HeroProps } from "./../../common/Hero";
 import { MacroData, MacroDataValue } from "@/types";
 
 import { secondToMicrosecond } from "../../utils/Utils";
@@ -233,9 +233,22 @@ export default function DailyPage() {
     },
   ];
 
+  const heroProps: HeroProps = {
+    title: "Daily",
+    description: (
+      <p>
+        We run all macro benchmark workloads against the <i>main</i> branch
+        every day. This is done to ensure the consistency of the results over
+        time on <i>main</i>. On this page, you can find graphs that show you the
+        results of all five macro benchmark workload over the last 30 days. Click
+        on a macro benchmark workload to see all the results for that workload.
+      </p>
+    ),
+  };
+
   return (
     <>
-      <Hero />
+      <Hero title={heroProps.title} description={heroProps.description} />
 
       <figure className="p-page w-full">
         <div className="border-front border" />

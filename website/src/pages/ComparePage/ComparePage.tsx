@@ -18,10 +18,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
-import Hero from "./components/Hero";
 import Macrobench from "../../common/Macrobench";
 import { CompareData } from '@/types'
- 
+import Hero, { HeroProps } from "@/common/Hero";
+import { twMerge } from "tailwind-merge";
+
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -45,9 +46,63 @@ export default function Compare() {
     navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
   }, [gitRef.old, gitRef.new]);
 
+  function ComparisonInput(props: {
+    className: any;
+    gitRef: any;
+    setGitRef: any;
+    name: any;
+  }) {
+    const { className, gitRef, setGitRef, name } = props;
+
+    return (
+      <input
+        type="text"
+        name={name}
+        className={twMerge(
+          className,
+          "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary"
+        )}
+        defaultValue={gitRef[name]}
+        placeholder={`${name} SHA`}
+        onChange={(event) =>
+          setGitRef((p: any) => {
+            return { ...p, [name]: event.target.value };
+          })
+        }
+      />
+    );
+  }
+
+  const heroProps: HeroProps = {
+    title: "Compare versions",
+    children: (
+      <div>
+        <h1 className="mb-3 text-front text-opacity-70">
+          Enter SHAs to compare commits
+        </h1>
+      <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
+        <ComparisonInput
+          name="old"
+          className="rounded-l-full"
+          setGitRef={setGitRef}
+          gitRef={gitRef}
+        />
+        <ComparisonInput
+          name="new"
+          className="rounded-r-full "
+          setGitRef={setGitRef}
+          gitRef={gitRef}
+        />
+      </div>
+      </div>
+    )
+  };
+
   return (
     <>
-      <Hero gitRef={gitRef} setGitRef={setGitRef} />
+      <Hero title={heroProps.title} description={heroProps.description}>
+        {heroProps.children}
+      </Hero>
       {macrobenchError && (
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
       )}
