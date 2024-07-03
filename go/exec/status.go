@@ -32,15 +32,15 @@ const (
 type BenchmarkStats struct {
 	Total      int
 	Last30Days int
-	Commits	   int
+	Commits    int
 	Last7Days  []int
 }
 
 func GetBenchmarkStats(client storage.SQLClient) (BenchmarkStats, error) {
-	rows, err := client.Select(`SELECT 
+	rows, err := client.Select(`SELECT
 			(SELECT COUNT(uuid) FROM execution) AS count_status,
 			(SELECT COUNT(DISTINCT git_ref) FROM execution) AS count_commits,
-			(SELECT COUNT(*) FROM execution WHERE started_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) AS count_all,
+			(SELECT COUNT(*) FROM execution WHERE started_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) AS count_all
 		FROM 
 			execution
 		LIMIT 1;`)
@@ -62,15 +62,15 @@ func GetBenchmarkStats(client storage.SQLClient) (BenchmarkStats, error) {
 	rows.Close()
 
 	rows, err = client.Select(`SELECT 
-			COUNT(*) 
-		FROM 
-			execution 
-		WHERE 
+			COUNT(*)
+		FROM
+			execution
+		WHERE
 			started_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) 
-		GROUP BY 
-			date 
-		ORDER BY 
-			date ASC 
+		GROUP BY
+			DATE_FORMAT(started_at, '%Y%m%d')
+		ORDER BY
+			DATE_FORMAT(started_at, '%Y%m%d') ASC
 		LIMIT 7;`)
 
 	if err != nil {
