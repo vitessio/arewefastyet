@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
           <div className={`flex gap-x-2 items-center`}>
             <img
               src="/logo.png"
-              alt="agrosurance logo"
+              alt="vitess logo"
               className="aspect-square h-10 w-10 md:h-12 md:w-12 md:shrink-0"
             />
             <h2 className="text-3xl font-normal">arewefastyet</h2>
