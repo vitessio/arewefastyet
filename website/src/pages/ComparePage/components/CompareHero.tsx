@@ -17,9 +17,37 @@ import React from "react";
 import { twMerge } from "tailwind-merge";
 import Hero, { HeroProps } from "@/common/Hero";
 
+
 const heroProps: HeroProps = {
-  title: "Compare versions",
+  title: "Compare versions"
 };
+
+function ComparisonInput(props: {
+  className: any;
+  gitRef: any;
+  setGitRef: any;
+  name: any;
+}) {
+  const { className, gitRef, setGitRef, name } = props;
+
+  return (
+    <input
+      type="text"
+      name={name}
+      className={twMerge(
+        className,
+        "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary"
+      )}
+      defaultValue={gitRef[name]}
+      placeholder={`${name} SHA`}
+      onChange={(event) =>
+        setGitRef((p: any) => {
+          return { ...p, [name]: event.target.value };
+        })
+      }
+    />
+  );
+}
 
 export default function CompareHero(props: { gitRef: any; setGitRef: any }) {
   const { gitRef, setGitRef } = props;
@@ -46,32 +74,5 @@ export default function CompareHero(props: { gitRef: any; setGitRef: any }) {
         </div>
       </div>
     </Hero>
-  );
-}
-
-function ComparisonInput(props: {
-  className: any;
-  gitRef: any;
-  setGitRef: any;
-  name: any;
-}) {
-  const { className, gitRef, setGitRef, name } = props;
-
-  return (
-    <input
-      type="text"
-      name={name}
-      className={twMerge(
-        className,
-        "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary"
-      )}
-      defaultValue={gitRef[name]}
-      placeholder={`${name} SHA`}
-      onChange={(event) =>
-        setGitRef((p: any) => {
-          return { ...p, [name]: event.target.value };
-        })
-      }
-    />
   );
 }
