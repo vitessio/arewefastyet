@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-
-import Hero from "./components/Hero";
+import HomePageHero from "./components/HomePageHero";
 import HowItWorks from "./components/HowItWorks";
 import Diagram from "./components/Diagram";
 import HeroMobile from "./components/HeroMobile";
@@ -24,7 +22,7 @@ import HeroMobile from "./components/HeroMobile";
 export default function HomePage() {
   return (
     <>
-      <Hero />
+      <HomePageHero />
       <HeroMobile />
       <HowItWorks />
       {/*<MicroAndMacro />*/}
