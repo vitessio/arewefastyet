@@ -13,19 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from "react";
+import { ReactNode } from "react";
 
 export type HeroProps = {
   title: string;
-  description?: React.ReactNode;
-  children?: React.ReactNode;
+  description?: ReactNode;
+  children?: ReactNode;
 };
 
 export default function Hero({ title, description, children }: HeroProps) {
   return (
     <section className="flex flex-col items-center p-12">
       <div className="flex flex-col items-center gap-4 max-w-screen-lg">
-        <h2 className="text-8xl text-primary mb-4">{title}</h2>
+        <h2 className="text-4xl md:text-8xl font-semibold text-primary mb-4">{title}</h2>
         <p className="md:my-6 leading-loose text-foreground/80">
           {description}
         </p>
