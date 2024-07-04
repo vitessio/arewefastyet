@@ -13,16 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import Hero, { HeroProps } from "@/common/Hero";
 import React from "react";
 
-interface HeroProps {
+interface SearchHeroProps {
   setGitRef: (value: string) => void;
 }
 
-export default function Hero({ setGitRef }: HeroProps) {
+const searchHeroProps: HeroProps = {
+  title: "Search"
+};
+
+export default function SearchHero({ setGitRef }: SearchHeroProps) {
   return (
-    <section className="h-[30vh] pt-[5vh] flex justify-center items-center">
-      <div className="p-[3px] bg-gradient-to-br from-primary to-theme rounded-full w-1/2 duration-300 focus-within:p-[1px]">
+    <Hero title={searchHeroProps.title}>
+      <div className="p-[3px] bg-gradient-to-br from-primary to-theme rounded-full duration-300 focus-within:p-[1px]">
         <input
           type="text"
           onChange={(e) => setGitRef(e.target.value)}
@@ -30,6 +35,6 @@ export default function Hero({ setGitRef }: HeroProps) {
           placeholder="Enter commit SHA"
         />
       </div>
-    </section>
+    </Hero>
   );
 }

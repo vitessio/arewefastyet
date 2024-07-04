@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
 import useApiCall from "../../utils/Hook";
 
-import Hero from "./components/Hero";
+import SearchHero from "./components/SearchHero";
 import SearchMacro from "./components/SearchMacro";
 import { SearchData } from "@/types";
 
@@ -43,7 +43,7 @@ export default function SearchPage() {
 
   return (
     <>
-      <Hero setGitRef={setGitRef} />
+      <SearchHero setGitRef={setGitRef} />
 
       {searchError && (
         <div className="text-red-500 text-center my-2">{searchError}</div>
