@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Hero, { HeroProps } from "@/common/Hero";
-import React from "react";
 
 interface SearchHeroProps {
   setGitRef: (value: string) => void;

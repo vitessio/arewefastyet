@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
-import useApiCall from "../../utils/Hook";
+import useApiCall from "@/utils/Hook";
 
 import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
 import { MacroData, MacroDataValue } from "@/types";
 
-import { secondToMicrosecond } from "../../utils/Utils";
+import { secondToMicrosecond } from "@/utils/Utils";
 import DailyHero from "./components/DailyHero";
 
 interface DailySummarydata {

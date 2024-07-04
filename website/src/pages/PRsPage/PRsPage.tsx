@@ -14,9 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-
-import useApiCall from "../../utils/Hook";
+import useApiCall from "@/utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
 import PRTable from "./components/PRTable";

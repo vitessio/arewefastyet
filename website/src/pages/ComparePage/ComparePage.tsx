@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-import useApiCall from "../../utils/Hook";
-import Macrobench from "../../common/Macrobench";
+import useApiCall from "@/utils/Hook";
+import Macrobench from "@/common/Macrobench";
 import { CompareData } from '@/types'
 import CompareHero from "./components/CompareHero";
 

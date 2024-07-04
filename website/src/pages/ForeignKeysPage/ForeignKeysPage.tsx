@@ -14,13 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
 import { MacrosData } from '@/types'
 
 import { errorApi } from "../../utils/Utils";
-import Hero from "./components/ForeignKeysHero";
 import FK from "./components/FK";
 import ForeignKeysHero from "./components/ForeignKeysHero";
 
@@ -35,9 +34,7 @@ export interface Ref {
   RCnumber: number;
 }
 
-interface ForeignKeysProps { }
-
-const ForeignKeys: React.FC<ForeignKeysProps> = () => {
+export default function ForeignKeys() {
   const urlParams = new URLSearchParams(window.location.search);
 
   const [gitRef, setGitRef] = useState<{ tag: string }>({
@@ -119,5 +116,3 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
     </>
   );
 };
-
-export default ForeignKeys;

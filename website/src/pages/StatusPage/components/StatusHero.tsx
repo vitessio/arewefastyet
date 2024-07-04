@@ -13,8 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from "react";
-import useApiCall from "../../../utils/Hook";
+import useApiCall from "@/utils/Hook";
 import { statusDataTypes } from "@/types";
 import Hero, { HeroProps } from "@/common/Hero";
 
