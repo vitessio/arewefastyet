@@ -15,30 +15,37 @@ limitations under the License.
 */
 import React from "react";
 import { twMerge } from "tailwind-merge";
+import Hero, { HeroProps } from "@/common/Hero";
 
-export default function Hero(props: { gitRef: any; setGitRef: any }) {
+const heroProps: HeroProps = {
+  title: "Compare versions",
+};
+
+export default function CompareHero(props: { gitRef: any; setGitRef: any }) {
   const { gitRef, setGitRef } = props;
 
   return (
-    <section className="flex flex-col h-[32vh] pt-[8vh] justify-center items-center">
-      <h1 className="mb-3 text-front text-opacity-70">
-        Enter SHAs to compare commits
-      </h1>
-      <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
-        <ComparisonInput
-          name="old"
-          className="rounded-l-full"
-          setGitRef={setGitRef}
-          gitRef={gitRef}
-        />
-        <ComparisonInput
-          name="new"
-          className="rounded-r-full "
-          setGitRef={setGitRef}
-          gitRef={gitRef}
-        />
+    <Hero title={heroProps.title}>
+      <div>
+        <h1 className="mb-3 text-front text-opacity-70">
+          Enter SHAs to compare commits
+        </h1>
+        <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
+          <ComparisonInput
+            name="old"
+            className="rounded-l-full"
+            setGitRef={setGitRef}
+            gitRef={gitRef}
+          />
+          <ComparisonInput
+            name="new"
+            className="rounded-r-full "
+            setGitRef={setGitRef}
+            gitRef={gitRef}
+          />
+        </div>
       </div>
-    </section>
+    </Hero>
   );
 }
 

@@ -80,20 +80,20 @@ export default function Compare() {
         <h1 className="mb-3 text-front text-opacity-70">
           Enter SHAs to compare commits
         </h1>
-      <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
-        <ComparisonInput
-          name="old"
-          className="rounded-l-full"
-          setGitRef={setGitRef}
-          gitRef={gitRef}
-        />
-        <ComparisonInput
-          name="new"
-          className="rounded-r-full "
-          setGitRef={setGitRef}
-          gitRef={gitRef}
-        />
-      </div>
+        <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
+          <ComparisonInput
+            name="old"
+            className="rounded-l-full"
+            setGitRef={setGitRef}
+            gitRef={gitRef}
+          />
+          <ComparisonInput
+            name="new"
+            className="rounded-r-full "
+            setGitRef={setGitRef}
+            gitRef={gitRef}
+          />
+        </div>
       </div>
     )
   };
