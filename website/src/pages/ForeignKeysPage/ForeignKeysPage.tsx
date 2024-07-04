@@ -20,10 +20,11 @@ import RingLoader from "react-spinners/RingLoader";
 import { MacrosData } from '@/types'
 
 import { errorApi } from "../../utils/Utils";
-import Hero from "./components/Hero";
+import Hero from "./components/ForeignKeysHero";
 import FK from "./components/FK";
+import ForeignKeysHero from "./components/ForeignKeysHero";
 
-interface Ref {
+export interface Ref {
   Name: string;
   CommitHash: string;
   Version: {
@@ -34,7 +35,7 @@ interface Ref {
   RCnumber: number;
 }
 
-interface ForeignKeysProps {}
+interface ForeignKeysProps { }
 
 const ForeignKeys: React.FC<ForeignKeysProps> = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -68,8 +69,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
     setLoading(true);
     try {
       const responseFK = await fetch(
-        `${import.meta.env.VITE_API_URL}fk/compare?sha=${
-          commits.tag
+        `${import.meta.env.VITE_API_URL}fk/compare?sha=${commits.tag
         }`
       );
       const jsonDataFKs = await responseFK.json();
@@ -95,7 +95,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
 
   return (
     <>
-      <Hero refs={dataRefs} gitRef={gitRef} setGitRef={setGitRef} />
+      <ForeignKeysHero refs={dataRefs} gitRef={gitRef} setGitRef={setGitRef} />
 
       <div className="p-page">
         <div className="border border-front" />
