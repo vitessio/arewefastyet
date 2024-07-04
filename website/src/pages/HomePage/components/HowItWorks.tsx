@@ -1,49 +1,61 @@
-/*
-Copyright 2023 The Vitess Authors.
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+type HowItWorksCardItem = {
+  title: string;
+  content: ReactNode;
+};
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-import React, { useEffect, useRef } from "react";
-
-const items = [
+const items: HowItWorksCardItem[] = [
   {
-    title: "The Execution Engine",
-    content:
-      "At the heart of arewefastyet is the Execution engine. It orchestrates the entire benchmarking process, ensuring accuracy and reproducibility on a large scale. Each benchmark run is initiated by new releases, new PRs, and new commits on main.",
+    title: "Workloads",
+    content: (
+      <>
+        Seven workloads are executed against every commit we decide to benchmark. These workloads define the SQL schema, the queries we execute, the configuration of the Vitess cluster, and the configuration of sysbench. The settings of our workload can be found on the
+        <Link to="" className="text-primary"> arewefastyet repository</Link>
+        <br />
+        <br />
+        We have two categories of workloads: OLTP and TPCC, both are a modified version of the official workloads.
+      </>
+    )
   },
   {
-    title: "Dedicated Benchmarking Servers",
-    content:
-      "arewefastyet relies on dedicated hardware provided by CNCF and Equinix Metal. Our benchmarking infrastructure uses large bare-metal servers, boosting benchmark reliability and accuracy.",
+    title: "Frequency",
+    content: (
+      <>
+        There are three cron schedules that enable us to periodically benchmark Vitess, the definition of these schedules is
+        <Link to="" className="text-primary"> available in our yaml configuration</Link>
+        <br />
+        <br />
+        Generally, we benchmark the main and release branches of Vitess every night at midnight UTC. We also detect new PRs that need to be benchmarked every five minutes, and new tags/releases every minute.      </>
+    )
   },
   {
-    title: "Customized Benchmark Settings",
-    content:
-      "Different benchmarks demand distinct configurations. For instance, a macro-benchmark necessitates the setup of a Vitess cluster, while a micro-benchmark does not. The default setup for macro-benchmarks examines Vitess performance in a sharded keyspace with six VTGates and two VTTablets.",
+    title: "Methodology",
+    content: (
+      <>
+        Each commit is benchmarked ten times by each workload. Under the hood, we use sysbench with a custom configuration to perform the benchmark. We then perform statistical analysis on the ten results of a given workload to get a more accurate and reliable result.
+        <br />
+        <br />
+        Every execution is done on the same hardware: 192Gb of RAM and 2x Intel Xeon Silver 4214 Processor 24-Core @ 2.20GHz.      </>
+    )
   },
   {
-    title: "Starting Benchmark Runs",
-    content:
-      "Once the server is ready, the final step is initiating the benchmark run. Ansible triggers arewefastyet's CLI to set the benchmark in motion. This comprehensive process, from YAML-based pipeline configuration to dynamic server setup, ensures that every benchmark run is accurate, reproducible, and adaptable to the unique demands of each benchmark type. arewefastyet streamlines the complexities of executing benchmarks against Vitess, offering a robust and precise benchmarking solution at scale.",
-  },
+    title: "Results",
+    content: (
+      <>
+We collect the same results as sysbench (QPS, TPS, Error rate, latency, etc), along with several Golang metrics such as the CPU used per query, and the total memory used per query.      </>
+    )
+
+  }
 ];
 
 export default function HowItWorks() {
   return (
-    <section className="relative flex flex-col items-center p-page -z-1 pb-14 bg-black text-white">
-      <div className="absolute-cover bg-white bg-opacity-5 z-0" />
-      <h1 className="text-4xl font-semibold my-14">How it works</h1>
-      <div className="flex flex-col md:flex-row md:flex-wrap justify-center items-center gap-5 md:justify-between md:items-start md:gap-y-12 px-5 md:px-10 md:relative z-1">
+    <section className="relative flex flex-col items-center p-page -z-1 pb-14 bg-background text-foreground">
+      <h1 className="text-4xl font-semibold my-14 text-primary dark:text-front">How it works</h1>
+      <div className="flex flex-col md:flex-row md:flex-wrap justify-center items-center md:justify-between md:items-start gap-y-12 px-5 md:px-10 md:relative z-1">
         {items.map((item, key) => (
           <HowItWorksCard key={key} title={item.title} content={item.content} />
         ))}
@@ -52,43 +64,15 @@ export default function HowItWorks() {
   );
 }
 
-function HowItWorksCard(props) {
-  const cardRef = useRef();
-  const glowRef = useRef();
-
-  function glowWithMouse(event) {
-    const cardRect = cardRef.current.getBoundingClientRect();
-    glowRef.current.style.setProperty("--x", `${event.x - cardRect.x}px`);
-    glowRef.current.style.setProperty("--y", `${event.y - cardRect.y}px`);
-  }
-
-  useEffect(() => {
-    const isSmallScreen = window.innerWidth < 768;
-
-    if (!isSmallScreen) {
-      window.addEventListener("mousemove", glowWithMouse);
-    }
-
-    return () => {
-      if (!isSmallScreen) {
-        window.removeEventListener("mousemove", glowWithMouse);
-      }
-    };
-  }, []);
-
+function HowItWorksCard({ title, content }: { title: string; content: ReactNode }) {
   return (
-    <div
-      ref={cardRef}
-      className="w-full min-h-[200px] md:relative flex flex-col items-center p-4 md:w-[calc(50%_-_1.25rem)] bg-black 
-      rounded-lg border border-white border-opacity-20 gap-y-4 overflow-hidden"
-    >
-      <div
-        ref={glowRef}
-        className="absolute bg-white bg-opacity-10 z-1 md:top-[var(--y)] md:left-[var(--x)] blur-3xl
-      md:w-[20vw] w-full h-[20vw] rounded-full -translate-x-1/2 -translate-y-1/2"
-      />
-      <h3 className="text-2xl font-semibold">{props.title}</h3>
-      <p className="text-sm mt-2 text-white text-opacity-70">{props.content}</p>
-    </div>
+    <Card className="w-full h-fit 2xl:h-[334px] md:w-[calc(50%_-_1.25rem)] border-border rounded-xl overflow-hidden">
+      <CardHeader>
+        <CardTitle className="text-3xl dark:text-primary font-semibold">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-lg mt-2 text-foreground">{content}</p>
+      </CardContent>
+    </Card>
   );
 }
