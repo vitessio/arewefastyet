@@ -21,17 +21,17 @@ import useApiCall from "../../utils/Hook";
 
 import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
-import Hero, { HeroProps } from "./../../common/Hero";
 import { MacroData, MacroDataValue } from "@/types";
 
 import { secondToMicrosecond } from "../../utils/Utils";
+import DailyHero from "./components/DailyHero";
 
 interface DailySummarydata {
   name: string;
-  data : { total_qps: MacroDataValue }[];
+  data: { total_qps: MacroDataValue }[];
 }
 
-type NumberDataPoint = { x: string; y: number};
+type NumberDataPoint = { x: string; y: number };
 type StringDataPoint = { x: string; y: string };
 
 type ChartDataItem =
@@ -97,7 +97,7 @@ export default function DailyPage() {
     },
   ];
 
-  const CPUTimeData : { id: string; data: StringDataPoint[] }[]= [
+  const CPUTimeData: { id: string; data: StringDataPoint[] }[] = [
     {
       id: "Total",
       data: [],
@@ -206,49 +206,36 @@ export default function DailyPage() {
     title: string;
     colors: string[];
   }[] = [
-    {
-      data: QPSData,
-      title: "QPS (Queries per second)",
-      colors: ["#fad900", "orange", "brown", "purple"],
-    },
-    {
-      data: TPSData,
-      title: "TPS (Transactions per second)",
-      colors: ["#fad900"],
-    },
-    {
-      data: latencyData,
-      title: "Latency (ms)",
-      colors: ["#fad900"],
-    },
-    {
-      data: CPUTimeData,
-      title: "CPU / query (μs)",
-      colors: ["#fad900", "orange", "brown"],
-    },
-    {
-      data: MemBytesData,
-      title: "Allocated / query (bytes)",
-      colors: ["#fad900", "orange", "brown"],
-    },
-  ];
-
-  const heroProps: HeroProps = {
-    title: "Daily",
-    description: (
-      <p>
-        We run all macro benchmark workloads against the <i>main</i> branch
-        every day. This is done to ensure the consistency of the results over
-        time on <i>main</i>. On this page, you can find graphs that show you the
-        results of all five macro benchmark workload over the last 30 days. Click
-        on a macro benchmark workload to see all the results for that workload.
-      </p>
-    ),
-  };
+      {
+        data: QPSData,
+        title: "QPS (Queries per second)",
+        colors: ["#fad900", "orange", "brown", "purple"],
+      },
+      {
+        data: TPSData,
+        title: "TPS (Transactions per second)",
+        colors: ["#fad900"],
+      },
+      {
+        data: latencyData,
+        title: "Latency (ms)",
+        colors: ["#fad900"],
+      },
+      {
+        data: CPUTimeData,
+        title: "CPU / query (μs)",
+        colors: ["#fad900", "orange", "brown"],
+      },
+      {
+        data: MemBytesData,
+        title: "Allocated / query (bytes)",
+        colors: ["#fad900", "orange", "brown"],
+      },
+    ];
 
   return (
     <>
-      <Hero title={heroProps.title} description={heroProps.description} />
+      <DailyHero />
 
       <figure className="p-page w-full">
         <div className="border-front border" />
@@ -264,7 +251,7 @@ export default function DailyPage() {
         </div>
       )}
 
-      {!errorDailySummary && dataDailySummary && dataDailySummary.length > 0 &&(
+      {!errorDailySummary && dataDailySummary && dataDailySummary.length > 0 && (
         <>
           <section className="flex p-page justif-center flex-wrap gap-10 py-10">
             {dataDailySummary.map((dailySummary, index) => {
