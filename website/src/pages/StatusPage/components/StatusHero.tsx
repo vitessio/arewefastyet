@@ -42,7 +42,6 @@ export default function StatusHero() {
     `${import.meta.env.VITE_API_URL}status/stats`
   );
 
-  console.log({ dataStatusStats });
 
   return (
     <Hero title={heroProps.title} description={heroProps.description}>
