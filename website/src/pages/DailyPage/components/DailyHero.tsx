@@ -21,9 +21,9 @@ const heroProps: HeroProps = {
     <>
       We run all macro benchmark workloads against the <i>main</i> branch
       every day. This is done to ensure the consistency of the results over
-      time on <i>main</i>. On this page, you can find graphs that show you the
-      results of all five macro benchmark workload over the last 30 days. Click
-      on a macro benchmark workload to see all the results for that workload.
+      time. On this page, you can find graphs that show you the
+      results of all workloads over the last 30 days. Click
+      on a workload to see the historical results of that workload.
     </>
   ),
 };

@@ -13,12 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import { twMerge } from "tailwind-merge";
 import Hero, { HeroProps } from "@/common/Hero";
 
-
 const heroProps: HeroProps = {
-  title: "Compare versions"
+  title: "Compare Versions"
 };
 
 function ComparisonInput(props: {

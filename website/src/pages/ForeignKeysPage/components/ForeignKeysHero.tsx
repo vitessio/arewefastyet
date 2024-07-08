@@ -21,24 +21,11 @@ const heroProps: HeroProps = {
   title: "Foreign Keys",
   description: (
     <>
-        Support for Foreign Keys have been added to Vitess in v18.0.0. We want
-        to be able to compare the performance of Vitess with and without
-        Foreign Keys.
-        <br />
-        For this purpose, we propose four benchmarks:
-        <br />
-        - TPCC, with a sharded keyspace
-        <br />
-        - TPCC_UNSHARDED, with an unsharded keyspace
-        <br />
-        - TPCC_FK, with Foreign Keys enabled and set to vitess managed
-        <br />
-        - TPCC_FK_UNMANAGED, with Foreign Keys enabled and set to vitess
-        unmanaged
-        <br />
-        Use the dropdown on the right to select which version of Vitess you
-        would like to use to compare the performance of our four TPCC
-        benchmarks.
+      Foreign Keys Management is a new feature that was added in version 18 of
+      Vitess. This page enables the comparison of two different Foreign Keys
+      workloads on the same commit, allowing you to see the performance of a
+      workflow with Vitess-managed foreign keys versus one where foreign keys
+      are either not enabled, or not managed by Vitess.
     </>
   ),
 };

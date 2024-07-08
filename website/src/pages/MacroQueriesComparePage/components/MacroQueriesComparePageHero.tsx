@@ -13,20 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from "react";
+
 import { Link } from "react-router-dom";
+import Hero, { HeroProps } from "@/common/Hero";
 
-export default function Hero(props: { commits: { left: any; right: any } }) {
+export default function MacroQueriesComparePageHero(props: {
+  commits: { left: any; right: any };
+}) {
   const { left, right } = props.commits;
-
-  return (
-    <section className="flex flex-col h-[50vh] pt-[10vh] items-center justify-evenly cursor-default">
-      <h2 className="text-5xl font-bold">Compare Query Plans</h2>
-      <span className="text-front text-opacity-70">
-        Comparing the query plans of two OLTP benchmarks: A and B.
-      </span>
-      <span>
-        <b className="text-primary text-xl">A</b> benchmarked commit{" "}
+  const heroProps: HeroProps = {
+    title: "Compare Query Plans",
+    description: (
+      <>
+        <b className="text-primary text-xl">Old</b> benchmarked commit{" "}
         <Link
           className="text-primary text-xl"
           target="_blank"
@@ -34,10 +33,9 @@ export default function Hero(props: { commits: { left: any; right: any } }) {
         >
           {left.slice(0, 8)}
         </Link>{" "}
-        using the Gen4 query planner.
-      </span>
-      <span>
-        <b className="text-primary text-xl">B</b> benchmarked commit{" "}
+        <br />
+        <br />
+        <b className="text-primary text-xl">New</b> benchmarked commit{" "}
         <Link
           className="text-primary text-xl"
           target="_blank"
@@ -45,12 +43,13 @@ export default function Hero(props: { commits: { left: any; right: any } }) {
         >
           {right.slice(0, 8)}
         </Link>{" "}
-        using the Gen4 query planner.
-      </span>
-      <span className="text-sm text-front text-opacity-70">
+        <br />
+        <br />
         Queries are ordered from the worst regression in execution time to the
         best. All executed queries are shown below.
-      </span>
-    </section>
-  );
+      </>
+    ),
+  };
+
+  return <Hero title={heroProps.title} description={heroProps.description} />;
 }
