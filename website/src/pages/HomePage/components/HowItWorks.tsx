@@ -68,10 +68,10 @@ function HowItWorksCard({ title, content }: { title: string; content: ReactNode 
   return (
     <Card className="w-full h-fit md:h-[640px] lg:h-[480px] xl:h-[400px] 2xl:h-[334px] md:w-[calc(50%_-_1.25rem)] border-border rounded-xl overflow-hidden">
       <CardHeader>
-        <CardTitle className="text-3xl dark:text-primary font-semibold">{title}</CardTitle>
+        <CardTitle className="text-base md:text-3xl dark:text-primary font-semibold">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-lg mt-2 text-foreground">{content}</p>
+        <p className="text-xs md:text-lg mt-2 text-foreground">{content}</p>
       </CardContent>
     </Card>
   );
