@@ -19,9 +19,9 @@ import Hero, { HeroProps } from "@/common/Hero";
 const heroProps: HeroProps = {
   title: "History",
   description: (
-    <p>
+    <>
       coming soon...
-    </p>
+    </>
   ),
 };
 

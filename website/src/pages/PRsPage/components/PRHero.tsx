@@ -18,14 +18,14 @@ import Hero, { HeroProps } from "@/common/Hero";
 const heroProps: HeroProps = {
   title: "Pull Request",
   description: (
-    <p>
+    <>
       If a given Pull Request on vitessio/vitess is labelled with the
       <span className="bg-red-800 text-white px-2 py-1 rounded-2xl ml-2">Benchmark Me</span> label
       the Pull Request will be handled and benchmarked by arewefastyet. For each commit on the Pull Request there will be two benchmarks: one on the Pull Request's HEAD and another on the base of the Pull Request.
       <br />
       <br />
       On this page you can find all benchmarked Pull Requests.
-    </p>
+    </>
   ),
 };
 
