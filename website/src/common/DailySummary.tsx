@@ -14,40 +14,42 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import PropTypes from "prop-types";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { DailySummarydata } from "@/types";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
-import { Button } from "@/components/ui/button";
-
+} from "@/components/ui/chart";
+import { DailySummarydata } from "@/types";
+import PropTypes from "prop-types";
+import { Line, LineChart, XAxis } from "recharts";
 
 export type DailySummaryProps = {
   data: DailySummarydata;
   benchmarkType: string;
   setBenchmarktype: (type: string) => void;
-}
+};
 
-export default function DailySummary({ data, benchmarkType, setBenchmarktype }: DailySummaryProps) {
+export default function DailySummary({ data }: DailySummaryProps) {
   const chartData: any[] | undefined = [];
 
   const chartConfig = {
     desktop: {
       label: "Desktop",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(var(--primary))",
     },
     mobile: {
       label: "Mobile",
-      color: "hsl(var(--chart-2))",
+      color: "hsl(var(--primary))",
     },
-  } satisfies ChartConfig
-
+  } satisfies ChartConfig;
 
   if (data.data !== null) {
     data.data.map((item) => ({
@@ -57,27 +59,15 @@ export default function DailySummary({ data, benchmarkType, setBenchmarktype }: 
     }));
   }
 
-  const getBenchmarkType = () => {
-    setBenchmarktype(data.name);
-  };
-
-  console.log(chartData)
-
   return (
-    <Card className="w-[20vw] max-h-[20vh]">
+    <Card className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] hover:scale-105 duration-300 border-border">
       <CardHeader>
-        <CardTitle className="font-light">{data.name}</CardTitle>
+        <CardTitle className="font-light text-sm">{data.name}</CardTitle>
       </CardHeader>
-      <CardContent className="max-h-[5vh]">
+      <CardContent className="max-h-[4vh] md:max-h-[7vh]">
         <ChartContainer config={chartConfig}>
-          <LineChart
-            data={chartData}
-          >
-            <XAxis
-              dataKey="time"
-              tickLine={false}
-              axisLine={false}
-            />
+          <LineChart data={chartData}>
+            <XAxis dataKey="time" tickLine={false} axisLine={false} />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
@@ -86,7 +76,7 @@ export default function DailySummary({ data, benchmarkType, setBenchmarktype }: 
               dataKey="totalQps"
               type="natural"
               stroke="var(--color-desktop)"
-              strokeWidth={2}
+              strokeWidth={1}
               dot={{
                 fill: "var(--color-desktop)",
               }}
@@ -97,13 +87,12 @@ export default function DailySummary({ data, benchmarkType, setBenchmarktype }: 
           </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-      <i className="fa-solid fa-arrow-right daily--fa-arrow-right"></i>
+      <CardFooter className="bottom-0">
+        <i className="fa-solid fa-arrow-right daily--fa-arrow-right"></i>
       </CardFooter>
-
     </Card>
   );
-};
+}
 
 DailySummary.propTypes = {
   data: PropTypes.shape({

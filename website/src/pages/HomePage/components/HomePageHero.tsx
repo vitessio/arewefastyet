@@ -14,32 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Link, To } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Icon from "@/common/Icon";
 import { Button } from "@/components/ui/button";
 import DailySummary from "@/common/DailySummary";
 import useDailySummaryData from "@/hooks/useDailySummaryData";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function HomePageHero() {
   const [benchmarkType, setBenchmarktype] = useState<string>("");
 
-  function getBenchmarkType(type: string) {
-    setBenchmarktype(type);
-  }
-
   const {
     dataDailySummary,
-  } = useDailySummaryData();
+    isLoadingDailySummary
+  } = useDailySummaryData(['OLTP', 'TPCC']);
 
   return (
     <section className="flex flex-col items-center h-screen p-page">
-      <h1 className="text-6xl font-semibold text-center mt-10 leading-normal">
+      <h1 className="text-3xl md:text-6xl font-semibold text-center mt-10 leading-normal">
         Benchmarking <br />
         System for <br />
         <span className="text-orange-500"> Vitess</span>
       </h1>
-      <div className="flex gap-x-4 mt-10">
+      <div className="flex md:flex-row flex-col gap-4 mt-10">
+        <div className="flex flex-row gap-4">
         <Button
           asChild
           size={"lg"}
@@ -70,6 +69,8 @@ export default function HomePageHero() {
             <Icon className="text-2xl" icon="github" />
           </Link>
         </Button>
+        </div>
+        <div className="flex justify-center">
         <Button
           asChild
           size={"lg"}
@@ -85,18 +86,24 @@ export default function HomePageHero() {
             <Icon className="text-2xl" icon="vitess" />
           </Link>
         </Button>
+        </div>
       </div>
-      <h2 className="text-2xl font-medium mt-20">
+      <h2 className="text-lg md:text-2xl font-medium mt-20">
         Historical results on the <Link className="text-primary" to="https://github.com/vitessio/arewefastyet/tree/main" target="_blank">main</Link>{" "}
         branch
       </h2>
-      <section className="flex p-page justif-center flex-wrap gap-10 py-10">
+      <section className="flex md:flex-row flex-col justif-center gap-10 py-10 my-10">
+        {isLoadingDailySummary && (
+          <>
+            <Skeleton className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] rounded-lg" />
+            <Skeleton className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] rounded-lg" />
+          </>
+        )}
         {dataDailySummary.map((dailySummary, index) => {
           if (dailySummary.name === "OLTP" || dailySummary.name === "TPCC") {
             return (
-              <Link to={`/daily?type=${dailySummary.name}`}>
+              <Link key={index} to={`/daily?type=${dailySummary.name}`}>
                 <DailySummary
-                  key={index}
                   data={dailySummary}
                   benchmarkType={benchmarkType}
                   setBenchmarktype={setBenchmarktype}
@@ -109,7 +116,7 @@ export default function HomePageHero() {
       </section>
       <Link
         to="/daily"
-        className="text-primary text-lg mt-10"
+        className="text-primary text-xs md:text-lg mt-10"
       >
         See more historical results {">"}
       </Link>

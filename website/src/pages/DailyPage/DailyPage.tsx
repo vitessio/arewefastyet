@@ -25,6 +25,7 @@ import { MacroData, MacroDataValue } from "@/types";
 
 import { secondToMicrosecond } from "@/utils/Utils";
 import DailyHero from "./components/DailyHero";
+import useDailySummaryData from "@/hooks/useDailySummaryData";
 
 interface DailySummarydata {
   name: string;
@@ -231,7 +232,7 @@ export default function DailyPage() {
     dataDailySummary,
     isLoadingDailySummary,
     errorDailySummary,
-  } = useDailySummaryData();
+  } = useDailySummaryData(["OLTP", "OLTP-READONLY", "OLTP-SET", "TPCC", "TPCC_FK", "TPCC_UNSHARDED", "TPCC_FK_UNMANAGED"]);
 
   return (
 

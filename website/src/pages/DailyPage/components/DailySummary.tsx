@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
 import PropTypes from "prop-types";
 import { ResponsiveLine } from "@nivo/line";
 import { twMerge } from "tailwind-merge";
