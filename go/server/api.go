@@ -32,6 +32,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/github"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
+	"golang.org/x/exp/slices"
 )
 
 type ErrorAPI struct {
@@ -288,7 +289,23 @@ type dailySummaryResp struct {
 }
 
 func (s *Server) getDailySummary(c *gin.Context) {
-	results, err := macrobench.SearchForLastDaysQPSOnly(s.dbClient, s.benchmarkTypes, macrobench.Gen4Planner, 31)
+	// Query array allows to get multiple values for the same key
+	// For example: /api/daily/summary?workloads=TPCC&workloads=OLTP
+	workloads := c.QueryArray("workloads")
+	slog.Infof("workloads: %v", workloads)
+	if len(workloads) == 0 {
+		workloads = s.benchmarkTypes
+	} else {
+		for _, workload := range workloads {
+			workload = strings.ToUpper(workload)
+			slog.Infof("workload: %v", workload)
+			if !slices.Contains(s.benchmarkTypes, workload) {
+				c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "Wrong workload specified"})
+				return
+			}
+		}
+	}
+	results, err := macrobench.SearchForLastDaysQPSOnly(s.dbClient, workloads, macrobench.Gen4Planner, 31)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
