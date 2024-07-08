@@ -53,7 +53,7 @@ We collect the same results as sysbench (QPS, TPS, Error rate, latency, etc), al
 
 export default function HowItWorks() {
   return (
-    <section className="relative flex flex-col items-center p-page -z-1 pb-14 bg-background text-foreground">
+    <section className="relative flex flex-col items-center p-page pb-14 bg-background text-foreground">
       <h1 className="text-4xl font-semibold my-14 text-primary dark:text-front">How it works</h1>
       <div className="flex flex-col md:flex-row md:flex-wrap justify-center items-center md:justify-between md:items-start gap-y-12 px-5 md:px-10 md:relative z-1">
         {items.map((item, key) => (
@@ -66,7 +66,7 @@ export default function HowItWorks() {
 
 function HowItWorksCard({ title, content }: { title: string; content: ReactNode }) {
   return (
-    <Card className="w-full h-fit 2xl:h-[334px] md:w-[calc(50%_-_1.25rem)] border-border rounded-xl overflow-hidden">
+    <Card className="w-full h-fit md:h-[640px] lg:h-[480px] xl:h-[400px] 2xl:h-[334px] md:w-[calc(50%_-_1.25rem)] border-border rounded-xl overflow-hidden">
       <CardHeader>
         <CardTitle className="text-3xl dark:text-primary font-semibold">{title}</CardTitle>
       </CardHeader>

@@ -30,6 +30,7 @@
     "react-json-pretty": "^2.2.0",
     "react-router-dom": "^6.11.2",
     "react-spinners": "^0.13.8",
+    "react-use": "^17.5.0",
     "recharts": "^2.12.7",
     "serve": "^14.2.0",
     "swiper": "^9.4.1",
