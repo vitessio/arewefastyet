@@ -41,14 +41,8 @@ type ChartDataItem =
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState<string>(
-    urlParams.get("type") ?? "OLTP"
+    (urlParams.get("type")) ?? "OLTP"
   );
-
-  const {
-    data: dataDailySummary,
-    isLoading: isLoadingDailySummary,
-    error: errorDailySummary,
-  } = useApiCall<DailySummarydata>(`${import.meta.env.VITE_API_URL}daily/summary`);
 
   const {
     data: dataDaily,
@@ -233,7 +227,19 @@ export default function DailyPage() {
       },
     ];
 
+  const {
+    dataDailySummary,
+    isLoadingDailySummary,
+    errorDailySummary,
+  } = useDailySummaryData();
+
   return (
+
+    console.log({
+      dataDailySummary,
+      isLoadingDailySummary,
+      errorDailySummary,
+    }),
     <>
       <DailyHero />
 
@@ -259,8 +265,8 @@ export default function DailyPage() {
                 <DailySummary
                   key={index}
                   data={dailySummary}
-                  setBenchmarktype={setBenchmarktype}
                   benchmarkType={benchmarkType}
+                  setBenchmarktype={setBenchmarktype}
                 />
               );
             })}

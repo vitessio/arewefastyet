@@ -17,7 +17,6 @@ limitations under the License.
 import HomePageHero from "./components/HomePageHero";
 import HowItWorks from "./components/HowItWorks";
 import Diagram from "./components/Diagram";
-import HeroMobile from "./components/HeroMobile";
 import { Separator } from "@/components/ui/separator"
 
 export default function HomePage() {
@@ -25,9 +24,7 @@ export default function HomePage() {
     <>
       <HomePageHero />
       <Separator className="mx-auto w-[80%] foreground" />
-      {/* <HeroMobile /> */}
       <HowItWorks />
-      {/*<MicroAndMacro />*/}
       <Separator className="mx-auto w-[80%]" />
       <Diagram />
     </>

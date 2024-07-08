@@ -1,21 +1,36 @@
-import { Link } from "react-router-dom";
+/*
+Copyright 2024 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+import { Link, To } from "react-router-dom";
 import Icon from "@/common/Icon";
 import { Button } from "@/components/ui/button";
 import DailySummary from "@/common/DailySummary";
-import useApiCall from "@/utils/Hook";
-import { MacroDataValue } from "@/types";
-
-interface DailySummarydata {
-  name: string;
-  data : { total_qps: MacroDataValue }[];
-}
+import useDailySummaryData from "@/hooks/useDailySummaryData";
+import { useState } from "react";
 
 export default function HomePageHero() {
+  const [benchmarkType, setBenchmarktype] = useState<string>("");
+
+  function getBenchmarkType(type: string) {
+    setBenchmarktype(type);
+  }
+
   const {
-    data: dataDailySummary,
-    isLoading: isLoadingDailySummary,
-    error: errorDailySummary,
-  } = useApiCall<DailySummarydata>(`${import.meta.env.VITE_API_URL}daily/summary`);
+    dataDailySummary,
+  } = useDailySummaryData();
 
   return (
     <section className="flex flex-col items-center h-screen p-page">
@@ -72,24 +87,29 @@ export default function HomePageHero() {
         </Button>
       </div>
       <h2 className="text-2xl font-medium mt-20">
-        Historical results on the <Link className="text-orange-500" to="https://github.com/vitessio/arewefastyet/tree/main" target="_blank">main</Link>{" "}
+        Historical results on the <Link className="text-primary" to="https://github.com/vitessio/arewefastyet/tree/main" target="_blank">main</Link>{" "}
         branch
       </h2>
-      {/* <div className="flex gap-x-8 mt-10">
-        <DailySummary
-          data={oltpData}
-          setBenchmarktype={setBenchmarktype}
-          benchmarkType={benchmarkType}
-        />
-        <DailySummary
-          data={tpccData}
-          setBenchmarktype={setBenchmarktype}
-          benchmarkType={benchmarkType}
-        />
-      </div> */}
+      <section className="flex p-page justif-center flex-wrap gap-10 py-10">
+        {dataDailySummary.map((dailySummary, index) => {
+          if (dailySummary.name === "OLTP" || dailySummary.name === "TPCC") {
+            return (
+              <Link to={`/daily?type=${dailySummary.name}`}>
+                <DailySummary
+                  key={index}
+                  data={dailySummary}
+                  benchmarkType={benchmarkType}
+                  setBenchmarktype={setBenchmarktype}
+                />
+              </Link>
+
+            );
+          }
+        })}
+      </section>
       <Link
         to="/daily"
-        className="text-orange-500 text-lg mt-10"
+        className="text-primary text-lg mt-10"
       >
         See more historical results {">"}
       </Link>
