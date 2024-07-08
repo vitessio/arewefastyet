@@ -13,13 +13,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import Hero, { HeroProps } from "@/common/Hero";
 
-import HistoryHero from "./components/HistoryHero";
-
-export default function HistoryPage() {
-  return (
+const heroProps: HeroProps = {
+  title: "Daily",
+  description: (
     <>
-      <HistoryHero />
+      We run all macro benchmark workloads against the <i>main</i> branch
+      every day. This is done to ensure the consistency of the results over
+      time. On this page, you can find graphs that show you the
+      results of all workloads over the last 30 days. Click
+      on a workload to see the historical results of that workload.
     </>
+  ),
+};
+
+
+export default function DailyHero() {
+  return (
+    <Hero title={heroProps.title} description={heroProps.description} />
   );
 }

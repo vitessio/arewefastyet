@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-import useApiCall from "../../utils/Hook";
-import Hero from "./components/Hero";
-import Macrobench from "../../common/Macrobench";
+import useApiCall from "@/utils/Hook";
+import Macrobench from "@/common/Macrobench";
 import { CompareData } from '@/types'
- 
+import CompareHero from "./components/CompareHero";
+
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -47,7 +47,7 @@ export default function Compare() {
 
   return (
     <>
-      <Hero gitRef={gitRef} setGitRef={setGitRef} />
+      <CompareHero gitRef={gitRef} setGitRef={setGitRef} />
       {macrobenchError && (
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
       )}

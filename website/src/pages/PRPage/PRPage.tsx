@@ -16,10 +16,10 @@ limitations under the License.
 
 import React from "react";
 import { Link, useParams } from "react-router-dom";
-import useApiCall from "../../utils/Hook";
+import useApiCall from "@/utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
-import { formatDate, errorApi } from "../../utils/Utils";
+import { formatDate, errorApi } from "@/utils/Utils";
 import { prDataTypes } from "@/types";
 
 export default function PRPage() {

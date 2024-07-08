@@ -14,14 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import Hero from "./components/Hero";
-
-import useApiCall from "../../utils/Hook";
+import useApiCall from "@/utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
 import PRTable from "./components/PRTable";
 import { prDataTypes } from "@/types";
+import PRHero from "./components/PRHero";
 
 export default function PRsPage() {
   const {
@@ -32,7 +30,7 @@ export default function PRsPage() {
 
   return (
     <>
-      <Hero />
+      <PRHero/>
 
       {isPRListLoading && (
         <div className="flex justify-center w-full my-16">

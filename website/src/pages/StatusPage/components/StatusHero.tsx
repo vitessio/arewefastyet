@@ -1,0 +1,68 @@
+/*
+Copyright 2024 The Vitess Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+import useApiCall from "@/utils/Hook";
+import { statusDataTypes } from "@/types";
+import Hero, { HeroProps } from "@/common/Hero";
+import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+
+const info = [
+  { title: "Total Benchmarks", content: "Total" },
+  { title: "Successful", content: "Finished" },
+  { title: `Total (last 30 days)`, content: "Last30Days" },
+];
+
+const heroProps: HeroProps = {
+  title: "Status",
+  description: (
+    <>
+      Arewefastyet has a single execution queue with tasks that are executed
+      sequentially on our benchmarking server. Each execution has a status that
+      can be either: started, failed or finished. When a benchmark is marked as
+      finished it means that it ran successfully.
+    </>
+  ),
+};
+
+export default function StatusHero() {
+  const { data: dataStatusStats } = useApiCall<statusDataTypes>(
+    `${import.meta.env.VITE_API_URL}status/stats`
+  );
+
+
+  return (
+    <Hero title={heroProps.title} description={heroProps.description}>
+      <div className="flex flex-col md:flex-row justify-between items-center w-full md:w-fit md:gap-x-24">
+        {info.map(({ content, title }, key) => (
+          <Card
+            key={key}
+            className="w-[214px] h-fit md:min-h-fit border-border"
+          >
+            <CardHeader>
+              <CardTitle
+                className="counter text-3xl md:text-5xl text-primary"
+                style={{ "--num": dataStatusStats[content] }}
+              ></CardTitle>
+            </CardHeader>
+            <CardFooter className="text-xs md:text-lg font-light md:font-medium">
+              {title}
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    </Hero>
+  );
+}

@@ -14,12 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import HistoryHero from "./components/HistoryHero";
+import Hero, { HeroProps } from "@/common/Hero";
 
-export default function HistoryPage() {
+const heroProps: HeroProps = {
+  title: "History",
+  description: (
+    <>
+      coming soon...
+    </>
+  ),
+};
+
+
+export default function HistoryHero() {
   return (
     <>
-      <HistoryHero />
+      <Hero title={heroProps.title} description={heroProps.description}/>
     </>
   );
 }

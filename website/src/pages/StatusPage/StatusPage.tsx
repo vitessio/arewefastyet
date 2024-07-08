@@ -14,15 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState } from "react";
+import { useState } from "react";
 import RingLoader from "react-spinners/RingLoader";
-import useApiCall from "../../utils/Hook";
+import useApiCall from "@/utils/Hook";
 import { statusDataTypes } from "@/types";
 
-import Hero from "./components/Hero";
+
+import StatusHero from "./components/StatusHero";
 import ExecutionQueue from "./components/PreviousExecutions";
 import PreviousExecutions from "./components/PreviousExecutions";
-import datas from "./data.json";
 
 import {
   Select,
@@ -96,7 +96,7 @@ export default function StatusPage() {
 
   return (
     <>
-      <Hero />
+      <StatusHero />
 
       <div className="border-accent border mt-5" />
 

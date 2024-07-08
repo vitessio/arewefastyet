@@ -14,24 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
-import useApiCall from "../../utils/Hook";
+import useApiCall from "@/utils/Hook";
 
 import ResponsiveChart from "./components/Chart";
 import DailySummary from "./components/DailySummary";
-import Hero from "./components/Hero";
 import { MacroData, MacroDataValue } from "@/types";
 
-import { secondToMicrosecond } from "../../utils/Utils";
+import { secondToMicrosecond } from "@/utils/Utils";
+import DailyHero from "./components/DailyHero";
 
 interface DailySummarydata {
   name: string;
-  data : { total_qps: MacroDataValue }[];
+  data: { total_qps: MacroDataValue }[];
 }
 
-type NumberDataPoint = { x: string; y: number};
+type NumberDataPoint = { x: string; y: number };
 type StringDataPoint = { x: string; y: string };
 
 type ChartDataItem =
@@ -97,7 +97,7 @@ export default function DailyPage() {
     },
   ];
 
-  const CPUTimeData : { id: string; data: StringDataPoint[] }[]= [
+  const CPUTimeData: { id: string; data: StringDataPoint[] }[] = [
     {
       id: "Total",
       data: [],
@@ -206,36 +206,36 @@ export default function DailyPage() {
     title: string;
     colors: string[];
   }[] = [
-    {
-      data: QPSData,
-      title: "QPS (Queries per second)",
-      colors: ["#fad900", "orange", "brown", "purple"],
-    },
-    {
-      data: TPSData,
-      title: "TPS (Transactions per second)",
-      colors: ["#fad900"],
-    },
-    {
-      data: latencyData,
-      title: "Latency (ms)",
-      colors: ["#fad900"],
-    },
-    {
-      data: CPUTimeData,
-      title: "CPU / query (μs)",
-      colors: ["#fad900", "orange", "brown"],
-    },
-    {
-      data: MemBytesData,
-      title: "Allocated / query (bytes)",
-      colors: ["#fad900", "orange", "brown"],
-    },
-  ];
+      {
+        data: QPSData,
+        title: "QPS (Queries per second)",
+        colors: ["#fad900", "orange", "brown", "purple"],
+      },
+      {
+        data: TPSData,
+        title: "TPS (Transactions per second)",
+        colors: ["#fad900"],
+      },
+      {
+        data: latencyData,
+        title: "Latency (ms)",
+        colors: ["#fad900"],
+      },
+      {
+        data: CPUTimeData,
+        title: "CPU / query (μs)",
+        colors: ["#fad900", "orange", "brown"],
+      },
+      {
+        data: MemBytesData,
+        title: "Allocated / query (bytes)",
+        colors: ["#fad900", "orange", "brown"],
+      },
+    ];
 
   return (
     <>
-      <Hero />
+      <DailyHero />
 
       <figure className="p-page w-full">
         <div className="border-front border" />
@@ -251,7 +251,7 @@ export default function DailyPage() {
         </div>
       )}
 
-      {!errorDailySummary && dataDailySummary && dataDailySummary.length > 0 &&(
+      {!errorDailySummary && dataDailySummary && dataDailySummary.length > 0 && (
         <>
           <section className="flex p-page justif-center flex-wrap gap-10 py-10">
             {dataDailySummary.map((dailySummary, index) => {

@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import QueryPlan from "./components/QueryPlan";
-import Hero from "./components/Hero";
+import Hero from "./components/MacroQueriesComparePageHero";
 import RingLoader from "react-spinners/RingLoader";
 
 export default function MacroQueriesComparePage() {

@@ -13,11 +13,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from "react";
-import Dropdown from "../../../common/Dropdown";
+import Dropdown from "@/common/Dropdown";
+import Hero, { HeroProps } from "@/common/Hero";
 import { twMerge } from "tailwind-merge";
 
-export default function Hero(props: {
+const heroProps: HeroProps = {
+  title: "Foreign Keys",
+  description: (
+    <>
+      Foreign Keys Management is a new feature that was added in version 18 of
+      Vitess. This page enables the comparison of two different Foreign Keys
+      workloads on the same commit, allowing you to see the performance of a
+      workflow with Vitess-managed foreign keys versus one where foreign keys
+      are either not enabled, or not managed by Vitess.
+    </>
+  ),
+};
+
+export default function ForeignKeysHero(props: {
   refs: any;
   gitRef: any;
   setGitRef: any;
@@ -25,37 +38,13 @@ export default function Hero(props: {
   const { refs, gitRef, setGitRef } = props;
 
   return (
-    <section className="flex h-[60vh] pt-[10vh] items-center p-page">
-      <div className="flex basis-1/2 flex-col">
-        <h2 className="text-8xl text-primary">Foreign Keys</h2>
-        <p className="my-6 leading-loose">
-          Support for Foreign Keys have been added to Vitess in v18.0.0. We want
-          to be able to compare the performance of Vitess with and without
-          Foreign Keys.
-          <br />
-          For this purpose, we propose four benchmarks:
-          <br />
-          - TPCC, with a sharded keyspace
-          <br />
-          - TPCC_UNSHARDED, with an unsharded keyspace
-          <br />
-          - TPCC_FK, with Foreign Keys enabled and set to vitess managed
-          <br />
-          - TPCC_FK_UNMANAGED, with Foreign Keys enabled and set to vitess
-          unmanaged
-          <br />
-          Use the dropdown on the right to select which version of Vitess you
-          would like to use to compare the performance of our four TPCC
-          benchmarks.
-        </p>
-      </div>
-
+    <Hero title={heroProps.title} description={heroProps.description}>
       <div className="flex-1 flex flex-col items-center">
         <div className="flex flex-col gap-y-8">
           {refs && refs.length > 0 && (
             <div className="flex gap-x-24">
               <Dropdown.Container
-                className="w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
+                className="w-[30vw] md:w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
                 defaultIndex={refs
                   .map((r: { Name: any }) => r.Name)
                   .indexOf(gitRef.tag)}
@@ -82,6 +71,6 @@ export default function Hero(props: {
           )}
         </div>
       </div>
-    </section>
+    </Hero>
   );
 }

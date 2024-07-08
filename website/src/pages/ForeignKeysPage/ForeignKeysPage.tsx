@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
 import { MacrosData } from '@/types'
 
 import { errorApi } from "../../utils/Utils";
-import Hero from "./components/Hero";
 import FK from "./components/FK";
+import ForeignKeysHero from "./components/ForeignKeysHero";
 
-interface Ref {
+export interface Ref {
   Name: string;
   CommitHash: string;
   Version: {
@@ -34,9 +34,7 @@ interface Ref {
   RCnumber: number;
 }
 
-interface ForeignKeysProps {}
-
-const ForeignKeys: React.FC<ForeignKeysProps> = () => {
+export default function ForeignKeys() {
   const urlParams = new URLSearchParams(window.location.search);
 
   const [gitRef, setGitRef] = useState<{ tag: string }>({
@@ -68,8 +66,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
     setLoading(true);
     try {
       const responseFK = await fetch(
-        `${import.meta.env.VITE_API_URL}fk/compare?sha=${
-          commits.tag
+        `${import.meta.env.VITE_API_URL}fk/compare?sha=${commits.tag
         }`
       );
       const jsonDataFKs = await responseFK.json();
@@ -95,7 +92,7 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
 
   return (
     <>
-      <Hero refs={dataRefs} gitRef={gitRef} setGitRef={setGitRef} />
+      <ForeignKeysHero refs={dataRefs} gitRef={gitRef} setGitRef={setGitRef} />
 
       <div className="p-page">
         <div className="border border-front" />
@@ -119,5 +116,3 @@ const ForeignKeys: React.FC<ForeignKeysProps> = () => {
     </>
   );
 };
-
-export default ForeignKeys;
