@@ -61,11 +61,12 @@ export default function DailySummary({ data }: DailySummaryProps) {
   }
 
   return (
-    <Card className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] hover:scale-105 duration-300 border-border">
-      <CardHeader>
+    <Card className="w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 border-border">
+      <CardHeader className="flex flex-row justify-between">
         <CardTitle className="font-light text-sm">{data.name}</CardTitle>
+        <i className="h-4 w-4 text-foreground fa-solid fa-arrow-right daily--fa-arrow-right"></i>
       </CardHeader>
-      <CardContent className="max-h-[4vh] md:max-h-[7vh]">
+      <CardContent className="max-h-[4vh] md:max-h-[7vh] pt-0 pb-0">
         <ChartContainer
           config={chartConfig}
           className="md:h-[80px] h-[60px] w-full"
@@ -74,6 +75,7 @@ export default function DailySummary({ data }: DailySummaryProps) {
             <XAxis dataKey="time" tickLine={false} axisLine={false} />
             <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Line
+              className="pb-0 pt-0"
               dataKey="totalQps"
               type="monotone"
               label="Total QPS"
@@ -89,9 +91,6 @@ export default function DailySummary({ data }: DailySummaryProps) {
           </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <i className="h-4 w-4 text-foreground fa-solid fa-arrow-right daily--fa-arrow-right"></i>
-      </CardFooter>
     </Card>
   );
 }
