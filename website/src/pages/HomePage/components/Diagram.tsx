@@ -8,11 +8,19 @@ export default function Diagram() {
       </h2>
       <Card className="w-full max-w-screen-xl my-8 border-border">
         <CardContent className="flex justify-center">
-          <img
-            className="w-full"
-            src="/images/execution-pipeline-dark.png"
-            alt="execution pipeline"
-          />
+          <div className="relative duration-1000">
+            <img
+              className="duration-inherit"
+              src="/images/execution-pipeline-dark.png"
+              alt="execution pipeline"
+            />
+
+            <img
+              className={"absolute-cover duration-inherit dark:opacity-0"}
+              src="/images/execution-pipeline.png"
+              alt="execution pipeline"
+            />
+          </div>
         </CardContent>
       </Card>
     </section>

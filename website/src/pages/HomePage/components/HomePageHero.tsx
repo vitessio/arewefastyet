@@ -31,11 +31,11 @@ export default function HomePageHero() {
   } = useDailySummaryData(['OLTP', 'TPCC']);
 
   return (
-    <section className="flex flex-col items-center h-screen p-page">
-      <h1 className="text-3xl md:text-6xl font-semibold text-center mt-10 leading-normal">
-        Benchmarking <br />
-        System for <br />
-        <span className="text-orange-500"> Vitess</span>
+    <section className="flex flex-col items-center h-fit my-12">
+      <h1 className="flex flex-col gap-8 text-3xl md:text-6xl font-semibold text-center">
+        <p>Benchmarking</p>
+        <p> System for</p>
+        <p className="text-primary"> Vitess</p>
       </h1>
       <div className="flex md:flex-row flex-col gap-4 mt-10">
         <div className="flex flex-row gap-4">
@@ -88,11 +88,11 @@ export default function HomePageHero() {
         </Button>
         </div>
       </div>
-      <h2 className="text-lg md:text-2xl font-medium mt-20">
-        Historical results on the <Link className="text-primary" to="https://github.com/vitessio/arewefastyet/tree/main" target="_blank">main</Link>{" "}
+      <h2 className="text-lg md:text-2xl font-medium mt-12">
+        Historical results on the <Link className="text-primary" to="https://github.com/vitessio/vitess/tree/main/" target="_blank">main</Link>{" "}
         branch
       </h2>
-      <section className="flex md:flex-row flex-col justif-center gap-10 py-10 my-10">
+      <section className="flex md:flex-row flex-col justif-center gap-10 my-20">
         {isLoadingDailySummary && (
           <>
             <Skeleton className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] rounded-lg" />
@@ -116,7 +116,7 @@ export default function HomePageHero() {
       </section>
       <Link
         to="/daily"
-        className="text-primary text-xs md:text-lg mt-10"
+        className="text-primary text-xs md:text-lg"
       >
         See more historical results {">"}
       </Link>

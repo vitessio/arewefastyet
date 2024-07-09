@@ -235,12 +235,6 @@ export default function DailyPage() {
   } = useDailySummaryData(["OLTP", "OLTP-READONLY", "OLTP-SET", "TPCC", "TPCC_FK", "TPCC_UNSHARDED", "TPCC_FK_UNMANAGED"]);
 
   return (
-
-    console.log({
-      dataDailySummary,
-      isLoadingDailySummary,
-      errorDailySummary,
-    }),
     <>
       <DailyHero />
 

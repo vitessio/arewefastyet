@@ -25,7 +25,6 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 import { DailySummarydata } from "@/types";
 import PropTypes from "prop-types";
@@ -38,15 +37,16 @@ export type DailySummaryProps = {
 };
 
 export default function DailySummary({ data }: DailySummaryProps) {
-  const chartData: any[] | undefined = [];
+  type ChartData = { name: string; totalQps: number };
+  const chartData: ChartData[] = [];
 
   const chartConfig = {
     desktop: {
-      label: "Desktop",
+      label: "Total QPS",
       color: "hsl(var(--primary))",
     },
     mobile: {
-      label: "Mobile",
+      label: "Total QPS",
       color: "hsl(var(--primary))",
     },
   } satisfies ChartConfig;
@@ -54,7 +54,8 @@ export default function DailySummary({ data }: DailySummaryProps) {
   if (data.data !== null) {
     data.data.map((item) => ({
       totalQps: chartData.push({
-        totalQps: item.total_qps.center / 2,
+        name: "Total QPS",
+        totalQps: item.total_qps.center,
       }),
     }));
   }
@@ -65,16 +66,17 @@ export default function DailySummary({ data }: DailySummaryProps) {
         <CardTitle className="font-light text-sm">{data.name}</CardTitle>
       </CardHeader>
       <CardContent className="max-h-[4vh] md:max-h-[7vh]">
-        <ChartContainer config={chartConfig}>
+        <ChartContainer
+          config={chartConfig}
+          className="md:h-[80px] h-[60px] w-full"
+        >
           <LineChart data={chartData}>
             <XAxis dataKey="time" tickLine={false} axisLine={false} />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<CustomTooltip />} />
             <Line
               dataKey="totalQps"
-              type="natural"
+              type="monotone"
+              label="Total QPS"
               stroke="var(--color-desktop)"
               strokeWidth={1}
               dot={{
@@ -87,18 +89,39 @@ export default function DailySummary({ data }: DailySummaryProps) {
           </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="bottom-0">
-        <i className="fa-solid fa-arrow-right daily--fa-arrow-right"></i>
+      <CardFooter>
+        <i className="h-4 w-4 text-foreground fa-solid fa-arrow-right daily--fa-arrow-right"></i>
       </CardFooter>
     </Card>
   );
 }
 
-DailySummary.propTypes = {
-  data: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    data: PropTypes.array,
-  }),
-  setBenchmarktype: PropTypes.func.isRequired,
-  isSelected: PropTypes.bool,
+const CustomTooltip = ({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: { value: number }[];
+}) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip p-2 border border-border shadow-lg rounded">
+        <p className="label flex items-center">
+          <span
+            className="inline-block w-2 h-2 mr-2"
+            style={{ backgroundColor: "hsl(var(--primary))" }}
+          ></span>
+          {`Total QPS: ${payload[0].value.toFixed(0)}`}
+        </p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+  label: PropTypes.string,
 };
