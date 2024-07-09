@@ -1,5 +1,5 @@
 /*
-Copyright 2023 The Vitess Authors.
+Copyright 2024 The Vitess Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import HomePageHero from "./components/HomePageHero";
-import HowItWorks from "./components/HowItWorks";
-import { Separator } from "@/components/ui/separator"
-import Diagram from "./components/Diagram";
-export default function HomePage() {
+import { cn } from "@/library/utils"
+
+function Skeleton({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <>
-      <HomePageHero />
-      <Separator className="mx-auto w-[80%] foreground" />
-      <HowItWorks />
-      <Separator className="mx-auto w-[80%]" />
-      <Diagram />
-    </>
-  );
+    <div
+      className={cn("animate-pulse rounded-md bg-muted", className)}
+      {...props}
+    />
+  )
 }
+
+export { Skeleton }

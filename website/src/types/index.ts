@@ -43,7 +43,7 @@ export interface Range {
     unknown: boolean;
     value: number;
 }
-  
+
 export interface MacroDataValue {
   center: number;
   confidence: number;
@@ -106,3 +106,10 @@ export interface CompareData {
   type: string;
   result: CompareResult;
 }
+
+export type DailySummarydata = {
+  name: string;
+  data : { total_qps: MacroDataValue }[];
+}
+
+export type Workloads = 'OLTP' | 'OLTP-READONLY' | 'OLTP-SET' | 'TPCC' | 'TPCC_FK' | 'TPCC_UNSHARDED' | 'TPCC_FK_UNMANAGED'

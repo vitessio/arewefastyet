@@ -25,6 +25,7 @@ import { MacroData, MacroDataValue } from "@/types";
 
 import { secondToMicrosecond } from "@/utils/Utils";
 import DailyHero from "./components/DailyHero";
+import useDailySummaryData from "@/hooks/useDailySummaryData";
 
 interface DailySummarydata {
   name: string;
@@ -41,14 +42,8 @@ type ChartDataItem =
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState<string>(
-    urlParams.get("type") ?? "OLTP"
+    (urlParams.get("type")) ?? "OLTP"
   );
-
-  const {
-    data: dataDailySummary,
-    isLoading: isLoadingDailySummary,
-    error: errorDailySummary,
-  } = useApiCall<DailySummarydata>(`${import.meta.env.VITE_API_URL}daily/summary`);
 
   const {
     data: dataDaily,
@@ -233,6 +228,12 @@ export default function DailyPage() {
       },
     ];
 
+  const {
+    dataDailySummary,
+    isLoadingDailySummary,
+    errorDailySummary,
+  } = useDailySummaryData(["OLTP", "OLTP-READONLY", "OLTP-SET", "TPCC", "TPCC_FK", "TPCC_UNSHARDED", "TPCC_FK_UNMANAGED"]);
+
   return (
     <>
       <DailyHero />
@@ -259,8 +260,8 @@ export default function DailyPage() {
                 <DailySummary
                   key={index}
                   data={dailySummary}
-                  setBenchmarktype={setBenchmarktype}
                   benchmarkType={benchmarkType}
+                  setBenchmarktype={setBenchmarktype}
                 />
               );
             })}
