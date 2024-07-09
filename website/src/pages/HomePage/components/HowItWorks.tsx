@@ -13,7 +13,7 @@ const items: HowItWorksCardItem[] = [
     content: (
       <>
         Seven workloads are executed against every commit we decide to benchmark. These workloads define the SQL schema, the queries we execute, the configuration of the Vitess cluster, and the configuration of sysbench. The settings of our workload can be found on the
-        <Link to="" className="text-primary"> arewefastyet repository</Link>.
+        <Link to="https://github.com/vitessio/arewefastyet/tree/main/config/benchmarks" className="text-primary"> arewefastyet repository</Link>.
         <br />
         <br />
         We have two categories of workloads: OLTP and TPCC, both are a modified version of the official workloads.
@@ -25,7 +25,7 @@ const items: HowItWorksCardItem[] = [
     content: (
       <>
         There are three cron schedules that enable us to periodically benchmark Vitess, the definition of these schedules is
-        <Link to="" className="text-primary"> available in our yaml configuration</Link>.
+        <Link to="https://github.com/vitessio/arewefastyet/blob/main/config/prod/config.yaml#L3-L5" className="text-primary"> available in our yaml configuration</Link>.
         <br />
         <br />
         Generally, we benchmark the main and release branches of Vitess every night at midnight UTC. We also detect new PRs that need to be benchmarked every five minutes, and new tags/releases every minute.      </>
