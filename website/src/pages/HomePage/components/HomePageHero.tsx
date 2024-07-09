@@ -95,8 +95,8 @@ export default function HomePageHero() {
       <section className="flex md:flex-row flex-col justif-center gap-10 my-20">
         {isLoadingDailySummary && (
           <>
-            <Skeleton className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] rounded-lg" />
-            <Skeleton className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] rounded-lg" />
+            <Skeleton className="w-[310px] h-[124px] md:w-[316px] md:h-[124px] rounded-lg" />
+            <Skeleton className="w-[310px] h-[124px] md:w-[316px] md:h-[124px] rounded-lg" />
           </>
         )}
         {dataDailySummary.map((dailySummary, index) => {

@@ -19,13 +19,22 @@ import RingLoader from "react-spinners/RingLoader";
 import { useNavigate } from "react-router-dom";
 import useApiCall from "@/utils/Hook";
 
-import ResponsiveChart from "./components/Chart";
-import DailySummary from "./components/DailySummary";
-import { MacroData, MacroDataValue } from "@/types";
+import DailySummary from "@/common/DailySummary";
+import { MacroData, MacroDataValue, Workloads } from "@/types";
 
 import { secondToMicrosecond } from "@/utils/Utils";
 import DailyHero from "./components/DailyHero";
 import useDailySummaryData from "@/hooks/useDailySummaryData";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { CartesianGrid, XAxis, Line, LineChart } from "recharts";
+import {
+  ChartTooltipContent,
+  ChartTooltip,
+  ChartContainer,
+} from "@/components/ui/chart";
+import ResponsiveChart from "./components/Chart";
 
 interface DailySummarydata {
   name: string;
@@ -42,14 +51,16 @@ type ChartDataItem =
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [benchmarkType, setBenchmarktype] = useState<string>(
-    (urlParams.get("type")) ?? "OLTP"
+    urlParams.get("type") ?? "OLTP"
   );
 
   const {
     data: dataDaily,
     error: dailyError,
     textLoading: dailyTextLoading,
-  } = useApiCall<MacroData>(`${import.meta.env.VITE_API_URL}daily?type=${benchmarkType}`);
+  } = useApiCall<MacroData>(
+    `${import.meta.env.VITE_API_URL}daily?workloads=${benchmarkType}`
+  );
 
   const navigate = useNavigate();
 
@@ -201,91 +212,131 @@ export default function DailyPage() {
     title: string;
     colors: string[];
   }[] = [
-      {
-        data: QPSData,
-        title: "QPS (Queries per second)",
-        colors: ["#fad900", "orange", "brown", "purple"],
-      },
-      {
-        data: TPSData,
-        title: "TPS (Transactions per second)",
-        colors: ["#fad900"],
-      },
-      {
-        data: latencyData,
-        title: "Latency (ms)",
-        colors: ["#fad900"],
-      },
-      {
-        data: CPUTimeData,
-        title: "CPU / query (μs)",
-        colors: ["#fad900", "orange", "brown"],
-      },
-      {
-        data: MemBytesData,
-        title: "Allocated / query (bytes)",
-        colors: ["#fad900", "orange", "brown"],
-      },
-    ];
+    {
+      data: QPSData,
+      title: "QPS (Queries per second)",
+      colors: ["#fad900", "orange", "brown", "purple"],
+    },
+    {
+      data: TPSData,
+      title: "TPS (Transactions per second)",
+      colors: ["#fad900"],
+    },
+    {
+      data: latencyData,
+      title: "Latency (ms)",
+      colors: ["#fad900"],
+    },
+    {
+      data: CPUTimeData,
+      title: "CPU / query (μs)",
+      colors: ["#fad900", "orange", "brown"],
+    },
+    {
+      data: MemBytesData,
+      title: "Allocated / query (bytes)",
+      colors: ["#fad900", "orange", "brown"],
+    },
+  ];
 
-  const {
-    dataDailySummary,
-    isLoadingDailySummary,
-    errorDailySummary,
-  } = useDailySummaryData(["OLTP", "OLTP-READONLY", "OLTP-SET", "TPCC", "TPCC_FK", "TPCC_UNSHARDED", "TPCC_FK_UNMANAGED"]);
+  const workloads: Workloads[] = [
+    "OLTP",
+    "OLTP-READONLY",
+    "OLTP-SET",
+    "TPCC",
+    "TPCC_FK",
+    "TPCC_UNSHARDED",
+    "TPCC_FK_UNMANAGED",
+  ];
+
+  const { dataDailySummary, isLoadingDailySummary, errorDailySummary } =
+    useDailySummaryData(workloads);
+
+  const [expandedStates, setExpandedStates] = useState(
+    Array(allChartData.length).fill(true)
+  );
+
+  const toggleExpand = (index: number) => {
+    setExpandedStates((prevStates) => {
+      const newStates = [...prevStates];
+      newStates[index] = !newStates[index];
+      return newStates;
+    });
+  };
 
   return (
     <>
       <DailyHero />
-
-      <figure className="p-page w-full">
-        <div className="border-front border" />
-      </figure>
-
-      {isLoadingDailySummary && (
-        <div className="flex justify-center w-full my-16">
-          <RingLoader
-            loading={isLoadingDailySummary}
-            color="#E77002"
-            size={300}
-          />
-        </div>
-      )}
-
-      {!errorDailySummary && dataDailySummary && dataDailySummary.length > 0 && (
-        <>
-          <section className="flex p-page justif-center flex-wrap gap-10 py-10">
-            {dataDailySummary.map((dailySummary, index) => {
+      <section className="flex p-page flex-wrap justify-center gap-12 p-4">
+        {isLoadingDailySummary && (
+          <>
+            {workloads.map((_, index) => {
               return (
-                <DailySummary
+                <Skeleton
                   key={index}
-                  data={dailySummary}
-                  benchmarkType={benchmarkType}
-                  setBenchmarktype={setBenchmarktype}
+                  className="w-[250px] h-[150px] md:w-[316px] md:h-[186px] rounded-lg"
                 />
               );
             })}
-          </section>
+          </>
+        )}
 
-          <figure className="p-page w-full">
-            <div className="border-front border" />
-          </figure>
-
-          {!dailyTextLoading && benchmarkType !== "" && (
-            <section className="p-page mt-12 flex flex-col gap-y-8">
-              {allChartData.map((chartData, index) => (
-                <div key={index} className="relative w-full h-[500px]">
-                  <ResponsiveChart
-                    data={chartData.data as any}
-                    title={chartData.title}
-                    colors={chartData.colors}
-                    isFirstChart={index === 0}
+        {!errorDailySummary &&
+          dataDailySummary &&
+          dataDailySummary.length > 0 && (
+            <>
+              {dataDailySummary.map((dailySummary, index) => {
+                return (
+                  <DailySummary
+                    key={index}
+                    data={dailySummary}
+                    benchmarkType={benchmarkType}
+                    setBenchmarktype={setBenchmarktype}
                   />
-                </div>
-              ))}
-            </section>
+                );
+              })}
+
+              <Separator className="mx-auto w-[80%] foreground" />
+            </>
           )}
-        </>
+      </section>
+
+      {dailyTextLoading && (
+        <div className="flex justify-center w-full my-16">
+          <RingLoader loading={dailyTextLoading} color="#E77002" size={300} />
+        </div>
+      )}
+
+      {!dailyTextLoading && benchmarkType !== "" && (
+        <section className="p-page mt-12 flex flex-col gap-y-8">
+          {allChartData.map((chartData, index) => (
+            <Card key={index} className="w-full">
+              <CardHeader
+                className="cursor-pointer hover:bg-muted duration-300 py-0"
+                onClick={() => toggleExpand(index)}
+              >
+                <div className="flex items-center justify-between">
+                  <CardTitle className="my-10 text-xl font-medium text-primary">
+                    {chartData.title}
+                  </CardTitle>
+                  <i className={`h-4 w-4 text-foreground fa-solid ${expandedStates[index] ? 'fa-chevron-up' : 'fa-chevron-down'} daily--fa-chevron-right`}></i>
+                </div>
+              </CardHeader>
+              {expandedStates[index] && (
+                <CardContent>
+                  <div className="relative w-full h-[500px]">
+                    <ResponsiveChart
+                      data={chartData.data as any}
+                      title={chartData.title}
+                      colors={chartData.colors}
+                      isFirstChart={index === 0}
+                    />
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          ))}
+        </section>
       )}
 
       {(errorDailySummary || dailyError) && (

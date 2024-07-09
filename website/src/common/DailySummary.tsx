@@ -17,7 +17,6 @@ limitations under the License.
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -29,6 +28,7 @@ import {
 import { DailySummarydata } from "@/types";
 import PropTypes from "prop-types";
 import { Line, LineChart, XAxis } from "recharts";
+import { twMerge } from "tailwind-merge";
 
 export type DailySummaryProps = {
   data: DailySummarydata;
@@ -36,7 +36,8 @@ export type DailySummaryProps = {
   setBenchmarktype: (type: string) => void;
 };
 
-export default function DailySummary({ data }: DailySummaryProps) {
+export default function DailySummary(props : DailySummaryProps) {
+  const { data, benchmarkType, setBenchmarktype } = props;
   type ChartData = { name: string; totalQps: number };
   const chartData: ChartData[] = [];
 
@@ -60,8 +61,14 @@ export default function DailySummary({ data }: DailySummaryProps) {
     }));
   }
 
+  const getBenchmarkType = () => {
+    setBenchmarktype(data.name);
+  };
+
   return (
-    <Card className="w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 border-border">
+    <Card className={twMerge("w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 hover:bg-muted border-border",
+      benchmarkType === data.name && "border-2 border-front"
+    )} onClick={() => getBenchmarkType()}>
       <CardHeader className="flex flex-row justify-between">
         <CardTitle className="font-light text-sm">{data.name}</CardTitle>
         <i className="h-4 w-4 text-foreground fa-solid fa-arrow-right daily--fa-arrow-right"></i>

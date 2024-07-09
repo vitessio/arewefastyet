@@ -23,7 +23,7 @@ const ResponsiveChart = ({ data, title, colors }) => {
   return (
     data[0].data.length > 0 && (
       <>
-        <h3 className="my-10 text-xl font-medium text-primary">{title}</h3>
+        {/* <h3 className="my-10 text-xl font-medium text-primary">{title}</h3> */}
         <ResponsiveLine
           data={data}
           height={400}
