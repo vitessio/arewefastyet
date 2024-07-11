@@ -24,12 +24,12 @@ export default function useDailySummaryData(workloads: Workloads[]) {
   const {
     data: dataDailySummary,
     isLoading: isLoadingDailySummary,
-    error: errorDailySummary,
+    error: dailySummaryError,
   } = useApiCall<DailySummarydata>(`${import.meta.env.VITE_API_URL}daily/summary?workloads=${workloadsQuery}`);
 
   return {
     dataDailySummary,
     isLoadingDailySummary,
-    errorDailySummary,
+    dailySummaryError,
   };
 };
