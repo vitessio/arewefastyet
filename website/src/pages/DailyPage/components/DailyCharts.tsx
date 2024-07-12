@@ -176,7 +176,7 @@ export default function DailyCharts(props: DailyChartsProps) {
 
   return (
     <>
-      <section className="p-page mt-12 flex flex-col gap-y-8">
+      <section className="p-page my-12 flex flex-col gap-y-8">
         <div className="flex flex-col items-center gap-4">
           <h2 className="text-4xl md:text-6xl font-semibold text-primary mb-4">
             {benchmarkType}
