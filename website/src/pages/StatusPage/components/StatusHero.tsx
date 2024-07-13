@@ -60,8 +60,6 @@ export default function StatusHero() {
     `${import.meta.env.VITE_API_URL}status/stats`
   );
 
-  console.log({ dataStatusStats });
-
   const chartConfig = {
     day: {
       label: "Day",
@@ -87,6 +85,7 @@ export default function StatusHero() {
             <CardHeader>
               <CardTitle
                 className="counter text-3xl md:text-5xl text-primary"
+                // TODO: Fix the type error caused by useApiCall that returns an array everytime even if the data is not an array
                 style={{ ["--num" as string]: dataStatusStats[content] }}
               ></CardTitle>
             </CardHeader>

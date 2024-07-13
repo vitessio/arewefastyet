@@ -14,36 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useState } from "react";
-import RingLoader from "react-spinners/RingLoader";
-import useApiCall from "@/utils/Hook";
-import { statusDataTypes } from "@/types";
 
 
 import StatusHero from "./components/StatusHero";
-import ExecutionQueue from "./components/PreviousExecutions";
-import PreviousExecutions from "./components/PreviousExecutions";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-interface dataTypes {
-  uuid: string;
-  git_ref: string;
-  source: string;
-  started_at: string;
-  finished_at: string;
-  type_of: string;
-  pull_nb?: number;
-  golang_version: string;
-  status: string;
-}
-
+import PreviousExecutionQueue from "./components/PreviousExecutions/PreviousExecutionQueue";
+import { Separator } from "@/components/ui/separator";
+import { statusDataTypes } from "@/types";
+import useApiCall from "@/utils/Hook";
 
 export default function StatusPage() {
   const {
@@ -51,57 +29,59 @@ export default function StatusPage() {
     isLoading: isLoadingQueue,
     error: errorQueue,
   } = useApiCall<statusDataTypes>(`${import.meta.env.VITE_API_URL}queue`);
-  const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
-    `${import.meta.env.VITE_API_URL}recent`
-  );
+  console.log({dataQueue});
+  // const { data: dataPreviousExe, isLoading: isLoadingPreviousExe } = useApiCall(
+  //   `${import.meta.env.VITE_API_URL}recent`
+  // );
 
-  const [filters, setFilters] = useState({
-    type: "",
-    status: "",
-    source: "",
-  });
+  // const [filters, setFilters] = useState({
+  //   type: "",
+  //   status: "",
+  //   source: "",
+  // });
 
-  const filterData = (data: dataTypes[]) => {
-    return data.filter((item) => {
-      const itemType = item.type_of ? item.type_of.toString() : "";
-      const itemSource = item.source ? item.source.toString() : "";
-      const itemStatus = item.status ? item.status.toString() : "";
+  // const filterData = (data: dataTypes[]) => {
+  //   return data.filter((item) => {
+  //     const itemType = item.type_of ? item.type_of.toString() : "";
+  //     const itemSource = item.source ? item.source.toString() : "";
+  //     const itemStatus = item.status ? item.status.toString() : "";
 
-      const matchesType =
-        filters.type === "" ||
-        filters.type === "All" ||
-        itemType === filters.type;
-      const matchesSource =
-        filters.source === "" ||
-        filters.source === "All" ||
-        itemSource === filters.source;
-      const matchesStatus =
-        filters.status === "" ||
-        filters.status === "All" ||
-        itemStatus === filters.status;
+  //     const matchesType =
+  //       filters.type === "" ||
+  //       filters.type === "All" ||
+  //       itemType === filters.type;
+  //     const matchesSource =
+  //       filters.source === "" ||
+  //       filters.source === "All" ||
+  //       itemSource === filters.source;
+  //     const matchesStatus =
+  //       filters.status === "" ||
+  //       filters.status === "All" ||
+  //       itemStatus === filters.status;
 
-      return matchesType && matchesSource && matchesStatus;
-    });
-  };
+  //     return matchesType && matchesSource && matchesStatus;
+  //   });
+  // };
 
-  const handleFilterChange = (name: string, value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [name]: value === "" ? "" : value,
-    }));
-  };
+  // const handleFilterChange = (name: string, value: string) => {
+  //   setFilters((prevFilters) => ({
+  //     ...prevFilters,
+  //     [name]: value === "" ? "" : value,
+  //   }));
+  // };
 
-  const filteredDataQueue = filterData(dataQueue) as dataTypes[];
-  const filteredPreviousDataExe = filterData(dataPreviousExe) as dataTypes[];
+  // const filteredDataQueue = filterData(dataQueue) as dataTypes[];
+  // const filteredPreviousDataExe = filterData(dataPreviousExe) as dataTypes[];
 
   return (
     <>
       <StatusHero />
-
+      <Separator className="w-[4/5]"/>
+      <PreviousExecutionQueue />
       <div className="border-accent border mt-5" />
 
       {/* FILTERS OPTIONS*/}
-      <div className="flex flex-col items-center">
+      {/* <div className="flex flex-col items-center">
         <div className="flex p-5 gap-4 ">
           <Select
             value={filters.type}
@@ -159,25 +139,25 @@ export default function StatusPage() {
               ))}
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
 
         {/* EXECUTION QUEUE */}
-        {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
+        {/* {!isLoadingQueue && dataQueue && dataQueue.length > 0 && (
           <ExecutionQueue data={filteredDataQueue} title={"Execution Queue"} />
-        )}
+        )} */}
 
         {/* PREVIOUS EXECUTIONS */}
-        {!isLoadingPreviousExe &&
+        {/* {!isLoadingPreviousExe &&
           dataPreviousExe &&
           dataPreviousExe.length > 0 && (
             <PreviousExecutions
               data={filteredPreviousDataExe}
               title={"Previous Executions"}
             />
-          )}
+          )} */}
 
         {/* SHOW LOADER BENEATH IF EITHER IS LOADING */}
-        {(isLoadingPreviousExe || isLoadingQueue) && (
+        {/* {(isLoadingPreviousExe || isLoadingQueue) && (
           <div className="flex justify-center w-full my-16">
             <RingLoader
               loading={isLoadingPreviousExe || isLoadingQueue}
@@ -189,8 +169,8 @@ export default function StatusPage() {
 
         {errorQueue && (
           <div className="my-10 text-center text-red-500">{errorQueue}</div>
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
     </>
   );
 }
