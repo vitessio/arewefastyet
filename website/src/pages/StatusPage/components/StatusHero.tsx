@@ -1,19 +1,3 @@
-/*
-Copyright 2024 The Vitess Authors.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 import Hero, { HeroProps } from "@/common/Hero";
 import {
   Card,
@@ -76,7 +60,7 @@ export default function StatusHero() {
 
   return (
     <Hero title={heroProps.title} description={heroProps.description}>
-      <div className="flex flex-col md:flex-row justify-between items-center w-full md:w-fit md:gap-x-24">
+      <div className="flex flex-wrap justify-center gap-8 w-[80vw]">
         {info.map(({ content, title }, key) => (
           <Card
             key={key}
@@ -84,18 +68,17 @@ export default function StatusHero() {
           >
             <CardHeader>
               <CardTitle
-                className="counter text-3xl md:text-5xl text-primary"
-                // TODO: Fix the type error caused by useApiCall that returns an array everytime even if the data is not an array
+                className="counter text-4xl md:text-5xl text-primary"
                 style={{ ["--num" as string]: dataStatusStats[content] }}
               ></CardTitle>
             </CardHeader>
-            <CardFooter className="text-xs md:text-xl font-light md:font-medium">
+            <CardFooter className="text-lg md:text-xl font-light md:font-medium">
               {title}
             </CardFooter>
           </Card>
         ))}
-        <Card className=" w-[300px] max-h-[150px] border-border">
-          <CardContent className="w-[300px] max-h-[150px]">
+        <Card className="w-[300px] h-[150px] border-border">
+          <CardContent className="w-full h-full">
             <ChartContainer config={chartConfig}>
               <BarChart
                 margin={{ top: 12, right: 0, left: -32, bottom: 0 }}
