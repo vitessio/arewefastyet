@@ -47,7 +47,7 @@ export const columns: ColumnDef<ExecutionQueueType>[] = [
   },
   {
     header: "Workload",
-    accessorKey: "type_of",
+    accessorKey: "workload",
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
