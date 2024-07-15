@@ -67,7 +67,7 @@ export const columns: ColumnDef<PreviousExecution>[] = [
   },
   {
     header: "Workload",
-    accessorKey: "type_of",
+    accessorKey: "workload",
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
