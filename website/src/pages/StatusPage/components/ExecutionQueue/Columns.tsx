@@ -14,34 +14,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge, Variant } from "@/components/ui/badge";
-import { formatDistanceToNow, format } from "date-fns";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
-export type ExecutionQueue = {
+export type ExecutionQueueApiType = {
   uuid: string;
   source: string;
   git_ref: string;
   status: string;
   type_of: string;
-  pull_nb: string;
+  pull_nb: number;
   golang_version: string;
-  started_at: string;
-  finished_at: string;
+  started_at: string | null;
+  finished_at: string | null;
 };
 
-export const columns: ColumnDef<ExecutionQueue>[] = [
+export type ExecutionQueueType = Omit<
+  ExecutionQueueApiType,
+  "started_at" | "finished_at" | "status"
+>;
+
+export const columns: ColumnDef<ExecutionQueueType>[] = [
   {
     header: "UUID",
     accessorKey: "uuid",
     cell: ({ row }) => {
-      const formatted = row.original.uuid.slice(0, 8);
+      const formatted =
+        row.original.uuid == "" ? "N/A" : row.original.uuid.slice(0, 8);
       return <div>{formatted}</div>;
     },
   },
@@ -73,54 +72,11 @@ export const columns: ColumnDef<ExecutionQueue>[] = [
     },
   },
   {
-    header: "Started At",
-    accessorKey: "started_at",
-    cell: ({ row }) => {
-      const date = new Date(row.original.started_at);
-      const formatted = formatDistanceToNow(date, {
-        addSuffix: true,
-      });
-      return (
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="underline">{formatted}</div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{format(date, "MMM d, yyyy, h:mm a 'GMT'XXX")}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
-  },
-  {
-    header: "Finished At",
-    accessorKey: "finished_at",
-    cell: ({ row }) => {
-      const date = new Date(row.original.started_at);
-      const formatted = formatDistanceToNow(date, {
-        addSuffix: true,
-      });
-      return (
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="underline">{formatted}</div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{format(date, "MMM d, yyyy, h:mm a 'GMT'XXX")}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    },
-  },
-  {
     header: "PR",
     accessorKey: "pull_nb",
     cell: ({ row }) => {
-      const formatted = row.original.pull_nb;
+      const formatted =
+        row.original.pull_nb === 0 ? "N/A" : row.original.pull_nb;
       return (
         <div>
           {" "}
@@ -132,28 +88,10 @@ export const columns: ColumnDef<ExecutionQueue>[] = [
   {
     header: "Go Version",
     accessorKey: "golang_version",
-  },
-  {
-    header: "Status",
-    accessorKey: "status",
     cell: ({ row }) => {
-      const status = row.original.status;
-      let variant: Variant = "success";
-      if (status === "failed") {
-        variant = "destructive";
-      } else if (status === "canceled") {
-        variant = "warning";
-      } else if (status === "started") {
-        variant = "progress";
-      }
-      return (
-        <div>
-          <Badge variant={variant}>{status}</Badge>
-        </div>
-      );
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      const formatted =
+        row.original.golang_version == "" ? "N/A" : row.original.golang_version;
+      return <div>{formatted}</div>;
     },
   },
 ];

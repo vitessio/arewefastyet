@@ -15,21 +15,21 @@ limitations under the License.
 */
 
 import useApiCall from "@/utils/Hook";
-import { PreviousExexutionQueueTable } from "./PreviousExecutionQueueTable";
-import { columns, PreviousExecution } from "./Columns";
+import { columns, type PreviousExecution } from "./Columns";
+import { PreviousExexutionQueueTable } from "./PreviousExecutionTable";
 
-export default function PreviousExecutionQueue() {
-  const { data: dataPreviousExecution, isLoading: isLoadingPreviousExecution } =
+export default function PreviousExecution() {
+  const { data: dataPreviousExecution } =
     useApiCall<PreviousExecution>(`${import.meta.env.VITE_API_URL}recent`);
 
   return (
     <>
-    <div className="p-page my-12">
-      <PreviousExexutionQueueTable
-        columns={columns}
-        data={dataPreviousExecution}
-      />
-    </div>
+      <div className="p-page my-12">
+        <PreviousExexutionQueueTable
+          columns={columns}
+          data={dataPreviousExecution}
+        />
+      </div>
     </>
   );
 }

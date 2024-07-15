@@ -14,31 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ExecutionQueueType, columns } from "./Columns";
-import { data } from "./data.json";
-import { ExexutionQueueTable } from "./ExecutionQueueTable";
+import useApiCall from "@/utils/Hook";
+import { columns, type PreviousExecution } from "./Columns";
+import { PreviousExexutionQueueTable } from "./PreviousExecutionTable";
 
-export default function ExecutionQueue() {
-  const executionQueueData: ExecutionQueueType[] = data.map(
-    (value): ExecutionQueueType => {
-      return {
-        uuid: value.uuid,
-        source: value.source,
-        git_ref: value.git_ref,
-        type_of: value.type_of,
-        pull_nb: value.pull_nb,
-        golang_version: value.golang_version,
-      };
-    }
-  );
+export default function PreviousExecution() {
+  const { data: dataPreviousExecution } =
+    useApiCall<PreviousExecution>(`${import.meta.env.VITE_API_URL}recent`);
 
   return (
     <>
       <div className="p-page my-12 flex flex-col">
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
-          Execution Queue
+          Previous Executions
         </h3>
-        <ExexutionQueueTable data={executionQueueData} columns={columns} />
+        <PreviousExexutionQueueTable
+          columns={columns}
+          data={dataPreviousExecution}
+        />
       </div>
     </>
   );
