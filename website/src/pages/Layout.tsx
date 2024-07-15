@@ -24,10 +24,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 const Layout = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <Navbar />
-      <Outlet />
-      <Footer />
-
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        <Footer />
+      </div>
       <Modal />
     </ThemeProvider>
   );
