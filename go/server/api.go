@@ -324,7 +324,7 @@ func (s *Server) getDailySummary(c *gin.Context) {
 }
 
 func (s *Server) getDaily(c *gin.Context) {
-	benchmarkType := c.Query("workloads")
+	benchmarkType := c.Query("workload")
 	data, err := macrobench.SearchForLastDays(s.dbClient, benchmarkType, macrobench.Gen4Planner, 31)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})

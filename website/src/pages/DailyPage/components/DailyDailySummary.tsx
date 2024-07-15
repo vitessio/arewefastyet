@@ -1,5 +1,5 @@
 /*
-Copyright 2023 The Vitess Authors.
+Copyright 2024 The Vitess Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import useDailySummaryData from "@/hooks/useDailySummaryData";
 import { Workloads } from "@/types";
 
 export type DailDailySummaryProps = {
-  benchmarkType: string;
-  setBenchmarktype: (type: string) => void;
+  workload: string;
+  setWorkload: (workload: string) => void;
 };
 
 export default function DailyDailySummary(props: DailDailySummaryProps) {
-  const { benchmarkType, setBenchmarktype } = props;
+  const { workload, setWorkload } = props;
   const workloads: Workloads[] = [
     "OLTP",
     "OLTP-READONLY",
@@ -73,8 +73,8 @@ export default function DailyDailySummary(props: DailDailySummaryProps) {
                   <DailySummary
                     key={index}
                     data={dailySummary}
-                    benchmarkType={benchmarkType}
-                    setBenchmarktype={setBenchmarktype}
+                    workload={workload}
+                    setWorkload={setWorkload}
                   />
                 );
               })}

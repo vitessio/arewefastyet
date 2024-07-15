@@ -26,12 +26,12 @@ import { twMerge } from "tailwind-merge";
 
 export type DailySummaryProps = {
   data: DailySummarydata;
-  benchmarkType: string;
-  setBenchmarktype: (type: string) => void;
+  workload: string;
+  setWorkload: (type: string) => void;
 };
 
 export default function DailySummary(props: DailySummaryProps) {
-  const { data, benchmarkType, setBenchmarktype } = props;
+  const { data, workload, setWorkload } = props;
   type ChartData = { name: string; totalQps: number };
   const chartData: ChartData[] = [];
 
@@ -52,14 +52,14 @@ export default function DailySummary(props: DailySummaryProps) {
   }
 
   const getBenchmarkType = () => {
-    setBenchmarktype(data.name);
+    setWorkload(data.name);
   };
 
   return (
     <Card
       className={twMerge(
         "w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 hover:bg-muted border-border",
-        benchmarkType === data.name && "border-2 border-front"
+        workload === data.name && "border-2 border-front"
       )}
       onClick={() => getBenchmarkType()}
     >

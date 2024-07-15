@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 
 export type DailyChartsProps = {
-  benchmarkType: string;
+  workload: string;
 };
 
 type DailyDataType = {
@@ -78,7 +78,7 @@ const chartConfig: { [key: string]: { label: string; color: string } } = {
 };
 
 export default function DailyCharts(props: DailyChartsProps) {
-  const { benchmarkType } = props;
+  const { workload } = props;
   const workloads: Workloads[] = [
     "OLTP",
     "OLTP-READONLY",
@@ -89,14 +89,14 @@ export default function DailyCharts(props: DailyChartsProps) {
     "TPCC_FK_UNMANAGED",
   ];
 
-  const workloadsQuery = workloads.join("&workloads=");
+  const workloadsQuery = workloads.join("&workload=");
 
   const {
     data: dataDaily,
     error: dailyError,
     isLoading: dailyLoading,
   } = useApiCall<MacroData>(
-    `${import.meta.env.VITE_API_URL}daily?workloads=${workloadsQuery}`
+    `${import.meta.env.VITE_API_URL}daily?workload=${workloadsQuery}`
   );
 
   let chartData: DailyDataType[] = [];
@@ -169,7 +169,7 @@ export default function DailyCharts(props: DailyChartsProps) {
       <section className="p-page my-12 flex flex-col gap-y-8">
         <div className="flex flex-col items-center gap-4">
           <h2 className="text-4xl md:text-6xl font-semibold text-primary mb-4">
-            {benchmarkType}
+            {workload}
           </h2>
         </div>
         {dailyLoading ? (

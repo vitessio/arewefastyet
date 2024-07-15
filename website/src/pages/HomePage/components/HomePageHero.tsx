@@ -23,7 +23,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function HomePageHero() {
-  const [benchmarkType, setBenchmarktype] = useState<string>("");
+  const [workload, setWorkload] = useState<string>("");
 
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
     useDailySummaryData(["OLTP", "TPCC"]);
@@ -125,8 +125,8 @@ export default function HomePageHero() {
                     <Link key={index} to={`/daily?type=${dailySummary.name}`}>
                       <DailySummary
                         data={dailySummary}
-                        benchmarkType={benchmarkType}
-                        setBenchmarktype={setBenchmarktype}
+                        workload={workload}
+                        setWorkload={setWorkload}
                       />
                     </Link>
                   );

@@ -24,23 +24,23 @@ import DailDailySummary from "./components/DailyDailySummary";
 
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
-  const [benchmarkType, setBenchmarktype] = useState<string>(
-    urlParams.get("type") ?? "OLTP"
+  const [workload, setWorkload] = useState<string>(
+    urlParams.get("workload") ?? "OLTP"
   );
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`?type=${benchmarkType}`);
-  }, [benchmarkType]);
+    navigate(`?workload=${workload}`);
+  }, [workload]);
 
 
   return (
     <>
       <DailyHero />
-      <DailDailySummary benchmarkType={benchmarkType} setBenchmarktype={setBenchmarktype} />
+      <DailDailySummary workload={workload} setWorkload={setWorkload} />
       <Separator className="mx-auto w-[80%] foreground" />
-      <DailyCharts benchmarkType={benchmarkType} />
+      <DailyCharts workload={workload} />
     </>
   );
 }
