@@ -297,7 +297,6 @@ func (s *Server) getDailySummary(c *gin.Context) {
 	} else {
 		for _, workload := range workloads {
 			workload = strings.ToUpper(workload)
-			slog.Infof("workload: %v", workload)
 			if !slices.Contains(s.benchmarkTypes, workload) {
 				c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "Wrong workload specified"})
 				return
