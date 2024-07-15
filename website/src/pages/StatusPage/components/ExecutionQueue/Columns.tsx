@@ -31,19 +31,10 @@ export type ExecutionQueueApiType = {
 
 export type ExecutionQueueType = Omit<
   ExecutionQueueApiType,
-  "started_at" | "finished_at" | "status"
+  "started_at" | "finished_at" | "status" | "uuid" | "golang_version"
 >;
 
 export const columns: ColumnDef<ExecutionQueueType>[] = [
-  {
-    header: "UUID",
-    accessorKey: "uuid",
-    cell: ({ row }) => {
-      const formatted =
-        row.original.uuid == "" ? "N/A" : row.original.uuid.slice(0, 8);
-      return <div>{formatted}</div>;
-    },
-  },
   {
     header: "SHA",
     accessorKey: "git_ref",
@@ -83,15 +74,6 @@ export const columns: ColumnDef<ExecutionQueueType>[] = [
           <Badge color="primary">{formatted}</Badge>
         </div>
       );
-    },
-  },
-  {
-    header: "Go Version",
-    accessorKey: "golang_version",
-    cell: ({ row }) => {
-      const formatted =
-        row.original.golang_version == "" ? "N/A" : row.original.golang_version;
-      return <div>{formatted}</div>;
     },
   },
 ];

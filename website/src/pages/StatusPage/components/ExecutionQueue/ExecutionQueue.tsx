@@ -22,19 +22,17 @@ export default function ExecutionQueue() {
   const executionQueueData: ExecutionQueueType[] = data.map(
     (value): ExecutionQueueType => {
       return {
-        uuid: value.uuid,
         source: value.source,
         git_ref: value.git_ref,
         type_of: value.type_of,
         pull_nb: value.pull_nb,
-        golang_version: value.golang_version,
       };
     }
   );
 
   return (
     <>
-      <div className="p-page my-12 flex flex-col">
+      <div className="xl:px-96 p-page my-12 flex flex-col">
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Execution Queue
         </h3>

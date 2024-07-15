@@ -50,13 +50,13 @@ export function ExexutionQueueTable<ExecutionQueueType, TValue>({
   columns,
   data,
 }: DataTableProps<ExecutionQueueType, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  )
+  const [sorting, setSorting] = React.useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -90,10 +90,7 @@ export function ExexutionQueueTable<ExecutionQueueType, TValue>({
               <TableRow key={headerGroup.id} className="border-border">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className="text-center font-semibold text-foreground"
-                    >
+                    <TableHead key={header.id} className="text-center font-semibold text-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
