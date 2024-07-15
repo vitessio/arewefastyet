@@ -24,7 +24,7 @@ export default function ExecutionQueue() {
       return {
         source: value.source,
         git_ref: value.git_ref,
-        type_of: value.type_of,
+        workload: value.workload,
         pull_nb: value.pull_nb,
       };
     }

@@ -71,7 +71,7 @@ type Exec struct {
 	FinishedAt *time.Time
 
 	// Defines the type of execution (oltp, tpcc, micro, ...)
-	TypeOf string
+	Workload string
 
 	// PullNB defines the pull request number linked to this execution.
 	PullNB            int
@@ -278,7 +278,7 @@ func (e *Exec) Prepare() error {
 		StatusCreated,
 		e.Source,
 		e.GitRef,
-		e.TypeOf,
+		e.Workload,
 		e.PullNB,
 		e.GolangVersion,
 	); err != nil {
@@ -375,7 +375,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyBenchmarkSecretsPath, absSecretsPath)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecUUID, e.UUID.String())
-	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionType, e.TypeOf)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionType, e.Workload)
 
 	if e.PreviousBenchmarkIsTheSame {
 		e.AnsibleConfig.AddExtraVar(ansible.KeyLastIsSame, true)
@@ -433,7 +433,7 @@ func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	defer result.Close()
 	for result.Next() {
 		exec := &Exec{}
-		err = result.Scan(&exec.RawUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.TypeOf, &exec.PullNB, &exec.GolangVersion)
+		err = result.Scan(&exec.RawUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.Workload, &exec.PullNB, &exec.GolangVersion)
 		if err != nil {
 			return nil, err
 		}

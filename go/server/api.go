@@ -39,12 +39,19 @@ type ErrorAPI struct {
 	Error string `json:"error"`
 }
 
+type ExecutionQueue struct {
+	Source   string `json:"source"`
+	GitRef   string `json:"git_ref"`
+	Workload string `json:"workload"`
+	PullNb   int    `json:"pull_nb"`
+}
+
 type RecentExecutions struct {
 	UUID          string     `json:"uuid"`
 	Source        string     `json:"source"`
 	GitRef        string     `json:"git_ref"`
 	Status        string     `json:"status"`
-	TypeOf        string     `json:"type_of"`
+	Workload      string     `json:"workload"`
 	PullNb        int        `json:"pull_nb"`
 	GolangVersion string     `json:"golang_version"`
 	StartedAt     *time.Time `json:"started_at"`
@@ -69,7 +76,7 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 			Source:        e.Source,
 			GitRef:        e.GitRef,
 			Status:        e.Status,
-			TypeOf:        e.TypeOf,
+			Workload:      e.Workload,
 			PullNb:        e.PullNB,
 			GolangVersion: e.GolangVersion,
 			StartedAt:     e.StartedAt,
@@ -80,15 +87,15 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 }
 
 func (s *Server) getExecutionsQueue(c *gin.Context) {
-	recentExecs := make([]RecentExecutions, 0, len(queue))
+	recentExecs := make([]ExecutionQueue, 0, len(queue))
 	for _, e := range queue {
 		if e.Executing {
 			continue
 		}
-		recentExecs = append(recentExecs, RecentExecutions{
+		recentExecs = append(recentExecs, ExecutionQueue{
 			Source: e.identifier.Source,
 			GitRef: e.identifier.GitRef,
-			TypeOf: e.identifier.BenchmarkType,
+			Workload: e.identifier.BenchmarkType,
 			PullNb: e.identifier.PullNb,
 		})
 	}

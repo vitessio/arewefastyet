@@ -17,22 +17,12 @@ limitations under the License.
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type ExecutionQueueApiType = {
-  uuid: string;
+export type ExecutionQueueType = {
   source: string;
   git_ref: string;
-  status: string;
-  type_of: string;
+  workload: string;
   pull_nb: number;
-  golang_version: string;
-  started_at: string | null;
-  finished_at: string | null;
 };
-
-export type ExecutionQueueType = Omit<
-  ExecutionQueueApiType,
-  "started_at" | "finished_at" | "status" | "uuid" | "golang_version"
->;
 
 export const columns: ColumnDef<ExecutionQueueType>[] = [
   {
