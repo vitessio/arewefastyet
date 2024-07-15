@@ -292,7 +292,6 @@ func (s *Server) getDailySummary(c *gin.Context) {
 	// Query array allows to get multiple values for the same key
 	// For example: /api/daily/summary?workloads=TPCC&workloads=OLTP
 	workloads := c.QueryArray("workloads")
-	slog.Infof("workloads: %v", workloads)
 	if len(workloads) == 0 {
 		workloads = s.benchmarkTypes
 	} else {
