@@ -38,6 +38,7 @@ export default function DailyDailySummary(props: DailDailySummaryProps) {
 
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
     useDailySummaryData(workloads);
+
   return (
     <>
       <section className="flex p-page flex-wrap justify-center gap-12 p-4">
@@ -54,13 +55,16 @@ export default function DailyDailySummary(props: DailDailySummaryProps) {
           </>
         )}
 
-        {dailySummaryError && (
-          <div className="text-red-500 text-center my-10">
-            {dailySummaryError}
-          </div>
-        )}
+        {!isLoadingDailySummary &&
+          (dailySummaryError ||
+            !dataDailySummary ||
+            dataDailySummary.length === 0) && (
+            <div className="text-red-500 text-center my-10">
+              {dailySummaryError || "No data available"}
+            </div>
+          )}
 
-        {!dailySummaryError &&
+        {!isLoadingDailySummary &&
           dataDailySummary &&
           dataDailySummary.length > 0 && (
             <>
