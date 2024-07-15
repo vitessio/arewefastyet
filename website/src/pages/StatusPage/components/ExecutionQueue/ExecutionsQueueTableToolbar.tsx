@@ -74,7 +74,7 @@ const sourceses = [
 
 const filterConfigs = [
   {
-    column: "type_of",
+    column: "workload",
     title: "Workload",
     options: workloadses,
   },
