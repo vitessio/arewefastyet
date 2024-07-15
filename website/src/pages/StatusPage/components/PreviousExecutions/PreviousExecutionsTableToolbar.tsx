@@ -99,7 +99,7 @@ const filterConfigs = [
     options: statuses,
   },
   {
-    column: "type_of",
+    column: "workload",
     title: "Workload",
     options: workloadses,
   },
