@@ -47,7 +47,7 @@ export default function StatusHero() {
   const chartConfig = {
     day: {
       label: "Day",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(var(--primary))",
     },
   };
 
