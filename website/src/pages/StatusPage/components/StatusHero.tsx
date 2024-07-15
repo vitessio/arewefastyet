@@ -53,9 +53,9 @@ export default function StatusHero() {
 
   const last7days = [234, 283, 210, 371, 234, 283, 210];
 
-  const chartData = last7days.map((commits, index) => ({
+  const chartData = last7days.map((executions, index) => ({
     day: index.toString(),
-    commits,
+    executions,
   }));
 
   return (
@@ -81,7 +81,7 @@ export default function StatusHero() {
           <CardContent className="w-full h-full">
             <ChartContainer config={chartConfig}>
               <BarChart
-                margin={{ top: 12, right: 0, left: -32, bottom: 0 }}
+                margin={{ top: 12, right: 0, left: -22, bottom: 0 }}
                 barSize={10}
                 accessibilityLayer
                 data={chartData}
@@ -93,7 +93,7 @@ export default function StatusHero() {
                   cursor={true}
                   content={<ChartTooltipContent hideLabel />}
                 />
-                <Bar dataKey="commits" fill="var(--color-day)" />
+                <Bar dataKey="executions" fill="var(--color-day)" />
               </BarChart>
             </ChartContainer>
           </CardContent>
