@@ -25,6 +25,7 @@ const useApiCall = <T,>(url: string) : { data: T[], isLoading: boolean, error: s
   const [textLoading, setTextLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     setTextLoading(true);
     const fetchData = async () => {
       try {
