@@ -16,7 +16,7 @@ limitations under the License.
 
 import { ExecutionQueueType, columns } from "./Columns";
 import { data } from "./data.json";
-import { ExexutionQueueTable } from "./ExecutionQueueTable";
+import { ExecutionQueueTable } from "./ExecutionTable";
 
 export default function ExecutionQueue() {
   const executionQueueData: ExecutionQueueType[] = data.map(
@@ -36,7 +36,7 @@ export default function ExecutionQueue() {
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Execution Queue
         </h3>
-        <ExexutionQueueTable data={executionQueueData} columns={columns} />
+        <ExecutionQueueTable data={executionQueueData} columns={columns} />
       </div>
     </>
   );

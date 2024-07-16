@@ -17,8 +17,8 @@ limitations under the License.
 import StatusHero from "./components/StatusHero";
 
 import { Separator } from "@/components/ui/separator";
-import ExecutionQueue from "./components/ExecutionQueue/ExecutionQueue";
-import PreviousExecution from "./components/PreviousExecutions/PreviousExecution";
+import ExecutionQueue from "./components/ExecutionQueue/Execution";
+import PreviousExecution from "./components/PreviousExecutions/Execution";
 
 export default function StatusPage() {
   return (

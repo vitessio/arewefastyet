@@ -122,7 +122,6 @@ export const columns: ColumnDef<PreviousExecution>[] = [
     cell: ({ row }) => {
       // if pull_nb is 0, display N/A
       const formatted = row.original.pull_nb == "0" ? "N/A" : row.original.pull_nb;
-      console.log({ formatted });
       return (
         <div>
           {" "}

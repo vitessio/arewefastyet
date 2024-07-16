@@ -16,7 +16,7 @@ limitations under the License.
 
 import useApiCall from "@/utils/Hook";
 import { columns, type PreviousExecution } from "./Columns";
-import { PreviousExexutionQueueTable } from "./PreviousExecutionTable";
+import { PreviousExecutionQueueTable } from "./ExecutionTable";
 
 export default function PreviousExecution() {
   const { data: dataPreviousExecution } =
@@ -24,11 +24,8 @@ export default function PreviousExecution() {
 
   return (
     <>
-      <div className="p-page my-12 flex flex-col">
-        <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
-          Previous Executions
-        </h3>
-        <PreviousExexutionQueueTable
+      <div className="p-page my-12">
+        <PreviousExecutionQueueTable
           columns={columns}
           data={dataPreviousExecution}
         />

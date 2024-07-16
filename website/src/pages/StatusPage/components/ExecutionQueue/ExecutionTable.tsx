@@ -17,8 +17,6 @@ limitations under the License.
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -26,10 +24,12 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
-import * as React from "react";
 
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import {
   Table,
   TableBody,
@@ -38,26 +38,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import React from "react";
+import { DataTableToolbar } from "./ExecutionTableToolbar";
 
-import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { DataTableToolbar } from "./PreviousExecutionsTableToolbar";
-
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps<ExecutionQueueType, TValue> {
+  columns: ColumnDef<ExecutionQueueType, TValue>[];
+  data: ExecutionQueueType[];
 }
 
-export function PreviousExexutionQueueTable<TData, TValue>({
+export function ExecutionQueueTable<ExecutionQueueType, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({});
+}: DataTableProps<ExecutionQueueType, TValue>) {
+  const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  )
+  const [sorting, setSorting] = React.useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -91,10 +90,7 @@ export function PreviousExexutionQueueTable<TData, TValue>({
               <TableRow key={headerGroup.id} className="border-border">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      key={header.id}
-                      className="text-center font-semibold text-foreground"
-                    >
+                    <TableHead key={header.id} className="text-center font-semibold text-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
