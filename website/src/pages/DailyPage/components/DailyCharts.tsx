@@ -98,10 +98,10 @@ const chartMetadas = [
   {
     title: "QPS (Queries per second)",
     metrics: [
-      { dataKey: "qpsReads", legend: "QPS Reads" },
-      { dataKey: "qpsWrites", legend: "QPS Writes" },
-      { dataKey: "qpsOther", legend: "QPS Other" },
-      { dataKey: "qpsTotal", legend: "QPS Total" },
+      { dataKey: "qpsReads", legend: "Reads" },
+      { dataKey: "qpsWrites", legend: "Writes" },
+      { dataKey: "qpsOther", legend: "Other" },
+      { dataKey: "qpsTotal", legend: "Total" },
     ],
   },
   {
@@ -115,17 +115,17 @@ const chartMetadas = [
   {
     title: "CPU / query (μs)",
     metrics: [
-      { dataKey: "cpuTimeVtgate", legend: "CPU Time Vtgate" },
-      { dataKey: "cpuTimeVttablet", legend: "CPU Time Vttablet" },
-      { dataKey: "cpuTimeTotal", legend: "CPU Time Total" },
+      { dataKey: "cpuTimeVtgate", legend: "Vtgate" },
+      { dataKey: "cpuTimeVttablet", legend: "Vttablet" },
+      { dataKey: "cpuTimeTotal", legend: "Total" },
     ],
   },
   {
     title: "Allocated / query (bytes)",
     metrics: [
-      { dataKey: "memBytesVtgate", legend: "Mem Bytes Vtgate" },
-      { dataKey: "memBytesVttablet", legend: "Mem Bytes Vttablet" },
-      { dataKey: "memBytesTotal", legend: "Mem Bytes Total" },
+      { dataKey: "memBytesVtgate", legend: "Vtgate" },
+      { dataKey: "memBytesVttablet", legend: "Vttablet" },
+      { dataKey: "memBytesTotal", legend: "Total" },
     ],
   },
 ];
