@@ -3,6 +3,7 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MacroData, Workloads } from "@/types";
 import useApiCall from "@/utils/Hook";
+import { formatGitRef } from "@/utils/Utils";
 import { useEffect, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 
@@ -82,9 +83,9 @@ const chartMetadas = [
     title: "QPS (Queries per second)",
     metrics: [
       { dataKey: "qpsReads", legend: "QPS Reads" },
-      { dataKey: "qpsTotal", legend: "QPS Total" },
       { dataKey: "qpsWrites", legend: "QPS Writes" },
       { dataKey: "qpsOther", legend: "QPS Other" },
+      { dataKey: "qpsTotal", legend: "QPS Total" },
     ],
   },
   {
@@ -98,17 +99,17 @@ const chartMetadas = [
   {
     title: "CPU / query (μs)",
     metrics: [
-      { dataKey: "cpuTimeTotal", legend: "CPU Time Total" },
       { dataKey: "cpuTimeVtgate", legend: "CPU Time Vtgate" },
       { dataKey: "cpuTimeVttablet", legend: "CPU Time Vttablet" },
+      { dataKey: "cpuTimeTotal", legend: "CPU Time Total" },
     ],
   },
   {
     title: "Allocated / query (bytes)",
     metrics: [
-      { dataKey: "memBytesTotal", legend: "Mem Bytes Total" },
       { dataKey: "memBytesVtgate", legend: "Mem Bytes Vtgate" },
       { dataKey: "memBytesVttablet", legend: "Mem Bytes Vttablet" },
+      { dataKey: "memBytesTotal", legend: "Mem Bytes Total" },
     ],
   },
 ];
@@ -139,7 +140,7 @@ export default function DailyCharts(props: DailyChartsProps) {
 
   if (dataDaily.length > 0) {
     chartData = dataDaily.map((item) => ({
-      gitRef: item.git_ref.slice(0, 8),
+      gitRef: formatGitRef(item.git_ref),
       qpsReads: item.reads_qps.center,
       qpsWrites: item.writes_qps.center,
       qpsOther: item.other_qps.center,

@@ -34,7 +34,6 @@ export default function DailyPage() {
     navigate(`?workload=${workload}`);
   }, [workload]);
 
-
   return (
     <>
       <DailyHero />
