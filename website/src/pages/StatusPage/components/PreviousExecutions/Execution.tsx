@@ -17,10 +17,38 @@ limitations under the License.
 import useApiCall from "@/utils/Hook";
 import { columns, type PreviousExecution } from "./Columns";
 import { PreviousExecutionQueueTable } from "./ExecutionTable";
+import { FilterConfigs } from "./ExecutionTableToolbar";
 
 export default function PreviousExecution() {
-  const { data: dataPreviousExecution } =
+  const { data: dataPreviousExecution, isLoading } =
     useApiCall<PreviousExecution>(`${import.meta.env.VITE_API_URL}recent`);
+
+  const filterConfigs: FilterConfigs[] = [
+    {
+      column: "source",
+      title: "Source",
+      options:
+        dataPreviousExecution?.sources?.map((source) => {
+          return { label: source, value: source };
+        }) || [],
+    },
+    {
+      column: "status",
+      title: "Status",
+      options:
+        dataPreviousExecution?.statuses.map((status) => {
+          return { label: status, value: status };
+        }) || [],
+    },
+    {
+      column: "workload",
+      title: "Workload",
+      options:
+        dataPreviousExecution?.workloads.map((workload) => {
+          return { label: workload, value: workload };
+        }) || [],
+    },
+  ];
 
   return (
     <>
@@ -28,10 +56,15 @@ export default function PreviousExecution() {
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Previous Executions
         </h3>
-        <PreviousExecutionQueueTable
-          columns={columns}
-          data={dataPreviousExecution}
-        />
+        {isLoading && <div>Loading...</div>}
+        {dataPreviousExecution === null && <div>No data found</div>}
+        {dataPreviousExecution !== null && (
+          <PreviousExecutionQueueTable
+            columns={columns}
+            data={dataPreviousExecution.executions}
+            filterConfigs={filterConfigs}
+          />
+        )}
       </div>
     </>
   );

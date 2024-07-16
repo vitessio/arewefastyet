@@ -19,11 +19,10 @@ import { ExecutionQueueType, columns } from "./Columns";
 import { ExecutionQueueTable } from "./ExecutionTable";
 
 export default function ExecutionQueue() {
+  const { data: dataExecutionQueue, isLoading } =
+    useApiCall<ExecutionQueueType[]>(`${import.meta.env.VITE_API_URL}recent`);
 
-  const { data: dataExecutionQueue } =
-  useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}recent`);
-
-  const executionQueueData: ExecutionQueueType[] = dataExecutionQueue.map(
+  const executionQueueData: ExecutionQueueType[] | undefined = dataExecutionQueue?.map(
     (value): ExecutionQueueType => {
       return {
         source: value.source,
@@ -40,7 +39,11 @@ export default function ExecutionQueue() {
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Execution Queue
         </h3>
-        <ExecutionQueueTable data={executionQueueData} columns={columns} />
+        {isLoading && <div>Loading...</div>}
+        {executionQueueData === null && <div>No data found</div>}
+        {executionQueueData && (
+          <ExecutionQueueTable columns={columns} data={executionQueueData} />
+        )}{" "}
       </div>
     </>
   );

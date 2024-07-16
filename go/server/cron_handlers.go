@@ -318,7 +318,7 @@ func (s *Server) createSimpleExecutionQueueElement(config benchmarkConfig, sourc
 		identifier: executionIdentifier{
 			GitRef:         ref,
 			Source:         source,
-			BenchmarkType:  configType,
+			Workload:       configType,
 			PlannerVersion: plannerVersion,
 			PullNb:         pullNb,
 			Version:        version,

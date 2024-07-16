@@ -37,7 +37,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 				err = errSuccess
 				return
 			}
-			slog.Info("Finished execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
+			slog.Info("Finished execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.Workload, "]")
 		}
 	}()
 
@@ -70,7 +70,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 		}
 	}
 
-	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.BenchmarkType, "]")
+	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.Workload, "]")
 	err = e.Prepare()
 	if err != nil {
 		nErr := fmt.Errorf(fmt.Sprintf("prepare error: %v", err))
@@ -86,7 +86,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	}
 
 	timeout := 1 * time.Hour
-	if identifier.BenchmarkType == "micro" {
+	if identifier.Workload == "micro" {
 		timeout = 4 * time.Hour
 	}
 	err = e.ExecuteWithTimeout(timeout)
@@ -150,7 +150,7 @@ func (s *Server) compareElement(element *executionQueueElement) {
 			if _, ok := seen[comparer]; ok {
 				continue
 			}
-			comparerUUID, err := exec.GetFinishedExecution(s.dbClient, comparer.GitRef, comparer.Source, comparer.BenchmarkType, comparer.PlannerVersion, comparer.PullNb)
+			comparerUUID, err := exec.GetFinishedExecution(s.dbClient, comparer.GitRef, comparer.Source, comparer.Workload, comparer.PlannerVersion, comparer.PullNb)
 			if err != nil {
 				slog.Error(err)
 				return
@@ -166,14 +166,14 @@ func (s *Server) compareElement(element *executionQueueElement) {
 func (s *Server) getNumberOfBenchmarksInDB(identifier executionIdentifier) (int, error) {
 	var nb int
 	var err error
-	if identifier.BenchmarkType == "micro" {
+	if identifier.Workload == "micro" {
 		var exists bool
-		exists, err = exec.Exists(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, exec.StatusFinished)
+		exists, err = exec.Exists(s.dbClient, identifier.GitRef, identifier.Source, identifier.Workload, exec.StatusFinished)
 		if exists {
 			nb = 1
 		}
 	} else {
-		nb, err = exec.CountMacroBenchmark(s.dbClient, identifier.GitRef, identifier.Source, identifier.BenchmarkType, exec.StatusFinished, identifier.PlannerVersion)
+		nb, err = exec.CountMacroBenchmark(s.dbClient, identifier.GitRef, identifier.Source, identifier.Workload, exec.StatusFinished, identifier.PlannerVersion)
 	}
 	if err != nil {
 		slog.Error(err)

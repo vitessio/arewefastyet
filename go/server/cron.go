@@ -39,7 +39,7 @@ type (
 	}
 
 	executionIdentifier struct {
-		GitRef, Source, BenchmarkType, PlannerVersion string
+		GitRef, Source, Workload, PlannerVersion string
 		PullNb                                        int
 		PullBaseRef                                   string
 		Version                                       git.Version
@@ -118,7 +118,7 @@ func (s *Server) removePRFromQueue(element *executionQueueElement) {
 	defer mtx.Unlock()
 
 	for id, e := range queue {
-		if !e.Executing && id.PullNb == element.identifier.PullNb && id.BenchmarkType == element.identifier.BenchmarkType && id.Source == element.identifier.Source && id.GitRef != element.identifier.GitRef {
+		if !e.Executing && id.PullNb == element.identifier.PullNb && id.Workload == element.identifier.Workload && id.Source == element.identifier.Source && id.GitRef != element.identifier.GitRef {
 			slog.Infof("%+v is removed from the queue", id)
 			delete(queue, id)
 		}
@@ -143,7 +143,7 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	// on how many times we want to execute the same benchmark and on how many
 	// times it already exists in the database.
 	var execElements []*executionQueueElement
-	if element.identifier.BenchmarkType == "micro" {
+	if element.identifier.Workload == "micro" {
 		execElements = append(execElements, element)
 	} else {
 		nb, err := s.getNumberOfBenchmarksInDB(element.identifier)

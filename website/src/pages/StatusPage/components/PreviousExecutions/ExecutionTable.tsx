@@ -40,16 +40,18 @@ import {
 } from "@/components/ui/table";
 
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { DataTableToolbar } from "./ExecutionTableToolbar";
+import { DataTableToolbar, FilterConfigs } from "./ExecutionTableToolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  filterConfigs: FilterConfigs[];
 }
 
 export function PreviousExecutionQueueTable<TData, TValue>({
   columns,
   data,
+  filterConfigs
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -83,7 +85,7 @@ export function PreviousExecutionQueueTable<TData, TValue>({
 
   return (
     <div>
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} filterConfigs={filterConfigs}/>
       <div className="rounded-md border-border border">
         <Table>
           <TableHeader>

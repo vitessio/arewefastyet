@@ -22,100 +22,28 @@ import { DataTableViewOptions } from "@/components/ui/data-table-view-options";
 import { Input } from "@/components/ui/input";
 
 import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
+import { ComponentType } from "react";
 
-
-const statuses = [
-  {
-    label: "Finished",
-    value: "finished",
-  },
-  {
-    label: "Cancelled",
-    value: "cancelled",
-  },
-  {
-    label: "Failed",
-    value: "failed",
-  },
-  {
-    label: "Started",
-    value: "started"
-  }
-]
-
-const workloadses = [
-  {
-    label: "oltp",
-    value: "oltp",
-  },
-  {
-    label: "oltp-readonly",
-    value: "oltp-readonly",
-  },
-  {
-    label: "oltp-set",
-    value: "oltp-set",
-  },
-  {
-    label: "tpcc",
-    value: "tpcc",
-  },
-  {
-    label: "tpcc_fk",
-    value: "tpcc_fk",
-  },
-  {
-    label: "tpcc_fk_unmanaged",
-    value: "tpcc_fk_unmanaged",
-  },
-  {
-    label: "tpcc_unsharded",
-    value: "tpcc_unsharded",
-  }
-];
-const sourceses = [
-  {
-    label: "cron",
-    value: "cron",
-  },
-  {
-    label: "cron_pr",
-    value: "cron_pr",
-  },
-  {
-    label: "cron_pr_base",
-    value: "cron_pr_base",
-  },
-  {
-    label: "cron_tags",
-    value: "cron_tags",
-  }
-];
-
-const filterConfigs = [
-  {
-    column: "status",
-    title: "Status",
-    options: statuses,
-  },
-  {
-    column: "workload",
-    title: "Workload",
-    options: workloadses,
-  },
-  {
-    column: "source",
-    title: "Source",
-    options: sourceses,
-  },
-];
+export type FilterConfigs = {
+  column: string;
+  title: string;
+  options: {
+    label: string;
+    value: string;
+    icon?: ComponentType<{
+      className?: string;
+    }>;
+  }[];
+};
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
+  filterConfigs: FilterConfigs[];
 }
 
 export function DataTableToolbar<TData>({
   table,
+  filterConfigs,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 

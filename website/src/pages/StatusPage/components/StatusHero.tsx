@@ -40,7 +40,7 @@ const heroProps: HeroProps = {
 };
 
 export default function StatusHero() {
-  const { data: dataStatusStats } = useApiCall<DataStatusType>(
+  const { data: dataStatusMetrics } = useApiCall<DataStatusType>(
     `${import.meta.env.VITE_API_URL}status/stats`
   );
 
@@ -51,7 +51,11 @@ export default function StatusHero() {
     },
   };
 
-  const last7days = [234, 283, 210, 371, 234, 283, 210];
+  let last7days: number[] = [];
+
+  if (dataStatusMetrics !== null) {
+    last7days = dataStatusMetrics.Last7Days;
+  }
 
   const chartData = last7days.map((executions, index) => ({
     day: index.toString(),
@@ -69,7 +73,7 @@ export default function StatusHero() {
             <CardHeader>
               <CardTitle
                 className="counter text-4xl md:text-5xl text-primary"
-                style={{ ["--num" as string]: dataStatusStats[content] }}
+                style={{ ["--num" as string]: dataStatusMetrics?.[content as keyof DataStatusType] }}
               ></CardTitle>
             </CardHeader>
             <CardFooter className="text-lg md:text-xl font-light md:font-medium">

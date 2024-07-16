@@ -20,14 +20,14 @@ import { PreviousExecutionQueueTable } from "./ExecutionTable";
 
 export default function PreviousExecution() {
   const { data: dataPreviousExecution } =
-    useApiCall<PreviousExecution>(`${import.meta.env.VITE_API_URL}recent`);
+    useApiCall<PreviousExecution[]>(`${import.meta.env.VITE_API_URL}recent`);
 
   return (
     <>
       <div className="p-page my-12">
         <PreviousExecutionQueueTable
           columns={columns}
-          data={dataPreviousExecution}
+          data={dataPreviousExecution ?? [] as PreviousExecution[]}
         />
       </div>
     </>

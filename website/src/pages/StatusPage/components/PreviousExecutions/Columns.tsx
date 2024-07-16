@@ -24,7 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export type PreviousExecution = {
+export type Execution = {
   uuid: string;
   source: string;
   git_ref: string;
@@ -36,7 +36,14 @@ export type PreviousExecution = {
   finished_at: string;
 };
 
-export const columns: ColumnDef<PreviousExecution>[] = [
+export type PreviousExecution = {
+  executions: Execution[];
+  sources: string[];
+  workloads: string[];
+  statuses: string[];
+};
+
+export const columns: ColumnDef<Execution>[] = [
   {
     header: "UUID",
     accessorKey: "uuid",
@@ -121,7 +128,8 @@ export const columns: ColumnDef<PreviousExecution>[] = [
     accessorKey: "pull_nb",
     cell: ({ row }) => {
       // if pull_nb is 0, display N/A
-      const formatted = row.original.pull_nb == "0" ? "N/A" : row.original.pull_nb;
+      const formatted =
+        row.original.pull_nb == "0" ? "N/A" : row.original.pull_nb;
       return (
         <div>
           {" "}
