@@ -55,7 +55,7 @@ export default function ExecutionQueue() {
 
   return (
     <>
-      <div className="xl:px-96 p-page my-12 flex flex-col">
+      <div className="mx-auto w-[50vw] my-12 flex flex-col">
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Execution Queue
         </h3>

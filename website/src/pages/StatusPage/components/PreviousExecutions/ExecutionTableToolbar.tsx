@@ -36,41 +36,45 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
-    <div className="flex items-center justify-between py-4">
-      <div className="flex flex-1 items-center space-x-2">
+    <div className="flex items-center gap-8 md:gap-0 md:justify-between py-4 flex-row">
+      <div className="flex flex-1 md:flex-none h-full">
         <Input
           placeholder="Filter executions..."
           value={(table.getColumn("git_ref")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("git_ref")?.setFilterValue(event.target.value)
           }
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-full w-full flex-1 md:w-[150px] lg:w-[250px]"
         />
-        {filterConfigs.map((filter) => {
-          const column = table.getColumn(filter.column);
-          return (
-            column && (
-              <DataTableFacetedFilter
-                key={filter.column}
-                column={column}
-                title={filter.title}
-                options={filter.options}
-              />
-            )
-          );
-        })}
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
-          >
-            Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
-          </Button>
-        )}
+        <div className="hidden w-0 md:flex items-center space-x-2">
+          {filterConfigs.map((filter) => {
+            const column = table.getColumn(filter.column);
+            return (
+              column && (
+                <DataTableFacetedFilter
+                  key={filter.column}
+                  column={column}
+                  title={filter.title}
+                  options={filter.options}
+                />
+              )
+            );
+          })}
+          {isFiltered && (
+            <Button
+              variant="ghost"
+              onClick={() => table.resetColumnFilters()}
+              className="h-8 px-2 lg:px-3"
+            >
+              Reset
+              <Cross2Icon className="ml-2 h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="md:w-auto justify-end">
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   );
 }
