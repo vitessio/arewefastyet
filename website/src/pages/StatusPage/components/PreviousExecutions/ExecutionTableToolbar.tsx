@@ -22,19 +22,7 @@ import { DataTableViewOptions } from "@/components/ui/data-table-view-options";
 import { Input } from "@/components/ui/input";
 
 import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
-import { ComponentType } from "react";
-
-export type FilterConfigs = {
-  column: string;
-  title: string;
-  options: {
-    label: string;
-    value: string;
-    icon?: ComponentType<{
-      className?: string;
-    }>;
-  }[];
-};
+import { FilterConfigs } from "@/types";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;

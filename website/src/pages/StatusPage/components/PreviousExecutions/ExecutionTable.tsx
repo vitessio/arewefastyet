@@ -40,7 +40,8 @@ import {
 } from "@/components/ui/table";
 
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { DataTableToolbar, FilterConfigs } from "./ExecutionTableToolbar";
+import { FilterConfigs } from "@/types";
+import { DataTableToolbar } from "./ExecutionTableToolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

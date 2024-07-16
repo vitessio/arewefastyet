@@ -40,15 +40,18 @@ import {
 } from "@/components/ui/table";
 import React from "react";
 import { DataTableToolbar } from "./ExecutionTableToolbar";
+import { FilterConfigs } from "@/types";
 
 interface DataTableProps<ExecutionQueueType, TValue> {
   columns: ColumnDef<ExecutionQueueType, TValue>[];
   data: ExecutionQueueType[];
+  filterConfigs: FilterConfigs[];
 }
 
 export function ExecutionQueueTable<ExecutionQueueType, TValue>({
   columns,
   data,
+  filterConfigs
 }: DataTableProps<ExecutionQueueType, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -82,7 +85,7 @@ export function ExecutionQueueTable<ExecutionQueueType, TValue>({
 
   return (
     <div>
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} filterConfigs={filterConfigs}/>
       <div className="rounded-md border-border border">
         <Table>
           <TableHeader>

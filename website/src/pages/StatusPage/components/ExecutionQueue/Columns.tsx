@@ -18,13 +18,20 @@ import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 
 export type ExecutionQueueType = {
+  executions: ExecutionQueueExecution[];
+  sources: string[];
+  workloads: string[];
+  statuses: string[];
+};
+
+export type ExecutionQueueExecution = {
   source: string;
   git_ref: string;
   workload: string;
   pull_nb: number;
 };
 
-export const columns: ColumnDef<ExecutionQueueType>[] = [
+export const columns: ColumnDef<ExecutionQueueExecution>[] = [
   {
     header: "SHA",
     accessorKey: "git_ref",

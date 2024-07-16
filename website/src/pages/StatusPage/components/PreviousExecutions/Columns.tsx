@@ -14,17 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ColumnDef } from "@tanstack/react-table";
 import { Badge, Variant } from "@/components/ui/badge";
-import { formatDistanceToNow, format } from "date-fns";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ColumnDef } from "@tanstack/react-table";
+import { format, formatDistanceToNow } from "date-fns";
 
-export type Execution = {
+export type PreviousExecutionExecution = {
   uuid: string;
   source: string;
   git_ref: string;
@@ -37,13 +37,13 @@ export type Execution = {
 };
 
 export type PreviousExecution = {
-  executions: Execution[];
+  executions: PreviousExecutionExecution[];
   sources: string[];
   workloads: string[];
   statuses: string[];
 };
 
-export const columns: ColumnDef<Execution>[] = [
+export const columns: ColumnDef<PreviousExecutionExecution>[] = [
   {
     header: "UUID",
     accessorKey: "uuid",

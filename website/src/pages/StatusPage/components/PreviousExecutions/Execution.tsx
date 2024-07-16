@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { FilterConfigs } from "@/types";
 import useApiCall from "@/utils/Hook";
 import { columns, type PreviousExecution } from "./Columns";
 import { PreviousExecutionQueueTable } from "./ExecutionTable";
-import { FilterConfigs } from "./ExecutionTableToolbar";
 
 export default function PreviousExecution() {
   const { data: dataPreviousExecution, isLoading } =

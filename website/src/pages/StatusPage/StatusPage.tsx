@@ -23,9 +23,9 @@ import PreviousExecution from "./components/PreviousExecutions/Execution";
 export default function StatusPage() {
   return (
     <>
-      {/* <StatusHero /> */}
+      <StatusHero />
       <Separator className="mx-auto w-[80%]" />
-      {/* <ExecutionQueue /> */}
+      <ExecutionQueue />
       <Separator className="mx-auto w-[80%]" />
       <PreviousExecution />
       <div className="border-accent border mt-5" />

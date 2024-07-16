@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { ComponentType } from "react";
+
 export type Theme = "default" | "dark";
 
 export type statusDataTypes = {
@@ -113,3 +115,15 @@ export type DailySummarydata = {
 }
 
 export type Workloads = 'OLTP' | 'OLTP-READONLY' | 'OLTP-SET' | 'TPCC' | 'TPCC_FK' | 'TPCC_UNSHARDED' | 'TPCC_FK_UNMANAGED'
+
+export type FilterConfigs = {
+  column: string;
+  title: string;
+  options: {
+    label: string;
+    value: string;
+    icon?: ComponentType<{
+      className?: string;
+    }>;
+  }[];
+};
