@@ -14,12 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import useApiCall from "@/utils/Hook";
 import { ExecutionQueueType, columns } from "./Columns";
-import { data } from "./data.json";
 import { ExecutionQueueTable } from "./ExecutionTable";
 
 export default function ExecutionQueue() {
-  const executionQueueData: ExecutionQueueType[] = data.map(
+
+  const { data: dataExecutionQueue } =
+  useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}recent`);
+
+  const executionQueueData: ExecutionQueueType[] = dataExecutionQueue.map(
     (value): ExecutionQueueType => {
       return {
         source: value.source,
