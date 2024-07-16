@@ -51,7 +51,7 @@ export default function DailySummary(props: DailySummaryProps) {
     }));
   }
 
-  const getBenchmarkType = () => {
+  const getWorkload = () => {
     setWorkload(data.name);
   };
 
@@ -61,7 +61,7 @@ export default function DailySummary(props: DailySummaryProps) {
         "w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 hover:bg-muted border-border",
         workload === data.name && "border-2 border-front"
       )}
-      onClick={() => getBenchmarkType()}
+      onClick={() => getWorkload()}
     >
       <CardHeader className="flex flex-row justify-between">
         <CardTitle className="font-light text-sm">{data.name}</CardTitle>
