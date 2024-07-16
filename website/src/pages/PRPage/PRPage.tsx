@@ -29,9 +29,9 @@ export default function PRPage() {
     data: dataSinglePr,
     isLoading: singlePrLoading,
     error: singlePrError,
-  } = useApiCall<prDataTypes>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
+  } = useApiCall<prDataTypes[]>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
 
-  const singlePrData = dataSinglePr.length > 0 ? dataSinglePr[0] : null;
+  const singlePrData = dataSinglePr && dataSinglePr.length > 0 ? dataSinglePr[0] : null;
 
   const isComparisonAvailable =
     singlePrData?.Base !== "" && singlePrData?.Head !== "";

@@ -33,9 +33,8 @@ export default function Compare() {
   const {
     data: compareData,
     isLoading: isMacrobenchLoading,
-    textLoading: macrobenchTextLoading,
     error: macrobenchError,
-  } = useApiCall<CompareData>(
+  } = useApiCall<CompareData[]>(
     `${import.meta.env.VITE_API_URL}macrobench/compare?new=${gitRef.new}&old=${gitRef.old}`
   );
 
@@ -52,17 +51,17 @@ export default function Compare() {
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
       )}
 
-      {(isMacrobenchLoading || macrobenchTextLoading) && (
+      {(isMacrobenchLoading) && (
         <div className="flex justify-center items-center">
           <RingLoader
-            loading={isMacrobenchLoading || macrobenchTextLoading}
+            loading={isMacrobenchLoading}
             color="#E77002"
             size={300}
           />
         </div>
       )}
 
-      {!isMacrobenchLoading && !macrobenchTextLoading && compareData && compareData.length > 0 && (
+      {!isMacrobenchLoading && compareData && compareData.length > 0 && (
         <section className="flex flex-col items-center">
           <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
           <div className="flex flex-col gap-y-20">
