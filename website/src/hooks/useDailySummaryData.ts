@@ -14,22 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { DailySummarydata } from "@/types";
 import useApiCall from "@/utils/Hook";
-import { DailySummarydata, Workloads } from "@/types";
 
-export default function useDailySummaryData(workloads: Workloads[]) {
-
-  const workloadsQuery = workloads.join('&workloads=');
+export default function useDailySummaryData(workloads: string[]) {
+  const workloadsQuery = workloads.join("&workload=");
 
   const {
     data: dataDailySummary,
     isLoading: isLoadingDailySummary,
-    error: errorDailySummary,
-  } = useApiCall<DailySummarydata>(`${import.meta.env.VITE_API_URL}daily/summary?workloads=${workloadsQuery}`);
+    error: dailySummaryError,
+  } = useApiCall<DailySummarydata>(
+    `${import.meta.env.VITE_API_URL}daily/summary?workload=${workloadsQuery}`
+  );
+
+  if (dailySummaryError || dataDailySummary.length === 0) {
+    return {
+      dataDailySummary: null,
+      isLoadingDailySummary,
+      dailySummaryError:
+        dailySummaryError || "An error occurred while fetching data.",
+    };
+  }
 
   return {
     dataDailySummary,
     isLoadingDailySummary,
-    errorDailySummary,
+    dailySummaryError: null,
   };
-};
+}

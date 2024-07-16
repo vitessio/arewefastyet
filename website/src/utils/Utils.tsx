@@ -100,3 +100,7 @@ export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
 ////THE NUMBER OF PIXELS THAT ARE USED TO OPEN AND CLOSE THE PREVIOUS EXECUTIONS AND MICROBENCH TABLES
 export const openTables = 400;
 export const closeTables = 70;
+
+export const formatGitRef = (gitRef: string): string => {
+  return gitRef.slice(0, 8);
+}

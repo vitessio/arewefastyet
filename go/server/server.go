@@ -229,6 +229,7 @@ func (s *Server) Run() error {
 	}))
 
 	// API
+	s.router.GET("/api/workloads", s.getWorkloadList)
 	s.router.GET("/api/recent", s.getRecentExecutions)
 	s.router.GET("/api/queue", s.getExecutionsQueue)
 	s.router.GET("/api/vitess/refs", s.getLatestVitessGitRef)

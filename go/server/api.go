@@ -51,6 +51,10 @@ type RecentExecutions struct {
 	FinishedAt    *time.Time `json:"finished_at"`
 }
 
+func (s *Server) getWorkloadList(c *gin.Context) {
+	c.JSON(http.StatusOK, s.benchmarkTypes)
+}
+
 func (s *Server) getRecentExecutions(c *gin.Context) {
 	execs, err := exec.GetRecentExecutions(s.dbClient)
 	if err != nil {
@@ -324,7 +328,7 @@ func (s *Server) getDailySummary(c *gin.Context) {
 }
 
 func (s *Server) getDaily(c *gin.Context) {
-	benchmarkType := c.Query("type")
+	benchmarkType := c.Query("workload")
 	data, err := macrobench.SearchForLastDays(s.dbClient, benchmarkType, macrobench.Gen4Planner, 31)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})

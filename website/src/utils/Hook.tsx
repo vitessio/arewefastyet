@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { errorApi } from "./Utils";
 
@@ -25,6 +25,7 @@ const useApiCall = <T,>(url: string) : { data: T[], isLoading: boolean, error: s
   const [textLoading, setTextLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     setTextLoading(true);
     const fetchData = async () => {
       try {
