@@ -19,8 +19,8 @@ import { useNavigate } from "react-router-dom";
 
 import { Separator } from "@/components/ui/separator";
 import DailyCharts from "./components/DailyCharts";
-import DailyHero from "./components/DailyHero";
 import DailDailySummary from "./components/DailyDailySummary";
+import DailyHero from "./components/DailyHero";
 
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);

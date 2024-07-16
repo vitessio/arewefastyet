@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { errorApi } from "./Utils";
 

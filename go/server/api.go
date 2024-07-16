@@ -51,6 +51,11 @@ type RecentExecutions struct {
 	FinishedAt    *time.Time `json:"finished_at"`
 }
 
+func (s *Server) getWorkloadList(c *gin.Context) {
+	slog.Info("getWorkloadList", s.benchmarkTypes);
+	c.JSON(http.StatusOK, s.benchmarkTypes)
+}
+
 func (s *Server) getRecentExecutions(c *gin.Context) {
 	execs, err := exec.GetRecentExecutions(s.dbClient)
 	if err != nil {

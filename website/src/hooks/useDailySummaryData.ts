@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { DailySummarydata, Workloads } from "@/types";
+import { DailySummarydata } from "@/types";
 import useApiCall from "@/utils/Hook";
 
-export default function useDailySummaryData(workloads: Workloads[]) {
+export default function useDailySummaryData(workloads: string[]) {
   const workloadsQuery = workloads.join("&workload=");
 
   const {

@@ -17,7 +17,7 @@ limitations under the License.
 import DailySummary from "@/common/DailySummary";
 import { Skeleton } from "@/components/ui/skeleton";
 import useDailySummaryData from "@/hooks/useDailySummaryData";
-import { Workloads } from "@/types";
+import useApiCall from "@/utils/Hook";
 
 export type DailDailySummaryProps = {
   workload: string;
@@ -26,15 +26,11 @@ export type DailDailySummaryProps = {
 
 export default function DailyDailySummary(props: DailDailySummaryProps) {
   const { workload, setWorkload } = props;
-  const workloads: Workloads[] = [
-    "OLTP",
-    "OLTP-READONLY",
-    "OLTP-SET",
-    "TPCC",
-    "TPCC_FK",
-    "TPCC_UNSHARDED",
-    "TPCC_FK_UNMANAGED",
-  ];
+  const {data: workloads} = useApiCall<string>(
+    `${import.meta.env.VITE_API_URL}workloads`
+  );
+
+  console.log({workloads});
 
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
     useDailySummaryData(workloads);
