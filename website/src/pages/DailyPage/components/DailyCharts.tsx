@@ -77,6 +77,42 @@ const chartConfig: { [key: string]: { label: string; color: string } } = {
   },
 };
 
+const chartMetadas = [
+  {
+    title: "QPS (Queries per second)",
+    metrics: [
+      { dataKey: "qpsReads", legend: "QPS Reads" },
+      { dataKey: "qpsTotal", legend: "QPS Total" },
+      { dataKey: "qpsWrites", legend: "QPS Writes" },
+      { dataKey: "qpsOther", legend: "QPS Other" },
+    ],
+  },
+  {
+    title: "TPS (Transactions per second)",
+    metrics: [{ dataKey: "tps", legend: "TPS" }],
+  },
+  {
+    title: "Latency (ms)",
+    metrics: [{ dataKey: "latency", legend: "Latency" }],
+  },
+  {
+    title: "CPU / query (μs)",
+    metrics: [
+      { dataKey: "cpuTimeTotal", legend: "CPU Time Total" },
+      { dataKey: "cpuTimeVtgate", legend: "CPU Time Vtgate" },
+      { dataKey: "cpuTimeVttablet", legend: "CPU Time Vttablet" },
+    ],
+  },
+  {
+    title: "Allocated / query (bytes)",
+    metrics: [
+      { dataKey: "memBytesTotal", legend: "Mem Bytes Total" },
+      { dataKey: "memBytesVtgate", legend: "Mem Bytes Vtgate" },
+      { dataKey: "memBytesVttablet", legend: "Mem Bytes Vttablet" },
+    ],
+  },
+];
+
 export default function DailyCharts(props: DailyChartsProps) {
   const { workload } = props;
   const workloads: Workloads[] = [
@@ -101,7 +137,7 @@ export default function DailyCharts(props: DailyChartsProps) {
 
   let chartData: DailyDataType[] = [];
 
-  if (dataDaily) {
+  if (dataDaily.length > 0) {
     chartData = dataDaily.map((item) => ({
       gitRef: item.git_ref.slice(0, 8),
       qpsReads: item.reads_qps.center,
@@ -124,29 +160,6 @@ export default function DailyCharts(props: DailyChartsProps) {
       memBytesVttablet: item.components_mem_stats_alloc_bytes.vttablet.center,
     }));
   }
-
-  const chartMetadas = [
-    {
-      title: "QPS (Queries per second)",
-      dataKeys: ["qpsReads", "qpsTotal", "qpsWrites", "qpsOther"],
-    },
-    {
-      title: "TPS (Transactions per second)",
-      dataKeys: ["tps"],
-    },
-    {
-      title: "Latency (ms)",
-      dataKeys: ["latency"],
-    },
-    {
-      title: "CPU / query (μs)",
-      dataKeys: ["cpuTimeTotal", "cpuTimeVtgate", "cpuTimeVttablet"],
-    },
-    {
-      title: "Allocated / query (bytes)",
-      dataKeys: ["memBytesTotal", "memBytesVtgate", "memBytesVttablet"],
-    },
-  ];
 
   const [expandedStates, setExpandedStates] = useState<boolean[]>(
     Array(chartMetadas.length).fill(true)
@@ -219,24 +232,31 @@ export default function DailyCharts(props: DailyChartsProps) {
                           cursor={true}
                           content={<CustomTooltip />}
                         />
-                        {chartMetadata.dataKeys.map((dataKey, dataKeyIndex) => (
+                        {chartMetadata.metrics.map((metric, dataKeyIndex) => (
                           <Line
                             key={dataKeyIndex}
                             className="pb-0 pt-0"
-                            dataKey={dataKey}
+                            dataKey={metric.dataKey}
                             type="natural"
-                            label={chartConfig[dataKey].label}
-                            stroke={chartConfig[dataKey].color}
+                            label={chartConfig[metric.dataKey].label}
+                            stroke={chartConfig[metric.dataKey].color}
                             strokeWidth={2}
                             dot={{
-                              fill: chartConfig[dataKey].color,
+                              fill: chartConfig[metric.dataKey].color,
                             }}
                             activeDot={{
                               r: 6,
                             }}
                           />
                         ))}
-                        <Legend />
+                        <Legend
+                          payload={chartMetadata.metrics.map((metric) => ({
+                            id: metric.dataKey,
+                            type: "circle",
+                            value: metric.legend,
+                            color: chartConfig[metric.dataKey].color,
+                          }))}
+                        />
                       </LineChart>
                     </ChartContainer>
                   </div>

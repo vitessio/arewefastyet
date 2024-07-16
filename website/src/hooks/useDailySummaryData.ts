@@ -18,14 +18,14 @@ import { DailySummarydata, Workloads } from "@/types";
 import useApiCall from "@/utils/Hook";
 
 export default function useDailySummaryData(workloads: Workloads[]) {
-  const workloadsQuery = workloads.join("&workloads=");
+  const workloadsQuery = workloads.join("&workload=");
 
   const {
     data: dataDailySummary,
     isLoading: isLoadingDailySummary,
     error: dailySummaryError,
   } = useApiCall<DailySummarydata>(
-    `${import.meta.env.VITE_API_URL}daily/summary?workloads=${workloadsQuery}`
+    `${import.meta.env.VITE_API_URL}daily/summary?workload=${workloadsQuery}`
   );
 
   if (dailySummaryError || dataDailySummary.length === 0) {
