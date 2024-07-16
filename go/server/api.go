@@ -52,7 +52,6 @@ type RecentExecutions struct {
 }
 
 func (s *Server) getWorkloadList(c *gin.Context) {
-	slog.Info("getWorkloadList", s.benchmarkTypes);
 	c.JSON(http.StatusOK, s.benchmarkTypes)
 }
 
