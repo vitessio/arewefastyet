@@ -116,24 +116,13 @@ const chartMetadas = [
 
 export default function DailyCharts(props: DailyChartsProps) {
   const { workload } = props;
-  const workloads: Workloads[] = [
-    "OLTP",
-    "OLTP-READONLY",
-    "OLTP-SET",
-    "TPCC",
-    "TPCC_FK",
-    "TPCC_UNSHARDED",
-    "TPCC_FK_UNMANAGED",
-  ];
-
-  const workloadsQuery = workloads.join("&workload=");
 
   const {
     data: dataDaily,
     error: dailyError,
     isLoading: dailyLoading,
   } = useApiCall<MacroData>(
-    `${import.meta.env.VITE_API_URL}daily?workload=${workloadsQuery}`
+    `${import.meta.env.VITE_API_URL}daily?workload=${workload}`
   );
 
   let chartData: DailyDataType[] = [];

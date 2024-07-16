@@ -30,8 +30,6 @@ export default function DailyDailySummary(props: DailDailySummaryProps) {
     `${import.meta.env.VITE_API_URL}workloads`
   );
 
-  console.log({workloads});
-
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
     useDailySummaryData(workloads);
 
