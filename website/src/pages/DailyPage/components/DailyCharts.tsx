@@ -17,7 +17,7 @@ limitations under the License.
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MacroData, Workloads } from "@/types";
+import { MacroData } from "@/types";
 import useApiCall from "@/utils/Hook";
 import { formatGitRef } from "@/utils/Utils";
 import { useEffect, useState } from "react";
@@ -137,13 +137,13 @@ export default function DailyCharts(props: DailyChartsProps) {
     data: dataDaily,
     error: dailyError,
     isLoading: dailyLoading,
-  } = useApiCall<MacroData>(
+  } = useApiCall<MacroData[]>(
     `${import.meta.env.VITE_API_URL}daily?workload=${workload}`
   );
 
   let chartData: DailyDataType[] = [];
 
-  if (dataDaily.length > 0) {
+  if (dataDaily !== null && dataDaily.length > 0) {
     chartData = dataDaily.map((item) => ({
       gitRef: formatGitRef(item.git_ref),
       qpsReads: item.reads_qps.center,

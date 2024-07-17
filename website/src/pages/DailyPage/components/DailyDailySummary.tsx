@@ -26,19 +26,19 @@ export type DailDailySummaryProps = {
 
 export default function DailyDailySummary(props: DailDailySummaryProps) {
   const { workload, setWorkload } = props;
-  const {data: workloads} = useApiCall<string>(
+  const {data: workloads} = useApiCall<string[]>(
     `${import.meta.env.VITE_API_URL}workloads`
   );
 
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
-    useDailySummaryData(workloads);
+    useDailySummaryData(workloads || []);
 
   return (
     <>
       <section className="flex p-page flex-wrap justify-center gap-12 p-4">
         {isLoadingDailySummary && (
           <>
-            {workloads.map((_, index) => {
+            {workloads?.map((_, index) => {
               return (
                 <Skeleton
                   key={index}

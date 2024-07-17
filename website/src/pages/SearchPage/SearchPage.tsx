@@ -31,7 +31,7 @@ export default function SearchPage() {
     data: dataSearch,
     isLoading: isSearchLoading,
     error: searchError,
-  } = useApiCall<SearchData>(
+  } = useApiCall<SearchData[]>(
     `${import.meta.env.VITE_API_URL}search?sha=${gitRef}`
   );
 

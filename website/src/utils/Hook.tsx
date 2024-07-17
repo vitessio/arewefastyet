@@ -18,25 +18,21 @@ import { useEffect, useState } from "react";
 
 import { errorApi } from "./Utils";
 
-const useApiCall = <T,>(url: string) : { data: T[], isLoading: boolean, error: string | null, textLoading: boolean } => {
-  const [data, setData] = useState<T[]>([]);
+export default function useApiCall<T,>(url: string) : { data: T | null, isLoading: boolean, error: string | null } {
+  const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [textLoading, setTextLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    setTextLoading(true);
     const fetchData = async () => {
       try {
         const response = await fetch(url);
         const jsonData = await response.json();
-        setTextLoading(false);
         setData(jsonData);
         setIsLoading(false);
       } catch (error) {
         console.log("Error while retrieving data from the API", error);
-        setTextLoading(false);
         setError(errorApi);
         setIsLoading(false);
       }
@@ -45,7 +41,5 @@ const useApiCall = <T,>(url: string) : { data: T[], isLoading: boolean, error: s
     fetchData();
   }, [url]);
 
-  return { data, isLoading, error, textLoading };
+  return { data, isLoading, error };
 };
-
-export default useApiCall;

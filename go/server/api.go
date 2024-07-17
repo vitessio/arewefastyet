@@ -39,16 +39,40 @@ type ErrorAPI struct {
 	Error string `json:"error"`
 }
 
+type ExecutionQueue struct {
+	Source   string `json:"source"`
+	GitRef   string `json:"git_ref"`
+	Workload string `json:"workload"`
+	PullNb   int    `json:"pull_nb"`
+}
+
 type RecentExecutions struct {
 	UUID          string     `json:"uuid"`
 	Source        string     `json:"source"`
 	GitRef        string     `json:"git_ref"`
 	Status        string     `json:"status"`
-	TypeOf        string     `json:"type_of"`
+	Workload      string     `json:"workload"`
 	PullNb        int        `json:"pull_nb"`
 	GolangVersion string     `json:"golang_version"`
 	StartedAt     *time.Time `json:"started_at"`
 	FinishedAt    *time.Time `json:"finished_at"`
+}
+
+type ExecutionMetadatas struct {
+	Workloads  []string           `json:"workloads"`
+	Sources    []string           `json:"sources"`
+	Statuses   []string           `json:"statuses"`
+}
+
+type RecentExecutionsResponse struct {
+	Executions []RecentExecutions `json:"executions"`
+	ExecutionMetadatas
+}
+
+
+type ExecutionQueueResponse struct {
+	Executions []ExecutionQueue `json:"executions"`
+	ExecutionMetadatas
 }
 
 func (s *Server) getWorkloadList(c *gin.Context) {
@@ -62,40 +86,59 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 		slog.Error(err)
 		return
 	}
-	recentExecs := make([]RecentExecutions, 0, len(execs))
+	response := RecentExecutionsResponse{
+		Executions: make([]RecentExecutions, 0, len(execs)),
+	}
 	for _, e := range execs {
-		recentExecs = append(recentExecs, RecentExecutions{
+		response.Executions = append(response.Executions, RecentExecutions{
 			UUID:          e.RawUUID,
 			Source:        e.Source,
 			GitRef:        e.GitRef,
 			Status:        e.Status,
-			TypeOf:        e.TypeOf,
+			Workload:      e.Workload,
 			PullNb:        e.PullNB,
 			GolangVersion: e.GolangVersion,
 			StartedAt:     e.StartedAt,
 			FinishedAt:    e.FinishedAt,
 		})
+		if !slices.Contains(response.Workloads, e.Workload) {
+			response.Workloads = append(response.Workloads, e.Workload)
+		}
+		if !slices.Contains(response.Statuses, e.Status) {
+			response.Statuses = append(response.Statuses, e.Status)
+		}
+		if !slices.Contains(response.Sources, e.Source) {
+			response.Sources = append(response.Sources, e.Source)
+		}
 	}
-	c.JSON(http.StatusOK, recentExecs)
+	c.JSON(http.StatusOK, response)
 }
 
 func (s *Server) getExecutionsQueue(c *gin.Context) {
-	recentExecs := make([]RecentExecutions, 0, len(queue))
+	response := ExecutionQueueResponse{
+		Executions: make([]ExecutionQueue, 0, len(queue)),
+	}
 	for _, e := range queue {
 		if e.Executing {
 			continue
 		}
-		recentExecs = append(recentExecs, RecentExecutions{
-			Source: e.identifier.Source,
-			GitRef: e.identifier.GitRef,
-			TypeOf: e.identifier.BenchmarkType,
-			PullNb: e.identifier.PullNb,
+		response.Executions = append(response.Executions, ExecutionQueue{
+			Source:   e.identifier.Source,
+			GitRef:   e.identifier.GitRef,
+			Workload: e.identifier.Workload,
+			PullNb:   e.identifier.PullNb,
 		})
+		if !slices.Contains(response.Workloads, e.identifier.Workload) {
+			response.Workloads = append(response.Workloads, e.identifier.Workload)
+		}
+		if !slices.Contains(response.Sources, e.identifier.Source) {
+			response.Sources = append(response.Sources, e.identifier.Source)
+		}
 	}
-	sort.Slice(recentExecs, func(i, j int) bool {
-		return recentExecs[i].GitRef > recentExecs[j].GitRef && recentExecs[i].Source > recentExecs[j].Source
+	sort.Slice(response.Executions, func(i, j int) bool {
+		return response.Executions[i].GitRef > response.Executions[j].GitRef && response.Executions[i].Source > response.Executions[j].Source
 	})
-	c.JSON(http.StatusOK, recentExecs)
+	c.JSON(http.StatusOK, response)
 }
 
 type VitessGitRef struct {
