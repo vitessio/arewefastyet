@@ -25,7 +25,7 @@ import { ExecutionQueueTable } from "./ExecutionTable";
 
 export default function ExecutionQueue() {
   const { data: dataExecutionQueue, isLoading } =
-    useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}recent`);
+    useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}queue`);
 
   if (
     dataExecutionQueue === null ||
