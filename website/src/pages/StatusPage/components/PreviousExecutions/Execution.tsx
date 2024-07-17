@@ -56,8 +56,6 @@ export default function PreviousExecution() {
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Previous Executions
         </h3>
-        {isLoading && <div>Loading...</div>}
-        {dataPreviousExecution === null && <div>No data found</div>}
         {dataPreviousExecution !== null && (
           <PreviousExecutionQueueTable
             columns={columns}
