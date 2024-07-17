@@ -23,14 +23,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fixed, formatGitRef } from "@/utils/Utils";
+import { MacroDataValue } from "@/types";
+import {
+  fixed,
+  formatByte,
+  formatGitRef,
+  secondToMicrosecond,
+} from "@/utils/Utils";
 
 type MacroBenchmarkTableDataRow = {
   title: string;
-  old: number;
-  new: number;
+  old: MacroDataValue;
+  new: MacroDataValue;
   p: number;
   delta: number;
+  insignificant: boolean;
 };
 
 export type MacroBenchmarkTableData = {
@@ -64,11 +71,23 @@ const getBadgeVariant = (delta: number) => {
   }
 };
 
+const formatCellValue = (key: string, value: any) => {
+  if (key.includes("CpuTime")) {
+    return secondToMicrosecond(value);
+  } else if (key.includes("MemStatsAllocBytes")) {
+    return formatByte(value);
+  }
+  return value;
+};
+
 export default function MacroBenchmarkTable({
   data,
   newGitRef,
   oldGitRef,
 }: MacroBenchmarkTableProps) {
+  if (!data) {
+    return null;
+  }
   const dataKeys = Object.keys(data);
   const classNameMap: { [key: string]: string } = {
     qpsTotal: "bg-background border-b light:border-foreground",
@@ -110,10 +129,16 @@ export default function MacroBenchmarkTable({
               {data[key as keyof MacroBenchmarkTableData].title}
             </TableCell>
             <TableCell className="text-center">
-              {data[key as keyof MacroBenchmarkTableData].old}
+              {formatCellValue(
+                key,
+                data[key as keyof MacroBenchmarkTableData].old.center
+              )}
             </TableCell>
             <TableCell className="text-center border-r border-border">
-              {data[key as keyof MacroBenchmarkTableData].new}
+              {formatCellValue(
+                key,
+                data[key as keyof MacroBenchmarkTableData].new.center
+              )}
             </TableCell>
             <TableCell className="text-center">
               {fixed(data[key as keyof MacroBenchmarkTableData].p, 3)}
