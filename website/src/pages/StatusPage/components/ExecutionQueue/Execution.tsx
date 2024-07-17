@@ -31,7 +31,7 @@ export default function ExecutionQueue() {
     dataExecutionQueue === null ||
     dataExecutionQueue.executions.length === 0
   ) {
-    return <></ >;
+    return <></>;
   }
 
   let filterConfigs: FilterConfigs[] = [
