@@ -29,7 +29,7 @@ export type PreviousExecutionExecution = {
   source: string;
   git_ref: string;
   status: string;
-  type_of: string;
+  workload: string;
   pull_nb: string;
   golang_version: string;
   started_at: string;
