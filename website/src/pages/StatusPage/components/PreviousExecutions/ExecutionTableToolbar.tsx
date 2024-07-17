@@ -37,7 +37,7 @@ export function DataTableToolbar<TData>({
 
   return (
     <div className="flex items-center gap-8 md:gap-0 md:justify-between py-4 flex-row">
-      <div className="flex flex-1 md:flex-none h-full">
+      <div className="flex flex-1 gap-4 md:flex-none h-full">
         <Input
           placeholder="Filter executions..."
           value={(table.getColumn("git_ref")?.getFilterValue() as string) ?? ""}

@@ -16,42 +16,52 @@ limitations under the License.
 
 import { FilterConfigs } from "@/types";
 import useApiCall from "@/utils/Hook";
-import { ExecutionQueueExecution, ExecutionQueueType, columns } from "./Columns";
+import {
+  ExecutionQueueExecution,
+  ExecutionQueueType,
+  columns,
+} from "./Columns";
 import { ExecutionQueueTable } from "./ExecutionTable";
 
 export default function ExecutionQueue() {
   const { data: dataExecutionQueue, isLoading } =
-    useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}recent`);
+    useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}queue`);
 
-    const filterConfigs: FilterConfigs[] = [
-      {
-        column: "source",
-        title: "Source",
-        options:
+  if (
+    dataExecutionQueue === null ||
+    dataExecutionQueue.executions.length === 0
+  ) {
+    return <></ >;
+  }
+
+  let filterConfigs: FilterConfigs[] = [
+    {
+      column: "source",
+      title: "Source",
+      options:
         dataExecutionQueue?.sources?.map((source) => {
           return { label: source, value: source };
         }) || [],
-      },
-      {
-        column: "workload",
-        title: "Workload",
-        options:
-          dataExecutionQueue?.workloads.map((workload) => {
-            return { label: workload, value: workload };
-          }) || [],
-      },
-    ];
+    },
+    {
+      column: "workload",
+      title: "Workload",
+      options:
+        dataExecutionQueue?.workloads.map((workload) => {
+          return { label: workload, value: workload };
+        }) || [],
+    },
+  ];
 
-  const executionQueueData: ExecutionQueueExecution[] | undefined = dataExecutionQueue?.executions?.map(
-    (value) => {
+  const executionQueueData: ExecutionQueueExecution[] | undefined =
+    dataExecutionQueue?.executions?.map((value) => {
       return {
         source: value.source,
         git_ref: value.git_ref,
         workload: value.workload,
         pull_nb: value.pull_nb,
       };
-    }
-  );
+    });
 
   return (
     <>
@@ -62,7 +72,11 @@ export default function ExecutionQueue() {
         {isLoading && <div>Loading...</div>}
         {executionQueueData === null && <div>No data found</div>}
         {executionQueueData && (
-          <ExecutionQueueTable columns={columns} data={executionQueueData} filterConfigs={filterConfigs}/>
+          <ExecutionQueueTable
+            columns={columns}
+            data={executionQueueData}
+            filterConfigs={filterConfigs}
+          />
         )}{" "}
       </div>
     </>
