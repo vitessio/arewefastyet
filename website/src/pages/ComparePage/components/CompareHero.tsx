@@ -14,63 +14,124 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { twMerge } from "tailwind-merge";
 import Hero, { HeroProps } from "@/common/Hero";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { VitessRefs } from "@/types";
+import useApiCall from "@/utils/Hook";
+import { formatGitRef } from "@/utils/Utils";
+import { ChangeEvent, FocusEvent, useState } from "react";
 
 const heroProps: HeroProps = {
-  title: "Compare Versions"
+  title: "Compare Versions",
 };
 
-function ComparisonInput(props: {
-  className: any;
-  gitRef: any;
-  setGitRef: any;
-  name: any;
-}) {
-  const { className, gitRef, setGitRef, name } = props;
+export type CompareHeroProps = {
+  gitRef: { old: string; new: string };
+  setGitRef: React.Dispatch<
+    React.SetStateAction<{
+      old: string;
+      new: string;
+    }>
+  >;
+};
 
-  return (
-    <input
-      type="text"
-      name={name}
-      className={twMerge(
-        className,
-        "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary"
-      )}
-      defaultValue={gitRef[name]}
-      placeholder={`${name} SHA`}
-      onChange={(event) =>
-        setGitRef((p: any) => {
-          return { ...p, [name]: event.target.value };
-        })
-      }
-    />
-  );
-}
-
-export default function CompareHero(props: { gitRef: any; setGitRef: any }) {
+export default function CompareHero(props: CompareHeroProps) {
   const { gitRef, setGitRef } = props;
+  const [oldInputValue, setOldInputValue] = useState("");
+  const [newInputValue, setNewInputValue] = useState("");
+  const isButtonDisabled = !oldInputValue || !newInputValue;
+  const [oldListVisible, setOldListVisible] = useState(false);
+  const [newListVisible, setNewListVisible] = useState(false);
+
+  const {
+    data: vitessRefs,
+    isLoading: vitessRefsLoading,
+    error: vitessRefsError,
+  } = useApiCall<VitessRefs[]>(`${import.meta.env.VITE_API_URL}vitess/refs`);
+
+  const handleOldSelect = (commitHash: string) => {
+    setOldInputValue(commitHash);
+    setOldListVisible(false);
+  };
+
+  const handleNewSelect = (commitHash: string) => {
+    setNewInputValue(commitHash);
+  };
+
+  const compareClicked = () => {
+    setGitRef({ old: oldInputValue, new: newInputValue });
+  };
+
+  const handleOldInputFocus = () => setOldListVisible(true);
+  const handleNewInputFocus = () => setNewListVisible(true);
 
   return (
     <Hero title={heroProps.title}>
-      <div>
-        <h1 className="mb-3 text-front text-opacity-70">
-          Enter SHAs to compare commits
-        </h1>
-        <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
-          <ComparisonInput
-            name="old"
-            className="rounded-l-full"
-            setGitRef={setGitRef}
-            gitRef={gitRef}
+      <div className="flex flex-row gap-4">
+        <Command className="w-[300px] rounded-lg border shadow-md">
+          <CommandInput
+            placeholder="Search commits or releases..."
+            value={formatGitRef(oldInputValue)}
+            onInput={(e: ChangeEvent<HTMLInputElement>) =>
+              setOldInputValue(e.target.value)
+            }
+            onFocus={handleOldInputFocus}
           />
-          <ComparisonInput
-            name="new"
-            className="rounded-r-full "
-            setGitRef={setGitRef}
-            gitRef={gitRef}
+          {oldListVisible && (
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Releases">
+                {vitessRefs?.map((ref, index) => (
+                  <CommandItem
+                    key={index}
+                    onSelect={() => handleOldSelect(ref.CommitHash)}
+                  >
+                    <span>
+                      {ref.Name}
+                      <span className="hidden">{ref.CommitHash}</span>
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          )}
+        </Command>
+        <Command className="w-[300px] rounded-lg border shadow-md">
+          <CommandInput
+            placeholder="Search commits or releases..."
+            value={formatGitRef(newInputValue)}
+            onInput={(e: ChangeEvent<HTMLInputElement>) =>
+              setNewInputValue(e.target.value)
+            }
+            onFocus={handleNewInputFocus}
           />
-        </div>
+          {newListVisible && (
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Releases">
+                {vitessRefs?.map((ref, index) => (
+                  <CommandItem
+                    key={index}
+                    onSelect={() => handleNewSelect(ref.CommitHash)}
+                  >
+                    <span>{ref.Name}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          )}
+        </Command>
+        <Button onClick={compareClicked} disabled={isButtonDisabled}>
+          Compare
+        </Button>
       </div>
     </Hero>
   );
