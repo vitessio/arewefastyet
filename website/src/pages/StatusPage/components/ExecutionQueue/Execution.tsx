@@ -25,7 +25,7 @@ import { ExecutionQueueTable } from "./ExecutionTable";
 
 export default function ExecutionQueue() {
   const { data: dataExecutionQueue, isLoading } =
-    useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}queue`);
+    useApiCall<ExecutionQueueType>(`${import.meta.env.VITE_API_URL}recent`);
 
   if (
     dataExecutionQueue === null ||
@@ -65,12 +65,10 @@ export default function ExecutionQueue() {
 
   return (
     <>
-      <div className="mx-auto w-[50vw] my-12 flex flex-col">
+      <div className="mx-auto p-page lg:w-[50vw] my-12 flex flex-col">
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Execution Queue
         </h3>
-        {isLoading && <div>Loading...</div>}
-        {executionQueueData === null && <div>No data found</div>}
         {executionQueueData && (
           <ExecutionQueueTable
             columns={columns}
