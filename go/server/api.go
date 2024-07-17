@@ -59,16 +59,15 @@ type RecentExecutions struct {
 }
 
 type ExecutionMetadatas struct {
-	Workloads  []string           `json:"workloads"`
-	Sources    []string           `json:"sources"`
-	Statuses   []string           `json:"statuses"`
+	Workloads []string `json:"workloads"`
+	Sources   []string `json:"sources"`
+	Statuses  []string `json:"statuses"`
 }
 
 type RecentExecutionsResponse struct {
 	Executions []RecentExecutions `json:"executions"`
 	ExecutionMetadatas
 }
-
 
 type ExecutionQueueResponse struct {
 	Executions []ExecutionQueue `json:"executions"`
@@ -153,7 +152,13 @@ type VitessGitRef struct {
 	FinishedAt    *time.Time `json:"finished_at"`
 }
 
+type VitessGitRefReleases struct {
+	Tags     []*git.Release `json:"tags"`
+	Branches []*git.Release `json:"branches"`
+}
+
 func (s *Server) getLatestVitessGitRef(c *gin.Context) {
+	var response VitessGitRefReleases
 	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
@@ -166,11 +171,11 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 		slog.Error(err)
 		return
 	}
-	mainRelease := []*git.Release{{
+	mainRelease := &git.Release{
 		Name:       "main",
 		CommitHash: lastrunDailySHA,
-	}}
-	allReleases = append(mainRelease, allReleases...)
+	}
+	response.Branches = append(response.Branches, mainRelease)
 	// get all the latest release branches as well
 	allReleaseBranches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath())
 	if err != nil {
@@ -178,9 +183,10 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 		slog.Error(err)
 		return
 	}
-	allReleases = append(allReleases, allReleaseBranches...)
+	response.Branches = append(response.Branches, allReleaseBranches...)
+	response.Tags = allReleases
 
-	c.JSON(http.StatusOK, allReleases)
+	c.JSON(http.StatusOK, response)
 }
 
 type CompareMacrobench struct {

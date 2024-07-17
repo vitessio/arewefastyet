@@ -27,7 +27,7 @@ import {
 import { VitessRefs } from "@/types";
 import useApiCall from "@/utils/Hook";
 import { formatGitRef } from "@/utils/Utils";
-import { ChangeEvent, FocusEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 const heroProps: HeroProps = {
   title: "Compare Versions",
@@ -55,7 +55,9 @@ export default function CompareHero(props: CompareHeroProps) {
     data: vitessRefs,
     isLoading: vitessRefsLoading,
     error: vitessRefsError,
-  } = useApiCall<VitessRefs[]>(`${import.meta.env.VITE_API_URL}vitess/refs`);
+  } = useApiCall<VitessRefs>(`${import.meta.env.VITE_API_URL}vitess/refs`);
+
+  console.log({vitessRefs});
 
   const handleOldSelect = (commitHash: string) => {
     setOldInputValue(commitHash);
@@ -88,15 +90,28 @@ export default function CompareHero(props: CompareHeroProps) {
           {oldListVisible && (
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Releases">
-                {vitessRefs?.map((ref, index) => (
+              <CommandGroup heading="Branches">
+                {vitessRefs?.branches?.map((ref, index) => (
                   <CommandItem
                     key={index}
-                    onSelect={() => handleOldSelect(ref.CommitHash)}
+                    onSelect={() => handleOldSelect(ref.commit_hash)}
                   >
                     <span>
-                      {ref.Name}
-                      <span className="hidden">{ref.CommitHash}</span>
+                      {ref.name}
+                      {/* <span className="hidden">{ref.commit_hash}</span> */}
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              <CommandGroup heading="Releases">
+                {vitessRefs?.tags?.map((ref, index) => (
+                  <CommandItem
+                    key={index}
+                    onSelect={() => handleOldSelect(ref.commit_hash)}
+                  >
+                    <span>
+                      {ref.name}
+                      <span className="hidden">{ref.commit_hash}</span>
                     </span>
                   </CommandItem>
                 ))}
@@ -104,7 +119,7 @@ export default function CompareHero(props: CompareHeroProps) {
             </CommandList>
           )}
         </Command>
-        <Command className="w-[300px] rounded-lg border shadow-md">
+        {/* <Command className="w-[300px] rounded-lg border shadow-md">
           <CommandInput
             placeholder="Search commits or releases..."
             value={formatGitRef(newInputValue)}
@@ -128,7 +143,7 @@ export default function CompareHero(props: CompareHeroProps) {
               </CommandGroup>
             </CommandList>
           )}
-        </Command>
+        </Command> */}
         <Button onClick={compareClicked} disabled={isButtonDisabled}>
           Compare
         </Button>

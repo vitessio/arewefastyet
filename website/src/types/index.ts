@@ -144,13 +144,18 @@ export type FilterConfigs = {
   }[];
 };
 
-export type VitessRefs = {
-  Name: string;
-  CommitHash: string;
-  Version: {
-    Major: number;
-    Minor: number;
-    Patch: number;
+export type VitessRefsData = {
+  name: string;
+  commit_hash: string;
+  version: {
+    major: number;
+    minor: number;
+    patch: number;
   };
   cnumber: number;
 }
+
+export type VitessRefs = {
+  tags: VitessRefsData[];
+  branches: VitessRefsData[];
+};
