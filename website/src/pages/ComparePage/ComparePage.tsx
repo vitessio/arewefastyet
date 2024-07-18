@@ -46,8 +46,6 @@ export default function Compare() {
     }`
   );
 
-  console.log({ compareData });
-
   const formattedData: MacroBenchmarkTableData[] =
     compareData?.map((data: CompareData) => {
       return {
@@ -98,6 +96,14 @@ export default function Compare() {
           p: data.result.latency.p,
           delta: data.result.latency.delta,
           insignificant: data.result.latency.insignificant,
+        },
+        errors: {
+          title: "Errors",
+          old: data.result.errors.old,
+          new: data.result.errors.new,
+          p: data.result.errors.p,
+          delta: data.result.errors.delta,
+          insignificant: data.result.errors.insignificant,
         },
         totalComponentsCpuTime: {
           title: "Total CPU / Query",

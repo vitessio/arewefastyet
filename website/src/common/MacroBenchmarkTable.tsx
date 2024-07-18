@@ -23,7 +23,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MacroDataValue } from "@/types";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { MacroDataValue, Range } from "@/types";
 import {
   fixed,
   formatByte,
@@ -47,6 +53,7 @@ export type MacroBenchmarkTableData = {
   qpsOther: MacroBenchmarkTableDataRow;
   tps: MacroBenchmarkTableDataRow;
   latency: MacroBenchmarkTableDataRow;
+  errors: MacroBenchmarkTableDataRow;
   totalComponentsCpuTime: MacroBenchmarkTableDataRow;
   vtgateCpuTime: MacroBenchmarkTableDataRow;
   vttabletCpuTime: MacroBenchmarkTableDataRow;
@@ -61,14 +68,11 @@ export type MacroBenchmarkTableProps = {
   newGitRef: string;
 };
 
-const getBadgeVariant = (delta: number) => {
-  if (delta < 0) {
+const getPBadgeVariant = (p: number) => {
+  if (p < 0.05) {
     return "success";
-  } else if (delta === 0) {
-    return "warning";
-  } else {
-    return "destructive";
   }
+  return "destructive";
 };
 
 const formatCellValue = (key: string, value: any) => {
@@ -80,6 +84,19 @@ const formatCellValue = (key: string, value: any) => {
   return value;
 };
 
+export function getRange(range: Range) {
+  if (range.infinite == true) {
+    return "∞";
+  }
+  if (range.unknown == true) {
+    return "?";
+  }
+  return "±" + fixed(range.value, 1) + "%";
+}
+
+// Type-safe function to access properties
+const getValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
+
 export default function MacroBenchmarkTable({
   data,
   newGitRef,
@@ -88,7 +105,7 @@ export default function MacroBenchmarkTable({
   if (!data) {
     return null;
   }
-  const dataKeys = Object.keys(data);
+  const dataKeys = Object.keys(data) as Array<keyof MacroBenchmarkTableData>;
   const classNameMap: { [key: string]: string } = {
     qpsTotal: "bg-background border-b light:border-foreground",
     qpsReads: "bg-muted hover:bg-muted/120",
@@ -96,6 +113,7 @@ export default function MacroBenchmarkTable({
     qpsOther: "bg-muted hover:bg-muted/120 border-b light:border-foreground",
     tps: "bg-background",
     latency: "bg-background",
+    errors: "bg-background",
     totalComponentsCpuTime: "bg-background border-b light:border-foreground",
     vtgateCpuTime: "bg-muted hover:bg-muted/120 ",
     vttabletCpuTime:
@@ -123,37 +141,48 @@ export default function MacroBenchmarkTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {dataKeys.map((key, index) => (
-          <TableRow key={index} className={classNameMap[key]}>
-            <TableCell className="w-[200px] font-medium text-right border-r border-border">
-              {data[key as keyof MacroBenchmarkTableData].title}
-            </TableCell>
-            <TableCell className="text-center">
-              {formatCellValue(
-                key,
-                data[key as keyof MacroBenchmarkTableData].old.center
-              )}
-            </TableCell>
-            <TableCell className="text-center border-r border-border">
-              {formatCellValue(
-                key,
-                data[key as keyof MacroBenchmarkTableData].new.center
-              )}
-            </TableCell>
-            <TableCell className="text-center">
-              {fixed(data[key as keyof MacroBenchmarkTableData].p, 3)}
-            </TableCell>
-            <TableCell className="text-center">
-              <Badge
-                variant={getBadgeVariant(
-                  data[key as keyof MacroBenchmarkTableData].delta
+        {dataKeys.map((key, index) => {
+          const row = getValue(data, key);
+          return (
+            <TableRow key={index} className={classNameMap[key]}>
+              <TableCell className="w-[200px] font-medium text-right border-r border-border">
+                {row.title}
+              </TableCell>
+              <TableCell className="text-center">
+                {formatCellValue(key, row.old.center)} (
+                {getRange(row.old.range)})
+              </TableCell>
+              <TableCell className="text-center border-r border-border">
+                {formatCellValue(key, row.new.center)} (
+                {getRange(row.new.range)})
+              </TableCell>
+              <TableCell className="text-center">
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Badge variant={getPBadgeVariant(row.p)}>
+                          {fixed(row.p, 3)}
+                        </Badge>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {row.insignificant ? "Significant" : "Insignificant"}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+              <TableCell className="text-center">
+                {row.p <= 0.05 && (
+                  <Badge variant="success">{fixed(row.delta, 3)}</Badge>
                 )}
-              >
-                {data[key as keyof MacroBenchmarkTableData].delta}
-              </Badge>
-            </TableCell>
-          </TableRow>
-        ))}
+                {row.p > 0.05 && <>{fixed(row.delta, 3)}</>}
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
