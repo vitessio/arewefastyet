@@ -19,7 +19,7 @@ import CommandComponent from "@/common/VitessRefsCommand";
 import { Button } from "@/components/ui/button";
 import { VitessRefs } from "@/types";
 import useApiCall from "@/utils/Hook";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const heroProps: HeroProps = {
   title: "Compare Versions",
@@ -37,36 +37,53 @@ export type CompareHeroProps = {
 
 export default function CompareHero(props: CompareHeroProps) {
   const { gitRef, setGitRef } = props;
-  const [oldGitRef, setOldGitRef] = useState("");
-  const [newGitRef, setNewGitRef] = useState("");
+  const [oldGitRef, setOldGitRef] = useState(gitRef.old);
+  const [newGitRef, setNewGitRef] = useState(gitRef.new);
   const isButtonDisabled = !oldGitRef || !newGitRef;
-  const [oldListVisible, setOldListVisible] = useState(false);
-  const [newListVisible, setNewListVisible] = useState(false);
 
-  const {
-    data: vitessRefs,
-  } = useApiCall<VitessRefs>(`${import.meta.env.VITE_API_URL}vitess/refs`);
+  const { data: vitessRefs } = useApiCall<VitessRefs>(
+    `${import.meta.env.VITE_API_URL}vitess/refs`
+  );
 
   const compareClicked = () => {
     setGitRef({ old: oldGitRef, new: newGitRef });
   };
 
+  useEffect(() => {
+    setOldGitRef(gitRef.old);
+    setNewGitRef(gitRef.new);
+  }, [gitRef]);
+
   return (
     <Hero title={heroProps.title}>
-      <div className="flex flex-row gap-4">
-        <CommandComponent
-          inputLabel="Search commits or releases..."
-          setGitRef={setOldGitRef}
-          vitessRefs={vitessRefs}
-        />
-        <CommandComponent
-          inputLabel="Search commits or releases..."
-          setGitRef={setNewGitRef}
-          vitessRefs={vitessRefs}
-        />
-        <Button onClick={compareClicked} disabled={isButtonDisabled}>
-          Compare
-        </Button>
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col">
+          <label className="text-primary mb-2">Old</label>
+          <CommandComponent
+            inputLabel={"Search for commit or releases..."}
+            gitRef={oldGitRef}
+            setGitRef={setOldGitRef}
+            vitessRefs={vitessRefs}
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="text-primary mb-2">New</label>
+          <CommandComponent
+            inputLabel={"Search for commit or releases..."}
+            gitRef={newGitRef}
+            setGitRef={setNewGitRef}
+            vitessRefs={vitessRefs}
+          />
+        </div>
+        <div className="flex md:items-end items-center justify-center mt-4 md:mt-0">
+          <Button
+            onClick={compareClicked}
+            disabled={isButtonDisabled}
+            className="w-fit md:w-auto"
+          >
+            Compare
+          </Button>
+        </div>
       </div>
     </Hero>
   );

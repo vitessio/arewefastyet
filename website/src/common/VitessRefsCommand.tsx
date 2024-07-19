@@ -25,10 +25,11 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/library/utils";
 import { VitessRefs, VitessRefsData } from "@/types";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 interface VitessRefsCommandProps {
   inputLabel: string;
+  gitRef: string;
   setGitRef: (value: string) => void;
   vitessRefs: VitessRefs | null;
 }
@@ -37,10 +38,10 @@ export default function VitessRefsCommand({
   inputLabel,
   setGitRef,
   vitessRefs,
-  ...props
+  gitRef,
 }: VitessRefsCommandProps) {
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(gitRef);
   const [selectedRefName, setSelectedRefName] = useState("");
 
   const handleSelect = (vitessRef: VitessRefsData) => {
@@ -79,24 +80,27 @@ export default function VitessRefsCommand({
     return () => document.removeEventListener("keydown", down);
   }, []);
 
+  useEffect(() => {
+    setInputValue(gitRef);
+  }, [gitRef]);
+
   return (
     <>
       <Button
         variant="outline"
         className={cn(
-          "relative h-full w-full justify-start rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64 overflow-hidden"
+          "relative justify-start rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-4 w-full md:w-40 lg:w-64"
         )}
         onClick={() => setOpen(true)}
-        {...props}
       >
-        <span className="hidden lg:inline-flex w-fi">
-          {selectedRefName || inputLabel}
+        <span className="hidden lg:inline-flex overflow-hidden">
+          {selectedRefName || gitRef || inputLabel}
         </span>
-        <span className="inline-flex lg:hidden w-full">
-          {selectedRefName || "Search..."}
+        <span className="inline-flex lg:hidden overflow-hidden">
+          {selectedRefName || gitRef || "Search..."}
         </span>
       </Button>
-      <CommandDialog open={open} onOpenChange={setOpen} >
+      <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
           placeholder={inputLabel}
           value={inputValue}
@@ -104,6 +108,7 @@ export default function VitessRefsCommand({
             setInputValue(e.target.value)
           }
           onKeyDown={handleInputKeyDown}
+          className="w-full max-w-md mx-auto sm:max-w-lg lg:max-w-xl"
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>

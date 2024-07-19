@@ -21,12 +21,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CompareData } from "@/types";
 import useApiCall from "@/utils/Hook";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
 import CompareHero from "./components/CompareHero";
-import { PlusCircledIcon } from "@radix-ui/react-icons";
-
 
 export default function Compare() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -36,8 +35,15 @@ export default function Compare() {
     new: urlParams.get("new") || "",
   });
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
+  }, [gitRef.old, gitRef.new]);
+
+
   const {
-    data: compareData,
+    data: data,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
   } = useApiCall<CompareData[]>(
@@ -47,7 +53,7 @@ export default function Compare() {
   );
 
   const formattedData: MacroBenchmarkTableData[] =
-    compareData?.map((data: CompareData) => {
+    data?.map((data: CompareData) => {
       return {
         qpsTotal: {
           title: "QPS Total",
@@ -135,7 +141,8 @@ export default function Compare() {
           new: data.result.total_components_mem_stats_alloc_bytes.new,
           p: data.result.total_components_mem_stats_alloc_bytes.p,
           delta: data.result.total_components_mem_stats_alloc_bytes.delta,
-          insignificant: data.result.total_components_mem_stats_alloc_bytes.insignificant,
+          insignificant:
+            data.result.total_components_mem_stats_alloc_bytes.insignificant,
         },
         vtgateMemStatsAllocBytes: {
           title: "vtgate",
@@ -143,7 +150,8 @@ export default function Compare() {
           new: data.result.components_mem_stats_alloc_bytes.vtgate.new,
           p: data.result.components_mem_stats_alloc_bytes.vtgate.p,
           delta: data.result.components_mem_stats_alloc_bytes.vtgate.delta,
-          insignificant: data.result.components_mem_stats_alloc_bytes.vtgate.insignificant,
+          insignificant:
+            data.result.components_mem_stats_alloc_bytes.vtgate.insignificant,
         },
         vttabletMemStatsAllocBytes: {
           title: "vttablet",
@@ -151,16 +159,11 @@ export default function Compare() {
           new: data.result.components_mem_stats_alloc_bytes.vttablet.new,
           p: data.result.components_mem_stats_alloc_bytes.vttablet.p,
           delta: data.result.components_mem_stats_alloc_bytes.vttablet.delta,
-          insignificant: data.result.components_mem_stats_alloc_bytes.vttablet.insignificant,
+          insignificant:
+            data.result.components_mem_stats_alloc_bytes.vttablet.insignificant,
         },
       };
     }) || [];
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
-  }, [gitRef.old, gitRef.new]);
 
   return (
     <>
@@ -179,17 +182,21 @@ export default function Compare() {
         </div>
       )}
 
-      {!isMacrobenchLoading && compareData && compareData.length > 0 && (
+      {!isMacrobenchLoading && data && data.length > 0 && (
         <section className="flex flex-col items-center">
           <h3 className="my-6 text-primary text-2xl">Macro Benchmarks</h3>
-          {compareData.map((macro, index) => {
+          {data.map((macro, index) => {
             return (
               <div className="w-full p-page my-12" key={index}>
                 <Card className="border-border">
                   <CardHeader className="flex flex-row justify-between pt-6">
                     <CardTitle className="text-4xl">{macro.type}</CardTitle>
-                    <Button variant="outline" size="sm" className="h-8 border-dashed">
-                    <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 border-dashed"
+                    >
+                      <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
                       <Link
                         to={`/macrobench/queries/compare?ltag=${gitRef.old}&rtag=${gitRef.new}&type=${macro.type}`}
                       >
