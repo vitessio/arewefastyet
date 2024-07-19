@@ -57,15 +57,11 @@ export default function CompareHero(props: CompareHeroProps) {
         <CommandComponent
           inputLabel="Search commits or releases..."
           setGitRef={setOldGitRef}
-          listVisible={oldListVisible}
-          setListVisible={setOldListVisible}
           vitessRefs={vitessRefs}
         />
         <CommandComponent
           inputLabel="Search commits or releases..."
           setGitRef={setNewGitRef}
-          listVisible={newListVisible}
-          setListVisible={setNewListVisible}
           vitessRefs={vitessRefs}
         />
         <Button onClick={compareClicked} disabled={isButtonDisabled}>

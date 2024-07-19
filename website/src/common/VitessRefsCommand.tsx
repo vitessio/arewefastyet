@@ -14,77 +14,117 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { Button } from "@/components/ui/button";
 import {
-  Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { cn } from "@/library/utils";
 import { VitessRefs, VitessRefsData } from "@/types";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
 interface VitessRefsCommandProps {
   inputLabel: string;
   setGitRef: (value: string) => void;
-  listVisible: boolean;
-  setListVisible: (visible: boolean) => void;
   vitessRefs: VitessRefs | null;
 }
 
 export default function VitessRefsCommand({
   inputLabel,
   setGitRef,
-  listVisible,
-  setListVisible,
   vitessRefs,
+  ...props
 }: VitessRefsCommandProps) {
+  const [open, setOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [selectedRefName, setSelectedRefName] = useState("");
+
   const handleSelect = (vitessRef: VitessRefsData) => {
     setInputValue(vitessRef.name);
+    setSelectedRefName(vitessRef.name);
     setGitRef(vitessRef.commit_hash);
-    setTimeout(() => setListVisible(false), 100);
+    setOpen(false);
   };
 
-  const [inputValue, setInputValue] = useState("");
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setGitRef(inputValue);
+      setSelectedRefName(inputValue);
+      setOpen(false);
+    }
+  };
 
-  const handleInputFocus = () => setListVisible(true);
-  const handleInputBlur = () => setTimeout(() => setListVisible(false), 200);
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+        if (
+          (e.target instanceof HTMLElement && e.target.isContentEditable) ||
+          e.target instanceof HTMLInputElement ||
+          e.target instanceof HTMLTextAreaElement ||
+          e.target instanceof HTMLSelectElement
+        ) {
+          return;
+        }
+
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   return (
-    <div className="relative w-[300px]">
-      <Command className="rounded-lg border shadow-md">
+    <>
+      <Button
+        variant="outline"
+        className={cn(
+          "relative h-full w-full justify-start rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64 overflow-hidden"
+        )}
+        onClick={() => setOpen(true)}
+        {...props}
+      >
+        <span className="hidden lg:inline-flex w-fi">
+          {selectedRefName || inputLabel}
+        </span>
+        <span className="inline-flex lg:hidden w-full">
+          {selectedRefName || "Search..."}
+        </span>
+      </Button>
+      <CommandDialog open={open} onOpenChange={setOpen} >
         <CommandInput
           placeholder={inputLabel}
           value={inputValue}
           onInput={(e: ChangeEvent<HTMLInputElement>) =>
             setInputValue(e.target.value)
           }
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
+          onKeyDown={handleInputKeyDown}
         />
-        {listVisible && (
-          <CommandList className="absolute z-10 w-full bg-white border border-t-0 rounded-b-lg shadow-md mt-12">
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Branches">
-              {vitessRefs?.branches?.map((ref, index) => (
-                <CommandItem key={ref.name} onSelect={() => handleSelect(ref)}>
-                  <span>{ref.name}</span>
-                  <span className="hidden" >{ref.commit_hash}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-            <CommandGroup heading="Releases">
-              {vitessRefs?.tags?.map((ref, index) => (
-                <CommandItem key={index} onSelect={() => handleSelect(ref)}>
-                  <span>{ref.name}</span>
-                  <span hidden>{ref.commit_hash}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        )}
-      </Command>
-    </div>
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Branches">
+            {vitessRefs?.branches?.map((ref) => (
+              <CommandItem key={ref.name} onSelect={() => handleSelect(ref)}>
+                <span>{ref.name}</span>
+                <span className="hidden">{ref.commit_hash}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+          <CommandGroup heading="Releases">
+            {vitessRefs?.tags?.map((ref, index) => (
+              <CommandItem key={index} onSelect={() => handleSelect(ref)}>
+                <span>{ref.name}</span>
+                <span hidden>{ref.commit_hash}</span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </>
   );
 }
