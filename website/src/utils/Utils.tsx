@@ -48,7 +48,7 @@ export const formatByte = (byte: number) => {
 };
 
 export function fixed(value: number, fractionDigits: number): string {
-  if (value === null || typeof value === "undefined") {
+  if (value === null || typeof value === "undefined" || isNaN(value) || value === 0) {
     return "0";
   }
   return value.toFixed(fractionDigits);

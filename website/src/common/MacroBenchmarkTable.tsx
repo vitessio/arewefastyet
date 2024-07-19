@@ -68,9 +68,23 @@ export type MacroBenchmarkTableProps = {
   newGitRef: string;
 };
 
-const getPBadgeVariant = (p: number) => {
-  if (p < 0.05) {
-    return "success";
+const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
+  if (delta === 0) {
+    return "warning";
+  }
+  if (
+    key.includes("CpuTime") ||
+    key.includes("Mem") ||
+    key.includes("latency")
+  ) {
+    if (delta < 0) {
+      return "success";
+    }
+  }
+  if (key.includes("qps") || key.includes("tps")) {
+    if (delta > 0) {
+      return "success";
+    }
   }
   return "destructive";
 };
@@ -106,23 +120,25 @@ export default function MacroBenchmarkTable({
     return null;
   }
   const dataKeys = Object.keys(data) as Array<keyof MacroBenchmarkTableData>;
-  const classNameMap: { [key: string]: string } = {
-    qpsTotal: "bg-background border-b light:border-foreground",
-    qpsReads: "bg-muted hover:bg-muted/120",
-    qpsWrites: "bg-muted hover:bg-muted/120",
-    qpsOther: "bg-muted hover:bg-muted/120 border-b light:border-foreground",
+
+  // Use keyof MacroBenchmarkTableData to enforce key types
+  const classNameMap: { [key in keyof MacroBenchmarkTableData]: string } = {
+    qpsTotal: "border-b border-foreground dark:border-none",
+    qpsReads: "bg-muted/80",
+    qpsWrites: "bg-muted/80",
+    qpsOther: "bg-muted/80 border-b border-foreground dark:border-none",
     tps: "bg-background",
     latency: "bg-background",
     errors: "bg-background",
-    totalComponentsCpuTime: "bg-background border-b light:border-foreground",
-    vtgateCpuTime: "bg-muted hover:bg-muted/120 ",
+    totalComponentsCpuTime: "border-b border-foreground dark:border-none",
+    vtgateCpuTime: "bg-muted/80 ",
     vttabletCpuTime:
-      "bg-muted hover:bg-muted/120 border-b light:border-foreground",
+      "bg-muted/80 border-b border-foreground dark:border-none",
     totalComponentsMemStatsAllocBytes:
-      "bg-background border-b light:border-foreground",
-    vtgateMemStatsAllocBytes: "bg-muted hover:bg-muted/120",
+      "border-b border-foreground dark:border-none",
+    vtgateMemStatsAllocBytes: "bg-muted/80",
     vttabletMemStatsAllocBytes:
-      "bg-muted hover:bg-muted/120 border-b light:border-foreground",
+      "bg-muted/80 border-b border-foreground dark:border-none",
   };
 
   return (
@@ -148,37 +164,39 @@ export default function MacroBenchmarkTable({
               <TableCell className="w-[200px] font-medium text-right border-r border-border">
                 {row.title}
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell className="text-center text-front">
                 {formatCellValue(key, row.old.center)} (
                 {getRange(row.old.range)})
               </TableCell>
-              <TableCell className="text-center border-r border-border">
+              <TableCell className="text-center text-front border-r border-border">
                 {formatCellValue(key, row.new.center)} (
                 {getRange(row.new.range)})
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell className="text-center text-front">
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div>
-                        <Badge variant={getPBadgeVariant(row.p)}>
-                          {fixed(row.p, 3)}
+                        <Badge variant={row.p > 0.05 ? "destructive" : "success"}>
+                          {fixed(row.p, 3)}%
                         </Badge>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>
-                        {row.insignificant ? "Significant" : "Insignificant"}
+                        {row.insignificant ? "Insignificant" : "Significant"}
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </TableCell>
-              <TableCell className="text-center">
-                {row.p <= 0.05 && (
-                  <Badge variant="success">{fixed(row.delta, 3)}</Badge>
+              <TableCell className="text-center text-front">
+                {row.insignificant && <>{fixed(row.delta, 3)}</>}
+                {!row.insignificant && (
+                  <Badge variant={getDeltaBadgeVariant(key, row.delta, row.p)}>
+                    {fixed(row.delta, 3)}
+                  </Badge>
                 )}
-                {row.p > 0.05 && <>{fixed(row.delta, 3)}</>}
               </TableCell>
             </TableRow>
           );
