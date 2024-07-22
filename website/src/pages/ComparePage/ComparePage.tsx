@@ -181,7 +181,7 @@ export default function Compare() {
         <section className="flex flex-col items-center">
           {[...Array(8)].map((_, index) => {
             return (
-              <div className="w-full p-page my-12">
+              <div key={index} className="w-full p-page my-12">
                 <Skeleton className="h-[852px]"></Skeleton>
               </div>
             );
