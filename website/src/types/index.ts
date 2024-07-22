@@ -123,15 +123,6 @@ export type DailySummarydata = {
   data: { total_qps: MacroDataValue }[];
 };
 
-export type Workloads =
-  | "OLTP"
-  | "OLTP-READONLY"
-  | "OLTP-SET"
-  | "TPCC"
-  | "TPCC_FK"
-  | "TPCC_UNSHARDED"
-  | "TPCC_FK_UNMANAGED";
-
 export type FilterConfigs = {
   column: string;
   title: string;
