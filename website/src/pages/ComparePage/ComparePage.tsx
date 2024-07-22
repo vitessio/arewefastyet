@@ -98,7 +98,7 @@ export default function Compare() {
             insignificant: data.result.tps.insignificant,
           },
           latency: {
-            title: "Latency",
+            title: "P95 Latency",
             old: data.result.latency.old,
             new: data.result.latency.new,
             p: data.result.latency.p,
@@ -106,7 +106,7 @@ export default function Compare() {
             insignificant: data.result.latency.insignificant,
           },
           errors: {
-            title: "Errors",
+            title: "Errors / Second",
             old: data.result.errors.old,
             new: data.result.errors.new,
             p: data.result.errors.p,
