@@ -60,19 +60,21 @@ export default function CompareHero(props: CompareHeroProps) {
         <div className="flex flex-col">
           <label className="text-primary mb-2">Old</label>
           <CommandComponent
-            inputLabel={"Search for commit or releases..."}
+            inputLabel={"Search  commit or releases..."}
             gitRef={oldGitRef}
             setGitRef={setOldGitRef}
             vitessRefs={vitessRefs}
+            keyboardShortcut="o"
           />
         </div>
         <div className="flex flex-col">
           <label className="text-primary mb-2">New</label>
           <CommandComponent
-            inputLabel={"Search for commit or releases..."}
+            inputLabel={"Search  commit or releases..."}
             gitRef={newGitRef}
             setGitRef={setNewGitRef}
             vitessRefs={vitessRefs}
+            keyboardShortcut="j"
           />
         </div>
         <div className="flex md:items-end items-center justify-center mt-4 md:mt-0">

@@ -32,6 +32,7 @@ type CompareCommandProps = {
   gitRef: string;
   setGitRef: (value: string) => void;
   vitessRefs: VitessRefs | null;
+  keyboardShortcut?: string;
 };
 
 export default function CompareCommand({
@@ -39,6 +40,7 @@ export default function CompareCommand({
   setGitRef,
   vitessRefs,
   gitRef,
+  keyboardShortcut = "k",
 }: CompareCommandProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(gitRef);
@@ -61,7 +63,7 @@ export default function CompareCommand({
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+      if ((e.key === keyboardShortcut && (e.metaKey || e.ctrlKey)) || e.key === "/") {
         if (
           (e.target instanceof HTMLElement && e.target.isContentEditable) ||
           e.target instanceof HTMLInputElement ||
@@ -89,7 +91,7 @@ export default function CompareCommand({
       <Button
         variant="outline"
         className={cn(
-          "relative justify-start rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-4 w-full md:w-40 lg:w-64"
+          "relative justify-between rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-4 w-full md:w-40 lg:w-64"
         )}
         onClick={() => setOpen(true)}
       >
@@ -99,6 +101,9 @@ export default function CompareCommand({
         <span className="inline-flex lg:hidden overflow-hidden">
           {selectedRefName || gitRef || "Search..."}
         </span>
+        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+          <span className="text-xs">⌘</span>{keyboardShortcut}
+        </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
