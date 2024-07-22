@@ -15,11 +15,11 @@ limitations under the License.
 */
 
 import Hero, { HeroProps } from "@/common/Hero";
-import CommandComponent from "@/common/VitessRefsCommand";
 import { Button } from "@/components/ui/button";
 import { VitessRefs } from "@/types";
 import useApiCall from "@/utils/Hook";
 import { useEffect, useState } from "react";
+import CommandComponent from "./CompareCommand";
 
 const heroProps: HeroProps = {
   title: "Compare Versions",

@@ -27,19 +27,19 @@ import { cn } from "@/library/utils";
 import { VitessRefs, VitessRefsData } from "@/types";
 import { ChangeEvent, useEffect, useState } from "react";
 
-interface VitessRefsCommandProps {
+type CompareCommandProps = {
   inputLabel: string;
   gitRef: string;
   setGitRef: (value: string) => void;
   vitessRefs: VitessRefs | null;
-}
+};
 
-export default function VitessRefsCommand({
+export default function CompareCommand({
   inputLabel,
   setGitRef,
   vitessRefs,
   gitRef,
-}: VitessRefsCommandProps) {
+}: CompareCommandProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState(gitRef);
   const [selectedRefName, setSelectedRefName] = useState("");
@@ -108,31 +108,29 @@ export default function VitessRefsCommand({
             setInputValue(e.target.value)
           }
           onKeyDown={handleInputKeyDown}
+          className="w-full max-w-md mx-auto sm:max-w-lg lg:max-w-xl"
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          {vitessRefs && vitessRefs?.branches?.length !== 0 && (
-            <>
-              <CommandGroup heading="Branches">
-                {vitessRefs.branches?.map((ref) => (
-                  <CommandItem
-                    key={ref.name}
-                    onSelect={() => handleSelect(ref)}
-                  >
-                    <span>{ref.name}</span>
-                    {/* <span className="hidden">{ref.commit_hash}</span> */}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandGroup heading="Releases">
-                {vitessRefs?.tags?.map((ref, index) => (
-                  <CommandItem key={index} onSelect={() => handleSelect(ref)}>
-                    <span>{ref.name}</span>
-                    {/* <span hidden>{ref.commit_hash}</span> */}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </>
+          {(vitessRefs?.branches ?? []).length > 0 && (
+            <CommandGroup heading="Branches">
+              {vitessRefs?.branches?.map((ref) => (
+                <CommandItem key={ref.name} onSelect={() => handleSelect(ref)}>
+                  <span>{ref.name}</span>
+                  <span className="hidden">{ref.commit_hash}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {(vitessRefs?.tags ?? []).length > 0 && (
+            <CommandGroup heading="Releases">
+              {vitessRefs?.tags?.map((ref, index) => (
+                <CommandItem key={index} onSelect={() => handleSelect(ref)}>
+                  <span>{ref.name}</span>
+                  <span hidden>{ref.commit_hash}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
           )}
         </CommandList>
       </CommandDialog>
