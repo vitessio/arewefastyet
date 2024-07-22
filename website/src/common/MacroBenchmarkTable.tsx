@@ -36,6 +36,7 @@ import {
   formatGitRef,
   secondToMicrosecond,
 } from "@/utils/Utils";
+import { Link } from "react-router-dom";
 
 type MacroBenchmarkTableDataRow = {
   title: string;
@@ -132,8 +133,7 @@ export default function MacroBenchmarkTable({
     errors: "bg-background",
     totalComponentsCpuTime: "border-b border-foreground dark:border-none",
     vtgateCpuTime: "bg-muted/80 ",
-    vttabletCpuTime:
-      "bg-muted/80 border-b border-foreground dark:border-none",
+    vttabletCpuTime: "bg-muted/80 border-b border-foreground dark:border-none",
     totalComponentsMemStatsAllocBytes:
       "border-b border-foreground dark:border-none",
     vtgateMemStatsAllocBytes: "bg-muted/80",
@@ -147,10 +147,20 @@ export default function MacroBenchmarkTable({
         <TableRow className="hover:bg-background border-b">
           <TableHead className="w-[200px]"></TableHead>
           <TableHead className="text-center text-primary font-semibold">
-            {formatGitRef(oldGitRef) || "N/A"}
+            <Link
+              to={`https://github.com/vitessio/vitess/commit/${oldGitRef}`}
+              target="__blank"
+            >
+              {formatGitRef(oldGitRef) || "N/A"}
+            </Link>
           </TableHead>
           <TableHead className="text-center text-primary font-semibold">
-            {formatGitRef(newGitRef) || "N/A"}
+            <Link
+              to={`https://github.com/vitessio/vitess/commit/${newGitRef}`}
+              target="__blank"
+            >
+              {formatGitRef(newGitRef) || "N/A"}
+            </Link>{" "}
           </TableHead>
           <TableHead className="text-center font-semibold">P</TableHead>
           <TableHead className="text-center font-semibold">Delta</TableHead>
@@ -177,8 +187,10 @@ export default function MacroBenchmarkTable({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div>
-                        <Badge variant={row.p > 0.05 ? "destructive" : "success"}>
-                          {fixed(row.p, 3)}%
+                        <Badge
+                          variant={row.p > 0.05 ? "destructive" : "success"}
+                        >
+                          {fixed(row.p, 3)}
                         </Badge>
                       </div>
                     </TooltipTrigger>
