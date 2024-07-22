@@ -92,11 +92,11 @@ const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
 
 const formatCellValue = (key: string, value: number) => {
   if (key.includes("CpuTime")) {
-    return secondToMicrosecond(Number(fixed(value, 2)));
+    return secondToMicrosecond(value);
   } else if (key.includes("MemStatsAllocBytes")) {
     return formatByte(Number(fixed(value, 2)));
   }
-  return value;
+  return fixed(value, 2);
 };
 
 export function getRange(range: Range) {
@@ -175,11 +175,11 @@ export default function MacroBenchmarkTable({
                 {row.title}
               </TableCell>
               <TableCell className="text-center text-front">
-                {formatCellValue(key, Number(fixed(row.old.center, 2)))} (
+                {formatCellValue(key, Number(row.old.center))} (
                 {getRange(row.old.range)})
               </TableCell>
               <TableCell className="text-center text-front border-r border-border">
-              {formatCellValue(key, Number(fixed(row.new.center, 2)))} (
+              {formatCellValue(key, Number(row.new.center))} (
                 {getRange(row.new.range)})
               </TableCell>
               <TableCell className="lg:w-[150px] text-center text-front">
