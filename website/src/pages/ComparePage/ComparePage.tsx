@@ -14,14 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import MacroBenchmarkTable, {
-  MacroBenchmarkTableData,
-} from "@/common/MacroBenchmarkTable";
+import MacroBenchmarkTable from "@/common/MacroBenchmarkTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CompareData } from "@/types";
+import { CompareData, MacroBenchmarkTableData } from "@/types";
 import useApiCall from "@/utils/Hook";
+import { formatCompareData } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -41,7 +40,7 @@ export default function Compare() {
     navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
   }, [gitRef.old, gitRef.new]);
 
-  let {
+  const {
     data: data,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
@@ -54,120 +53,7 @@ export default function Compare() {
   let formattedData: MacroBenchmarkTableData[] = [];
 
   if (data !== null && data.length > 0) {
-    formattedData =
-      data.map((data: CompareData) => {
-        return {
-          qpsTotal: {
-            title: "QPS Total",
-            old: data.result.total_qps.old,
-            new: data.result.total_qps.new,
-            p: data.result.total_qps.p,
-            delta: data.result.total_qps.delta,
-            insignificant: data.result.total_qps.insignificant,
-          },
-          qpsReads: {
-            title: "Reads",
-            old: data.result.reads_qps.old,
-            new: data.result.reads_qps.new,
-            p: data.result.reads_qps.p,
-            delta: data.result.reads_qps.delta,
-            insignificant: data.result.reads_qps.insignificant,
-          },
-          qpsWrites: {
-            title: "Writes",
-            old: data.result.writes_qps.old,
-            new: data.result.writes_qps.new,
-            p: data.result.writes_qps.p,
-            delta: data.result.writes_qps.delta,
-            insignificant: data.result.writes_qps.insignificant,
-          },
-          qpsOther: {
-            title: "Other",
-            old: data.result.other_qps.old,
-            new: data.result.other_qps.new,
-            p: data.result.other_qps.p,
-            delta: data.result.other_qps.delta,
-            insignificant: data.result.other_qps.insignificant,
-          },
-          tps: {
-            title: "TPS",
-            old: data.result.tps.old,
-            new: data.result.tps.new,
-            p: data.result.tps.p,
-            delta: data.result.tps.delta,
-            insignificant: data.result.tps.insignificant,
-          },
-          latency: {
-            title: "P95 Latency",
-            old: data.result.latency.old,
-            new: data.result.latency.new,
-            p: data.result.latency.p,
-            delta: data.result.latency.delta,
-            insignificant: data.result.latency.insignificant,
-          },
-          errors: {
-            title: "Errors / Second",
-            old: data.result.errors.old,
-            new: data.result.errors.new,
-            p: data.result.errors.p,
-            delta: data.result.errors.delta,
-            insignificant: data.result.errors.insignificant,
-          },
-          totalComponentsCpuTime: {
-            title: "Total CPU / Query",
-            old: data.result.total_components_cpu_time.old,
-            new: data.result.total_components_cpu_time.new,
-            p: data.result.total_components_cpu_time.p,
-            delta: data.result.total_components_cpu_time.delta,
-            insignificant: data.result.total_components_cpu_time.insignificant,
-          },
-          vtgateCpuTime: {
-            title: "vtgate",
-            old: data.result.components_cpu_time.vtgate.old,
-            new: data.result.components_cpu_time.vtgate.new,
-            p: data.result.components_cpu_time.vtgate.p,
-            delta: data.result.components_cpu_time.vtgate.delta,
-            insignificant: data.result.components_cpu_time.vtgate.insignificant,
-          },
-          vttabletCpuTime: {
-            title: "vttablet",
-            old: data.result.components_cpu_time.vttablet.old,
-            new: data.result.components_cpu_time.vttablet.new,
-            p: data.result.components_cpu_time.vttablet.p,
-            delta: data.result.components_cpu_time.vttablet.delta,
-            insignificant:
-              data.result.components_cpu_time.vttablet.insignificant,
-          },
-          totalComponentsMemStatsAllocBytes: {
-            title: "Total Allocated / Query",
-            old: data.result.total_components_mem_stats_alloc_bytes.old,
-            new: data.result.total_components_mem_stats_alloc_bytes.new,
-            p: data.result.total_components_mem_stats_alloc_bytes.p,
-            delta: data.result.total_components_mem_stats_alloc_bytes.delta,
-            insignificant:
-              data.result.total_components_mem_stats_alloc_bytes.insignificant,
-          },
-          vtgateMemStatsAllocBytes: {
-            title: "vtgate",
-            old: data.result.components_mem_stats_alloc_bytes.vtgate.old,
-            new: data.result.components_mem_stats_alloc_bytes.vtgate.new,
-            p: data.result.components_mem_stats_alloc_bytes.vtgate.p,
-            delta: data.result.components_mem_stats_alloc_bytes.vtgate.delta,
-            insignificant:
-              data.result.components_mem_stats_alloc_bytes.vtgate.insignificant,
-          },
-          vttabletMemStatsAllocBytes: {
-            title: "vttablet",
-            old: data.result.components_mem_stats_alloc_bytes.vttablet.old,
-            new: data.result.components_mem_stats_alloc_bytes.vttablet.new,
-            p: data.result.components_mem_stats_alloc_bytes.vttablet.p,
-            delta: data.result.components_mem_stats_alloc_bytes.vttablet.delta,
-            insignificant:
-              data.result.components_mem_stats_alloc_bytes.vttablet
-                .insignificant,
-          },
-        };
-      }) || [];
+    formattedData = formatCompareData(data);
   }
 
   return (
@@ -178,17 +64,17 @@ export default function Compare() {
       )}
 
       <section className="flex flex-col items-center">
-      {isMacrobenchLoading && (
-        <>
-         {[...Array(8)].map((_, index) => {
-            return (
-              <div key={index} className="w-full p-page lg:w-[60vw] my-12">
-                <Skeleton className="h-[852px]"></Skeleton>
-              </div>
-            );
-          })}
-        </>
-      )}
+        {isMacrobenchLoading && (
+          <>
+            {[...Array(8)].map((_, index) => {
+              return (
+                <div key={index} className="w-full p-page lg:w-[60vw] my-12">
+                  <Skeleton className="h-[852px]"></Skeleton>
+                </div>
+              );
+            })}
+          </>
+        )}
         {!isMacrobenchLoading && data !== null && data.length > 0 && (
           <>
             {data.map((macro, index) => {
@@ -215,8 +101,8 @@ export default function Compare() {
                     <CardContent className="w-full p-0">
                       <MacroBenchmarkTable
                         data={formattedData[index]}
-                        newGitRef={gitRef.new}
-                        oldGitRef={gitRef.old}
+                        new={gitRef.new}
+                        old={gitRef.old}
                       />
                     </CardContent>
                   </Card>

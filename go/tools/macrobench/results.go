@@ -239,6 +239,39 @@ func Compare(client storage.SQLClient, old, new string, types []string, planner 
 	return results, nil
 }
 
+func CompareFKs(client storage.SQLClient, oldWorkload, newWorkload string, sha string, planner PlannerVersion) (StatisticalCompareResults, error) {
+	oldResult, err := getBenchmarkResults(client, oldWorkload, sha, planner)
+
+	if err != nil {
+		return StatisticalCompareResults{}, err
+	}
+
+	newResult, err := getBenchmarkResults(client, newWorkload, sha, planner)
+	if err != nil {
+		return StatisticalCompareResults{}, err
+	}
+
+	if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
+		return StatisticalCompareResults{
+			ComponentsCPUTime: map[string]StatisticalResult{
+				"vtgate":   {},
+				"vttablet": {},
+			},
+			ComponentsMemStatsAllocBytes: map[string]StatisticalResult{
+				"vtgate":   {},
+				"vttablet": {},
+			},
+		}, nil
+	}
+
+	oldResultsAsSlice := oldResult.asSlice()
+	newResultsAsSlice := newResult.asSlice()
+
+	scr := performAnalysis(oldResultsAsSlice, newResultsAsSlice)
+
+	return scr, nil
+}
+
 func Search(client storage.SQLClient, sha string, types []string, planner PlannerVersion) (map[string]StatisticalSingleResult, error) {
 	results := make(map[string]StatisticalSingleResult, len(types))
 	for _, macroType := range types {

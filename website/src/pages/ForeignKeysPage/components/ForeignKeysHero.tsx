@@ -13,9 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import Dropdown from "@/common/Dropdown";
+
 import Hero, { HeroProps } from "@/common/Hero";
-import { twMerge } from "tailwind-merge";
+import VitessRefsCommand from "@/common/VitessRefsCommand";
+import WorkloadsCommand from "@/common/WorkloadsCommand";
+import { Button } from "@/components/ui/button";
+import { VitessRefs } from "@/types";
+import useApiCall from "@/utils/Hook";
+import { useEffect, useState } from "react";
 
 const heroProps: HeroProps = {
   title: "Foreign Keys",
@@ -31,44 +36,81 @@ const heroProps: HeroProps = {
 };
 
 export default function ForeignKeysHero(props: {
-  refs: any;
-  gitRef: any;
-  setGitRef: any;
+  gitRef: string;
+  setGitRef: React.Dispatch<React.SetStateAction<string>>;
+  workload: { old: string; new: string };
+  setWorkload: React.Dispatch<
+    React.SetStateAction<{ old: string; new: string }>
+  >;
+  vitessRefs: VitessRefs;
 }) {
-  const { refs, gitRef, setGitRef } = props;
+  const { gitRef, setGitRef, workload, setWorkload, vitessRefs } = props;
+  const [oldWorkload, setOldWorkload] = useState(workload.old);
+  const [newWorkload, setNewWorkload] = useState(workload.new);
+  const [commit, setCommit] = useState(gitRef);
+  let { data: workloads } = useApiCall<string[]>(
+    `${import.meta.env.VITE_API_URL}workloads`
+  );
+
+  workloads = workloads?.filter((workload) => workload.includes("TPCC")) ?? [];
+
+  const isButtonDisabled = !oldWorkload || !newWorkload || !commit;
+
+  const compareClicked = () => {
+    setGitRef(commit);
+    setWorkload({ old: oldWorkload, new: newWorkload });
+  };
+
+  useEffect(() => {
+    setOldWorkload(workload.old);
+    setNewWorkload(workload.new);
+  }, [workload]);
+
+  useEffect(() => {
+    setCommit(gitRef);
+  }, [gitRef]);
 
   return (
     <Hero title={heroProps.title} description={heroProps.description}>
-      <div className="flex-1 flex flex-col items-center">
-        <div className="flex flex-col gap-y-8">
-          {refs && refs.length > 0 && (
-            <div className="flex gap-x-24">
-              <Dropdown.Container
-                className="w-[30vw] md:w-[20vw] py-2 border border-primary rounded-md mb-[1px] text-lg shadow-xl"
-                defaultIndex={refs
-                  .map((r: { Name: any }) => r.Name)
-                  .indexOf(gitRef.tag)}
-                onChange={(event: { value: any }) => {
-                  setGitRef((p: any) => {
-                    return { ...p, tag: event.value };
-                  });
-                }}
-              >
-                {refs.map((ref: { Name: any }, key: number) => (
-                  <Dropdown.Option
-                    key={key}
-                    className={twMerge(
-                      "w-[20vw] relative border-front border border-t-transparent border-opacity-60 bg-background py-2 font-medium hover:bg-accent",
-                      key === 0 && "rounded-t border-t-front",
-                      key === refs.length - 1 && "rounded-b"
-                    )}
-                  >
-                    {ref.Name}
-                  </Dropdown.Option>
-                ))}
-              </Dropdown.Container>
-            </div>
-          )}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col">
+          <label className="text-primary mb-2">Old Workload</label>
+          <WorkloadsCommand
+            inputLabel="Search workloads..."
+            workload={oldWorkload}
+            workloads={workloads}
+            keyboardShortcut="o"
+            setWorkload={setOldWorkload}
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="text-primary mb-2">New Workload</label>
+          <WorkloadsCommand
+            inputLabel="Search workloads..."
+            workload={newWorkload}
+            workloads={workloads}
+            keyboardShortcut="j"
+            setWorkload={setNewWorkload}
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="text-primary mb-2">Commit</label>
+          <VitessRefsCommand
+            inputLabel={"Search commit or releases..."}
+            gitRef={commit}
+            setGitRef={setCommit}
+            vitessRefs={vitessRefs}
+            keyboardShortcut="o"
+          />
+        </div>
+        <div className="flex md:items-end items-center justify-center mt-4 md:mt-0">
+          <Button
+            onClick={compareClicked}
+            disabled={isButtonDisabled}
+            className="w-fit md:w-auto"
+          >
+            Compare
+          </Button>
         </div>
       </div>
     </Hero>
