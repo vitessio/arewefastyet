@@ -96,7 +96,7 @@ const formatCellValue = (key: string, value: number) => {
   } else if (key.includes("MemStatsAllocBytes")) {
     return formatByte(Number(fixed(value, 2)));
   } else if (key.includes("latency")) {
-    return value+"ms"
+    return fixed(value, 2)+"ms"
   }
   return fixed(value, 2);
 };
