@@ -193,7 +193,7 @@ export default function Compare() {
         <section className="flex flex-col items-center">
           {data.map((macro, index) => {
             return (
-              <div className="w-full p-page my-12" key={index}>
+              <div className="w-full p-page lg:w-[60vw] my-12" key={index}>
                 <Card className="border-border">
                   <CardHeader className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between pt-6">
                     <CardTitle className="text-2xl md:text-4xl">

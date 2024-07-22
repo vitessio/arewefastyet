@@ -90,11 +90,11 @@ const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
   return "destructive";
 };
 
-const formatCellValue = (key: string, value: any) => {
+const formatCellValue = (key: string, value: number) => {
   if (key.includes("CpuTime")) {
-    return secondToMicrosecond(value);
+    return secondToMicrosecond(Number(fixed(value, 2)));
   } else if (key.includes("MemStatsAllocBytes")) {
-    return formatByte(value);
+    return formatByte(Number(fixed(value, 2)));
   }
   return value;
 };
@@ -162,8 +162,8 @@ export default function MacroBenchmarkTable({
               {formatGitRef(newGitRef) || "N/A"}
             </Link>{" "}
           </TableHead>
-          <TableHead className="text-center font-semibold">P</TableHead>
-          <TableHead className="text-center font-semibold">Delta</TableHead>
+          <TableHead className="lg:w-[150px] text-center font-semibold">P</TableHead>
+          <TableHead className="lg:w-[150px] text-center font-semibold">Delta</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -175,14 +175,14 @@ export default function MacroBenchmarkTable({
                 {row.title}
               </TableCell>
               <TableCell className="text-center text-front">
-                {formatCellValue(key, row.old.center)} (
+                {formatCellValue(key, Number(fixed(row.old.center, 2)))} (
                 {getRange(row.old.range)})
               </TableCell>
               <TableCell className="text-center text-front border-r border-border">
-                {formatCellValue(key, row.new.center)} (
+              {formatCellValue(key, Number(fixed(row.new.center, 2)))} (
                 {getRange(row.new.range)})
               </TableCell>
-              <TableCell className="text-center text-front">
+              <TableCell className="lg:w-[150px] text-center text-front">
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -202,11 +202,11 @@ export default function MacroBenchmarkTable({
                   </Tooltip>
                 </TooltipProvider>
               </TableCell>
-              <TableCell className="text-center text-front">
-                {row.insignificant && <>{fixed(row.delta, 3)}</>}
+              <TableCell className="lg:w-[150px] text-center text-front">
+                {row.insignificant && <>{fixed(row.delta, 3)}%</>}
                 {!row.insignificant && (
                   <Badge variant={getDeltaBadgeVariant(key, row.delta, row.p)}>
-                    {fixed(row.delta, 3)}
+                    {fixed(row.delta, 3)}%
                   </Badge>
                 )}
               </TableCell>
