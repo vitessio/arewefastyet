@@ -80,7 +80,7 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     },
   },
   {
-    header: "Started At",
+    header: "Started",
     accessorKey: "started_at",
     cell: ({ row }) => {
       const date = new Date(row.original.started_at);
@@ -102,7 +102,7 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     },
   },
   {
-    header: "Finished At",
+    header: "Finished",
     accessorKey: "finished_at",
     cell: ({ row }) => {
       const date = new Date(row.original.started_at);
@@ -124,7 +124,7 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     },
   },
   {
-    header: "PR",
+    header: "PR #",
     accessorKey: "pull_nb",
     cell: ({ row }) => {
       // if pull_nb is 0, display N/A
@@ -139,7 +139,7 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     },
   },
   {
-    header: "Go Version",
+    header: "Golang",
     accessorKey: "golang_version",
   },
   {
