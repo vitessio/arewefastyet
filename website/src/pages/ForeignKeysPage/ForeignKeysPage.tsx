@@ -91,7 +91,7 @@ export default function ForeignKeys() {
           <>
             {[...Array(8)].map((_, index) => {
               return (
-                <div key={index} className="w-full p-page lg:w-[60vw] my-12">
+                <div key={index} className="w-[80vw] xl:w-[60vw] my-12">
                   <Skeleton className="h-[852px]"></Skeleton>
                 </div>
               );
@@ -103,7 +103,7 @@ export default function ForeignKeys() {
           data !== null &&
           vitessRefs && (
             <>
-              <div className="w-full p-page lg:w-[60vw] my-12">
+              <div className="w-[80vw] xl:w-[60vw] my-12">
                 <Card className="border-border">
                   <CardHeader className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between pt-6">
                     <CardTitle className="text-2xl md:text-4xl text-primary">

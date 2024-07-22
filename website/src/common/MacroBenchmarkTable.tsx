@@ -125,7 +125,7 @@ export default function MacroBenchmarkTable({
       <TableHeader>
         <TableRow className="hover:bg-background border-b">
           <TableHead className="w-[200px]"></TableHead>
-          <TableHead className="text-center text-primary font-semibold">
+          <TableHead className="text-center text-primary font-semibold min-w-[150px]">
             {isGitRef ? (
               <Link
                 to={`https://github.com/vitessio/vitess/commit/${old}`}
@@ -137,7 +137,7 @@ export default function MacroBenchmarkTable({
               <>{old}</>
             )}
           </TableHead>
-          <TableHead className="text-center text-primary font-semibold">
+          <TableHead className="text-center text-primary font-semibold min-w-[150px]">
             {isGitRef ? (
               <Link
                 to={`https://github.com/vitessio/vitess/commit/${newColumn}`}
