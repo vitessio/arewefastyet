@@ -39,24 +39,24 @@ export const formatDate = (date) => {
 };
 
 //FORMATTING BYTES TO Bytes
-export const formatByte = (byte) => {
+export const formatByte = (byte: number) => {
   const byteValue = bytes(byte);
   if (byteValue === null) {
     return "0";
   }
-  return byteValue.toString("B");
+  return byteValue;
 };
 
-export const fixed = (value, f) => {
-  if (value === null || typeof value === "undefined") {
+export function fixed(value: number, fractionDigits: number): string {
+  if (value === null || typeof value === "undefined" || isNaN(value) || value === 0) {
     return "0";
   }
-  return value.toFixed(f);
-};
+  return value.toFixed(fractionDigits);
+}
 
-export const secondToMicrosecond = (value) => {
+export function secondToMicrosecond(value: number): string {
   return fixed(value * 1000000, 2) + "μs";
-};
+}
 
 //ERROR API MESSAGE ERROR
 
@@ -101,6 +101,6 @@ export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
 export const openTables = 400;
 export const closeTables = 70;
 
-export const formatGitRef = (gitRef: string): string => {
+export function formatGitRef(gitRef: string): string {
   return gitRef.slice(0, 8);
 }

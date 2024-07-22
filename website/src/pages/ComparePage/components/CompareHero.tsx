@@ -14,62 +14,77 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { twMerge } from "tailwind-merge";
 import Hero, { HeroProps } from "@/common/Hero";
+import { Button } from "@/components/ui/button";
+import { VitessRefs } from "@/types";
+import useApiCall from "@/utils/Hook";
+import { useEffect, useState } from "react";
+import CommandComponent from "./CompareCommand";
 
 const heroProps: HeroProps = {
-  title: "Compare Versions"
+  title: "Compare Versions",
 };
 
-function ComparisonInput(props: {
-  className: any;
-  gitRef: any;
-  setGitRef: any;
-  name: any;
-}) {
-  const { className, gitRef, setGitRef, name } = props;
+export type CompareHeroProps = {
+  gitRef: { old: string; new: string };
+  setGitRef: React.Dispatch<
+    React.SetStateAction<{
+      old: string;
+      new: string;
+    }>
+  >;
+};
 
-  return (
-    <input
-      type="text"
-      name={name}
-      className={twMerge(
-        className,
-        "relative text-xl px-6 py-2 bg-background focus:border-none focus:outline-none border border-primary"
-      )}
-      defaultValue={gitRef[name]}
-      placeholder={`${name} SHA`}
-      onChange={(event) =>
-        setGitRef((p: any) => {
-          return { ...p, [name]: event.target.value };
-        })
-      }
-    />
-  );
-}
-
-export default function CompareHero(props: { gitRef: any; setGitRef: any }) {
+export default function CompareHero(props: CompareHeroProps) {
   const { gitRef, setGitRef } = props;
+  const [oldGitRef, setOldGitRef] = useState(gitRef.old);
+  const [newGitRef, setNewGitRef] = useState(gitRef.new);
+  const isButtonDisabled = !oldGitRef || !newGitRef;
+
+  const { data: vitessRefs } = useApiCall<VitessRefs>(
+    `${import.meta.env.VITE_API_URL}vitess/refs`
+  );
+
+  const compareClicked = () => {
+    setGitRef({ old: oldGitRef, new: newGitRef });
+  };
+
+  useEffect(() => {
+    setOldGitRef(gitRef.old);
+    setNewGitRef(gitRef.new);
+  }, [gitRef]);
 
   return (
     <Hero title={heroProps.title}>
-      <div>
-        <h1 className="mb-3 text-front text-opacity-70">
-          Enter SHAs to compare commits
-        </h1>
-        <div className="flex overflow-hidden bg-gradient-to-br from-primary to-theme p-[2px] rounded-full">
-          <ComparisonInput
-            name="old"
-            className="rounded-l-full"
-            setGitRef={setGitRef}
-            gitRef={gitRef}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col">
+          <label className="text-primary mb-2">Old</label>
+          <CommandComponent
+            inputLabel={"Search  commit or releases..."}
+            gitRef={oldGitRef}
+            setGitRef={setOldGitRef}
+            vitessRefs={vitessRefs}
+            keyboardShortcut="o"
           />
-          <ComparisonInput
-            name="new"
-            className="rounded-r-full "
-            setGitRef={setGitRef}
-            gitRef={gitRef}
+        </div>
+        <div className="flex flex-col">
+          <label className="text-primary mb-2">New</label>
+          <CommandComponent
+            inputLabel={"Search  commit or releases..."}
+            gitRef={newGitRef}
+            setGitRef={setNewGitRef}
+            vitessRefs={vitessRefs}
+            keyboardShortcut="j"
           />
+        </div>
+        <div className="flex md:items-end items-center justify-center mt-4 md:mt-0">
+          <Button
+            onClick={compareClicked}
+            disabled={isButtonDisabled}
+            className="w-fit md:w-auto"
+          >
+            Compare
+          </Button>
         </div>
       </div>
     </Hero>

@@ -19,31 +19,31 @@ import { ComponentType } from "react";
 export type Theme = "default" | "dark";
 
 export type statusDataTypes = {
-    uuid: string;
-    git_ref: string;
-    source: string;
-    started_at: string;
-    finished_at: string;
-    type_of: string;
-    pull_nb?: number;
-    golang_version: string;
-    status: string;
-}
+  uuid: string;
+  git_ref: string;
+  source: string;
+  started_at: string;
+  finished_at: string;
+  type_of: string;
+  pull_nb?: number;
+  golang_version: string;
+  status: string;
+};
 
 export type prDataTypes = {
-    ID: number;
-    Author: string;
-    Title: string;
-    CreatedAt: string;
-    Base: string;
-    Head: string;
-    error?: any
-}
+  ID: number;
+  Author: string;
+  Title: string;
+  CreatedAt: string;
+  Base: string;
+  Head: string;
+  error?: any;
+};
 
 export interface Range {
-    infinite: boolean;
-    unknown: boolean;
-    value: number;
+  infinite: boolean;
+  unknown: boolean;
+  value: number;
 }
 
 export interface MacroDataValue {
@@ -102,6 +102,15 @@ export interface CompareResult {
   writes_qps: ComparedValue;
   other_qps: ComparedValue;
   tps: ComparedValue;
+  latency: ComparedValue;
+  errors: ComparedValue;
+  total_components_cpu_time: ComparedValue;
+  components_cpu_time: { vtgate: ComparedValue; vttablet: ComparedValue };
+  total_components_mem_stats_alloc_bytes: ComparedValue;
+  components_mem_stats_alloc_bytes: {
+    vtgate: ComparedValue;
+    vttablet: ComparedValue;
+  };
 }
 
 export interface CompareData {
@@ -111,10 +120,8 @@ export interface CompareData {
 
 export type DailySummarydata = {
   name: string;
-  data : { total_qps: MacroDataValue }[];
-}
-
-export type Workloads = 'OLTP' | 'OLTP-READONLY' | 'OLTP-SET' | 'TPCC' | 'TPCC_FK' | 'TPCC_UNSHARDED' | 'TPCC_FK_UNMANAGED'
+  data: { total_qps: MacroDataValue }[];
+};
 
 export type FilterConfigs = {
   column: string;
@@ -126,4 +133,20 @@ export type FilterConfigs = {
       className?: string;
     }>;
   }[];
+};
+
+export type VitessRefsData = {
+  name: string;
+  commit_hash: string;
+  version: {
+    major: number;
+    minor: number;
+    patch: number;
+  };
+  cnumber: number;
+}
+
+export type VitessRefs = {
+  tags: VitessRefsData[];
+  branches: VitessRefsData[];
 };
