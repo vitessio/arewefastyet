@@ -177,54 +177,55 @@ export default function Compare() {
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
       )}
 
+      <section className="flex flex-col items-center">
       {isMacrobenchLoading && (
-        <section className="flex flex-col items-center">
-          {[...Array(8)].map((_, index) => {
+        <>
+         {[...Array(8)].map((_, index) => {
             return (
-              <div key={index} className="w-full p-page my-12">
+              <div key={index} className="w-full p-page lg:w-[60vw] my-12">
                 <Skeleton className="h-[852px]"></Skeleton>
               </div>
             );
           })}
-        </section>
+        </>
       )}
-
-      {!isMacrobenchLoading && data !== null && data.length > 0 && (
-        <section className="flex flex-col items-center">
-          {data.map((macro, index) => {
-            return (
-              <div className="w-full p-page lg:w-[60vw] my-12" key={index}>
-                <Card className="border-border">
-                  <CardHeader className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between pt-6">
-                    <CardTitle className="text-2xl md:text-4xl">
-                      {macro.type}
-                    </CardTitle>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 w-fit border-dashed mt-4 md:mt-0"
-                    >
-                      <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
-                      <Link
-                        to={`/macrobench/queries/compare?ltag=${gitRef.old}&rtag=${gitRef.new}&type=${macro.type}`}
+        {!isMacrobenchLoading && data !== null && data.length > 0 && (
+          <>
+            {data.map((macro, index) => {
+              return (
+                <div className="w-full p-page lg:w-[60vw] my-12" key={index}>
+                  <Card className="border-border">
+                    <CardHeader className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between pt-6">
+                      <CardTitle className="text-2xl md:text-4xl">
+                        {macro.type}
+                      </CardTitle>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-fit border-dashed mt-4 md:mt-0"
                       >
-                        See Query Plan{" "}
-                      </Link>
-                    </Button>
-                  </CardHeader>
-                  <CardContent className="w-full p-0">
-                    <MacroBenchmarkTable
-                      data={formattedData[index]}
-                      newGitRef={gitRef.new}
-                      oldGitRef={gitRef.old}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            );
-          })}
-        </section>
-      )}
+                        <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
+                        <Link
+                          to={`/macrobench/queries/compare?ltag=${gitRef.old}&rtag=${gitRef.new}&type=${macro.type}`}
+                        >
+                          See Query Plan{" "}
+                        </Link>
+                      </Button>
+                    </CardHeader>
+                    <CardContent className="w-full p-0">
+                      <MacroBenchmarkTable
+                        data={formattedData[index]}
+                        newGitRef={gitRef.new}
+                        oldGitRef={gitRef.old}
+                      />
+                    </CardContent>
+                  </Card>
+                </div>
+              );
+            })}
+          </>
+        )}
+      </section>
     </>
   );
 }
