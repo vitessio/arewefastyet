@@ -19,10 +19,12 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import MacroBenchmarkTable from "@/common/MacroBenchmarkTable";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useApiCall from "@/utils/Hook";
-import { formatCompareResult, formatGitRef } from "@/utils/Utils";
+import { errorApi, formatCompareResult, formatGitRef } from "@/utils/Utils";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ForeignKeysHero from "./components/ForeignKeysHero";
 
 export const formatTite = (gitRef: string, vitessRefs: VitessRefs): string => {
@@ -60,6 +62,8 @@ export default function ForeignKeys() {
     `${import.meta.env.VITE_API_URL}fk/compare?sha=${gitRef}`
   );
 
+  console.log(data);
+
   let formattedData = data !== null ? formatCompareResult(data) : null;
 
   const navigate = useNavigate();
@@ -84,6 +88,10 @@ export default function ForeignKeys() {
 
       {macrobenchError && (
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
+      )}
+
+      {(formattedData === null || data === null) && (
+        <div className="text-red-500 text-center my-2">{errorApi}</div>
       )}
 
       <section className="flex flex-col items-center">
@@ -114,18 +122,18 @@ export default function ForeignKeys() {
                         {formatTite(gitRef, vitessRefs)}
                       </Link>
                     </CardTitle>
-                    {/* <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 w-fit border-dashed mt-4 md:mt-0"
-                      >
-                        <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
-                        <Link
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 w-fit border-dashed mt-4 md:mt-0"
+                      disabled
+                    >
+                      <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
+                      {/* <Link
                           to={`/macrobench/queries/compare?ltag=${gitRef.old}&rtag=${gitRef.new}&type=${macro.type}`}
-                        >
-                          See Query Plan{" "}
-                        </Link>
-                      </Button> */}
+                        > */}
+                      See Query Plan {/* </Link> */}
+                    </Button>
                   </CardHeader>
                   <CardContent className="w-full p-0">
                     <MacroBenchmarkTable
