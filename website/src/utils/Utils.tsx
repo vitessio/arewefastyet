@@ -232,7 +232,6 @@ export function formatCompareData(
 export function formatCompareResult(
   data: CompareResult
 ): MacroBenchmarkTableData {
-  console.log({ compareData: data });
   return {
     qpsTotal: {
       title: "QPS Total",
