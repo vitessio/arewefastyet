@@ -27,7 +27,7 @@ import { errorApi, formatCompareResult, formatGitRef } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ForeignKeysHero from "./components/ForeignKeysHero";
 
-export const formatTite = (gitRef: string, vitessRefs: VitessRefs): string => {
+export const formatTitle = (gitRef: string, vitessRefs: VitessRefs): string => {
   let title = formatGitRef(gitRef);
   vitessRefs.branches.forEach((branch) => {
     if (branch.commit_hash.match(gitRef)) {
@@ -116,12 +116,12 @@ export default function ForeignKeys() {
                 <Card className="border-border">
                   <CardHeader className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between pt-6">
                     <CardTitle className="text-2xl md:text-4xl text-primary">
-                      <Link
-                        to={`https://github.com/vitessio/vitess/commit/${gitRef}`}
-                        target="__blank"
+                      {gitRef == "" ? "N/A" : <Link
+                          to={`https://github.com/vitessio/vitess/commit/${gitRef}`}
+                          target="__blank"
                       >
-                        {formatTite(gitRef, vitessRefs)}
-                      </Link>
+                        {formatTitle(gitRef, vitessRefs)}
+                      </Link>}
                     </CardTitle>
                     <Button
                       variant="outline"
