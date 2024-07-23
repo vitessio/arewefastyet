@@ -105,7 +105,7 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     header: "Finished",
     accessorKey: "finished_at",
     cell: ({ row }) => {
-      const date = new Date(row.original.started_at);
+      const date = new Date(row.original.finished_at);
       const formatted = formatDistanceToNow(date, {
         addSuffix: true,
       });
