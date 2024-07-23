@@ -72,7 +72,7 @@ export default function PRPage() {
         )}
 
         {!prLoading && prData && (
-          <Card className="w-fit">
+          <Card className="w-fit border-border">
             <CardHeader>
               <CardTitle className="flex flex-row gap-10 justify-between">
                 <Link
