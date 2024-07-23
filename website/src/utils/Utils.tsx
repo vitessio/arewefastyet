@@ -158,7 +158,7 @@ export function formatCompareData(
           insignificant: data.result.tps.insignificant,
         },
         latency: {
-          title: "Latency",
+          title: "P95 Latency",
           old: data.result.latency.old,
           new: data.result.latency.new,
           p: data.result.latency.p,
@@ -166,7 +166,7 @@ export function formatCompareData(
           insignificant: data.result.latency.insignificant,
         },
         errors: {
-          title: "Errors",
+          title: "Errors / Second",
           old: data.result.errors.old,
           new: data.result.errors.new,
           p: data.result.errors.p,
@@ -274,7 +274,7 @@ export function formatCompareResult(
       insignificant: data.tps.insignificant,
     },
     latency: {
-      title: "Latency",
+      title: "P95 Latency",
       old: data.latency.old,
       new: data.latency.new,
       p: data.latency.p,
@@ -282,7 +282,7 @@ export function formatCompareResult(
       insignificant: data.latency.insignificant,
     },
     errors: {
-      title: "Errors",
+      title: "Errors / Second",
       old: data.errors.old,
       new: data.errors.new,
       p: data.errors.p,
