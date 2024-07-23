@@ -29,7 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MacroDataValue, Range } from "@/types";
+import { MacroBenchmarkTableData, Range } from "@/types";
 import {
   fixed,
   formatByte,
@@ -38,35 +38,11 @@ import {
 } from "@/utils/Utils";
 import { Link } from "react-router-dom";
 
-type MacroBenchmarkTableDataRow = {
-  title: string;
-  old: MacroDataValue;
-  new: MacroDataValue;
-  p: number;
-  delta: number;
-  insignificant: boolean;
-};
-
-export type MacroBenchmarkTableData = {
-  qpsTotal: MacroBenchmarkTableDataRow;
-  qpsReads: MacroBenchmarkTableDataRow;
-  qpsWrites: MacroBenchmarkTableDataRow;
-  qpsOther: MacroBenchmarkTableDataRow;
-  tps: MacroBenchmarkTableDataRow;
-  latency: MacroBenchmarkTableDataRow;
-  errors: MacroBenchmarkTableDataRow;
-  totalComponentsCpuTime: MacroBenchmarkTableDataRow;
-  vtgateCpuTime: MacroBenchmarkTableDataRow;
-  vttabletCpuTime: MacroBenchmarkTableDataRow;
-  totalComponentsMemStatsAllocBytes: MacroBenchmarkTableDataRow;
-  vtgateMemStatsAllocBytes: MacroBenchmarkTableDataRow;
-  vttabletMemStatsAllocBytes: MacroBenchmarkTableDataRow;
-};
-
 export type MacroBenchmarkTableProps = {
   data: MacroBenchmarkTableData;
-  oldGitRef: string;
-  newGitRef: string;
+  old: string;
+  new: string;
+  isGitRef?: boolean;
 };
 
 const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
@@ -96,7 +72,7 @@ const formatCellValue = (key: string, value: number) => {
   } else if (key.includes("MemStatsAllocBytes")) {
     return formatByte(Number(fixed(value, 2)));
   } else if (key.includes("latency")) {
-    return fixed(value, 2)+"ms"
+    return fixed(value, 2) + "ms";
   }
   return fixed(value, 2);
 };
@@ -116,8 +92,9 @@ const getValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
 
 export default function MacroBenchmarkTable({
   data,
-  newGitRef,
-  oldGitRef,
+  new: newColumn,
+  old,
+  isGitRef = true,
 }: MacroBenchmarkTableProps) {
   if (!data) {
     return null;
@@ -148,24 +125,36 @@ export default function MacroBenchmarkTable({
       <TableHeader>
         <TableRow className="hover:bg-background border-b">
           <TableHead className="w-[200px]"></TableHead>
-          <TableHead className="text-center text-primary font-semibold">
-            <Link
-              to={`https://github.com/vitessio/vitess/commit/${oldGitRef}`}
-              target="__blank"
-            >
-              {formatGitRef(oldGitRef) || "N/A"}
-            </Link>
+          <TableHead className="text-center text-primary font-semibold min-w-[150px]">
+            {isGitRef ? (
+              <Link
+                to={`https://github.com/vitessio/vitess/commit/${old}`}
+                target="__blank"
+              >
+                {formatGitRef(old) || "N/A"}
+              </Link>
+            ) : (
+              <>{old}</>
+            )}
           </TableHead>
-          <TableHead className="text-center text-primary font-semibold">
-            <Link
-              to={`https://github.com/vitessio/vitess/commit/${newGitRef}`}
-              target="__blank"
-            >
-              {formatGitRef(newGitRef) || "N/A"}
-            </Link>{" "}
+          <TableHead className="text-center text-primary font-semibold min-w-[150px]">
+            {isGitRef ? (
+              <Link
+                to={`https://github.com/vitessio/vitess/commit/${newColumn}`}
+                target="__blank"
+              >
+                {formatGitRef(newColumn) || "N/A"}
+              </Link>
+            ) : (
+              <>{newColumn}</>
+            )}
           </TableHead>
-          <TableHead className="lg:w-[150px] text-center font-semibold">P</TableHead>
-          <TableHead className="lg:w-[150px] text-center font-semibold">Delta</TableHead>
+          <TableHead className="lg:w-[150px] text-center font-semibold">
+            P
+          </TableHead>
+          <TableHead className="lg:w-[150px] text-center font-semibold">
+            Delta
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -181,7 +170,7 @@ export default function MacroBenchmarkTable({
                 {getRange(row.old.range)})
               </TableCell>
               <TableCell className="text-center text-front border-r border-border">
-              {formatCellValue(key, Number(row.new.center))} (
+                {formatCellValue(key, Number(row.new.center))} (
                 {getRange(row.new.range)})
               </TableCell>
               <TableCell className="lg:w-[150px] text-center text-front">

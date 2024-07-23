@@ -24,46 +24,48 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/library/utils";
-import { VitessRefs, VitessRefsData } from "@/types";
 import { ChangeEvent, useEffect, useState } from "react";
 
-type CompareCommandProps = {
+type WorkloadsCommandProps = {
   inputLabel: string;
-  gitRef: string;
-  setGitRef: (value: string) => void;
-  vitessRefs: VitessRefs | null;
+  workload: string;
+  workloads: string[] | null;
   keyboardShortcut?: string;
+  setWorkload: (value: string) => void;
 };
 
-export default function CompareCommand({
+export default function WorkloadsCommand({
   inputLabel,
-  setGitRef,
-  vitessRefs,
-  gitRef,
+  workload,
+  workloads,
   keyboardShortcut = "k",
-}: CompareCommandProps) {
+  setWorkload,
+}: WorkloadsCommandProps) {
   const [open, setOpen] = useState(false);
-  const [inputValue, setInputValue] = useState(gitRef);
-  const [selectedRefName, setSelectedRefName] = useState("");
+  const [inputValue, setInputValue] = useState(workload);
+  const [selectedWorkload, setSelectedWorkload] = useState("");
 
-  const handleSelect = (vitessRef: VitessRefsData) => {
-    setInputValue(vitessRef.name);
-    setSelectedRefName(vitessRef.name);
-    setGitRef(vitessRef.commit_hash);
+  const handleSelect = (workload: string) => {
+    setInputValue(workload);
+    setWorkload(workload);
+    setSelectedWorkload(workload);
     setOpen(false);
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      setGitRef(inputValue);
-      setSelectedRefName(inputValue);
+      setSelectedWorkload(inputValue);
+      setWorkload(workload);
       setOpen(false);
     }
   };
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if ((e.key === keyboardShortcut && (e.metaKey || e.ctrlKey)) || e.key === "/") {
+      if (
+        (e.key === keyboardShortcut && (e.metaKey || e.ctrlKey)) ||
+        e.key === "/"
+      ) {
         if (
           (e.target instanceof HTMLElement && e.target.isContentEditable) ||
           e.target instanceof HTMLInputElement ||
@@ -83,8 +85,8 @@ export default function CompareCommand({
   }, []);
 
   useEffect(() => {
-    setInputValue(gitRef);
-  }, [gitRef]);
+    setInputValue(workload);
+  }, [workload]);
 
   return (
     <>
@@ -96,13 +98,14 @@ export default function CompareCommand({
         onClick={() => setOpen(true)}
       >
         <span className="hidden lg:inline-flex overflow-hidden">
-          {selectedRefName || gitRef || inputLabel}
+          {selectedWorkload || workload || inputLabel}
         </span>
         <span className="inline-flex lg:hidden overflow-hidden">
-          {selectedRefName || gitRef || "Search..."}
+          {selectedWorkload || workload || "Search..."}
         </span>
         <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-          <span className="text-xs">⌘</span>{keyboardShortcut}
+          <span className="text-xs">⌘</span>
+          {keyboardShortcut}
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
@@ -117,22 +120,11 @@ export default function CompareCommand({
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          {(vitessRefs?.branches ?? []).length > 0 && (
-            <CommandGroup heading="Branches">
-              {vitessRefs?.branches?.map((ref) => (
-                <CommandItem key={ref.name} onSelect={() => handleSelect(ref)}>
-                  <span>{ref.name}</span>
-                  <span className="hidden">{ref.commit_hash}</span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          )}
-          {(vitessRefs?.tags ?? []).length > 0 && (
-            <CommandGroup heading="Releases">
-              {vitessRefs?.tags?.map((ref, index) => (
-                <CommandItem key={index} onSelect={() => handleSelect(ref)}>
-                  <span>{ref.name}</span>
-                  <span hidden>{ref.commit_hash}</span>
+          {(workloads ?? []).length > 0 && (
+            <CommandGroup heading="Workloads">
+              {workloads?.map((ref) => (
+                <CommandItem key={ref} onSelect={() => handleSelect(ref)}>
+                  <span>{ref}</span>
                 </CommandItem>
               ))}
             </CommandGroup>

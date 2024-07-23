@@ -15,11 +15,11 @@ limitations under the License.
 */
 
 import Hero, { HeroProps } from "@/common/Hero";
+import VitessRefsCommand from "@/common/VitessRefsCommand";
 import { Button } from "@/components/ui/button";
 import { VitessRefs } from "@/types";
 import useApiCall from "@/utils/Hook";
 import { useEffect, useState } from "react";
-import CommandComponent from "./CompareCommand";
 
 const heroProps: HeroProps = {
   title: "Compare Versions",
@@ -54,12 +54,14 @@ export default function CompareHero(props: CompareHeroProps) {
     setNewGitRef(gitRef.new);
   }, [gitRef]);
 
+  useEffect(() => {}, [vitessRefs]);
+
   return (
     <Hero title={heroProps.title}>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex flex-col">
           <label className="text-primary mb-2">Old</label>
-          <CommandComponent
+          <VitessRefsCommand
             inputLabel={"Search  commit or releases..."}
             gitRef={oldGitRef}
             setGitRef={setOldGitRef}
@@ -69,7 +71,7 @@ export default function CompareHero(props: CompareHeroProps) {
         </div>
         <div className="flex flex-col">
           <label className="text-primary mb-2">New</label>
-          <CommandComponent
+          <VitessRefsCommand
             inputLabel={"Search  commit or releases..."}
             gitRef={newGitRef}
             setGitRef={setNewGitRef}

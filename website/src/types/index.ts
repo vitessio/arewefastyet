@@ -144,9 +144,34 @@ export type VitessRefsData = {
     patch: number;
   };
   cnumber: number;
-}
+};
 
 export type VitessRefs = {
   tags: VitessRefsData[];
   branches: VitessRefsData[];
+};
+
+type MacroBenchmarkTableDataRow = {
+  title: string;
+  old: MacroDataValue;
+  new: MacroDataValue;
+  p: number;
+  delta: number;
+  insignificant: boolean;
+};
+
+export type MacroBenchmarkTableData = {
+  qpsTotal: MacroBenchmarkTableDataRow;
+  qpsReads: MacroBenchmarkTableDataRow;
+  qpsWrites: MacroBenchmarkTableDataRow;
+  qpsOther: MacroBenchmarkTableDataRow;
+  tps: MacroBenchmarkTableDataRow;
+  latency: MacroBenchmarkTableDataRow;
+  errors: MacroBenchmarkTableDataRow;
+  totalComponentsCpuTime: MacroBenchmarkTableDataRow;
+  vtgateCpuTime: MacroBenchmarkTableDataRow;
+  vttabletCpuTime: MacroBenchmarkTableDataRow;
+  totalComponentsMemStatsAllocBytes: MacroBenchmarkTableDataRow;
+  vtgateMemStatsAllocBytes: MacroBenchmarkTableDataRow;
+  vttabletMemStatsAllocBytes: MacroBenchmarkTableDataRow;
 };

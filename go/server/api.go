@@ -499,19 +499,15 @@ func (s *Server) deleteRun(c *gin.Context) {
 
 func (s *Server) compareBenchmarkFKs(c *gin.Context) {
 	sha := c.Query("sha")
+	newWorkload := c.Query("newWorkload")
+	oldWorkload := c.Query("oldWorkload")
 
-	var mtypes []string
-	for _, benchmarkType := range s.benchmarkTypes {
-		if strings.Contains(benchmarkType, "TPCC") {
-			mtypes = append(mtypes, benchmarkType)
-		}
-	}
-
-	results, err := macrobench.Search(s.dbClient, sha, mtypes, macrobench.Gen4Planner)
+	results, err := macrobench.CompareFKs(s.dbClient, oldWorkload, newWorkload, sha, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
 		return
 	}
+
 	c.JSON(http.StatusOK, results)
 }
