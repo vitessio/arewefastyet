@@ -30,14 +30,14 @@ export type statusDataTypes = {
   status: string;
 };
 
-export type prDataTypes = {
+export type PrData = {
   ID: number;
   Author: string;
   Title: string;
   CreatedAt: string;
   Base: string;
   Head: string;
-  error?: any;
+  error?: string;
 };
 
 export interface Range {

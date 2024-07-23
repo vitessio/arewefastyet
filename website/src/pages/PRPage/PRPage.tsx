@@ -14,30 +14,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { PrData } from "@/types";
 import useApiCall from "@/utils/Hook";
+import { errorApi } from "@/utils/Utils";
+import { format, formatDistanceToNow } from "date-fns";
+import { Link, useParams } from "react-router-dom";
 import RingLoader from "react-spinners/RingLoader";
-
-import { formatDate, errorApi } from "@/utils/Utils";
-import { prDataTypes } from "@/types";
 
 export default function PRPage() {
   const { pull_nb } = useParams();
 
   const {
-    data: dataSinglePr,
-    isLoading: singlePrLoading,
-    error: singlePrError,
-  } = useApiCall<prDataTypes[]>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
+    data: prData,
+    isLoading: prLoading,
+    error: prError,
+  } = useApiCall<PrData>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
 
-  const singlePrData = dataSinglePr && dataSinglePr.length > 0 ? dataSinglePr[0] : null;
-
-  const isComparisonAvailable =
-    singlePrData?.Base !== "" && singlePrData?.Head !== "";
+  const isComparisonAvailable = prData?.Base !== "" && prData?.Head !== "";
 
   if (
-    singlePrData?.error ==
+    prData?.error ==
     "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
   ) {
     return (
@@ -48,60 +61,85 @@ export default function PRPage() {
   return (
     <>
       <section className="flex h-screen flex-col items-center py-[20vh] p-page">
-        {singlePrLoading && (
+        {prLoading && (
           <div className="loadingSpinner">
-            <RingLoader loading={singlePrLoading} color="#E77002" size={300} />
+            <RingLoader loading={prLoading} color="#E77002" size={300} />
           </div>
         )}
 
-        {singlePrError && <div className="text-red-500 text-center my-2">{errorApi}</div>}
+        {prError && (
+          <div className="text-red-500 text-center my-2">{errorApi}</div>
+        )}
 
-        {!singlePrLoading && dataSinglePr && (
-          <div className="flex flex-col border border-front rounded-3xl w-11/12 bg-foreground bg-opacity-5">
-            <div className="flex justify-between p-5 border-b border-front">
-              <div className="flex flex-col justify-evenly">
-                <h2 className="text-2xl font-semibold">
+        {!prLoading && prData && (
+          <Card className="w-fit border-border">
+            <CardHeader>
+              <CardTitle className="flex flex-row gap-10 justify-between">
+                <Link
+                  target="_blank"
+                  to={`https://github.com/vitessio/vitess/pull/${pull_nb}`}
+                  className="text-primary"
+                >
+                  #{pull_nb}
+                </Link>
+                <span>{prData?.Title}</span>
+              </CardTitle>
+              <CardDescription>
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="underline text-left">
+                        {" "}
+                        By {prData?.Author} at{" "}
+                        {formatDistanceToNow(prData?.CreatedAt, {
+                          addSuffix: true,
+                        })}{" "}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent align="start">
+                      <p>
+                        {format(
+                          prData?.CreatedAt,
+                          "MMM d, yyyy, h:mm a 'GMT'XXX"
+                        )}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid w-full items-center gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label className="text-xl font-semibold">Base</Label>
                   <Link
-                    className="text-primary"
                     target="_blank"
-                    to={`https://github.com/vitessio/vitess/pull/${pull_nb}`}
+                    to={`https://github.com/vitessio/vitess/commit/${prData?.Base}`}
                   >
-                    [#{pull_nb}]
-                  </Link>{" "}
-                  {singlePrData?.Title}
-                </h2>
-                <span>
-                  By {singlePrData?.Author} at{" "}
-                  {formatDate(singlePrData?.CreatedAt)}{" "}
-                </span>
-              </div>
-
-              {isComparisonAvailable && (
-                <div className="flex justify-center items-center">
-                  <Link
-                    className="text-primary p-6 border border-primary rounded-xl duration-300 hover:bg-primary hover:bg-opacity-20 hover:scale-105 whitespace-nowrap"
-                    to={`/compare?ltag=${singlePrData?.Base}&rtag=${singlePrData?.Head}`}
-                  >
-                    Compare with base commit
+                    <p className="text-primary">{prData?.Base}</p>
                   </Link>
+                  <Separator />
+                  <Label className="text-xl font-semibold">Head</Label>
+                  <Link
+                    target="_blank"
+                    to={`https://github.com/vitessio/vitess/commit/${prData?.Head}`}
+                  >
+                    <p className="text-primary">{prData?.Head}</p>
+                  </Link>{" "}
                 </div>
-              )}
-            </div>
-            <div className="flex flex-col justify-between p-5 text-lg leading-loose">
-              {isComparisonAvailable ? (
-                <>
-                  <span>Base: {singlePrData?.Base}</span>
-                  <span>Head: {singlePrData?.Head}</span>
-                </>
-              ) : (
-                <div>
-                  The Base and Head commit information is not available for this
-                  pull request.
-                </div>
-              )}
-              <span>{singlePrData?.error}</span>
-            </div>
-          </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button className="p-8">
+                <Link
+                  to={`/compare?old=${prData?.Base}&new=${prData?.Head}`}
+                  className="text-lg"
+                >
+                  Compare with Base Commit
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
         )}
       </section>
     </>
