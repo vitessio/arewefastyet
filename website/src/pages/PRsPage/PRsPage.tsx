@@ -17,20 +17,23 @@ limitations under the License.
 import useApiCall from "@/utils/Hook";
 import RingLoader from "react-spinners/RingLoader";
 
-import PRTable from "./components/PRTable";
-import { prDataTypes } from "@/types";
+import { PrData } from "@/types";
+import { columns } from "./components/Columns";
 import PRHero from "./components/PRHero";
+import PRTable from "./components/PRTable";
 
 export default function PRsPage() {
   const {
     data: dataPRList,
     isLoading: isPRListLoading,
     error: PRListError,
-  } = useApiCall<prDataTypes>(`${import.meta.env.VITE_API_URL}pr/list`);
+  } = useApiCall<PrData[]>(`${import.meta.env.VITE_API_URL}pr/list`);
+
+  console.log({ dataPRList });
 
   return (
     <>
-      <PRHero/>
+      <PRHero />
 
       {isPRListLoading && (
         <div className="flex justify-center w-full my-16">
@@ -38,9 +41,15 @@ export default function PRsPage() {
         </div>
       )}
 
-      {PRListError ? <div className="text-red-500 text-center my-2">{PRListError}</div> : null}
+      {PRListError ? (
+        <div className="text-red-500 text-center my-2">{PRListError}</div>
+      ) : null}
 
-      {!isPRListLoading && dataPRList && <PRTable data={dataPRList} />}
+      {!isPRListLoading && dataPRList && (
+        <div className="lg:mx-auto w-full p-page xl:w-[80vw] my-12 flex flex-col">
+          <PRTable data={dataPRList} columns={columns} />
+        </div>
+      )}
     </>
   );
 }
