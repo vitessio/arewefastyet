@@ -48,7 +48,7 @@ export default function ForeignKeysHero(props: {
   const [oldWorkload, setOldWorkload] = useState(workload.old);
   const [newWorkload, setNewWorkload] = useState(workload.new);
   const [commit, setCommit] = useState(gitRef);
-let { data: workloads } = useApiCall<string[]>(
+  let { data: workloads } = useApiCall<string[]>(
     `${import.meta.env.VITE_API_URL}workloads`
   );
 

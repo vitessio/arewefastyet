@@ -72,7 +72,7 @@ const formatCellValue = (key: string, value: number) => {
   } else if (key.includes("MemStatsAllocBytes")) {
     return formatByte(Number(fixed(value, 2)));
   } else if (key.includes("latency")) {
-    return fixed(value, 2)+"ms"
+    return fixed(value, 2) + "ms";
   }
   return fixed(value, 2);
 };
@@ -170,7 +170,7 @@ export default function MacroBenchmarkTable({
                 {getRange(row.old.range)})
               </TableCell>
               <TableCell className="text-center text-front border-r border-border">
-              {formatCellValue(key, Number(row.new.center))} (
+                {formatCellValue(key, Number(row.new.center))} (
                 {getRange(row.new.range)})
               </TableCell>
               <TableCell className="lg:w-[150px] text-center text-front">

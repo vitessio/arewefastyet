@@ -51,18 +51,19 @@ export default function ForeignKeys() {
     new: urlParams.get("newWorkload") || "",
   });
 
-  const { data: vitessRefs, isLoading: isVitessRefsLoading } =
-    useApiCall<VitessRefs>(`${import.meta.env.VITE_API_URL}vitess/refs`);
+  const { data: vitessRefs } = useApiCall<VitessRefs>(
+    `${import.meta.env.VITE_API_URL}vitess/refs`
+  );
 
   const {
     data: data,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
   } = useApiCall<CompareResult>(
-    `${import.meta.env.VITE_API_URL}fk/compare?sha=${gitRef}`
+    `${import.meta.env.VITE_API_URL}fk/compare?sha=${gitRef}&newWorkload=${
+      workload.new
+    }&oldWorkload=${workload.old}`
   );
-
-  console.log(data);
 
   let formattedData = data !== null ? formatCompareResult(data) : null;
 
@@ -90,7 +91,7 @@ export default function ForeignKeys() {
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
       )}
 
-      {(formattedData === null || data === null) && (
+      {(formattedData === null || data === null) && !isMacrobenchLoading && (
         <div className="text-red-500 text-center my-2">{errorApi}</div>
       )}
 
