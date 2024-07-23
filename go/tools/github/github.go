@@ -23,7 +23,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/google/go-github/v53/github"
+	"github.com/google/go-github/v63/github"
 	"github.com/gregjones/httpcache"
 	"github.com/palantir/go-githubapp/githubapp"
 	"github.com/rcrowley/go-metrics"
