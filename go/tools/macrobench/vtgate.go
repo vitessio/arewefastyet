@@ -242,6 +242,10 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 	}
 	defer result.Close()
 
+	parser, err := sqlparser.New(sqlparser.Options{})
+	if err != nil {
+		return nil, err
+	}
 	res := []VTGateQueryPlan{}
 	for result.Next() {
 		var plan VTGateQueryPlan
@@ -257,7 +261,7 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 		// Remove all comments from the query
 		// This prevents the query from not match across two versions
 		// of Vitess where we changed query hints and added comments
-		stmt, err := sqlparser.Parse(plan.Key)
+		stmt, err := parser.Parse(plan.Key)
 		if err != nil {
 			return nil, err
 		}
