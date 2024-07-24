@@ -40,9 +40,9 @@ export function DataTableToolbar<TData>({
       <div className="flex flex-1 gap-4 md:flex-none h-full">
         <Input
           placeholder="Filter executions..."
-          value={(table.getColumn("Key")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("query")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("Key")?.setFilterValue(event.target.value)
+            table.getColumn("query")?.setFilterValue(event.target.value)
           }
           className="h-full w-full flex-1 md:w-[150px] lg:w-[250px]"
         />

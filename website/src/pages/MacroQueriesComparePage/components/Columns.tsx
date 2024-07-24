@@ -20,43 +20,51 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 export type MacroQueriesPlanCommitValue = {
-  QueryType: string;
-  Original: string;
-  Instructions: string;
-  ExecCount: number;
-  ExecTime: number;
-  ShardQueries: number;
-  RowsReturned: number;
-  RowsAffected: number;
-  Errors: number;
-  TablesUsed: string;
+  query_type: string;
+  original: string;
+  instructions: string;
+  exec_count: number;
+  exec_time: number;
+  shard_queries: number;
+  rows_returned: number;
+  rows_affected: number;
+  errors: number;
+  tables_used: string;
 };
 
 export type MacroQueriesPlanCommit = {
-  Key: string;
-  Value: MacroQueriesPlanCommitValue;
+  key: string;
+  value: MacroQueriesPlanCommitValue;
 };
 
 export type MacroQueriesPlan = {
-  Key: string;
-  ExecTimeDiff: number;
-  ExecCountDiff: number;
-  ErrorsDiff: number;
-  RowsReturnedDiff: number;
-  SamePlan: boolean;
-  Right: MacroQueriesPlanCommit;
-  Left: MacroQueriesPlanCommit;
+  key: string;
+  exec_time_diff: number;
+  exec_count_diff: number;
+  errors_diff: number;
+  rows_returned_diff: number;
+  same_plan: boolean;
+  right: MacroQueriesPlanCommit;
+  left: MacroQueriesPlanCommit;
 };
 
 export const columns: ColumnDef<MacroQueriesPlan>[] = [
   {
-    header: ({ column }) => {
+    id: "Query",
+    enableHiding: true,
+    header: () => {
       return <div className="text-left">Query</div>;
     },
-    accessorKey: "Key",
+    accessorKey: "key",
     cell: ({ row }) => {
-      const formatted = row.original.Key;
-      return <div className="text-left">{formatted}</div>;
+      const formatted = row.original.key;
+      return <div className="text-left min-w-fit">{formatted}</div>;
+    },
+    enableColumnFilter: true,
+    enableSorting: true,
+    filterFn: (row, _, value) => {
+      const original = row.original.key;
+      return original.toString().includes(value);
     },
   },
   {
@@ -72,9 +80,10 @@ export const columns: ColumnDef<MacroQueriesPlan>[] = [
         </Button>
       );
     },
-    accessorKey: "ExecTimeDiff",
+    id: "Execution Time",
+    accessorKey: "exec_time_diff",
     cell: ({ row }) => {
-      const formatted = row.original.ExecTimeDiff;
+      const formatted = row.original.exec_time_diff;
       let variant: "success" | "warning" | "destructive" = "success";
       if (formatted === 0) {
         variant = "warning";
@@ -89,24 +98,6 @@ export const columns: ColumnDef<MacroQueriesPlan>[] = [
         </div>
       );
     },
-  },
-  {
-    header: ({ column }) => {
-      return (
-        <Button
-          className="p-0"
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Execution Count
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    accessorKey: "ExecCountDiff",
-    cell: ({ row }) => {
-      const formatted = row.original.ExecCountDiff;
-      return <>{formatted}%</>;
-    },
+    enableSorting: true,
   },
 ];

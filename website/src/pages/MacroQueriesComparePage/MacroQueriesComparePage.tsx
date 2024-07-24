@@ -15,11 +15,11 @@ limitations under the License.
 */
 
 import { Separator } from "@/components/ui/separator";
-import MacroQueriesCompareHero from "./components/MacroQueriesCompareHero";
+import { FilterConfigs } from "@/types";
 import useApiCall from "@/utils/Hook";
-import { MacroQueriesPlan } from "./components/Columns";
+import { columns, MacroQueriesPlan } from "./components/Columns";
+import MacroQueriesCompareHero from "./components/MacroQueriesCompareHero";
 import { MacroQueriesCompareTable } from "./components/MacroQueriesCompareTable";
-import {columns} from './components/Columns'
 export default function MacroQueriesComparePage() {
   const urlParams = new URLSearchParams(window.location.search);
   const commits = {
@@ -34,23 +34,33 @@ export default function MacroQueriesComparePage() {
     error: macrobenchError,
   } = useApiCall<MacroQueriesPlan[]>(
     `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
-          commits.oldGitRef
-        }&rtag=${commits.newGitRef}&type=${workload}`
+      commits.oldGitRef
+    }&rtag=${commits.newGitRef}&type=${workload}`
   );
 
-  console.log({data});
+  let filterConfigs: FilterConfigs[] = [
+    {
+      column: "query",
+      title: "Operators",
+      options: ["select", "insert", "update", "delete"].map((value) => {
+        return { label: value, value: value };
+      }),
+    },
+  ];
 
   return (
     <>
       <MacroQueriesCompareHero commits={commits} />
       <Separator className="w-4/5 m-auto" />
-      {
-        data && !isMacrobenchLoading && (
-          <div className="w-[80vw] xl:w-[60vw] m-auto">
-            <MacroQueriesCompareTable columns={columns} data={data} filterConfigs={[]}/>
-          </div>
-        )
-      }
+      {data && !isMacrobenchLoading && (
+        <div className="w-[80vw] xl:w-[60vw] m-auto">
+          <MacroQueriesCompareTable
+            columns={columns}
+            data={data}
+            filterConfigs={filterConfigs}
+          />
+        </div>
+      )}
     </>
   );
 }

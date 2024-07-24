@@ -39,8 +39,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { FilterConfigs } from "@/types";
+import { MacroQueriesPlan } from "./Columns";
+import MacroQueriesCompareDialog from "./MacroQueriesCompareDialog";
 import { DataTableToolbar } from "./MacroQueriesCompareTableToolbar";
 
 interface DataTableProps<TData, TValue> {
@@ -112,21 +116,27 @@ export function MacroQueriesCompareTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  className="border-border text-center"
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+              table.getRowModel().rows.map((row, rowIndex) => (
+                <Dialog key={row.id}>
+                  <DialogTrigger asChild>
+                    <TableRow
+                      className="border-border text-center"
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </DialogTrigger>
+                  <MacroQueriesCompareDialog
+                    data={data[rowIndex] as unknown as MacroQueriesPlan}
+                  />
+                </Dialog>
               ))
             ) : (
               <TableRow>
