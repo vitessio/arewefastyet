@@ -14,111 +14,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-
-import QueryPlan from "./components/QueryPlan";
-import Hero from "./components/MacroQueriesComparePageHero";
-import RingLoader from "react-spinners/RingLoader";
-
+import { Separator } from "@/components/ui/separator";
+import MacroQueriesCompareHero from "./components/MacroQueriesCompareHero";
+import useApiCall from "@/utils/Hook";
+import { MacroQueriesPlan } from "./components/Columns";
+import { MacroQueriesCompareTable } from "./components/MacroQueriesCompareTable";
+import {columns} from './components/Columns'
 export default function MacroQueriesComparePage() {
-  const [error, setError] = useState<null|string>(null);
-  const [loading, setLoading] = useState(true);
-
   const urlParams = new URLSearchParams(window.location.search);
   const commits = {
-    left: urlParams.get("ltag") || "",
-    right: urlParams.get("rtag") || "",
+    oldGitRef: urlParams.get("old") || "",
+    newGitRef: urlParams.get("new") || "",
   };
+  const workload = urlParams.get("workload") || "";
 
-  const type = urlParams.get("type") || "";
-  const navigate = useNavigate();
+  const {
+    data: data,
+    isLoading: isMacrobenchLoading,
+    error: macrobenchError,
+  } = useApiCall<MacroQueriesPlan[]>(
+    `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
+          commits.oldGitRef
+        }&rtag=${commits.newGitRef}&type=${workload}`
+  );
 
-  useEffect(() => {
-    navigate(`?ltag=${commits.left}&rtag=${commits.right}&type=${type}`);
-  }, []);
-
-  const [dataQueryPlan, setDataQueryPlan] = useState([]);
-
-  async function loadData() {
-    setLoading(true);
-    try {
-      const responseQueryPlan = await fetch(
-        `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
-          commits.left
-        }&rtag=${commits.right}&type=${type}`
-      );
-
-      const jsonDataQueryPlan = await responseQueryPlan.json();
-
-      setDataQueryPlan(jsonDataQueryPlan);
-    } catch (error) {
-      console.log("Error while retrieving data from the API", error);
-      setError(JSON.stringify(error));
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (
-      !commits.left.length ||
-      !commits.right.length ||
-      !type ||
-      !type.length ||
-      commits.left === "null" ||
-      commits.right === "null" ||
-      type === "null"
-    ) {
-      setError(
-        "Error: Some URL parameters are missing. Please provide both 'ltag', 'rtag' and type parameters."
-      );
-    } else {
-      loadData();
-    }
-  }, []);
+  console.log({data});
 
   return (
     <>
-      {error && (
-        <div className="flex flex-col h-screen fixed top-0 left-0 w-full justify-center items-center bg-background z-10">
-          <span className="my-2 text-sm text-red-600">
-            An error occured <br /> <br />
-            {error}
-          </span>
-          <Link
-            to="/macro"
-            className="text-primary my-5 text-lg underline underline-offset-2 hover:no-underline"
-          >
-            Back to Macro
-          </Link>
-        </div>
-      )}
-
-      {!error && (
-        <>
-          <Hero commits={commits} />
-
-          <div className="p-page my-8">
-            <div className="border border-front" />
+      <MacroQueriesCompareHero commits={commits} />
+      <Separator className="w-4/5 m-auto" />
+      {
+        data && !isMacrobenchLoading && (
+          <div className="w-[80vw] xl:w-[60vw] m-auto">
+            <MacroQueriesCompareTable columns={columns} data={data} filterConfigs={[]}/>
           </div>
-
-          <section className="p-page flex flex-col gap-y-8 my-5">
-            {loading && (
-              <div className="flex items-center justify-center my-10">
-                <RingLoader loading={loading} color="#E77002" size={300} />
-              </div>
-            )}
-
-            {!loading &&
-              dataQueryPlan &&
-              dataQueryPlan.length > 0 &&
-              dataQueryPlan.map((queryPlan, index) => {
-                return <QueryPlan key={index} data={queryPlan} />;
-              })}
-          </section>
-        </>
-      )}
+        )
+      }
     </>
   );
 }
