@@ -91,7 +91,7 @@ export default function PRTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-left font-semibold text-foreground"
+                      className="font-semibold text-foreground"
                     >
                       {header.isPlaceholder
                         ? null

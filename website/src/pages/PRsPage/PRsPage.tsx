@@ -21,6 +21,7 @@ import { PrData } from "@/types";
 import { columns } from "./components/Columns";
 import PRHero from "./components/PRHero";
 import PRTable from "./components/PRTable";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PRsPage() {
   const {
@@ -29,15 +30,13 @@ export default function PRsPage() {
     error: PRListError,
   } = useApiCall<PrData[]>(`${import.meta.env.VITE_API_URL}pr/list`);
 
-  console.log({ dataPRList });
-
   return (
     <>
       <PRHero />
 
       {isPRListLoading && (
-        <div className="flex justify-center w-full my-16">
-          <RingLoader loading={isPRListLoading} color="#E77002" size={300} />
+        <div className="lg:mx-auto w-full p-page xl:w-[80vw] my-12 flex flex-col">
+          <Skeleton className="h-[712px]"></Skeleton>
         </div>
       )}
 

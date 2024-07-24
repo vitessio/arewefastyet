@@ -47,8 +47,6 @@ export default function PRPage() {
     error: prError,
   } = useApiCall<PrData>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
 
-  const isComparisonAvailable = prData?.Base !== "" && prData?.Head !== "";
-
   if (
     prData?.error ==
     "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"
@@ -74,7 +72,8 @@ export default function PRPage() {
         {!prLoading && prData && (
           <Card className="w-fit border-border">
             <CardHeader>
-              <CardTitle className="flex flex-row gap-10 justify-between">
+              <CardTitle className="text-lg md:text-2xl flex flex-row gap-10 justify-between">
+                <span>{prData?.Title}</span>
                 <Link
                   target="_blank"
                   to={`https://github.com/vitessio/vitess/pull/${pull_nb}`}
@@ -82,9 +81,8 @@ export default function PRPage() {
                 >
                   #{pull_nb}
                 </Link>
-                <span>{prData?.Title}</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="py-4">
                 <TooltipProvider delayDuration={200}>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -111,26 +109,26 @@ export default function PRPage() {
             <CardContent>
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col gap-3">
-                  <Label className="text-xl font-semibold">Base</Label>
+                  <Label className="md:text-xl font-semibold">Base</Label>
                   <Link
                     target="_blank"
                     to={`https://github.com/vitessio/vitess/commit/${prData?.Base}`}
                   >
-                    <p className="text-primary">{prData?.Base}</p>
+                    <p className="text-xs md:text-lg text-primary">{prData?.Base}</p>
                   </Link>
                   <Separator />
-                  <Label className="text-xl font-semibold">Head</Label>
+                  <Label className="md:text-xl font-semibold">Head</Label>
                   <Link
                     target="_blank"
                     to={`https://github.com/vitessio/vitess/commit/${prData?.Head}`}
                   >
-                    <p className="text-primary">{prData?.Head}</p>
+                    <p className="text-xs md:text-lg text-primary">{prData?.Head}</p>
                   </Link>{" "}
                 </div>
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button className="p-8">
+              <Button className="p-4 md:p-8">
                 <Link
                   to={`/compare?old=${prData?.Base}&new=${prData?.Head}`}
                   className="text-lg"
