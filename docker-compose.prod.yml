@@ -69,3 +69,12 @@ services:
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
     network_mode: bridge
+
+  cleanup_executions:
+    image: alpine
+    restart: on-failure
+    container_name: "cleanup_executions"
+    volumes:
+      - "./exec/:/exec"
+      - "./infra/cleanup/cleanup_exec.sh:/cleanup.sh"
+    entrypoint: sh -c "echo '0 0 * * * /cleanup.sh' > /etc/crontabs/root && crond -f -d 8"
