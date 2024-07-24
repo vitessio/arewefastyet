@@ -33,33 +33,34 @@ import (
 )
 
 type VTGateQueryPlanValue struct {
-	QueryType    string
-	Original     string
-	Instructions interface{}
+	QueryType    string      `json:"query_type"`
+	Original     string      `json:"original"`
+	Instructions interface{} `json:"instructions"`
 
-	ExecCount    int // Count of times this plan was executed
-	ExecTime     int // Average execution time per query
-	ShardQueries int // Total number of shard queries
-	RowsReturned int // Total number of rows
-	RowsAffected int // Total number of rows
-	Errors       int // Total number of errors
+	ExecCount    int `json:"exec_count"`    // Count of times this plan was executed
+	ExecTime     int `json:"exec_time"`     // Average execution time per query
+	ShardQueries int `json:"shard_queries"` // Total number of shard queries
+	RowsReturned int `json:"rows_returned"` // Total number of rows
+	RowsAffected int `json:"rows_affected"` // Total number of rows
+	Errors       int `json:"errors"`        // Total number of errors
 
-	TablesUsed interface{}
+	TablesUsed interface{} `json:"tables_used"`
 }
 
 type VTGateQueryPlan struct {
-	Key   string
-	Value VTGateQueryPlanValue
+	Key   string               `json:"key"`
+	Value VTGateQueryPlanValue `json:"value"`
 }
 
 type VTGateQueryPlanComparer struct {
-	Left, Right      *VTGateQueryPlan
-	SamePlan         bool
-	Key              string
-	ExecCountDiff    int
-	ExecTimeDiff     int
-	RowsReturnedDiff int
-	ErrorsDiff       int
+	Left             *VTGateQueryPlan `json:"left"`
+	Right            *VTGateQueryPlan `json:"right"`
+	SamePlan         bool             `json:"same_plan"`
+	Key              string           `json:"key"`
+	ExecCountDiff    int              `json:"exec_count_diff"`
+	ExecTimeDiff     int              `json:"exec_time_diff"`
+	RowsReturnedDiff int              `json:"rows_returned_diff"`
+	ErrorsDiff       int              `json:"errors_diff"`
 }
 
 type VTGateQueryPlanMap map[string]VTGateQueryPlanValue

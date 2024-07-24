@@ -274,20 +274,46 @@ func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 		return
 	}
 
-	plansLeft, err := macrobench.GetVTGateSelectQueryPlansWithFilter(leftGitRef, macroType, macrobench.Gen4Planner, s.dbClient)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-		slog.Error(err)
+	comparison := s.queriesCompare(c, leftGitRef, rightGitRef, macroType, macroType)
+	if comparison == nil {
 		return
 	}
-	plansRight, err := macrobench.GetVTGateSelectQueryPlansWithFilter(rightGitRef, macroType, macrobench.Gen4Planner, s.dbClient)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
-		slog.Error(err)
-		return
-	}
-	comparison := macrobench.CompareVTGateQueryPlans(plansLeft, plansRight)
+
 	c.JSON(http.StatusOK, comparison)
+}
+
+func (s *Server) fkQueriesCompareMacrobenchmarks(c *gin.Context) {
+	gitRef := c.Query("gitRef")
+	oldWorkload := macrobench.Type(c.Query("oldWorkload"))
+	newWorkload := macrobench.Type(c.Query("newWorkload"))
+
+	if gitRef == "" || oldWorkload == "" || newWorkload == "" {
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "The gitref and the two workloads are incorrect or missing. Please kindly add them."})
+		return
+	}
+
+	comparison := s.queriesCompare(c, gitRef, gitRef, oldWorkload, newWorkload)
+	if comparison == nil {
+		return
+	}
+
+	c.JSON(http.StatusOK, comparison)
+}
+
+func (s *Server) queriesCompare(c *gin.Context, oldGitRef, newGitRef string, oldWorkload, newWorkload macrobench.Type)[]macrobench.VTGateQueryPlanComparer {
+	oldPlans, err := macrobench.GetVTGateSelectQueryPlansWithFilter(oldGitRef, oldWorkload, macrobench.Gen4Planner, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return nil
+	}
+	newPlans, err := macrobench.GetVTGateSelectQueryPlansWithFilter(newGitRef, newWorkload, macrobench.Gen4Planner, s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return nil
+	}
+	return macrobench.CompareVTGateQueryPlans(oldPlans, newPlans)
 }
 
 func (s *Server) getPullRequest(c *gin.Context) {
