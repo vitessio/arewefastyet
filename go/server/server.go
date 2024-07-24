@@ -234,6 +234,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/queue", s.getExecutionsQueue)
 	s.router.GET("/api/vitess/refs", s.getLatestVitessGitRef)
 	s.router.GET("/api/fk/compare", s.compareBenchmarkFKs)
+	s.router.GET("/api/fk/compare/queries", s.fkQueriesCompareMacrobenchmarks)
 	s.router.GET("/api/macrobench/compare", s.compareMacroBenchmarks)
 	s.router.GET("/api/microbench/compare", s.compareMicrobenchmarks)
 	s.router.GET("/api/search", s.searchBenchmark)
