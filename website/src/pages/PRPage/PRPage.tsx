@@ -47,8 +47,6 @@ export default function PRPage() {
     error: prError,
   } = useApiCall<PrData>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
 
-  const isComparisonAvailable = prData?.Base !== "" && prData?.Head !== "";
-
   if (
     prData?.error ==
     "GET https://api.github.com/repos/vitessio/vitess/pulls/13675: 404 Not Found []"

@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import Icon from "@/common/Icon";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -24,12 +25,25 @@ import {
 import { PrData } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { format, formatDistanceToNow } from "date-fns";
+import { ArrowUpDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const columns: ColumnDef<PrData>[] = [
   {
-    header: "#",
+    id: "ID",
     accessorKey: "ID",
+    header: ({ column }) => {
+      return (
+        <Button
+          className="text-left p-0"
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          #
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const formatted = row.original.ID;
       return (
@@ -40,6 +54,12 @@ export const columns: ColumnDef<PrData>[] = [
           <p className="text-primary text-left">{formatted}</p>
         </Link>
       );
+    },
+    enableSorting: true,
+    enableColumnFilter: true,
+    filterFn: (row, _, value) => {
+      const original = row.original.ID;
+      return original.toString().includes(value);
     },
   },
   {
@@ -65,8 +85,19 @@ export const columns: ColumnDef<PrData>[] = [
     },
   },
   {
-    header: "Opened At",
     accessorKey: "CreatedAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          className="text-left p-0"
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Opened At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const date = new Date(row.original.CreatedAt);
       const formatted = formatDistanceToNow(date, {
@@ -87,7 +118,9 @@ export const columns: ColumnDef<PrData>[] = [
     },
   },
   {
-    header: "Details",
+    header: ({ column }) => {
+      return <p className="text-center">Details</p>;
+    },
     accessorKey: "Base",
     cell: ({ row }) => {
       const formatted = row.original.ID;
