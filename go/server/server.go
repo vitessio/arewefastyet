@@ -238,6 +238,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/macrobench/compare", s.compareMacroBenchmarks)
 	s.router.GET("/api/microbench/compare", s.compareMicrobenchmarks)
 	s.router.GET("/api/search", s.searchBenchmark)
+	s.router.GET("/api/history", s.getHistory)
 	s.router.GET("/api/macrobench/compare/queries", s.queriesCompareMacrobenchmarks)
 	s.router.GET("/api/pr/list", s.getPullRequest)
 	s.router.GET("/api/pr/info/:nb", s.getPullRequestInfo)

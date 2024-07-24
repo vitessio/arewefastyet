@@ -591,3 +591,57 @@ func DeleteExecution(client storage.SQLClient, gitRef, UUID, source string) erro
 	}
 	return nil
 }
+
+type History struct {
+	SHA                  string 		`json:"sha"`
+	Source               string			`json:"source"`
+	WorkloadsBenchmarked int			`json:"workloads_benchmarked"`
+	StartedAt            *time.Time		`json:"started_at"`
+}
+
+func GetHistory(client storage.SQLClient) ([]*History, error) {
+	query := `
+			SELECT
+				git_ref,
+				source,
+				COUNT(DISTINCT type) AS distinct_types,
+				MIN(min_started_at) AS min_started_at
+			FROM (
+				SELECT
+					git_ref,
+					source,
+					type,
+					MIN(started_at) AS min_started_at
+				FROM
+					execution
+				WHERE
+					status = 'finished'
+				GROUP BY
+					git_ref,
+					source,
+					type
+				HAVING
+					COUNT(*) >= 10
+			) AS subquery
+			GROUP BY
+				git_ref,
+				source
+			ORDER BY
+				min_started_at DESC;`
+
+	result, err := client.Select(query)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	res := make([]*History, 0)
+	for result.Next() {
+		history := &History{}
+		err = result.Scan(&history.SHA, &history.Source, &history.WorkloadsBenchmarked, &history.StartedAt)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, history)
+	}
+	return res, nil
+}

@@ -537,3 +537,14 @@ func (s *Server) compareBenchmarkFKs(c *gin.Context) {
 
 	c.JSON(http.StatusOK, results)
 }
+
+func (s *Server) getHistory(c *gin.Context) {
+	results, err := exec.GetHistory(s.dbClient)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
+		slog.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, results)
+}
