@@ -22,6 +22,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -38,6 +39,12 @@ const (
 	flagPsdbBranch        = "planetscale-db-branch"
 
 	errorClientConnectionNotInitialized = "the client connection to the database is not initialized"
+
+	// These two values are used to configure our connection pools.
+	// The values are subject to change, but are based off the recommendations on:
+	// https://github.com/go-sql-driver/mysql#important-settings
+	connMaxLifetime = 3 * time.Minute
+	maxOpenedConns  = 20
 )
 
 type (
@@ -120,18 +127,26 @@ func (cfg *Config) NewClient() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	setConnDefault(writedb)
 
 	// Open a connection pool to the read-only servers
 	readdb, err := sql.Open("mysql", cfg.connectionString(cfg.authRead))
 	if err != nil {
 		return nil, err
 	}
+	setConnDefault(readdb)
 
 	return &Client{
 		config:  cfg,
 		writeDB: writedb,
 		readDB:  readdb,
 	}, nil
+}
+
+func setConnDefault(db *sql.DB) {
+	db.SetConnMaxLifetime(connMaxLifetime)
+	db.SetMaxOpenConns(maxOpenedConns)
+	db.SetMaxIdleConns(maxOpenedConns)
 }
 
 func (c *Client) Close() error {
