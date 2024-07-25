@@ -50,7 +50,7 @@ export type MacroQueriesPlan = {
 
 export const columns: ColumnDef<MacroQueriesPlan>[] = [
   {
-    id: "Query",
+    id: "query",
     enableHiding: true,
     header: () => {
       return <div className="text-left">Query</div>;
@@ -61,7 +61,6 @@ export const columns: ColumnDef<MacroQueriesPlan>[] = [
       return <div className="text-left min-w-fit">{formatted}</div>;
     },
     enableColumnFilter: true,
-    enableSorting: true,
     filterFn: (row, _, value) => {
       const original = row.original.key;
       return original.toString().includes(value);
@@ -94,10 +93,9 @@ export const columns: ColumnDef<MacroQueriesPlan>[] = [
       return (
         <div>
           {" "}
-          <Badge variant={variant}>{formatted}</Badge>
+          <Badge variant={variant}>{formatted}%</Badge>
         </div>
       );
     },
-    enableSorting: true,
   },
 ];

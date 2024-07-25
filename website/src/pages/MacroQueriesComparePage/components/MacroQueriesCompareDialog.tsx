@@ -49,7 +49,7 @@ export default function MacroQueriesCompareDialog<MacroQueriesPlan, TValue>(
             Statistics
           </DialogTitle>
         </DialogHeader>
-        <div className="w-3/5">
+        <div className="w-full md:w-3/5">
           <Table className="border-border border rounded-lg">
             <TableHeader className="text-center">
               <TableRow>
@@ -117,7 +117,7 @@ export default function MacroQueriesCompareDialog<MacroQueriesPlan, TValue>(
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
-        <DialogTitle className="text-primary text-center text-lg md:text-base">
+        <DialogTitle className="text-primary text-center text-lg md:text-4xl">
           New query plan
         </DialogTitle>
         <div className="w-full px-4">

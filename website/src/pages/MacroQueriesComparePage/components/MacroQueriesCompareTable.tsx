@@ -120,7 +120,7 @@ export function MacroQueriesCompareTable<TData, TValue>({
                 <Dialog key={row.id}>
                   <DialogTrigger asChild>
                     <TableRow
-                      className="border-border text-center"
+                      className="border-border text-center cursor-pointer"
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
