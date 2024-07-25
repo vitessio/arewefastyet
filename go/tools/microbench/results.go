@@ -211,7 +211,7 @@ func (mbd DetailsArray) mergeUsingCondition(compareCondition func(i, j int) bool
 // GetResultsForGitRef will fetch and return a DetailsArray
 // containing all the Details linked to the given git commit SHA.
 func GetResultsForGitRef(ref string, client storage.SQLClient) (mrs DetailsArray, err error) {
-	result, err := client.Select("select m.pkg_name, m.name, md.name, md.n, md.ns_per_op, md.bytes_per_op,"+
+	result, err := client.Read("select m.pkg_name, m.name, md.name, md.n, md.ns_per_op, md.bytes_per_op,"+
 		" md.allocs_per_op, md.mb_per_sec FROM execution e, microbenchmark m, microbenchmark_details md where m.git_ref = ? AND "+
 		"md.microbenchmark_no = m.microbenchmark_no and e.uuid = m.exec_uuid and e.status = \"finished\" order by m.microbenchmark_no desc", ref)
 	if err != nil {
@@ -239,7 +239,7 @@ func GetLatestResultsFor(name, subBenchmarkName string, count int, client storag
 		" md.allocs_per_op, md.mb_per_sec, m.started_at  from (select microbenchmark_no, pkg_name, name, microbenchmark.git_ref, started_at" +
 		" from microbenchmark join execution on exec_uuid = uuid where name = ? and source = \"cron\" and status = \"finished\" order by started_at desc limit ?) m, " +
 		"microbenchmark_details md where md.microbenchmark_no = m.microbenchmark_no and md.name = ?"
-	rows, err := client.Select(query, name, count, subBenchmarkName)
+	rows, err := client.Read(query, name, count, subBenchmarkName)
 	if err != nil {
 		return nil, err
 	}

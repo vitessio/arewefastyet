@@ -53,7 +53,7 @@ type benchmark struct {
 
 func (b *benchmark) registerToMySQL(client storage.SQLClient) error {
 	query := "INSERT INTO microbenchmark(exec_uuid, pkg_name, name, git_ref) VALUES(NULLIF(?, ''), ?, ?, ?)"
-	res, err := client.Insert(query, b.execUUID, b.pkgName, b.name, b.gitHash)
+	res, err := client.Write(query, b.execUUID, b.pkgName, b.name, b.gitHash)
 	if err != nil {
 		return err
 	}

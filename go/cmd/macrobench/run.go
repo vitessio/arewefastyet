@@ -36,9 +36,8 @@ func run() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return macrobench.Run(mabcfg)
 		},
-		Short:   "Run macro benchmarks and store the output in the mysql configuration provided.",
-		Long:    "Run macro benchmarks using a fork of sysbench (https://github.com/planetscale/sysbench for OLTP and https://github.com/planetscale/sysbench-TPCC for TPCC)  and store the output in the mysql configuration provided.",
-		Example: "arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-db-branch main --planetscale-db-org my-org --planetscale-db-service-token <token> --planetscale-db-service-token-name <token name>",
+		Short: "Run macro benchmarks and store the output in the mysql configuration provided.",
+		Long:  "Run macro benchmarks using a fork of sysbench (https://github.com/planetscale/sysbench for OLTP and https://github.com/planetscale/sysbench-TPCC for TPCC)  and store the output in the mysql configuration provided.",
 	}
 	mabcfg.AddToCommand(cmd)
 	return cmd

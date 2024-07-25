@@ -21,6 +21,6 @@ package storage
 import "database/sql"
 
 type SQLClient interface {
-	Insert(query string, args ...interface{}) (int64, error)
-	Select(query string, args ...interface{}) (*sql.Rows, error)
+	Write(query string, args ...interface{}) (int64, error)
+	Read(query string, args ...interface{}) (*sql.Rows, error)
 }

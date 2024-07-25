@@ -272,7 +272,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Insert(
+	if _, err = e.clientDB.Write(
 		"INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
 		e.UUID.String(),
 		StatusCreated,
@@ -347,7 +347,7 @@ func (e *Exec) Execute() (err error) {
 	if !e.prepared {
 		return errors.New(ErrorNotPrepared)
 	}
-	if _, err := e.clientDB.Insert("UPDATE execution SET started_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusStarted, e.UUID.String()); err != nil {
+	if _, err := e.clientDB.Write("UPDATE execution SET started_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusStarted, e.UUID.String()); err != nil {
 		return err
 	}
 
@@ -405,7 +405,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 
 func (e *Exec) Success() error {
 	// checking if the execution has not already failed
-	rows, err := e.clientDB.Select("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
+	rows, err := e.clientDB.Read("SELECT uuid FROM execution WHERE uuid = ? AND status = ?", e.UUID.String(), StatusFailed)
 	if err != nil {
 		return err
 	}
@@ -413,20 +413,20 @@ func (e *Exec) Success() error {
 	if rows.Next() {
 		return nil
 	}
-	_, err = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
+	_, err = e.clientDB.Write("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFinished, e.UUID.String())
 	return err
 }
 
 func (e *Exec) handleStepEnd(err error) {
 	if err != nil {
-		_, _ = e.clientDB.Insert("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFailed, e.UUID.String())
+		_, _ = e.clientDB.Write("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFailed, e.UUID.String())
 	}
 }
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	var res []*Exec
 	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, type, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 300"
-	result, err := client.Select(query)
+	result, err := client.Read(query)
 	if err != nil {
 		return nil, err
 	}
@@ -450,11 +450,11 @@ func GetFinishedExecution(client storage.SQLClient, gitRef, source, benchmarkTyp
 	if plannerVersion == "" {
 		// no plannerVersion, meaning we are dealing with a micro benchmark
 		query = "SELECT e.uuid FROM execution e WHERE e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
-		result, err = client.Select(query, source, StatusFinished, benchmarkType, gitRef, pullNb)
+		result, err = client.Read(query, source, StatusFinished, benchmarkType, gitRef, pullNb)
 	} else {
 		// we have a plannerVersion, meaning we are dealing with a macro benchmark
 		query = "SELECT e.uuid FROM execution e, macrobenchmark m WHERE e.uuid = m.exec_uuid AND m.vtgate_planner_version = ? AND e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
-		result, err = client.Select(query, plannerVersion, source, StatusFinished, benchmarkType, gitRef, pullNb)
+		result, err = client.Read(query, plannerVersion, source, StatusFinished, benchmarkType, gitRef, pullNb)
 	}
 	if err != nil {
 		return "", err
@@ -471,7 +471,7 @@ func GetFinishedExecution(client storage.SQLClient, gitRef, source, benchmarkTyp
 
 func IsLastExecutionFinished(client storage.SQLClient) (bool, error) {
 	query := "SELECT e.status FROM execution e ORDER BY e.started_at DESC LIMIT 1"
-	result, err := client.Select(query)
+	result, err := client.Read(query)
 	if err != nil {
 		return false, err
 	}
@@ -490,7 +490,7 @@ func IsLastExecutionFinished(client storage.SQLClient) (bool, error) {
 func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
 		"e.type = \"micro\" AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
-	result, err := client.Select(query, source, gitRef)
+	result, err := client.Read(query, source, gitRef)
 	if err != nil {
 		return
 	}
@@ -508,7 +508,7 @@ func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRe
 func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeOf, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.source = ? AND e.status = 'finished' AND " +
 		"e.type = ? AND e.git_ref != ? AND m.exec_uuid = e.uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
-	result, err := client.Select(query, source, typeOf, gitRef, plannerVersion)
+	result, err := client.Read(query, source, typeOf, gitRef, plannerVersion)
 	if err != nil {
 		return
 	}
@@ -526,7 +526,7 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeO
 // the last daily job for microbenchmarks was run
 func GetLatestDailyJobForMicrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
 	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and type = \"micro\" order by started_at desc limit 1"
-	rows, err := client.Select(query)
+	rows, err := client.Read(query)
 	if err != nil {
 		return "", err
 	}
@@ -543,7 +543,7 @@ func GetLatestDailyJobForMicrobenchmarks(client storage.SQLClient) (gitSha strin
 // the last daily job for macrobenchmarks was run
 func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
 	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and ( type != \"micro\" ) order by started_at desc limit 1"
-	rows, err := client.Select(query)
+	rows, err := client.Read(query)
 	if err != nil {
 		return "", err
 	}
@@ -558,7 +558,7 @@ func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha strin
 
 func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bool, error) {
 	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
-	result, err := client.Select(query, status, gitRef, typeOf, source)
+	result, err := client.Read(query, status, gitRef, typeOf, source)
 	if err != nil {
 		return false, err
 	}
@@ -568,7 +568,7 @@ func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bo
 
 func CountMacroBenchmark(client storage.SQLClient, gitRef, source, typeOf, status, planner string) (int, error) {
 	query := "SELECT count(uuid) FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
-	result, err := client.Select(query, status, gitRef, typeOf, source, planner)
+	result, err := client.Read(query, status, gitRef, typeOf, source, planner)
 	if err != nil {
 		return 0, err
 	}
@@ -585,7 +585,7 @@ func CountMacroBenchmark(client storage.SQLClient, gitRef, source, typeOf, statu
 
 func DeleteExecution(client storage.SQLClient, gitRef, UUID, source string) error {
 	query := fmt.Sprintf("DELETE FROM execution WHERE uuid LIKE '%%%s%%' AND git_ref LIKE '%%%s%%' AND source = '%s'", UUID, gitRef, source)
-	_, err := client.Select(query)
+	_, err := client.Read(query)
 	if err != nil {
 		return err
 	}
@@ -593,10 +593,10 @@ func DeleteExecution(client storage.SQLClient, gitRef, UUID, source string) erro
 }
 
 type History struct {
-	SHA                  string 		`json:"sha"`
-	Source               string			`json:"source"`
-	WorkloadsBenchmarked int			`json:"workloads_benchmarked"`
-	StartedAt            *time.Time		`json:"started_at"`
+	SHA                  string     `json:"sha"`
+	Source               string     `json:"source"`
+	WorkloadsBenchmarked int        `json:"workloads_benchmarked"`
+	StartedAt            *time.Time `json:"started_at"`
 }
 
 func GetHistory(client storage.SQLClient) ([]*History, error) {
@@ -629,7 +629,7 @@ func GetHistory(client storage.SQLClient) ([]*History, error) {
 			ORDER BY
 				min_started_at DESC;`
 
-	result, err := client.Select(query)
+	result, err := client.Read(query)
 	if err != nil {
 		return nil, err
 	}

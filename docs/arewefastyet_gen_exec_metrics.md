@@ -9,18 +9,20 @@ arewefastyet gen exec_metrics [flags]
 ### Options
 
 ```
-  -h, --help                             help for exec_metrics
-      --influx-database string           Name of the database to use in InfluxDB.
-      --influx-hostname string           Hostname of InfluxDB.
-      --influx-password string           Password used to connect to InfluxDB.
-      --influx-port string               Port on which to InfluxDB listens. (default "8086")
-      --influx-username string           Username used to connect to InfluxDB.
-      --planetscale-db-branch string     PlanetscaleDB branch to use. (default "main")
-      --planetscale-db-database string   PlanetscaleDB database name.
-      --planetscale-db-host string       Hostname of the PlanetscaleDB database.
-      --planetscale-db-org string        Name of the PlanetscaleDB organization.
-      --planetscale-db-password string   Password used to authenticate to PlanetscaleDB.
-      --planetscale-db-user string       Username used to authenticate to PlanetscaleDB.
+  -h, --help                                   help for exec_metrics
+      --influx-database string                 Name of the database to use in InfluxDB.
+      --influx-hostname string                 Hostname of InfluxDB.
+      --influx-password string                 Password used to connect to InfluxDB.
+      --influx-port string                     Port on which to InfluxDB listens. (default "8086")
+      --influx-username string                 Username used to connect to InfluxDB.
+      --planetscale-db-branch string           PlanetScaleDB branch to use. (default "main")
+      --planetscale-db-database string         PlanetScaleDB database name.
+      --planetscale-db-host string             Hostname of the PlanetScaleDB database.
+      --planetscale-db-org string              Name of the PlanetScaleDB organization.
+      --planetscale-db-password-read string    Password used to authenticate to the read-only servers of PlanetScaleDB.
+      --planetscale-db-password-write string   Password used to authenticate to the write servers of PlanetScaleDB.
+      --planetscale-db-user-read string        Username used to authenticate to the read-only servers of PlanetScaleDB.
+      --planetscale-db-user-write string       Username used to authenticate to the write servers of PlanetScaleDB.
 ```
 
 ### Options inherited from parent commands
