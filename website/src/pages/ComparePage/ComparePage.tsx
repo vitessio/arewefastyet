@@ -92,7 +92,7 @@ export default function Compare() {
                       >
                         <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
                         <Link
-                          to={`/macrobench/queries/compare?ltag=${gitRef.old}&rtag=${gitRef.new}&type=${macro.type}`}
+                          to={`/macrobench/queries/compare?old=${gitRef.old}&new=${gitRef.new}&workload=${macro.type}`}
                         >
                           See Query Plan{" "}
                         </Link>
