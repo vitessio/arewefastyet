@@ -134,7 +134,7 @@ export function HistoryTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No executions or benchmarks found for this commit.
                 </TableCell>
               </TableRow>
             )}
