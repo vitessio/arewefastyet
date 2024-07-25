@@ -20,6 +20,7 @@ import useApiCall from "@/utils/Hook";
 import { columns, MacroQueriesPlan } from "./components/Columns";
 import MacroQueriesCompareHero from "./components/MacroQueriesCompareHero";
 import { MacroQueriesCompareTable } from "./components/MacroQueriesCompareTable";
+
 export default function MacroQueriesComparePage() {
   const urlParams = new URLSearchParams(window.location.search);
   const commits = {
