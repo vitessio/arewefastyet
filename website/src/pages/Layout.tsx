@@ -15,12 +15,12 @@ limitations under the License.
 */
 
 import CompareActionsWrapper from "@/common/CompareActionsWrapper";
+import Footer from "@/common/Footer";
+import Modal from "@/common/Modal";
+import Navbar from "@/common/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CompareProvider } from "@/contexts/CompareContext";
 import { Outlet } from "react-router-dom";
-import Footer from "../common/Footer";
-import Modal from "../common/Modal";
-import Navbar from "../common/Navbar";
 
 export default function Layout() {
   return (

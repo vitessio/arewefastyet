@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 
 import { DataTableFacetedFilter } from "@/components/ui/data-table-faceted-filter";
 import { FilterConfigs } from "@/types";
+import { useEffect, useState } from "react";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -33,17 +34,29 @@ export function DataTableToolbar<TData>({
   table,
   filterConfigs,
 }: DataTableToolbarProps<TData>) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const gitRef = urlParams.get("gitRef");
+  const [inputValue, setInputValue] = useState<string>("");
+
+  useEffect(() => {
+    if (gitRef) {
+      setInputValue(gitRef);
+      table.getColumn("sha")?.setFilterValue(gitRef);
+    }
+  }, [gitRef, table]);
+
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
     <div className="flex items-center gap-8 md:gap-0 md:justify-between py-4 flex-row">
       <div className="flex flex-1 gap-4 md:flex-none h-full">
-        <Input
+      <Input
           placeholder="Filter History..."
-          value={(table.getColumn("sha")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("sha")?.setFilterValue(event.target.value)
-          }
+          value={(table.getColumn("sha")?.getFilterValue() as string) ?? inputValue}
+          onChange={(event) => {
+            setInputValue(event.target.value);
+            table.getColumn("sha")?.setFilterValue(event.target.value);
+          }}
           className="h-full w-full flex-1 md:w-[150px] lg:w-[250px]"
         />
         <div className="hidden w-0 md:flex items-center space-x-2">
