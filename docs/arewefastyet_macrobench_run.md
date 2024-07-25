@@ -10,12 +10,6 @@ Run macro benchmarks using a fork of sysbench (https://github.com/planetscale/sy
 arewefastyet macrobench run [flags]
 ```
 
-### Examples
-
-```
-arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-db-branch main --planetscale-db-org my-org --planetscale-db-service-token <token> --planetscale-db-service-token-name <token name>
-```
-
 ### Options
 
 ```
@@ -38,8 +32,10 @@ arewastyet macrobenchmark run --planetscale-db-database benchmark --planetscale-
       --planetscale-db-database string             PlanetscaleDB database name.
       --planetscale-db-host string                 Hostname of the PlanetscaleDB database.
       --planetscale-db-org string                  Name of the PlanetscaleDB organization.
-      --planetscale-db-password string             Password used to authenticate to PlanetscaleDB.
-      --planetscale-db-user string                 Username used to authenticate to PlanetscaleDB.
+      --planetscale-db-password-read string        Password used to authenticate to the read-only servers of PlanetScaleDB.
+      --planetscale-db-password-write string       Password used to authenticate to the write servers of PlanetScaleDB.
+      --planetscale-db-user-read string            Username used to authenticate to the read-only servers of PlanetScaleDB.
+      --planetscale-db-user-write string           Username used to authenticate to the write servers of PlanetScaleDB.
 ```
 
 ### Options inherited from parent commands

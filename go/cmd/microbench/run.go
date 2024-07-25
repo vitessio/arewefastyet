@@ -32,7 +32,6 @@ func run() *cobra.Command {
 		Short: "Run micro benchmarks from the <root dir> on <pkg>, and outputs to <output file>.",
 		Long: `Runs all the micro benchmarks from the <root dir> on <pkg>, and parses the output and saves it to mysql if the configuration is provided. 
 The output can also be outputted to <output file>.`,
-		Example: "arewastyet microbenchmark run ~/vitess ./go/vt/sqlparser output.txt",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			idx := 0
 			if len(args) == 3 {

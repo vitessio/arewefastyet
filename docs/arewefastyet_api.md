@@ -19,8 +19,10 @@ arewefastyet api [flags]
       --planetscale-db-database string           PlanetscaleDB database name.
       --planetscale-db-host string               Hostname of the PlanetscaleDB database.
       --planetscale-db-org string                Name of the PlanetscaleDB organization.
-      --planetscale-db-password string           Password used to authenticate to PlanetscaleDB.
-      --planetscale-db-user string               Username used to authenticate to PlanetscaleDB.
+      --planetscale-db-password-read string      Password used to authenticate to the read-only servers of PlanetScaleDB.
+      --planetscale-db-password-write string     Password used to authenticate to the write servers of PlanetScaleDB.
+      --planetscale-db-user-read string          Username used to authenticate to the read-only servers of PlanetScaleDB.
+      --planetscale-db-user-write string         Username used to authenticate to the write servers of PlanetScaleDB.
       --slack-channel string                     Slack channel on which to post messages
       --slack-token string                       Token used to authenticate Slack
       --web-benchmark-config-path string         Path to the configuration file folder for the benchmarks.
