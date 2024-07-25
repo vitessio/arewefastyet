@@ -89,8 +89,8 @@ func (cfg *Config) AddToViper(v *viper.Viper) {
 	_ = v.UnmarshalKey(flagPsdbUserWrite, &cfg.authWrite.username)
 
 	// Read authentication
-	_ = v.UnmarshalKey(flagPsdbPasswordWrite, &cfg.authWrite.password)
-	_ = v.UnmarshalKey(flagPsdbUserWrite, &cfg.authWrite.username)
+	_ = v.UnmarshalKey(flagPsdbPasswordWrite, &cfg.authRead.password)
+	_ = v.UnmarshalKey(flagPsdbUserWrite, &cfg.authRead.username)
 }
 
 func (cfg *Config) AddToCommand(cmd *cobra.Command) {
@@ -150,10 +150,14 @@ func setConnDefault(db *sql.DB) {
 }
 
 func (c *Client) Close() error {
-	if c.writeDB == nil {
+	if c.writeDB == nil || c.readDB == nil {
 		return errors.New(errorClientConnectionNotInitialized)
 	}
-	return c.writeDB.Close()
+	err := c.writeDB.Close()
+	if err != nil {
+		return err
+	}
+	return c.readDB.Close()
 }
 
 func (c *Client) Write(query string, args ...interface{}) (int64, error) {
