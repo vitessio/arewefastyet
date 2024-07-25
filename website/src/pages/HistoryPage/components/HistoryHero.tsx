@@ -20,16 +20,17 @@ const heroProps: HeroProps = {
   title: "History",
   description: (
     <>
-      coming soon...
+      Easily navigate the different commits that were benchmarked by
+      arewefastyet, allowing for faster exploration and bisection of performance
+      regressions. Each row is a unique pair of commit SHA and benchmark source.{" "}
     </>
   ),
 };
 
-
 export default function HistoryHero() {
   return (
     <>
-      <Hero title={heroProps.title} description={heroProps.description}/>
+      <Hero title={heroProps.title} description={heroProps.description} />
     </>
   );
 }

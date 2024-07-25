@@ -14,12 +14,52 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { FilterConfigs } from "@/types";
+import useApiCall from "@/utils/Hook";
 import HistoryHero from "./components/HistoryHero";
+import { columns, HistoryType } from "./components/Columns";
+import { HistoryTable } from "./components/HistoryTable";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HistoryPage() {
+  let {
+    data: dataHistory,
+    isLoading,
+    error,
+  } = useApiCall<HistoryType[]>(`${import.meta.env.VITE_API_URL}history`);
+
+  const sources = dataHistory?.map((source) => source.source);
+  const uniqueSources = Array.from(new Set(sources));
+  const filterConfigs: FilterConfigs[] = [
+    {
+      column: "source",
+      title: "Source",
+      options:
+        uniqueSources.map((source) => {
+          return { label: source, value: source };
+        }) || [],
+    },
+  ];
+
   return (
     <>
       <HistoryHero />
+      <section className="mx-auto p-page lg:w-[60vw] my-12 flex flex-col">
+        {isLoading && (
+            <Skeleton className="h-[732px]"></Skeleton>
+        )}
+        {error && (
+          <div className="text-destructive text-center my-2">{error}</div>
+        )}
+
+        {dataHistory && (
+          <HistoryTable
+            columns={columns}
+            data={dataHistory}
+            filterConfigs={filterConfigs}
+          />
+        )}
+      </section>
     </>
   );
 }
