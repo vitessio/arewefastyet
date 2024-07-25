@@ -16,12 +16,12 @@
  * /
  */
 
-package exec 
+package exec
 
 import "github.com/vitessio/arewefastyet/go/storage"
 
 func GetPullRequestList(client storage.SQLClient) ([]int, error) {
-	rows, err := client.Select("select pull_nb from execution where pull_nb > 0 group by pull_nb order by pull_nb desc")
+	rows, err := client.Read("select pull_nb from execution where pull_nb > 0 group by pull_nb order by pull_nb desc")
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func GetPullRequestList(client storage.SQLClient) ([]int, error) {
 
 	var res []int
 	for rows.Next() {
-		var pullNumber int 
+		var pullNumber int
 		err = rows.Scan(&pullNumber)
 		if err != nil {
 			return nil, err
@@ -45,8 +45,8 @@ type pullRequestInfo struct {
 	PR   string
 }
 
-func GetPullRequestInfo(client storage.SQLClient, pullNumber int) (pullRequestInfo, error){
-	rows, err := client.Select("select cron_pr.git_ref as pr, cron_pr_base.git_ref as main from (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr' order by started_at desc limit 1) cron_pr , (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr_base' order by started_at desc limit 1) cron_pr_base ", pullNumber, pullNumber)
+func GetPullRequestInfo(client storage.SQLClient, pullNumber int) (pullRequestInfo, error) {
+	rows, err := client.Read("select cron_pr.git_ref as pr, cron_pr_base.git_ref as main from (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr' order by started_at desc limit 1) cron_pr , (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr_base' order by started_at desc limit 1) cron_pr_base ", pullNumber, pullNumber)
 	if err != nil {
 		return pullRequestInfo{}, err
 	}

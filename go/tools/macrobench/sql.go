@@ -40,7 +40,7 @@ func getResultsForGitRefAndPlanner(macroType string, ref string, planner Planner
 		"AND info.macrobenchmark_id = results.macrobenchmark_id " +
 		"AND info.type = ?"
 
-	result, err := client.Select(query, ref, planner, upperMacroType)
+	result, err := client.Read(query, ref, planner, upperMacroType)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func getResultsLastXDays(macroType string, source string, planner PlannerVersion
 		"AND info.type = ? " +
 		"ORDER BY e.finished_at "
 
-	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
+	result, err := client.Read(query, lastDays, source, planner, upperMacroType)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func getSummaryLastXDays(macroType string, source string, planner PlannerVersion
 		"AND info.type = ? " +
 		"ORDER BY e.finished_at "
 
-	result, err := client.Select(query, lastDays, source, planner, upperMacroType)
+	result, err := client.Read(query, lastDays, source, planner, upperMacroType)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (mbr *result) insertToMySQL(macrobenchmarkID int, client storage.SQLClient)
 
 	// insert result
 	queryResult := "INSERT INTO macrobenchmark_results(macrobenchmark_id, queries, tps, latency, errors, reconnects, time, threads, total_qps, reads_qps, writes_qps, other_qps) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-	_, err := client.Insert(queryResult, macrobenchmarkID, mbr.Queries, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
+	_, err := client.Write(queryResult, macrobenchmarkID, mbr.Queries, mbr.TPS, mbr.Latency, mbr.Errors, mbr.Reconnects, mbr.Time, mbr.Threads, mbr.QPS.Total, mbr.QPS.Reads, mbr.QPS.Writes, mbr.QPS.Other)
 	if err != nil {
 		return err
 	}

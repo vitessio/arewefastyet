@@ -237,7 +237,7 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 		"order by qp.`key` " +
 		"limit 1500;"
 
-	result, err := client.Select(query, macroType.String(), gitRef, string(planner))
+	result, err := client.Read(query, macroType.String(), gitRef, string(planner))
 	if err != nil {
 		return nil, err
 	}
@@ -285,7 +285,7 @@ func insertVTGateQueryMapToMySQL(client storage.SQLClient, execUUID string, resu
 	query := "INSERT INTO query_plans(`exec_uuid`, `macrobenchmark_id`, `key`, `plan`, `exec_count`, `exec_time`, `rows`, `errors`) VALUES(?, ?, ?, ?, ?, ?, ?, ?)"
 	for key, value := range result {
 		normalizeVTGateQueryPlan(&value)
-		_, err := client.Insert(query, execUUID, macrobenchmarkID, key, fmt.Sprintf("%v", value.Instructions), value.ExecCount, value.ExecTime, value.RowsReturned, value.Errors)
+		_, err := client.Write(query, execUUID, macrobenchmarkID, key, fmt.Sprintf("%v", value.Instructions), value.ExecCount, value.ExecTime, value.RowsReturned, value.Errors)
 		if err != nil {
 			return err
 		}

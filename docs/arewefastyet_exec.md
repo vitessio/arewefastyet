@@ -27,10 +27,10 @@ arewefastyet exec [flags]
       --exec-type string                       Defines the execution type (oltp, tpcc, micro).
       --exec-vtgate-planner-version string     Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback. (default "V3")
   -h, --help                                   help for exec
-      --planetscale-db-branch string           PlanetscaleDB branch to use. (default "main")
-      --planetscale-db-database string         PlanetscaleDB database name.
-      --planetscale-db-host string             Hostname of the PlanetscaleDB database.
-      --planetscale-db-org string              Name of the PlanetscaleDB organization.
+      --planetscale-db-branch string           PlanetScaleDB branch to use. (default "main")
+      --planetscale-db-database string         PlanetScaleDB database name.
+      --planetscale-db-host string             Hostname of the PlanetScaleDB database.
+      --planetscale-db-org string              Name of the PlanetScaleDB organization.
       --planetscale-db-password-read string    Password used to authenticate to the read-only servers of PlanetScaleDB.
       --planetscale-db-password-write string   Password used to authenticate to the write servers of PlanetScaleDB.
       --planetscale-db-user-read string        Username used to authenticate to the read-only servers of PlanetScaleDB.

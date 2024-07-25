@@ -37,7 +37,7 @@ const (
 	flagPsdbDatabase      = "planetscale-db-database"
 	flagPsdbBranch        = "planetscale-db-branch"
 
-	ErrorClientConnectionNotInitialized = "the client connection to the database is not initialized"
+	errorClientConnectionNotInitialized = "the client connection to the database is not initialized"
 )
 
 type (
@@ -47,16 +47,16 @@ type (
 	}
 
 	Config struct {
-		Org       string
-		Database  string
-		Branch    string
-		Host      string
-		authWrite auth
-		authRead  auth
+		organisation string
+		database     string
+		branch       string
+		hostname     string
+		authWrite    auth
+		authRead     auth
 	}
 
 	Client struct {
-		Config  *Config
+		config  *Config
 		writeDB *sql.DB
 		readDB  *sql.DB
 	}
@@ -67,15 +67,15 @@ func (au auth) isValid() bool {
 }
 
 func (cfg *Config) IsValid() bool {
-	return cfg.Org != "" && cfg.Database != "" && cfg.Branch != "" && cfg.Host != "" && cfg.authWrite.isValid() && cfg.authRead.isValid()
+	return cfg.organisation != "" && cfg.database != "" && cfg.branch != "" && cfg.hostname != "" && cfg.authWrite.isValid() && cfg.authRead.isValid()
 }
 
 func (cfg *Config) AddToViper(v *viper.Viper) {
 	// General settings
-	_ = v.UnmarshalKey(flagPsdbOrg, &cfg.Org)
-	_ = v.UnmarshalKey(flagPsdbHost, &cfg.Host)
-	_ = v.UnmarshalKey(flagPsdbDatabase, &cfg.Database)
-	_ = v.UnmarshalKey(flagPsdbBranch, &cfg.Branch)
+	_ = v.UnmarshalKey(flagPsdbOrg, &cfg.organisation)
+	_ = v.UnmarshalKey(flagPsdbHost, &cfg.hostname)
+	_ = v.UnmarshalKey(flagPsdbDatabase, &cfg.database)
+	_ = v.UnmarshalKey(flagPsdbBranch, &cfg.branch)
 
 	// Write authentication
 	_ = v.UnmarshalKey(flagPsdbPasswordWrite, &cfg.authWrite.password)
@@ -88,10 +88,10 @@ func (cfg *Config) AddToViper(v *viper.Viper) {
 
 func (cfg *Config) AddToCommand(cmd *cobra.Command) {
 	// General settings
-	cmd.Flags().StringVar(&cfg.Org, flagPsdbOrg, "", "Name of the PlanetscaleDB organization.")
-	cmd.Flags().StringVar(&cfg.Host, flagPsdbHost, "", "Hostname of the PlanetscaleDB database.")
-	cmd.Flags().StringVar(&cfg.Database, flagPsdbDatabase, "", "PlanetscaleDB database name.")
-	cmd.Flags().StringVar(&cfg.Branch, flagPsdbBranch, "main", "PlanetscaleDB branch to use.")
+	cmd.Flags().StringVar(&cfg.organisation, flagPsdbOrg, "", "Name of the PlanetScaleDB organization.")
+	cmd.Flags().StringVar(&cfg.hostname, flagPsdbHost, "", "Hostname of the PlanetScaleDB database.")
+	cmd.Flags().StringVar(&cfg.database, flagPsdbDatabase, "", "PlanetScaleDB database name.")
+	cmd.Flags().StringVar(&cfg.branch, flagPsdbBranch, "main", "PlanetScaleDB branch to use.")
 	_ = viper.BindPFlag(flagPsdbOrg, cmd.Flags().Lookup(flagPsdbOrg))
 	_ = viper.BindPFlag(flagPsdbHost, cmd.Flags().Lookup(flagPsdbHost))
 	_ = viper.BindPFlag(flagPsdbDatabase, cmd.Flags().Lookup(flagPsdbDatabase))
@@ -111,7 +111,7 @@ func (cfg *Config) AddToCommand(cmd *cobra.Command) {
 }
 
 func (cfg *Config) connectionString(a auth) string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&tls=true&interpolateParams=true", a.username, a.password, cfg.Host, cfg.Database)
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&tls=true&interpolateParams=true", a.username, a.password, cfg.hostname, cfg.database)
 }
 
 func (cfg *Config) NewClient() (*Client, error) {
@@ -128,7 +128,7 @@ func (cfg *Config) NewClient() (*Client, error) {
 	}
 
 	return &Client{
-		Config:  cfg,
+		config:  cfg,
 		writeDB: writedb,
 		readDB:  readdb,
 	}, nil
@@ -136,14 +136,14 @@ func (cfg *Config) NewClient() (*Client, error) {
 
 func (c *Client) Close() error {
 	if c.writeDB == nil {
-		return errors.New(ErrorClientConnectionNotInitialized)
+		return errors.New(errorClientConnectionNotInitialized)
 	}
 	return c.writeDB.Close()
 }
 
-func (c *Client) Insert(query string, args ...interface{}) (int64, error) {
+func (c *Client) Write(query string, args ...interface{}) (int64, error) {
 	if c.writeDB == nil {
-		return 0, errors.New(ErrorClientConnectionNotInitialized)
+		return 0, errors.New(errorClientConnectionNotInitialized)
 	}
 	stms, err := c.writeDB.Prepare(query)
 	if err != nil {
@@ -158,9 +158,9 @@ func (c *Client) Insert(query string, args ...interface{}) (int64, error) {
 	return res.LastInsertId()
 }
 
-func (c *Client) Select(query string, args ...interface{}) (*sql.Rows, error) {
+func (c *Client) Read(query string, args ...interface{}) (*sql.Rows, error) {
 	if c.readDB == nil {
-		return nil, errors.New(ErrorClientConnectionNotInitialized)
+		return nil, errors.New(errorClientConnectionNotInitialized)
 	}
 	rows, err := c.readDB.Query(query, args...)
 	if err != nil {

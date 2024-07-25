@@ -161,13 +161,13 @@ func InsertExecutionMetrics(client storage.SQLClient, execUUID string, execMetri
 			execUUID, "ComponentsMemStatsAllocBytes." + k, v,
 		}...)
 	}
-	_, err := client.Insert(query, args...)
+	_, err := client.Write(query, args...)
 	return err
 }
 
 func GetExecutionMetricsSQL(client storage.SQLClient, execUUID string) (ExecutionMetrics, error) {
 	query := "select `name`, value from metrics where exec_uuid = ?"
-	rows, err := client.Select(query, execUUID)
+	rows, err := client.Read(query, execUUID)
 	if err != nil {
 		return ExecutionMetrics{}, err
 	}

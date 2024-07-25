@@ -37,7 +37,7 @@ type BenchmarkStats struct {
 }
 
 func GetBenchmarkStats(client storage.SQLClient) (BenchmarkStats, error) {
-	rows, err := client.Select(`SELECT
+	rows, err := client.Read(`SELECT
 			(SELECT COUNT(uuid) FROM execution) AS count_status,
 			(SELECT COUNT(DISTINCT git_ref) FROM execution) AS count_commits,
 			(SELECT COUNT(*) FROM execution WHERE started_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)) AS count_all
@@ -61,7 +61,7 @@ func GetBenchmarkStats(client storage.SQLClient) (BenchmarkStats, error) {
 
 	rows.Close()
 
-	rows, err = client.Select(`SELECT 
+	rows, err = client.Read(`SELECT 
 			COUNT(*)
 		FROM
 			execution

@@ -20,6 +20,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -48,7 +49,7 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
-func (c *Client) Insert(query string, args ...interface{}) (int64, error) {
+func (c *Client) Write(query string, args ...interface{}) (int64, error) {
 	if c.db == nil {
 		return 0, errors.New(ErrorClientConnectionNotInitialized)
 	}
@@ -65,7 +66,7 @@ func (c *Client) Insert(query string, args ...interface{}) (int64, error) {
 	return res.LastInsertId()
 }
 
-func (c *Client) Select(query string, args ...interface{}) (*sql.Rows, error) {
+func (c *Client) Read(query string, args ...interface{}) (*sql.Rows, error) {
 	if c.db == nil {
 		return nil, errors.New(ErrorClientConnectionNotInitialized)
 	}

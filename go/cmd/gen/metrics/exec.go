@@ -45,7 +45,7 @@ func GenExecMetricsCmd() *cobra.Command {
 				return err
 			}
 
-			rowsExecUUIDs, err := clientSQL.Select("select uuid from execution where status = ?", exec.StatusFinished)
+			rowsExecUUIDs, err := clientSQL.Read("select uuid from execution where status = ?", exec.StatusFinished)
 			if err != nil {
 				return err
 			}
@@ -58,7 +58,7 @@ func GenExecMetricsCmd() *cobra.Command {
 					return err
 				}
 
-				rowsExecMetrics, err := clientSQL.Select("select id from metrics where exec_uuid = ? limit 1", uuid)
+				rowsExecMetrics, err := clientSQL.Read("select id from metrics where exec_uuid = ? limit 1", uuid)
 				if err != nil {
 					return err
 				}

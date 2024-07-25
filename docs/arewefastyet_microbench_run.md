@@ -17,10 +17,10 @@ arewefastyet microbench run [root dir] <pkg> <output file> [flags]
   -h, --help                                   help for run
       --microbench-exec-uuid string            UUID of the parent execution, an empty string will set to NULL.
       --microbench-run-profile                 Run goproc profiling for each micro-benchmark.
-      --planetscale-db-branch string           PlanetscaleDB branch to use. (default "main")
-      --planetscale-db-database string         PlanetscaleDB database name.
-      --planetscale-db-host string             Hostname of the PlanetscaleDB database.
-      --planetscale-db-org string              Name of the PlanetscaleDB organization.
+      --planetscale-db-branch string           PlanetScaleDB branch to use. (default "main")
+      --planetscale-db-database string         PlanetScaleDB database name.
+      --planetscale-db-host string             Hostname of the PlanetScaleDB database.
+      --planetscale-db-org string              Name of the PlanetScaleDB organization.
       --planetscale-db-password-read string    Password used to authenticate to the read-only servers of PlanetScaleDB.
       --planetscale-db-password-write string   Password used to authenticate to the write servers of PlanetScaleDB.
       --planetscale-db-user-read string        Username used to authenticate to the read-only servers of PlanetScaleDB.
