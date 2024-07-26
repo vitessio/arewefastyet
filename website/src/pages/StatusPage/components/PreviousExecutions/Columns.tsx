@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import CompareRowActions from "@/common/CompareRowActions";
 import { Badge, Variant } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -106,9 +107,7 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     accessorKey: "finished_at",
     cell: ({ row }) => {
       if (row.original.finished_at == null) {
-        return (
-            "N/A"
-        );
+        return "N/A";
       }
 
       const date = new Date(row.original.finished_at);
@@ -169,6 +168,13 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const gitRef = row.original.git_ref;
+      return <CompareRowActions gitRef={gitRef} />;
     },
   },
 ];

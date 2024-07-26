@@ -14,26 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
+import CompareActionsWrapper from "@/common/CompareActionsWrapper";
+import { ThemeProvider } from "@/components/theme-provider";
+import { CompareProvider } from "@/contexts/CompareContext";
 import { Outlet } from "react-router-dom";
-import Navbar from "../common/Navbar";
 import Footer from "../common/Footer";
 import Modal from "../common/Modal";
-import { ThemeProvider } from "@/components/theme-provider";
+import Navbar from "../common/Navbar";
 
-const Layout = () => {
+export default function Layout() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <div className="flex-1">
-          <Outlet />
+      <CompareProvider>
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <div className="flex-1">
+            <Outlet />
+            <CompareActionsWrapper />
+          </div>
+          <Footer />
         </div>
-        <Footer />
-      </div>
-      <Modal />
+        <Modal />
+      </CompareProvider>
     </ThemeProvider>
   );
-};
-
-export default Layout;
+}

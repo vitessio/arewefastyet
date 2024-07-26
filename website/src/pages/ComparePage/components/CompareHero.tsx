@@ -14,9 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import CompareActions from "@/common/CompareActions";
 import Hero, { HeroProps } from "@/common/Hero";
-import VitessRefsCommand from "@/common/VitessRefsCommand";
-import { Button } from "@/components/ui/button";
 import { VitessRefs } from "@/types";
 import useApiCall from "@/utils/Hook";
 import { useEffect, useState } from "react";
@@ -39,7 +38,6 @@ export default function CompareHero(props: CompareHeroProps) {
   const { gitRef, setGitRef } = props;
   const [oldGitRef, setOldGitRef] = useState(gitRef.old);
   const [newGitRef, setNewGitRef] = useState(gitRef.new);
-  const isButtonDisabled = !oldGitRef || !newGitRef;
 
   const { data: vitessRefs } = useApiCall<VitessRefs>(
     `${import.meta.env.VITE_API_URL}vitess/refs`
@@ -49,46 +47,23 @@ export default function CompareHero(props: CompareHeroProps) {
     setGitRef({ old: oldGitRef, new: newGitRef });
   };
 
+  useEffect(() => {}, [vitessRefs]);
+
   useEffect(() => {
     setOldGitRef(gitRef.old);
     setNewGitRef(gitRef.new);
   }, [gitRef]);
 
-  useEffect(() => {}, [vitessRefs]);
-
   return (
     <Hero title={heroProps.title}>
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex flex-col">
-          <label className="text-primary mb-2">Old</label>
-          <VitessRefsCommand
-            inputLabel={"Search  commit or releases..."}
-            gitRef={oldGitRef}
-            setGitRef={setOldGitRef}
-            vitessRefs={vitessRefs}
-            keyboardShortcut="o"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label className="text-primary mb-2">New</label>
-          <VitessRefsCommand
-            inputLabel={"Search  commit or releases..."}
-            gitRef={newGitRef}
-            setGitRef={setNewGitRef}
-            vitessRefs={vitessRefs}
-            keyboardShortcut="j"
-          />
-        </div>
-        <div className="flex md:items-end items-center justify-center mt-4 md:mt-0">
-          <Button
-            onClick={compareClicked}
-            disabled={isButtonDisabled}
-            className="w-fit md:w-auto"
-          >
-            Compare
-          </Button>
-        </div>
-      </div>
+      <CompareActions
+        compareClicked={compareClicked}
+        newGitRef={newGitRef}
+        oldGitRef={oldGitRef}
+        setNewGitRef={setNewGitRef}
+        vitessRefs={vitessRefs}
+        setOldGitRef={setOldGitRef}
+      />
     </Hero>
   );
 }
