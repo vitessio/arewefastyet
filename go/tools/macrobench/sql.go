@@ -130,6 +130,128 @@ func getExecutionGroupResults(macroType string, ref string, planner PlannerVersi
 	return results, nil
 }
 
+func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
+	upperMacroType := strings.ToUpper(macroType)
+	query := `
+        SELECT 
+            IFNULL(e.uuid, '') AS exec_uuid, 
+            e.git_ref,
+            results.tps, 
+            results.latency, 
+            results.errors, 
+            results.reconnects, 
+            results.time, 
+            results.threads, 
+            results.total_qps, 
+            results.reads_qps, 
+            results.writes_qps, 
+            results.other_qps, 
+            m.name AS metric_name, 
+            m.value AS metric_value
+        FROM 
+            execution AS e
+        JOIN 
+            macrobenchmark AS info ON e.uuid = info.exec_uuid
+        JOIN 
+            macrobenchmark_results AS results ON info.macrobenchmark_id = results.macrobenchmark_id
+        LEFT JOIN 
+            metrics AS m ON e.uuid = m.exec_uuid
+        WHERE 
+            e.finished_at BETWEEN DATE(NOW()) - INTERVAL 30 DAY AND DATE(NOW() + INTERVAL 1 DAY)
+            AND e.source = 'cron'
+            AND e.status = 'finished'
+            AND info.vtgate_planner_version = ? 
+            AND info.type = ?
+        ORDER BY 
+            e.finished_at ASC, e.uuid, m.name
+    `
+
+	rows, err := client.Read(query, planner, upperMacroType)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var allResults []executionGroupResults
+	var results executionGroupResults
+	var execRes *executionResults
+	var currentExecUUID string
+	var currentGitRef string
+
+	for rows.Next() {
+		var (
+			execUUID    string
+			gitRef      string
+			sr          sysbenchResult
+			metricName  sql.NullString
+			metricValue sql.NullFloat64
+		)
+
+		err := rows.Scan(
+			&execUUID, &gitRef, &sr.TPS, &sr.Latency, &sr.Errors, &sr.Reconnects, &sr.Time, &sr.Threads, &sr.QPS.Total,
+			&sr.QPS.Reads, &sr.QPS.Writes, &sr.QPS.Other, &metricName, &metricValue,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		// If gitRef is different it means we are looking at another group of results
+		if currentGitRef != gitRef {
+			if execRes != nil {
+				results.Results = append(results.Results, execRes.Result)
+				results.Metrics = append(results.Metrics, execRes.Metrics)
+				execRes = nil
+			}
+			if len(results.Results) > 0 {
+				allResults = append(allResults, results)
+			}
+			results = executionGroupResults{GitRef: gitRef}
+			currentGitRef = gitRef
+		}
+
+		// If execUUID is different it means we are looking at another set of results
+		if currentExecUUID != execUUID {
+			if execRes != nil {
+				results.Results = append(results.Results, execRes.Result)
+				results.Metrics = append(results.Metrics, execRes.Metrics)
+			}
+			execRes = &executionResults{
+				Result: sr,
+				Metrics: metrics.ExecutionMetrics{
+					ComponentsCPUTime:            make(map[string]float64),
+					ComponentsMemStatsAllocBytes: make(map[string]float64),
+				},
+			}
+			currentExecUUID = execUUID
+		}
+
+		// Add the metrics values to the current executionResults
+		if metricName.Valid {
+			switch {
+			case metricName.String == "TotalComponentsCPUTime":
+				execRes.Metrics.TotalComponentsCPUTime = metricValue.Float64
+			case metricName.String == "TotalComponentsMemStatsAllocBytes":
+				execRes.Metrics.TotalComponentsMemStatsAllocBytes = metricValue.Float64
+			case strings.HasPrefix(metricName.String, "ComponentsCPUTime."):
+				execRes.Metrics.ComponentsCPUTime[strings.Split(metricName.String, ".")[1]] = metricValue.Float64
+			case strings.HasPrefix(metricName.String, "ComponentsMemStatsAllocBytes."):
+				execRes.Metrics.ComponentsMemStatsAllocBytes[strings.Split(metricName.String, ".")[1]] = metricValue.Float64
+			}
+		}
+	}
+
+	// Add the last set of results
+	if execRes != nil {
+		results.Results = append(results.Results, execRes.Result)
+		results.Metrics = append(results.Metrics, execRes.Metrics)
+	}
+	if len(results.Results) > 0 {
+		allResults = append(allResults, results)
+	}
+
+	return allResults, nil
+}
+
 func getResultsLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails executionResultsArray, err error) {
 	macrodetails = []executionResults{}
 	upperMacroType := strings.ToUpper(macroType)

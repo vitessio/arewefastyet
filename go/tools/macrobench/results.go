@@ -290,9 +290,9 @@ func Search(client storage.SQLClient, sha string, types []string, planner Planne
 	return results, nil
 }
 
-func SearchForLastDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int) ([]StatisticalSingleResult, error) {
+func SearchForLast30Days(client storage.SQLClient, macroType string, planner PlannerVersion) ([]StatisticalSingleResult, error) {
 	var ssrs []StatisticalSingleResult
-	results, err := getBenchmarkResultsLastXDays(client, macroType, planner, days, false)
+	results, err := getExecutionGroupResultsFromLast30Days(macroType, planner, client)
 	if err != nil {
 		return nil, err
 	}

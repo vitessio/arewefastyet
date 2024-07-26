@@ -300,7 +300,7 @@ func (s *Server) fkQueriesCompareMacrobenchmarks(c *gin.Context) {
 	c.JSON(http.StatusOK, comparison)
 }
 
-func (s *Server) queriesCompare(c *gin.Context, oldGitRef, newGitRef string, oldWorkload, newWorkload macrobench.Type)[]macrobench.VTGateQueryPlanComparer {
+func (s *Server) queriesCompare(c *gin.Context, oldGitRef, newGitRef string, oldWorkload, newWorkload macrobench.Type) []macrobench.VTGateQueryPlanComparer {
 	oldPlans, err := macrobench.GetVTGateSelectQueryPlansWithFilter(oldGitRef, oldWorkload, macrobench.Gen4Planner, s.dbClient)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
@@ -404,7 +404,7 @@ func (s *Server) getDailySummary(c *gin.Context) {
 
 func (s *Server) getDaily(c *gin.Context) {
 	benchmarkType := c.Query("workload")
-	data, err := macrobench.SearchForLastDays(s.dbClient, benchmarkType, macrobench.Gen4Planner, 31)
+	data, err := macrobench.SearchForLast30Days(s.dbClient, benchmarkType, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
