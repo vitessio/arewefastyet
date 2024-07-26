@@ -167,7 +167,7 @@ func compare(old, new []float64) StatisticalResult {
 	return sr
 }
 
-func performAnalysis(old, new resultAsSlice) StatisticalCompareResults {
+func performAnalysis(old, new executionGroupResultsAsSlice) StatisticalCompareResults {
 	scr := StatisticalCompareResults{
 		ComponentsCPUTime: map[string]StatisticalResult{
 			"vtgate":   {Insignificant: true},
