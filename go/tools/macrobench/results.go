@@ -301,7 +301,7 @@ func SearchForLast30Days(client storage.SQLClient, macroType string, planner Pla
 	return ssrs, nil
 }
 
-func SearchForLastDaysQPSOnly(client storage.SQLClient, types []string, planner PlannerVersion, days int) (map[string][]ShortStatisticalSingleResult, error) {
+func SearchForLast30DaysQPSOnly(client storage.SQLClient, types []string, planner PlannerVersion, days int) (map[string][]ShortStatisticalSingleResult, error) {
 	results := make(map[string][]ShortStatisticalSingleResult)
 	for _, macroType := range types {
 		resultsForType, err := getSummaryLast30Days(macroType, planner, client)

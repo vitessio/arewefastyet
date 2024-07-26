@@ -382,7 +382,7 @@ func (s *Server) getDailySummary(c *gin.Context) {
 			}
 		}
 	}
-	results, err := macrobench.SearchForLastDaysQPSOnly(s.dbClient, workloads, macrobench.Gen4Planner, 31)
+	results, err := macrobench.SearchForLast30DaysQPSOnly(s.dbClient, workloads, macrobench.Gen4Planner, 31)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
