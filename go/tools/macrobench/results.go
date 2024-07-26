@@ -20,6 +20,7 @@ package macrobench
 
 import (
 	"sort"
+	"sync"
 	"time"
 
 	"github.com/vitessio/arewefastyet/go/exec/metrics"
@@ -197,38 +198,54 @@ func (mrs sysbenchResultArray) resultsArrayToSlice() executionGroupResultsAsSlic
 
 func Compare(client storage.SQLClient, old, new string, types []string, planner PlannerVersion) (map[string]StatisticalCompareResults, error) {
 	results := make(map[string]StatisticalCompareResults, len(types))
+	mu := sync.Mutex{}
+	wg := sync.WaitGroup{}
+
+	var err error
 	for _, macroType := range types {
-		oldResult, err := getExecutionGroupResults(macroType, old, planner, client)
-		if err != nil {
-			return nil, err
-		}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
 
-		newResult, err := getExecutionGroupResults(macroType, new, planner, client)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
-			results[macroType] = StatisticalCompareResults{
-				ComponentsCPUTime: map[string]StatisticalResult{
-					"vtgate":   {},
-					"vttablet": {},
-				},
-				ComponentsMemStatsAllocBytes: map[string]StatisticalResult{
-					"vtgate":   {},
-					"vttablet": {},
-				},
+			var oldResult, newResult executionGroupResults
+			oldResult, err = getExecutionGroupResults(macroType, old, planner, client)
+			if err != nil {
+				return
 			}
-			continue
-		}
 
-		oldResultsAsSlice := oldResult.asSlice()
-		newResultsAsSlice := newResult.asSlice()
+			newResult, err = getExecutionGroupResults(macroType, new, planner, client)
+			if err != nil {
+				return
+			}
 
-		scr := performAnalysis(oldResultsAsSlice, newResultsAsSlice)
-		results[macroType] = scr
+			if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
+				mu.Lock()
+				defer mu.Unlock()
+				results[macroType] = StatisticalCompareResults{
+					ComponentsCPUTime: map[string]StatisticalResult{
+						"vtgate":   {},
+						"vttablet": {},
+					},
+					ComponentsMemStatsAllocBytes: map[string]StatisticalResult{
+						"vtgate":   {},
+						"vttablet": {},
+					},
+				}
+				return
+			}
+
+			oldResultsAsSlice := oldResult.asSlice()
+			newResultsAsSlice := newResult.asSlice()
+
+			scr := performAnalysis(oldResultsAsSlice, newResultsAsSlice)
+
+			mu.Lock()
+			defer mu.Unlock()
+			results[macroType] = scr
+		}()
 	}
-	return results, nil
+	wg.Wait()
+	return results, err
 }
 
 func CompareFKs(client storage.SQLClient, oldWorkload, newWorkload string, sha string, planner PlannerVersion) (StatisticalCompareResults, error) {
