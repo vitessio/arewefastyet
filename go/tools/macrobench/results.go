@@ -27,9 +27,8 @@ import (
 )
 
 type (
-	// qps represents the qps table. This table contains the raw
-	// results of a macro benchmark.
-	qps struct {
+	// sysbenchQPS is a subset of the results we get from sysbench, it only contains QPS information
+	sysbenchQPS struct {
 		ID     int
 		RefID  int
 		Total  float64 `json:"total"`
@@ -38,22 +37,20 @@ type (
 		Other  float64 `json:"other"`
 	}
 
-	// result represents both OLTP and TPCC tables.
-	// The two tables share the same schema and can thus be grouped
-	// under an unique go struct.
-	result struct {
+	// sysbenchResult is the full representation of the results we get after executing sysbench once.
+	sysbenchResult struct {
 		ID         int
-		Queries    int     `json:"queries"`
-		QPS        qps     `json:"qps"`
-		TPS        float64 `json:"tps"`
-		Latency    float64 `json:"latency"`
-		Errors     float64 `json:"errors"`
-		Reconnects float64 `json:"reconnects"`
-		Time       int     `json:"time"`
-		Threads    float64 `json:"threads"`
+		Queries    int         `json:"queries"`
+		QPS        sysbenchQPS `json:"qps"`
+		TPS        float64     `json:"tps"`
+		Latency    float64     `json:"latency"`
+		Errors     float64     `json:"errors"`
+		Reconnects float64     `json:"reconnects"`
+		Time       int         `json:"time"`
+		Threads    float64     `json:"threads"`
 	}
 
-	resultsArray []result
+	sysbenchResultArray []sysbenchResult
 
 	qpsAsSlice struct {
 		total  []float64
@@ -70,7 +67,7 @@ type (
 		componentsMemStatsAllocBytes      map[string][]float64
 	}
 
-	resultAsSlice struct {
+	executionGroupResultsAsSlice struct {
 		qps qpsAsSlice
 
 		tps        []float64
@@ -83,44 +80,41 @@ type (
 		metrics metricsAsSlice
 	}
 
-	benchmarkResults struct {
+	executionGroupResults struct {
 		GitRef  string
-		Results resultsArray
+		Results sysbenchResultArray
 		Metrics metrics.ExecutionMetricsArray
 	}
 
-	// benchmarkID is used to identify a macro benchmark using its database's ID, the
+	// executionID is used to identify a macro benchmark using its database's ID, the
 	// source from which the benchmark was triggered and its creation date.
-	benchmarkID struct {
+	executionID struct {
 		ID        int
 		Source    string
 		CreatedAt *time.Time
 		ExecUUID  string
 	}
 
-	// details represents the entire macro benchmark and its sub
-	// components. It has a benchmarkID (ID, creation date, source of the benchmark),
-	// the git reference that was used, and its results represented by a result.
-	// This struct encapsulates the "benchmark", "qps" and ("OLTP" or "TPCC") database tables.
-	details struct {
-		benchmarkID
+	// executionResults is the full representation of a single execution,
+	// it contains the ID and the results (both sysbench and metrics results)
+	executionResults struct {
+		executionID
 
-		// refers to commit
 		GitRef  string
-		Result  result
+		Result  sysbenchResult
 		Metrics metrics.ExecutionMetrics
 	}
 
-	detailsArray []details
+	executionResultsArray []executionResults
 )
 
-func (br benchmarkResults) asSlice() resultAsSlice {
+func (br executionGroupResults) asSlice() executionGroupResultsAsSlice {
 	s := br.Results.resultsArrayToSlice()
 	s.metrics = metricsToSlice(br.Metrics)
 	return s
 }
 
-func (br benchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
+func (br executionGroupResults) toStatisticalSingleResult() StatisticalSingleResult {
 	ssr := StatisticalSingleResult{
 		GitRef:                       br.GitRef,
 		ComponentsCPUTime:            map[string]StatisticalSummary{},
@@ -150,7 +144,7 @@ func (br benchmarkResults) toStatisticalSingleResult() StatisticalSingleResult {
 	return ssr
 }
 
-func (br benchmarkResults) toShortStatisticalSingleResult() ShortStatisticalSingleResult {
+func (br executionGroupResults) toShortStatisticalSingleResult() ShortStatisticalSingleResult {
 	var sssr ShortStatisticalSingleResult
 
 	resultSlice := br.asSlice()
@@ -177,8 +171,8 @@ func metricsToSlice(metrics metrics.ExecutionMetricsArray) metricsAsSlice {
 	return s
 }
 
-func (mrs resultsArray) resultsArrayToSlice() resultAsSlice {
-	var ras resultAsSlice
+func (mrs sysbenchResultArray) resultsArrayToSlice() executionGroupResultsAsSlice {
+	var ras executionGroupResultsAsSlice
 	for _, mr := range mrs {
 		ras.qps.total = append(ras.qps.total, mr.QPS.Total)
 		ras.qps.reads = append(ras.qps.reads, mr.QPS.Reads)
@@ -206,12 +200,12 @@ func (mrs resultsArray) resultsArrayToSlice() resultAsSlice {
 func Compare(client storage.SQLClient, old, new string, types []string, planner PlannerVersion) (map[string]StatisticalCompareResults, error) {
 	results := make(map[string]StatisticalCompareResults, len(types))
 	for _, macroType := range types {
-		oldResult, err := getBenchmarkResults(client, macroType, old, planner)
+		oldResult, err := getExecutionGroupResults(macroType, old, planner, client)
 		if err != nil {
 			return nil, err
 		}
 
-		newResult, err := getBenchmarkResults(client, macroType, new, planner)
+		newResult, err := getExecutionGroupResults(macroType, new, planner, client)
 		if err != nil {
 			return nil, err
 		}
@@ -240,13 +234,12 @@ func Compare(client storage.SQLClient, old, new string, types []string, planner 
 }
 
 func CompareFKs(client storage.SQLClient, oldWorkload, newWorkload string, sha string, planner PlannerVersion) (StatisticalCompareResults, error) {
-	oldResult, err := getBenchmarkResults(client, oldWorkload, sha, planner)
-
+	oldResult, err := getExecutionGroupResults(oldWorkload, sha, planner, client)
 	if err != nil {
 		return StatisticalCompareResults{}, err
 	}
 
-	newResult, err := getBenchmarkResults(client, newWorkload, sha, planner)
+	newResult, err := getExecutionGroupResults(newWorkload, sha, planner, client)
 	if err != nil {
 		return StatisticalCompareResults{}, err
 	}
@@ -275,7 +268,7 @@ func CompareFKs(client storage.SQLClient, oldWorkload, newWorkload string, sha s
 func Search(client storage.SQLClient, sha string, types []string, planner PlannerVersion) (map[string]StatisticalSingleResult, error) {
 	results := make(map[string]StatisticalSingleResult, len(types))
 	for _, macroType := range types {
-		result, err := getBenchmarkResults(client, macroType, sha, planner)
+		result, err := getExecutionGroupResults(macroType, sha, planner, client)
 		if err != nil {
 			return nil, err
 		}
@@ -325,34 +318,11 @@ func SearchForLastDaysQPSOnly(client storage.SQLClient, types []string, planner 
 	return results, nil
 }
 
-func getBenchmarkResults(client storage.SQLClient, macroType, gitSHA string, planner PlannerVersion) (benchmarkResults, error) {
-	results, err := getResultsForGitRefAndPlanner(macroType, gitSHA, planner, client)
-	if err != nil {
-		return benchmarkResults{}, err
-	}
-
-	if len(results) == 0 {
-		return benchmarkResults{}, nil
-	}
-
-	var br benchmarkResults
-	for _, result := range results {
-		br.Results = append(br.Results, result.Result)
-
-		metricsResult, err := metrics.GetExecutionMetricsSQL(client, result.ExecUUID)
-		if err != nil {
-			return benchmarkResults{}, err
-		}
-		br.Metrics = append(br.Metrics, metricsResult)
-	}
-	return br, nil
-}
-
-func (da detailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignoreMetrics bool) ([]benchmarkResults, error) {
-	var brs []benchmarkResults
+func (da executionResultsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignoreMetrics bool) ([]executionGroupResults, error) {
+	var brs []executionGroupResults
 	macroIdMap := make(map[int]bool)
 
-	getMetrics := func(br *benchmarkResults, uuid string) error {
+	getMetrics := func(br *executionGroupResults, uuid string) error {
 		if ignoreMetrics {
 			return nil
 		}
@@ -371,7 +341,7 @@ func (da detailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignor
 			continue
 		}
 
-		br := benchmarkResults{
+		br := executionGroupResults{
 			GitRef: result.GitRef,
 		}
 		br.Results = append(br.Results, result.Result)
@@ -397,8 +367,8 @@ func (da detailsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignor
 	return brs, nil
 }
 
-func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int, short bool) ([]benchmarkResults, error) {
-	var results detailsArray
+func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int, short bool) ([]executionGroupResults, error) {
+	var results executionResultsArray
 	var err error
 
 	if short {
