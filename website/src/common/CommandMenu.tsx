@@ -14,15 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { type DialogProps } from "@radix-ui/react-dialog";
 import { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import { CommandDialog, CommandInput } from "@/components/ui/command";
+import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+} from "@/components/ui/command";
 import { cn } from "@/library/utils";
 
-export function CommandMenu({ ...props }: DialogProps) {
+export function CommandMenu() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -64,7 +67,6 @@ export function CommandMenu({ ...props }: DialogProps) {
           "relative h-8 w-full justify-start rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
         )}
         onClick={() => setOpen(true)}
-        {...props}
       >
         <span className="hidden lg:inline-flex">Search a commit...</span>
         <span className="inline-flex lg:hidden">Search...</span>
@@ -80,6 +82,7 @@ export function CommandMenu({ ...props }: DialogProps) {
           }
           onKeyDown={handleInputKeyDown}
         />
+        <CommandList />
       </CommandDialog>
     </>
   );
