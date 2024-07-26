@@ -252,84 +252,67 @@ func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVer
 	return allResults, nil
 }
 
-func getResultsLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (macrodetails executionResultsArray, err error) {
-	macrodetails = []executionResults{}
+func getSummaryLast30Days(macroType string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
 	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT " +
-		"info.macrobenchmark_id, e.git_ref, e.source, e.finished_at, IFNULL(e.uuid, ''), " +
-		"results.tps, results.latency, results.errors, results.reconnects, results.time, results.threads, " +
-		"results.total_qps, results.reads_qps, results.writes_qps, results.other_qps " +
-		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid AND e.status = \"finished\" " +
-		"AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY " +
-		"AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND e.source = ? " +
-		"AND info.vtgate_planner_version = ? " +
-		"AND info.macrobenchmark_id = results.macrobenchmark_id " +
-		"AND info.type = ? " +
-		"ORDER BY e.finished_at "
+	query := `
+        SELECT 
+            e.git_ref, 
+            results.total_qps 
+        FROM 
+            execution AS e
+        JOIN 
+            macrobenchmark AS info ON e.uuid = info.exec_uuid
+        JOIN 
+            macrobenchmark_results AS results ON info.macrobenchmark_id = results.macrobenchmark_id
+        WHERE 
+            e.finished_at BETWEEN DATE(NOW()) - INTERVAL 30 DAY AND DATE(NOW() + INTERVAL 1 DAY) 
+            AND e.status = "finished" 
+            AND e.source = "cron" 
+            AND info.vtgate_planner_version = ? 
+            AND info.type = ? 
+        ORDER BY 
+            e.finished_at ASC
+    `
 
-	result, err := client.Read(query, lastDays, source, planner, upperMacroType)
+	rows, err := client.Read(query, planner, upperMacroType)
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
-	for result.Next() {
-		var res executionResults
-		err = result.Scan(
-			&res.ID,
-			&res.GitRef,
-			&res.Source,
-			&res.CreatedAt,
-			&res.ExecUUID,
-			&res.Result.TPS,
-			&res.Result.Latency,
-			&res.Result.Errors,
-			&res.Result.Reconnects,
-			&res.Result.Time,
-			&res.Result.Threads,
-			&res.Result.QPS.Total,
-			&res.Result.QPS.Reads,
-			&res.Result.QPS.Writes,
-			&res.Result.QPS.Other,
+	defer rows.Close()
+
+	var allResults []executionGroupResults
+	var results *executionGroupResults
+	var currentGitRef string
+
+	for rows.Next() {
+		var (
+			gitRef string
+			sr     sysbenchResult
 		)
-		if err != nil {
+
+		if err := rows.Scan(&gitRef, &sr.QPS.Total); err != nil {
 			return nil, err
 		}
-		macrodetails = append(macrodetails, res)
-	}
-	return macrodetails, nil
-}
 
-func getSummaryLastXDays(macroType string, source string, planner PlannerVersion, lastDays int, client storage.SQLClient) (results executionResultsArray, err error) {
-	upperMacroType := strings.ToUpper(macroType)
-	query := "SELECT " +
-		"info.macrobenchmark_id, e.git_ref, results.total_qps, IFNULL(e.uuid, '') " +
-		"FROM execution AS e, macrobenchmark AS info, macrobenchmark_results AS results " +
-		"WHERE e.uuid = info.exec_uuid " +
-		"AND e.status = \"finished\" " +
-		"AND e.finished_at BETWEEN DATE(NOW()) - INTERVAL ? DAY " +
-		"AND DATE(NOW() + INTERVAL 1 DAY) " +
-		"AND e.source = ? " +
-		"AND info.vtgate_planner_version = ? " +
-		"AND info.macrobenchmark_id = results.macrobenchmark_id " +
-		"AND info.type = ? " +
-		"ORDER BY e.finished_at "
-
-	result, err := client.Read(query, lastDays, source, planner, upperMacroType)
-	if err != nil {
-		return nil, err
-	}
-	defer result.Close()
-	for result.Next() {
-		var res executionResults
-		err = result.Scan(&res.ID, &res.GitRef, &res.Result.QPS.Total, &res.ExecUUID)
-		if err != nil {
-			return nil, err
+		if currentGitRef != gitRef {
+			if results != nil {
+				allResults = append(allResults, *results)
+			}
+			results = &executionGroupResults{
+				GitRef:  gitRef,
+				Results: []sysbenchResult{sr},
+			}
+			currentGitRef = gitRef
+		} else if results != nil {
+			results.Results = append(results.Results, sr)
 		}
-		results = append(results, res)
 	}
-	return
+
+	if results != nil {
+		allResults = append(allResults, *results)
+	}
+
+	return allResults, nil
 }
 
 // insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.

@@ -104,8 +104,6 @@ type (
 		Result  sysbenchResult
 		Metrics metrics.ExecutionMetrics
 	}
-
-	executionResultsArray []executionResults
 )
 
 func (br executionGroupResults) asSlice() executionGroupResultsAsSlice {
@@ -306,83 +304,18 @@ func SearchForLast30Days(client storage.SQLClient, macroType string, planner Pla
 func SearchForLastDaysQPSOnly(client storage.SQLClient, types []string, planner PlannerVersion, days int) (map[string][]ShortStatisticalSingleResult, error) {
 	results := make(map[string][]ShortStatisticalSingleResult)
 	for _, macroType := range types {
-		resultsForType, err := getBenchmarkResultsLastXDays(client, macroType, planner, days, true)
+		resultsForType, err := getSummaryLast30Days(macroType, planner, client)
 		if err != nil {
 			return nil, err
 		}
 
 		for _, result := range resultsForType {
+			// If we do not have a decent number of results in the set of benchmark, let's skip the result.
+			if len(result.Results) < 6 {
+				continue
+			}
 			results[macroType] = append(results[macroType], result.toShortStatisticalSingleResult())
 		}
 	}
 	return results, nil
-}
-
-func (da executionResultsArray) toSliceOfBenchmarkResults(client storage.SQLClient, ignoreMetrics bool) ([]executionGroupResults, error) {
-	var brs []executionGroupResults
-	macroIdMap := make(map[int]bool)
-
-	getMetrics := func(br *executionGroupResults, uuid string) error {
-		if ignoreMetrics {
-			return nil
-		}
-		metricsResult, err := metrics.GetExecutionMetricsSQL(client, uuid)
-		if err != nil {
-			return err
-		}
-		br.Metrics = append(br.Metrics, metricsResult)
-		return nil
-	}
-
-	for i, result := range da {
-		if _, ok := macroIdMap[result.ID]; !ok {
-			macroIdMap[result.ID] = true
-		} else {
-			continue
-		}
-
-		br := executionGroupResults{
-			GitRef: result.GitRef,
-		}
-		br.Results = append(br.Results, result.Result)
-		if err := getMetrics(&br, result.ExecUUID); err != nil {
-			return nil, err
-		}
-
-		for j := i + 1; j < len(da); j++ {
-			tmpResult := da[j]
-			if _, ok := macroIdMap[tmpResult.ID]; ok {
-				continue
-			}
-			if tmpResult.GitRef == result.GitRef {
-				macroIdMap[tmpResult.ID] = true
-				br.Results = append(br.Results, tmpResult.Result)
-				if err := getMetrics(&br, tmpResult.ExecUUID); err != nil {
-					return nil, err
-				}
-			}
-		}
-		brs = append(brs, br)
-	}
-	return brs, nil
-}
-
-func getBenchmarkResultsLastXDays(client storage.SQLClient, macroType string, planner PlannerVersion, days int, short bool) ([]executionGroupResults, error) {
-	var results executionResultsArray
-	var err error
-
-	if short {
-		results, err = getSummaryLastXDays(macroType, "cron", planner, days, client)
-	} else {
-		results, err = getResultsLastXDays(macroType, "cron", planner, days, client)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	if len(results) == 0 {
-		return nil, nil
-	}
-
-	return results.toSliceOfBenchmarkResults(client, short)
 }
