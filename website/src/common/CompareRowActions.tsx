@@ -29,6 +29,7 @@ import {
 import { CompareContext } from "@/contexts/CompareContext";
 import { MoreHorizontal } from "lucide-react";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 export type CompareRowActionsProps = {
   gitRef: string;
@@ -38,13 +39,14 @@ export default function CompareRowActions(props: CompareRowActionsProps) {
   const { gitRef } = props;
   const { setOldGitRef, setNewGitRef, showCompare } =
     useContext(CompareContext);
+  const navigate = useNavigate();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
+        <Button variant="ghost" className="h-10 w-10 p-0">
           <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
+          <MoreHorizontal className="h-6 w-6" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -72,8 +74,12 @@ export default function CompareRowActions(props: CompareRowActionsProps) {
             </DropdownMenuGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-        <DropdownMenuItem onClick={() => {}}>
-          Related Benchmarks
+        <DropdownMenuItem
+          onClick={() => {
+            navigate(`history?gitRef=${gitRef}`);
+          }}
+        >
+          Benchmarks History
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

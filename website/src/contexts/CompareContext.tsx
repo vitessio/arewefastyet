@@ -47,8 +47,14 @@ export const CompareProvider = ({ children }: { children: ReactNode }) => {
   const [newGitRef, setNewGitRef] = useState<string>("");
   const [isCompareVisible, setIsCompareVisible] = useState<boolean>(false);
 
-  const showCompare = () => setIsCompareVisible(true);
-  const closeCompare = () => setIsCompareVisible(false);
+  const showCompare = () => {
+    setIsCompareVisible(true);
+  };
+  const closeCompare = () => {
+    setOldGitRef("");
+    setNewGitRef("");
+    setIsCompareVisible(false);
+  };
 
   return (
     <CompareContext.Provider

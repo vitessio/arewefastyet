@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/library/utils";
 import { VitessRefs } from "@/types";
 import React from "react";
 import VitessRefsCommand from "./VitessRefsCommand";
@@ -26,6 +27,11 @@ export type CompareActionsProps = {
   setNewGitRef: React.Dispatch<React.SetStateAction<string>>;
   compareClicked: () => void;
   vitessRefs: VitessRefs | null;
+  keyboardShortcut?: {
+    old: string;
+    new: string;
+  };
+  className?: string;
 };
 
 export default function CompareAction(props: CompareActionsProps) {
@@ -36,11 +42,13 @@ export default function CompareAction(props: CompareActionsProps) {
     setOldGitRef,
     compareClicked,
     vitessRefs,
+    keyboardShortcut = { old: "o", new: "j" },
+    className,
   } = props;
   const isButtonDisabled = !oldGitRef || !newGitRef;
 
   return (
-    <div className="flex flex-col md:flex-row gap-4">
+    <div className={cn("flex flex-col md:flex-row gap-4", className)}>
       <div className="flex flex-col">
         <label className="text-primary mb-2">Old</label>
         <VitessRefsCommand
@@ -48,7 +56,7 @@ export default function CompareAction(props: CompareActionsProps) {
           gitRef={oldGitRef}
           setGitRef={setOldGitRef}
           vitessRefs={vitessRefs}
-          keyboardShortcut="o"
+          keyboardShortcut={keyboardShortcut.old}
         />
       </div>
       <div className="flex flex-col">
@@ -58,7 +66,7 @@ export default function CompareAction(props: CompareActionsProps) {
           gitRef={newGitRef}
           setGitRef={setNewGitRef}
           vitessRefs={vitessRefs}
-          keyboardShortcut="j"
+          keyboardShortcut={keyboardShortcut.new}
         />
       </div>
       <div className="flex md:items-end items-center justify-center mt-4 md:mt-0">
