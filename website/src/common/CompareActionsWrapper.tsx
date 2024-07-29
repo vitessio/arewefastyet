@@ -76,7 +76,7 @@ export default function CompareActionsWrapper() {
                   setNewGitRef={setNewGitRef}
                   compareClicked={compareClicked}
                   vitessRefs={vitessRefs}
-                  keyboardShortcut={{ old: "l", new: "r" }}
+                  keyboardShortcut={{ old: "l", new: "m" }}
                 />
               </CardContent>
             </Card>
