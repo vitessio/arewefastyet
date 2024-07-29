@@ -76,7 +76,7 @@ export default function CompareRowActions(props: CompareRowActionsProps) {
         </DropdownMenuSub>
         <DropdownMenuItem
           onClick={() => {
-            navigate(`history?gitRef=${gitRef}`);
+            navigate(`/history?gitRef=${gitRef}`);
           }}
         >
           Benchmarks History
