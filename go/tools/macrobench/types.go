@@ -23,28 +23,28 @@ import (
 )
 
 type (
-	// Type determines the type of a macro benchmark.
-	Type string
+	// Workload determines the workload of a macro-benchmark.
+	Workload string
 )
 
 // Type implements Cobra flag.Value interface.
-func (mbtype *Type) Type() string {
-	return "Type"
+func (mbtype *Workload) Type() string {
+	return "Workload"
 }
 
 // Set implements Cobra flag.Value interface.
-func (mbtype *Type) Set(s string) error {
-	*mbtype = Type(s)
+func (mbtype *Workload) Set(s string) error {
+	*mbtype = Workload(s)
 	return nil
 }
 
-// ToUpper returns a new Type in upper case.
-func (mbtype Type) ToUpper() Type {
-	return Type(strings.ToUpper(string(mbtype)))
+// ToUpper returns a new Workload in upper case.
+func (mbtype Workload) ToUpper() Workload {
+	return Workload(strings.ToUpper(string(mbtype)))
 }
 
-// String returns the given Type as a string.
+// String returns the given Workload as a string.
 // It also implements the flag.Value interface.
-func (mbtype Type) String() string {
+func (mbtype Workload) String() string {
 	return string(mbtype)
 }

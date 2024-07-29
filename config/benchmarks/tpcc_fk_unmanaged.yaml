@@ -1,5 +1,5 @@
 ## Exec configuration
-exec-type: tpcc_fk_unmanaged
+exec-workload: tpcc_fk_unmanaged
 exec-schema: "./vitess-benchmark/tpcc_fk_unmanaged_vschema.json"
 minimum-version: 18
 
@@ -11,7 +11,7 @@ ansible-playbook-file: macrobench.yml
 macrobench-sysbench-executable: /usr/local/bin/sysbench
 macrobench-workload-path: /src/sysbench-tpcc/tpcc.lua
 macrobench-skip-steps:
-macrobench-type: tpcc_fk_unmanaged
+macrobench-workload: tpcc_fk_unmanaged
 macrobench-working-directory: /src/sysbench-tpcc
 
 ## Sysbench all steps

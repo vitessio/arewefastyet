@@ -33,9 +33,8 @@ const (
 	// current benchmark.
 	KeyExecUUID = "arewefastyet_exec_uuid"
 
-	// KeyExecutionType corresponding value in the map is the type of execution for
-	// this benchmark.
-	KeyExecutionType = "arewefastyet_execution_type"
+	// KeyExecutionWorkload corresponding value in the map is the workload we will execute.
+	KeyExecutionWorkload = "arewefastyet_execution_workload"
 
 	// KeyBenchmarkConfigPath corresponding value in the map is the path to the configuration
 	// file that will be used to execute the benchmark by arewefastyet inside the benchmarking

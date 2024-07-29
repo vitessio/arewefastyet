@@ -23,7 +23,7 @@ arewefastyet macrobench run [flags]
       --macrobench-git-ref string                  Git SHA referring to the macro benchmark.
       --macrobench-skip-steps string               Slice of sysbench steps to skip.
       --macrobench-sysbench-executable string      Path to the sysbench binary.
-      --macrobench-type Type                       Type of macro benchmark.
+      --macrobench-workload Workload                   Workload of macro-benchmark.
       --macrobench-vtgate-planner-version string   Vtgate planner version running on Vitess
       --macrobench-vtgate-web-ports strings        List of the web port for each VTGate.
       --macrobench-working-directory string        Directory on which to execute sysbench.

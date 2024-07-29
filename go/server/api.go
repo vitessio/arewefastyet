@@ -75,7 +75,7 @@ type ExecutionQueueResponse struct {
 }
 
 func (s *Server) getWorkloadList(c *gin.Context) {
-	c.JSON(http.StatusOK, s.benchmarkTypes)
+	c.JSON(http.StatusOK, s.workloads)
 }
 
 func (s *Server) getRecentExecutions(c *gin.Context) {
@@ -140,18 +140,6 @@ func (s *Server) getExecutionsQueue(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-type VitessGitRef struct {
-	UUID          string     `json:"uuid"`
-	Source        string     `json:"source"`
-	GitRef        string     `json:"git_ref"`
-	Status        string     `json:"status"`
-	TypeOf        string     `json:"type_of"`
-	PullNb        int        `json:"pull_nb"`
-	GolangVersion string     `json:"golang_version"`
-	StartedAt     *time.Time `json:"started_at"`
-	FinishedAt    *time.Time `json:"finished_at"`
-}
-
 type VitessGitRefReleases struct {
 	Tags     []*git.Release `json:"tags"`
 	Branches []*git.Release `json:"branches"`
@@ -190,15 +178,15 @@ func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 }
 
 type CompareMacrobench struct {
-	Type   string                               `json:"type"`
-	Result macrobench.StatisticalCompareResults `json:"result"`
+	Workload string                               `json:"workload"`
+	Result   macrobench.StatisticalCompareResults `json:"result"`
 }
 
 func (s *Server) compareMacroBenchmarks(c *gin.Context) {
 	oldSHA := c.Query("old")
 	newSHA := c.Query("new")
 
-	results, err := macrobench.Compare(s.dbClient, oldSHA, newSHA, s.benchmarkTypes, macrobench.Gen4Planner)
+	results, err := macrobench.Compare(s.dbClient, oldSHA, newSHA, s.workloads, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
@@ -206,15 +194,15 @@ func (s *Server) compareMacroBenchmarks(c *gin.Context) {
 	}
 
 	resultsSlice := make([]CompareMacrobench, 0, len(results))
-	for typeof, res := range results {
+	for workload, res := range results {
 		resultsSlice = append(resultsSlice, CompareMacrobench{
-			Type:   typeof,
-			Result: res,
+			Workload: workload,
+			Result:   res,
 		})
 	}
 
 	sort.Slice(resultsSlice, func(i, j int) bool {
-		return resultsSlice[i].Type < resultsSlice[j].Type
+		return resultsSlice[i].Workload < resultsSlice[j].Workload
 	})
 
 	c.JSON(http.StatusOK, resultsSlice)
@@ -251,7 +239,7 @@ type searchResult struct {
 func (s *Server) searchBenchmark(c *gin.Context) {
 	sha := c.Query("sha")
 
-	results, err := macrobench.Search(s.dbClient, sha, s.benchmarkTypes, macrobench.Gen4Planner)
+	results, err := macrobench.Search(s.dbClient, sha, s.workloads, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
@@ -267,14 +255,14 @@ func (s *Server) searchBenchmark(c *gin.Context) {
 func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 	leftGitRef := c.Query("ltag")
 	rightGitRef := c.Query("rtag")
-	macroType := macrobench.Type(c.Query("type"))
+	workload := macrobench.Workload(c.Query("workload"))
 
-	if leftGitRef == "" || rightGitRef == "" || macroType == "" {
+	if leftGitRef == "" || rightGitRef == "" || workload == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "The gitref left and right and where the macrotype are incorrect are missing. Please kindly add them."})
 		return
 	}
 
-	comparison := s.queriesCompare(c, leftGitRef, rightGitRef, macroType, macroType)
+	comparison := s.queriesCompare(c, leftGitRef, rightGitRef, workload, workload)
 	if comparison == nil {
 		return
 	}
@@ -284,8 +272,8 @@ func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 
 func (s *Server) fkQueriesCompareMacrobenchmarks(c *gin.Context) {
 	gitRef := c.Query("gitRef")
-	oldWorkload := macrobench.Type(c.Query("oldWorkload"))
-	newWorkload := macrobench.Type(c.Query("newWorkload"))
+	oldWorkload := macrobench.Workload(c.Query("oldWorkload"))
+	newWorkload := macrobench.Workload(c.Query("newWorkload"))
 
 	if gitRef == "" || oldWorkload == "" || newWorkload == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "The gitref and the two workloads are incorrect or missing. Please kindly add them."})
@@ -300,7 +288,7 @@ func (s *Server) fkQueriesCompareMacrobenchmarks(c *gin.Context) {
 	c.JSON(http.StatusOK, comparison)
 }
 
-func (s *Server) queriesCompare(c *gin.Context, oldGitRef, newGitRef string, oldWorkload, newWorkload macrobench.Type) []macrobench.VTGateQueryPlanComparer {
+func (s *Server) queriesCompare(c *gin.Context, oldGitRef, newGitRef string, oldWorkload, newWorkload macrobench.Workload) []macrobench.VTGateQueryPlanComparer {
 	oldPlans, err := macrobench.GetVTGateSelectQueryPlansWithFilter(oldGitRef, oldWorkload, macrobench.Gen4Planner, s.dbClient)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
@@ -372,17 +360,17 @@ func (s *Server) getDailySummary(c *gin.Context) {
 	// For example: /api/daily/summary?workloads=TPCC&workloads=OLTP
 	workloads := c.QueryArray("workloads")
 	if len(workloads) == 0 {
-		workloads = s.benchmarkTypes
+		workloads = s.workloads
 	} else {
 		for _, workload := range workloads {
 			workload = strings.ToUpper(workload)
-			if !slices.Contains(s.benchmarkTypes, workload) {
+			if !slices.Contains(s.workloads, workload) {
 				c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "Wrong workload specified"})
 				return
 			}
 		}
 	}
-	results, err := macrobench.SearchForLast30DaysQPSOnly(s.dbClient, workloads, macrobench.Gen4Planner, 31)
+	results, err := macrobench.SearchForLast30DaysQPSOnly(s.dbClient, workloads, macrobench.Gen4Planner)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)
@@ -424,14 +412,14 @@ func (s *Server) getStatusStats(c *gin.Context) {
 }
 
 func (s *Server) requestRun(c *gin.Context) {
-	benchmarkType := c.Query("type")
+	workload := c.Query("workload")
 	sha := c.Query("sha")
 	pswd := c.Query("key")
 	v := c.Query("version")
 
 	errStrFmt := "missing argument: %s"
-	if benchmarkType == "" {
-		errStr := fmt.Sprintf(errStrFmt, "type")
+	if workload == "" {
+		errStr := fmt.Sprintf(errStrFmt, "workload")
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errStr})
 		slog.Error(errStr)
 		return
@@ -469,16 +457,16 @@ func (s *Server) requestRun(c *gin.Context) {
 	currVersion := git.Version{Major: version}
 
 	configs := s.getConfigFiles()
-	cfg, ok := configs[strings.ToLower(benchmarkType)]
+	cfg, ok := configs[strings.ToLower(workload)]
 	if !ok {
-		errMsg := "unknown benchmark type: " + strings.ToUpper(benchmarkType)
+		errMsg := "unknown benchmark workload: " + strings.ToUpper(workload)
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: errMsg})
 		slog.Error(errMsg)
 		return
 	}
 
 	// create execution element
-	elem := s.createSimpleExecutionQueueElement(cfg, "custom_run", sha, benchmarkType, string(macrobench.Gen4Planner), false, 0, currVersion)
+	elem := s.createSimpleExecutionQueueElement(cfg, "custom_run", sha, workload, string(macrobench.Gen4Planner), false, 0, currVersion)
 
 	// to new element to the queue
 	s.addToQueue(elem)

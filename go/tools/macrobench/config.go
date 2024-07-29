@@ -58,8 +58,8 @@ type Config struct {
 	// sysbench steps.
 	SkipSteps string
 
-	// Type will be used to differentiate macro benchmarks.
-	Type Type
+	// Workload will be used to differentiate macro benchmarks.
+	Workload Workload
 
 	// Source defines from where the macro benchmark is triggered.
 	// This field is used to distinguish runs triggered by webhooks,
@@ -91,7 +91,7 @@ const (
 	flagSysbenchExecutable   = "macrobench-sysbench-executable"
 	flagSysbenchPath         = "macrobench-workload-path"
 	flagSkipSteps            = "macrobench-skip-steps"
-	flagType                 = "macrobench-type"
+	flagWorkload             = "macrobench-workload"
 	flagGitRef               = "macrobench-git-ref"
 	flagWorkingDirectory     = "macrobench-working-directory"
 	flagExecUUID             = "macrobench-exec-uuid"
@@ -108,7 +108,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&mabcfg.WorkloadPath, flagSysbenchPath, "", "Path to the workload used by sysbench.")
 	cmd.Flags().StringVar(&mabcfg.SysbenchExec, flagSysbenchExecutable, "", "Path to the sysbench binary.")
 	cmd.Flags().StringVar(&mabcfg.SkipSteps, flagSkipSteps, "", "Slice of sysbench steps to skip.")
-	cmd.Flags().Var(&mabcfg.Type, flagType, "Type of macro benchmark.")
+	cmd.Flags().Var(&mabcfg.Workload, flagWorkload, "Workload of this macro-benchmark.")
 	cmd.Flags().StringVar(&mabcfg.VtgatePlannerVersion, flagVtgatePlannerVersion, "", "Vtgate planner version running on Vitess")
 	cmd.Flags().StringVar(&mabcfg.GitRef, flagGitRef, "", "Git SHA referring to the macro benchmark.")
 	cmd.Flags().StringVar(&mabcfg.WorkingDirectory, flagWorkingDirectory, "", "Directory on which to execute sysbench.")
@@ -118,7 +118,7 @@ func (mabcfg *Config) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagSysbenchPath, cmd.Flags().Lookup(flagSysbenchPath))
 	_ = viper.BindPFlag(flagSysbenchExecutable, cmd.Flags().Lookup(flagSysbenchExecutable))
 	_ = viper.BindPFlag(flagSkipSteps, cmd.Flags().Lookup(flagSkipSteps))
-	_ = viper.BindPFlag(flagType, cmd.Flags().Lookup(flagType))
+	_ = viper.BindPFlag(flagWorkload, cmd.Flags().Lookup(flagWorkload))
 	_ = viper.BindPFlag(flagGitRef, cmd.Flags().Lookup(flagGitRef))
 	_ = viper.BindPFlag(flagVtgatePlannerVersion, cmd.Flags().Lookup(flagVtgatePlannerVersion))
 	_ = viper.BindPFlag(flagWorkingDirectory, cmd.Flags().Lookup(flagWorkingDirectory))
@@ -143,7 +143,7 @@ func (mabcfg Config) insertBenchmarkToSQL(client storage.SQLClient) (newMacroBen
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
 	query := "INSERT INTO macrobenchmark(exec_uuid, commit, vtgate_planner_version, type) VALUES(NULLIF(?, ''), ?, ?, ?)"
-	res, err := client.Write(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.VtgatePlannerVersion, mabcfg.Type.ToUpper().String())
+	res, err := client.Write(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.VtgatePlannerVersion, mabcfg.Workload.ToUpper().String())
 	if err != nil {
 		return 0, err
 	}

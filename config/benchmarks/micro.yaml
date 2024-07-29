@@ -1,5 +1,5 @@
 ## Exec configuration
-exec-type: micro
+exec-workload: micro
 
 ## Ansible
 ansible-inventory-file: microbench_inventory.yml

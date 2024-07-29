@@ -215,7 +215,7 @@ func getVTGatesQueryPlans(ports []string) (VTGateQueryPlanMap, error) {
 	return res, nil
 }
 
-func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner PlannerVersion, client storage.SQLClient) ([]VTGateQueryPlan, error) {
+func GetVTGateSelectQueryPlansWithFilter(gitRef string, workload Workload, planner PlannerVersion, client storage.SQLClient) ([]VTGateQueryPlan, error) {
 	query := "select " +
 		"qp.`key` as `key`, " +
 		"qp.plan as plan, " +
@@ -237,7 +237,7 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, macroType Type, planner 
 		"order by qp.`key` " +
 		"limit 1500;"
 
-	result, err := client.Read(query, macroType.String(), gitRef, string(planner))
+	result, err := client.Read(query, workload.String(), gitRef, string(planner))
 	if err != nil {
 		return nil, err
 	}

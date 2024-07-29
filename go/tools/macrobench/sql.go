@@ -27,8 +27,7 @@ import (
 )
 
 // getExecutionGroupResults the results of an execution group
-func getExecutionGroupResults(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (executionGroupResults, error) {
-	upperMacroType := strings.ToUpper(macroType)
+func getExecutionGroupResults(workload string, ref string, planner PlannerVersion, client storage.SQLClient) (executionGroupResults, error) {
 	query := `
         SELECT 
             IFNULL(e.uuid, '') AS exec_uuid, 
@@ -61,7 +60,7 @@ func getExecutionGroupResults(macroType string, ref string, planner PlannerVersi
             e.uuid, m.name
     `
 
-	rows, err := client.Read(query, ref, planner, upperMacroType)
+	rows, err := client.Read(query, ref, planner, strings.ToUpper(workload))
 	if err != nil {
 		return executionGroupResults{}, err
 	}
@@ -130,8 +129,7 @@ func getExecutionGroupResults(macroType string, ref string, planner PlannerVersi
 	return results, nil
 }
 
-func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
-	upperMacroType := strings.ToUpper(macroType)
+func getExecutionGroupResultsFromLast30Days(workload string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
 	query := `
         SELECT 
             IFNULL(e.uuid, '') AS exec_uuid, 
@@ -166,7 +164,7 @@ func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVer
             e.finished_at ASC, e.uuid, m.name
     `
 
-	rows, err := client.Read(query, planner, upperMacroType)
+	rows, err := client.Read(query, planner, strings.ToUpper(workload))
 	if err != nil {
 		return nil, err
 	}
@@ -252,8 +250,7 @@ func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVer
 	return allResults, nil
 }
 
-func getSummaryLast30Days(macroType string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
-	upperMacroType := strings.ToUpper(macroType)
+func getSummaryLast30Days(workload string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
 	query := `
         SELECT 
             e.git_ref, 
@@ -274,7 +271,7 @@ func getSummaryLast30Days(macroType string, planner PlannerVersion, client stora
             e.finished_at ASC
     `
 
-	rows, err := client.Read(query, planner, upperMacroType)
+	rows, err := client.Read(query, planner, strings.ToUpper(workload))
 	if err != nil {
 		return nil, err
 	}

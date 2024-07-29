@@ -37,7 +37,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 				err = errSuccess
 				return
 			}
-			slog.Info("Finished execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.Workload, "]")
+			slog.Info("Finished execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Workload: [", identifier.Workload, "]")
 		}
 	}()
 
@@ -70,7 +70,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 		}
 	}
 
-	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Type: [", identifier.Workload, "]")
+	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Workload: [", identifier.Workload, "]")
 	err = e.Prepare()
 	if err != nil {
 		nErr := fmt.Errorf(fmt.Sprintf("prepare error: %v", err))

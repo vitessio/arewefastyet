@@ -70,7 +70,7 @@ type Exec struct {
 	StartedAt  *time.Time
 	FinishedAt *time.Time
 
-	// Defines the type of execution (oltp, tpcc, micro, ...)
+	// Defines the workload of execution (oltp, tpcc, micro, ...)
 	Workload string
 
 	// PullNB defines the pull request number linked to this execution.
@@ -375,7 +375,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyBenchmarkSecretsPath, absSecretsPath)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecUUID, e.UUID.String())
-	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionType, e.Workload)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionWorkload, e.Workload)
 
 	if e.PreviousBenchmarkIsTheSame {
 		e.AnsibleConfig.AddExtraVar(ansible.KeyLastIsSame, true)
@@ -505,10 +505,10 @@ func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRe
 }
 
 // GetPreviousFromSourceMacrobenchmark gets the previous execution from the same source with the sane plannerVersion for macrobenchmarks
-func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeOf, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
+func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, workload, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.source = ? AND e.status = 'finished' AND " +
 		"e.type = ? AND e.git_ref != ? AND m.exec_uuid = e.uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
-	result, err := client.Read(query, source, typeOf, gitRef, plannerVersion)
+	result, err := client.Read(query, source, workload, gitRef, plannerVersion)
 	if err != nil {
 		return
 	}
@@ -556,9 +556,9 @@ func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha strin
 	return "", nil
 }
 
-func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bool, error) {
+func Exists(client storage.SQLClient, gitRef, source, workload, status string) (bool, error) {
 	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
-	result, err := client.Read(query, status, gitRef, typeOf, source)
+	result, err := client.Read(query, status, gitRef, workload, source)
 	if err != nil {
 		return false, err
 	}
@@ -566,9 +566,9 @@ func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bo
 	return result.Next(), nil
 }
 
-func CountMacroBenchmark(client storage.SQLClient, gitRef, source, typeOf, status, planner string) (int, error) {
+func CountMacroBenchmark(client storage.SQLClient, gitRef, source, workload, status, planner string) (int, error) {
 	query := "SELECT count(uuid) FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
-	result, err := client.Read(query, status, gitRef, typeOf, source, planner)
+	result, err := client.Read(query, status, gitRef, workload, source, planner)
 	if err != nil {
 		return 0, err
 	}

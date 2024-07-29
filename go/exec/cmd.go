@@ -27,7 +27,7 @@ const (
 	flagRootExec             = "exec-root-dir"
 	flagGitRefExec           = "exec-git-ref"
 	flagSourceExec           = "exec-source"
-	flagExecType             = "exec-type"
+	flagExecWorkload         = "exec-workload"
 	flagVtgatePlannerVersion = "exec-vtgate-planner-version"
 	flagExecPullNB           = "exec-pull-nb"
 	flagGolangVersion        = "exec-go-version"
@@ -40,7 +40,7 @@ func (e *Exec) AddToViper(v *viper.Viper) (err error) {
 	_ = v.UnmarshalKey(flagRootExec, &e.rootDir)
 	_ = v.UnmarshalKey(flagGitRefExec, &e.GitRef)
 	_ = v.UnmarshalKey(flagSourceExec, &e.Source)
-	_ = v.UnmarshalKey(flagExecType, &e.Workload)
+	_ = v.UnmarshalKey(flagExecWorkload, &e.Workload)
 	_ = v.UnmarshalKey(flagVtgatePlannerVersion, &e.VtgatePlannerVersion)
 	_ = v.UnmarshalKey(flagExecPullNB, &e.PullNB)
 	_ = v.UnmarshalKey(flagGolangVersion, &e.GolangVersion)
@@ -58,7 +58,7 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.rootDir, flagRootExec, "", "Path to the root directory of exec.")
 	cmd.Flags().StringVar(&e.GitRef, flagGitRefExec, "", "Git reference on which the benchmarks will run.")
 	cmd.Flags().StringVar(&e.Source, flagSourceExec, "", "Name of the source that triggered the execution.")
-	cmd.Flags().StringVar(&e.Workload, flagExecType, "", "Defines the execution type (oltp, tpcc, micro).")
+	cmd.Flags().StringVar(&e.Workload, flagExecWorkload, "", "Defines the execution workload (oltp, tpcc, micro).")
 	cmd.Flags().StringVar(&e.VtgatePlannerVersion, flagVtgatePlannerVersion, "V3", "Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback.")
 	cmd.Flags().IntVar(&e.PullNB, flagExecPullNB, 0, "Defines the number of the pull request against which to execute.")
 	cmd.Flags().StringVar(&e.GolangVersion, flagGolangVersion, "1.17", "Defines the golang version that will be used by this execution.")
@@ -68,7 +68,7 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagRootExec, cmd.Flags().Lookup(flagRootExec))
 	_ = viper.BindPFlag(flagGitRefExec, cmd.Flags().Lookup(flagGitRefExec))
 	_ = viper.BindPFlag(flagSourceExec, cmd.Flags().Lookup(flagSourceExec))
-	_ = viper.BindPFlag(flagExecType, cmd.Flags().Lookup(flagExecType))
+	_ = viper.BindPFlag(flagExecWorkload, cmd.Flags().Lookup(flagExecWorkload))
 	_ = viper.BindPFlag(flagExecPullNB, cmd.Flags().Lookup(flagExecPullNB))
 	_ = viper.BindPFlag(flagGolangVersion, cmd.Flags().Lookup(flagGolangVersion))
 	_ = viper.BindPFlag(flagServerAddress, cmd.Flags().Lookup(flagServerAddress))

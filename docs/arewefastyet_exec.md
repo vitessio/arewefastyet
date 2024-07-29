@@ -24,7 +24,7 @@ arewefastyet exec [flags]
       --exec-schema string                     Path to the VSchema for this benchmark.
       --exec-server-address string             The IP address of the server on which the benchmark will be executed.
       --exec-source string                     Name of the source that triggered the execution.
-      --exec-type string                       Defines the execution type (oltp, tpcc, micro).
+      --exec-workload string                       Defines the execution workload (oltp, tpcc, micro).
       --exec-vtgate-planner-version string     Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback. (default "V3")
   -h, --help                                   help for exec
       --planetscale-db-branch string           PlanetScaleDB branch to use. (default "main")
