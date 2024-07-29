@@ -1,5 +1,5 @@
 ## Exec Config
-exec-type: oltp-set
+exec-workload: oltp-set
 exec-schema: "./vitess-benchmark/sysbench.json"
 
 ## Minimum Vitess version on which the benchmark should be executed
@@ -13,7 +13,7 @@ ansible-playbook-file: macrobench.yml
 macrobench-sysbench-executable: /usr/local/bin/sysbench
 macrobench-workload-path: oltp_read_write_with_settings
 macrobench-skip-steps:
-macrobench-type: oltp-set
+macrobench-workload: oltp-set
 
 ## Sysbench all steps
 macrobench_all_mysql-db: main

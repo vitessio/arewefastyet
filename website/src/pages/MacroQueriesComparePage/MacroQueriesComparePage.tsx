@@ -36,7 +36,7 @@ export default function MacroQueriesComparePage() {
   } = useApiCall<MacroQueriesPlan[]>(
     `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
       commits.oldGitRef
-    }&rtag=${commits.newGitRef}&type=${workload}`
+    }&rtag=${commits.newGitRef}&workload=${workload}`
   );
 
   let filterConfigs: FilterConfigs[] = [

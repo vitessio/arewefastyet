@@ -36,7 +36,6 @@ const (
 	flagPsdbUserRead      = "planetscale-db-user-read"
 	flagPsdbHost          = "planetscale-db-host"
 	flagPsdbDatabase      = "planetscale-db-database"
-	flagPsdbBranch        = "planetscale-db-branch"
 
 	errorClientConnectionNotInitialized = "the client connection to the database is not initialized"
 
@@ -56,7 +55,6 @@ type (
 	Config struct {
 		organisation string
 		database     string
-		branch       string
 		hostname     string
 		authWrite    auth
 		authRead     auth
@@ -74,7 +72,7 @@ func (au auth) isValid() bool {
 }
 
 func (cfg *Config) IsValid() bool {
-	return cfg.organisation != "" && cfg.database != "" && cfg.branch != "" && cfg.hostname != "" && cfg.authWrite.isValid() && cfg.authRead.isValid()
+	return cfg.organisation != "" && cfg.database != "" && cfg.hostname != "" && cfg.authWrite.isValid() && cfg.authRead.isValid()
 }
 
 func (cfg *Config) AddToViper(v *viper.Viper) {
@@ -82,7 +80,6 @@ func (cfg *Config) AddToViper(v *viper.Viper) {
 	_ = v.UnmarshalKey(flagPsdbOrg, &cfg.organisation)
 	_ = v.UnmarshalKey(flagPsdbHost, &cfg.hostname)
 	_ = v.UnmarshalKey(flagPsdbDatabase, &cfg.database)
-	_ = v.UnmarshalKey(flagPsdbBranch, &cfg.branch)
 
 	// Write authentication
 	_ = v.UnmarshalKey(flagPsdbPasswordWrite, &cfg.authWrite.password)
@@ -98,11 +95,9 @@ func (cfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&cfg.organisation, flagPsdbOrg, "", "Name of the PlanetScaleDB organization.")
 	cmd.Flags().StringVar(&cfg.hostname, flagPsdbHost, "", "Hostname of the PlanetScaleDB database.")
 	cmd.Flags().StringVar(&cfg.database, flagPsdbDatabase, "", "PlanetScaleDB database name.")
-	cmd.Flags().StringVar(&cfg.branch, flagPsdbBranch, "main", "PlanetScaleDB branch to use.")
 	_ = viper.BindPFlag(flagPsdbOrg, cmd.Flags().Lookup(flagPsdbOrg))
 	_ = viper.BindPFlag(flagPsdbHost, cmd.Flags().Lookup(flagPsdbHost))
 	_ = viper.BindPFlag(flagPsdbDatabase, cmd.Flags().Lookup(flagPsdbDatabase))
-	_ = viper.BindPFlag(flagPsdbBranch, cmd.Flags().Lookup(flagPsdbBranch))
 
 	// Write authentication
 	cmd.Flags().StringVar(&cfg.authWrite.username, flagPsdbUserWrite, "", "Username used to authenticate to the write servers of PlanetScaleDB.")

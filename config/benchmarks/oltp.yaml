@@ -1,5 +1,5 @@
 ## Exec Config
-exec-type: oltp
+exec-workload: oltp
 
 ## Ansible
 ansible-inventory-file: macrobench_sharded_inventory.yml
@@ -11,7 +11,7 @@ exec-schema: "./vitess-benchmark/sysbench.json"
 macrobench-sysbench-executable: /usr/local/bin/sysbench
 macrobench-workload-path: oltp_read_write
 macrobench-skip-steps:
-macrobench-type: oltp
+macrobench-workload: oltp
 
 ## Sysbench all steps
 macrobench_all_mysql-db: main

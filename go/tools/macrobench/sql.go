@@ -27,8 +27,7 @@ import (
 )
 
 // getExecutionGroupResults the results of an execution group
-func getExecutionGroupResults(macroType string, ref string, planner PlannerVersion, client storage.SQLClient) (executionGroupResults, error) {
-	upperMacroType := strings.ToUpper(macroType)
+func getExecutionGroupResults(workload string, ref string, planner PlannerVersion, client storage.SQLClient) (executionGroupResults, error) {
 	query := `
         SELECT 
             IFNULL(e.uuid, '') AS exec_uuid, 
@@ -56,12 +55,12 @@ func getExecutionGroupResults(macroType string, ref string, planner PlannerVersi
             e.status = 'finished'
             AND e.git_ref = ? 
             AND info.vtgate_planner_version = ? 
-            AND info.type = ?
+            AND info.workload = ?
         ORDER BY 
             e.uuid, m.name
     `
 
-	rows, err := client.Read(query, ref, planner, upperMacroType)
+	rows, err := client.Read(query, ref, planner, strings.ToUpper(workload))
 	if err != nil {
 		return executionGroupResults{}, err
 	}
@@ -130,8 +129,7 @@ func getExecutionGroupResults(macroType string, ref string, planner PlannerVersi
 	return results, nil
 }
 
-func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
-	upperMacroType := strings.ToUpper(macroType)
+func getExecutionGroupResultsFromLast30Days(workload string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
 	query := `
         SELECT 
             IFNULL(e.uuid, '') AS exec_uuid, 
@@ -161,12 +159,12 @@ func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVer
             AND e.source = 'cron'
             AND e.status = 'finished'
             AND info.vtgate_planner_version = ? 
-            AND info.type = ?
+            AND info.workload = ?
         ORDER BY 
             e.finished_at ASC, e.uuid, m.name
     `
 
-	rows, err := client.Read(query, planner, upperMacroType)
+	rows, err := client.Read(query, planner, strings.ToUpper(workload))
 	if err != nil {
 		return nil, err
 	}
@@ -252,8 +250,7 @@ func getExecutionGroupResultsFromLast30Days(macroType string, planner PlannerVer
 	return allResults, nil
 }
 
-func getSummaryLast30Days(macroType string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
-	upperMacroType := strings.ToUpper(macroType)
+func getSummaryLast30Days(workload string, planner PlannerVersion, client storage.SQLClient) ([]executionGroupResults, error) {
 	query := `
         SELECT 
             e.git_ref, 
@@ -269,12 +266,12 @@ func getSummaryLast30Days(macroType string, planner PlannerVersion, client stora
             AND e.status = "finished" 
             AND e.source = "cron" 
             AND info.vtgate_planner_version = ? 
-            AND info.type = ? 
+            AND info.workload = ? 
         ORDER BY 
             e.finished_at ASC
     `
 
-	rows, err := client.Read(query, planner, upperMacroType)
+	rows, err := client.Read(query, planner, strings.ToUpper(workload))
 	if err != nil {
 		return nil, err
 	}
@@ -315,10 +312,7 @@ func getSummaryLast30Days(macroType string, planner PlannerVersion, client stora
 	return allResults, nil
 }
 
-// insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
-// The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
-// Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
-// The children table sysbenchQPS is also inserted.
+// insertToMySQL inserts the given sysbenchResult to MySQL.
 func (mbr *sysbenchResult) insertToMySQL(macrobenchmarkID int, client storage.SQLClient) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)

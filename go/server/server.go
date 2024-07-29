@@ -87,8 +87,11 @@ type Server struct {
 	prLabelTrigger   string
 	prLabelTriggerV3 string
 
+	// benchmarkConfig is a map with the workload name as the key and the configuration
+	// of that given workload as a value of the map. The value is a benchmarkConfig which
+	// contains the file (yaml) configuration of the benchmark.
 	benchmarkConfig map[string]benchmarkConfig
-	benchmarkTypes  []string
+	workloads       []string
 
 	sourceFilter        []string
 	excludeSourceFilter []string
@@ -188,15 +191,15 @@ func (s *Server) Init() error {
 		"tpcc_fk":           {file: path.Join(s.benchmarkConfigPath, "tpcc_fk.yaml"), v: viper.New()},
 		"tpcc_fk_unmanaged": {file: path.Join(s.benchmarkConfigPath, "tpcc_fk_unmanaged.yaml"), v: viper.New()},
 	}
-	for configName, config := range s.benchmarkConfig {
+	for workload, config := range s.benchmarkConfig {
 		config.v.SetConfigFile(config.file)
 		if err := config.v.ReadInConfig(); err != nil {
 			slog.Error(err)
 		}
-		if configName == "micro" {
+		if workload == "micro" {
 			continue
 		}
-		s.benchmarkTypes = append(s.benchmarkTypes, strings.ToUpper(configName))
+		s.workloads = append(s.workloads, strings.ToUpper(workload))
 	}
 	return nil
 }

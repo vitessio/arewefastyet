@@ -70,7 +70,7 @@ type Exec struct {
 	StartedAt  *time.Time
 	FinishedAt *time.Time
 
-	// Defines the type of execution (oltp, tpcc, micro, ...)
+	// Defines the workload of execution (oltp, tpcc, micro, ...)
 	Workload string
 
 	// PullNB defines the pull request number linked to this execution.
@@ -273,7 +273,7 @@ func (e *Exec) Prepare() error {
 
 	// insert new exec in SQL
 	if _, err = e.clientDB.Write(
-		"INSERT INTO execution(uuid, status, source, git_ref, type, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO execution(uuid, status, source, git_ref, workload, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
 		e.UUID.String(),
 		StatusCreated,
 		e.Source,
@@ -375,7 +375,7 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	}
 	e.AnsibleConfig.AddExtraVar(ansible.KeyBenchmarkSecretsPath, absSecretsPath)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyExecUUID, e.UUID.String())
-	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionType, e.Workload)
+	e.AnsibleConfig.AddExtraVar(ansible.KeyExecutionWorkload, e.Workload)
 
 	if e.PreviousBenchmarkIsTheSame {
 		e.AnsibleConfig.AddExtraVar(ansible.KeyLastIsSame, true)
@@ -425,7 +425,7 @@ func (e *Exec) handleStepEnd(err error) {
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	var res []*Exec
-	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, type, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 300"
+	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, workload, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 300"
 	result, err := client.Read(query)
 	if err != nil {
 		return nil, err
@@ -442,19 +442,19 @@ func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	return res, nil
 }
 
-func GetFinishedExecution(client storage.SQLClient, gitRef, source, benchmarkType, plannerVersion string, pullNb int) (string, error) {
+func GetFinishedExecution(client storage.SQLClient, gitRef, source, workload, plannerVersion string, pullNb int) (string, error) {
 	var eUUID string
 	var result *sql.Rows
 	var err error
 	query := ""
 	if plannerVersion == "" {
 		// no plannerVersion, meaning we are dealing with a micro benchmark
-		query = "SELECT e.uuid FROM execution e WHERE e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
-		result, err = client.Read(query, source, StatusFinished, benchmarkType, gitRef, pullNb)
+		query = "SELECT e.uuid FROM execution e WHERE e.source = ? AND e.status = ? AND e.workload = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
+		result, err = client.Read(query, source, StatusFinished, workload, gitRef, pullNb)
 	} else {
 		// we have a plannerVersion, meaning we are dealing with a macro benchmark
-		query = "SELECT e.uuid FROM execution e, macrobenchmark m WHERE e.uuid = m.exec_uuid AND m.vtgate_planner_version = ? AND e.source = ? AND e.status = ? AND e.type = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
-		result, err = client.Read(query, plannerVersion, source, StatusFinished, benchmarkType, gitRef, pullNb)
+		query = "SELECT e.uuid FROM execution e, macrobenchmark m WHERE e.uuid = m.exec_uuid AND m.vtgate_planner_version = ? AND e.source = ? AND e.status = ? AND e.workload = ? AND e.git_ref = ? AND e.pull_nb = ? ORDER BY e.finished_at DESC LIMIT 1"
+		result, err = client.Read(query, plannerVersion, source, StatusFinished, workload, gitRef, pullNb)
 	}
 	if err != nil {
 		return "", err
@@ -489,7 +489,7 @@ func IsLastExecutionFinished(client storage.SQLClient) (bool, error) {
 // GetPreviousFromSourceMicrobenchmark gets the previous execution from the same source for microbenchmarks
 func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' AND " +
-		"e.type = \"micro\" AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
+		"e.workload = \"micro\" AND e.git_ref != ? ORDER BY e.started_at DESC LIMIT 1"
 	result, err := client.Read(query, source, gitRef)
 	if err != nil {
 		return
@@ -505,10 +505,10 @@ func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRe
 }
 
 // GetPreviousFromSourceMacrobenchmark gets the previous execution from the same source with the sane plannerVersion for macrobenchmarks
-func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeOf, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
+func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, workload, plannerVersion, gitRef string) (execUUID, gitRefOut string, err error) {
 	query := "SELECT e.uuid, e.git_ref FROM execution e, macrobenchmark m WHERE e.source = ? AND e.status = 'finished' AND " +
-		"e.type = ? AND e.git_ref != ? AND m.exec_uuid = e.uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
-	result, err := client.Read(query, source, typeOf, gitRef, plannerVersion)
+		"e.workload = ? AND e.git_ref != ? AND m.exec_uuid = e.uuid AND m.vtgate_planner_version = ? ORDER BY e.started_at DESC LIMIT 1"
+	result, err := client.Read(query, source, workload, gitRef, plannerVersion)
 	if err != nil {
 		return
 	}
@@ -525,7 +525,7 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, typeO
 // GetLatestDailyJobForMicrobenchmarks will fetch and return the commit sha for which
 // the last daily job for microbenchmarks was run
 func GetLatestDailyJobForMicrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
-	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and type = \"micro\" order by started_at desc limit 1"
+	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and workload = \"micro\" order by started_at desc limit 1"
 	rows, err := client.Read(query)
 	if err != nil {
 		return "", err
@@ -542,7 +542,7 @@ func GetLatestDailyJobForMicrobenchmarks(client storage.SQLClient) (gitSha strin
 // GetLatestDailyJobForMacrobenchmarks will fetch and return the commit sha for which
 // the last daily job for macrobenchmarks was run
 func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
-	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and ( type != \"micro\" ) order by started_at desc limit 1"
+	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and ( workload != \"micro\" ) order by started_at desc limit 1"
 	rows, err := client.Read(query)
 	if err != nil {
 		return "", err
@@ -556,9 +556,9 @@ func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha strin
 	return "", nil
 }
 
-func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bool, error) {
-	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND type = ? AND source = ?"
-	result, err := client.Read(query, status, gitRef, typeOf, source)
+func Exists(client storage.SQLClient, gitRef, source, workload, status string) (bool, error) {
+	query := "SELECT uuid FROM execution WHERE status = ? AND git_ref = ? AND workload = ? AND source = ?"
+	result, err := client.Read(query, status, gitRef, workload, source)
 	if err != nil {
 		return false, err
 	}
@@ -566,9 +566,9 @@ func Exists(client storage.SQLClient, gitRef, source, typeOf, status string) (bo
 	return result.Next(), nil
 }
 
-func CountMacroBenchmark(client storage.SQLClient, gitRef, source, typeOf, status, planner string) (int, error) {
-	query := "SELECT count(uuid) FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.type = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
-	result, err := client.Read(query, status, gitRef, typeOf, source, planner)
+func CountMacroBenchmark(client storage.SQLClient, gitRef, source, workload, status, planner string) (int, error) {
+	query := "SELECT count(uuid) FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.workload = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
+	result, err := client.Read(query, status, gitRef, workload, source, planner)
 	if err != nil {
 		return 0, err
 	}
@@ -604,13 +604,13 @@ func GetHistory(client storage.SQLClient) ([]*History, error) {
 			SELECT
 				git_ref,
 				source,
-				COUNT(DISTINCT type) AS distinct_types,
+				COUNT(DISTINCT workload) AS distinct_workloads,
 				MIN(min_started_at) AS min_started_at
 			FROM (
 				SELECT
 					git_ref,
 					source,
-					type,
+					workload,
 					MIN(started_at) AS min_started_at
 				FROM
 					execution
@@ -619,7 +619,7 @@ func GetHistory(client storage.SQLClient) ([]*History, error) {
 				GROUP BY
 					git_ref,
 					source,
-					type
+					workload
 				HAVING
 					COUNT(*) >= 10
 			) AS subquery

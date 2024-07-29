@@ -196,24 +196,24 @@ func (mrs sysbenchResultArray) resultsArrayToSlice() executionGroupResultsAsSlic
 	return ras
 }
 
-func Compare(client storage.SQLClient, old, new string, types []string, planner PlannerVersion) (map[string]StatisticalCompareResults, error) {
-	results := make(map[string]StatisticalCompareResults, len(types))
+func Compare(client storage.SQLClient, old, new string, workloads []string, planner PlannerVersion) (map[string]StatisticalCompareResults, error) {
+	results := make(map[string]StatisticalCompareResults, len(workloads))
 	mu := sync.Mutex{}
 	wg := sync.WaitGroup{}
 
 	var err error
-	for _, macroType := range types {
+	for _, workload := range workloads {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
 			var oldResult, newResult executionGroupResults
-			oldResult, err = getExecutionGroupResults(macroType, old, planner, client)
+			oldResult, err = getExecutionGroupResults(workload, old, planner, client)
 			if err != nil {
 				return
 			}
 
-			newResult, err = getExecutionGroupResults(macroType, new, planner, client)
+			newResult, err = getExecutionGroupResults(workload, new, planner, client)
 			if err != nil {
 				return
 			}
@@ -221,7 +221,7 @@ func Compare(client storage.SQLClient, old, new string, types []string, planner 
 			if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
 				mu.Lock()
 				defer mu.Unlock()
-				results[macroType] = StatisticalCompareResults{
+				results[workload] = StatisticalCompareResults{
 					ComponentsCPUTime: map[string]StatisticalResult{
 						"vtgate":   {},
 						"vttablet": {},
@@ -241,7 +241,7 @@ func Compare(client storage.SQLClient, old, new string, types []string, planner 
 
 			mu.Lock()
 			defer mu.Unlock()
-			results[macroType] = scr
+			results[workload] = scr
 		}()
 	}
 	wg.Wait()
@@ -280,15 +280,15 @@ func CompareFKs(client storage.SQLClient, oldWorkload, newWorkload string, sha s
 	return scr, nil
 }
 
-func Search(client storage.SQLClient, sha string, types []string, planner PlannerVersion) (map[string]StatisticalSingleResult, error) {
-	results := make(map[string]StatisticalSingleResult, len(types))
-	for _, macroType := range types {
-		result, err := getExecutionGroupResults(macroType, sha, planner, client)
+func Search(client storage.SQLClient, sha string, workloads []string, planner PlannerVersion) (map[string]StatisticalSingleResult, error) {
+	results := make(map[string]StatisticalSingleResult, len(workloads))
+	for _, workload := range workloads {
+		result, err := getExecutionGroupResults(workload, sha, planner, client)
 		if err != nil {
 			return nil, err
 		}
 		if len(result.Results) == 0 {
-			results[macroType] = StatisticalSingleResult{
+			results[workload] = StatisticalSingleResult{
 				ComponentsCPUTime: map[string]StatisticalSummary{
 					"vtgate":   {},
 					"vttablet": {},
@@ -300,14 +300,14 @@ func Search(client storage.SQLClient, sha string, types []string, planner Planne
 			}
 			continue
 		}
-		results[macroType] = result.toStatisticalSingleResult()
+		results[workload] = result.toStatisticalSingleResult()
 	}
 	return results, nil
 }
 
-func SearchForLast30Days(client storage.SQLClient, macroType string, planner PlannerVersion) ([]StatisticalSingleResult, error) {
+func SearchForLast30Days(client storage.SQLClient, workload string, planner PlannerVersion) ([]StatisticalSingleResult, error) {
 	var ssrs []StatisticalSingleResult
-	results, err := getExecutionGroupResultsFromLast30Days(macroType, planner, client)
+	results, err := getExecutionGroupResultsFromLast30Days(workload, planner, client)
 	if err != nil {
 		return nil, err
 	}
@@ -318,20 +318,20 @@ func SearchForLast30Days(client storage.SQLClient, macroType string, planner Pla
 	return ssrs, nil
 }
 
-func SearchForLast30DaysQPSOnly(client storage.SQLClient, types []string, planner PlannerVersion, days int) (map[string][]ShortStatisticalSingleResult, error) {
+func SearchForLast30DaysQPSOnly(client storage.SQLClient, workloads []string, planner PlannerVersion) (map[string][]ShortStatisticalSingleResult, error) {
 	results := make(map[string][]ShortStatisticalSingleResult)
-	for _, macroType := range types {
-		resultsForType, err := getSummaryLast30Days(macroType, planner, client)
+	for _, workload := range workloads {
+		workloadResult, err := getSummaryLast30Days(workload, planner, client)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, result := range resultsForType {
+		for _, result := range workloadResult {
 			// If we do not have a decent number of results in the set of benchmark, let's skip the result.
 			if len(result.Results) < 6 {
 				continue
 			}
-			results[macroType] = append(results[macroType], result.toShortStatisticalSingleResult())
+			results[workload] = append(results[workload], result.toShortStatisticalSingleResult())
 		}
 	}
 	return results, nil

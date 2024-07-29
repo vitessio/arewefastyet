@@ -24,7 +24,7 @@ export type statusDataTypes = {
   source: string;
   started_at: string;
   finished_at: string;
-  type_of: string;
+  workload: string;
   pull_nb?: number;
   golang_version: string;
   status: string;
@@ -114,7 +114,7 @@ export interface CompareResult {
 }
 
 export interface CompareData {
-  type: string;
+  workload: string;
   result: CompareResult;
 }
 
