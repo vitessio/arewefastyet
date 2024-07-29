@@ -28,7 +28,6 @@ arewefastyet macrobench run [flags]
       --macrobench-working-directory string        Directory on which to execute sysbench.
       --macrobench-workload Workload               Workload of this macro-benchmark.
       --macrobench-workload-path string            Path to the workload used by sysbench.
-      --planetscale-db-branch string               PlanetScaleDB branch to use. (default "main")
       --planetscale-db-database string             PlanetScaleDB database name.
       --planetscale-db-host string                 Hostname of the PlanetScaleDB database.
       --planetscale-db-org string                  Name of the PlanetScaleDB organization.

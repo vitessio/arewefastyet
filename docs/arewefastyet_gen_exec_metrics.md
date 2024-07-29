@@ -15,7 +15,6 @@ arewefastyet gen exec_metrics [flags]
       --influx-password string                 Password used to connect to InfluxDB.
       --influx-port string                     Port on which to InfluxDB listens. (default "8086")
       --influx-username string                 Username used to connect to InfluxDB.
-      --planetscale-db-branch string           PlanetScaleDB branch to use. (default "main")
       --planetscale-db-database string         PlanetScaleDB database name.
       --planetscale-db-host string             Hostname of the PlanetScaleDB database.
       --planetscale-db-org string              Name of the PlanetScaleDB organization.

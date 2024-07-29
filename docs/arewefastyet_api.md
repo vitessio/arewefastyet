@@ -15,7 +15,6 @@ arewefastyet api [flags]
       --gh-secret-key string                     Secret key used to authenticate
       --gh-webhook-secret string                 Secrets used to verify the webhooks
   -h, --help                                     help for api
-      --planetscale-db-branch string             PlanetScaleDB branch to use. (default "main")
       --planetscale-db-database string           PlanetScaleDB database name.
       --planetscale-db-host string               Hostname of the PlanetScaleDB database.
       --planetscale-db-org string                Name of the PlanetScaleDB organization.

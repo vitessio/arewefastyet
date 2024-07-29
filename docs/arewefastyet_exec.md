@@ -27,7 +27,6 @@ arewefastyet exec [flags]
       --exec-vtgate-planner-version string     Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback. (default "V3")
       --exec-workload string                   Defines the execution workload (oltp, tpcc, micro).
   -h, --help                                   help for exec
-      --planetscale-db-branch string           PlanetScaleDB branch to use. (default "main")
       --planetscale-db-database string         PlanetScaleDB database name.
       --planetscale-db-host string             Hostname of the PlanetScaleDB database.
       --planetscale-db-org string              Name of the PlanetScaleDB organization.
