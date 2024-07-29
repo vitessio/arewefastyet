@@ -258,7 +258,7 @@ func (s *Server) queriesCompareMacrobenchmarks(c *gin.Context) {
 	workload := macrobench.Workload(c.Query("workload"))
 
 	if leftGitRef == "" || rightGitRef == "" || workload == "" {
-		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "The gitref left and right and where the macrotype are incorrect are missing. Please kindly add them."})
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "The gitref left and right and/or the workload are missing"})
 		return
 	}
 
