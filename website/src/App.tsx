@@ -13,12 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import PublicRoute from "./pages/PublicRoute";
 import { GlobalProvider } from "./contexts/GlobalContext";
+import PublicRoute from "./pages/PublicRoute";
 
-function App() {
+export default function App() {
   return (
     <>
       <GlobalProvider>
@@ -31,5 +30,3 @@ function App() {
     </>
   );
 }
-
-export default App;

@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { Badge, Variant } from "@/components/ui/badge";
+import CompareRowActions from "@/common/CompareRowActions";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -80,6 +81,13 @@ export const columns: ColumnDef<HistoryType>[] = [
           </Tooltip>
         </TooltipProvider>
       );
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const gitRef = row.original.sha;
+      return <CompareRowActions gitRef={gitRef} />;
     },
   },
 ];
