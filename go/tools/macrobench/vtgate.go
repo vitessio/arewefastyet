@@ -66,7 +66,7 @@ type VTGateQueryPlanComparer struct {
 type VTGateQueryPlanMap map[string]VTGateQueryPlanValue
 
 func CompareVTGateQueryPlans(left, right []VTGateQueryPlan) []VTGateQueryPlanComparer {
-	res := []VTGateQueryPlanComparer{}
+	var res []VTGateQueryPlanComparer
 	for i, plan := range left {
 		newCompare := VTGateQueryPlanComparer{
 			Key:  plan.Key,
@@ -229,7 +229,7 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, workload Workload, plann
 		"qp.macrobenchmark_id = ma.macrobenchmark_id " +
 		"and ex.uuid = qp.exec_uuid " +
 		"and ex.uuid = ma.exec_uuid " +
-		"and ex.type = ? " +
+		"and ex.workload = ? " +
 		"and ma.commit = ? " +
 		"and ma.vtgate_planner_version = ? " +
 		"group by " +

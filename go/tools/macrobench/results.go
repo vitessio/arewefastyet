@@ -321,12 +321,12 @@ func SearchForLast30Days(client storage.SQLClient, workload string, planner Plan
 func SearchForLast30DaysQPSOnly(client storage.SQLClient, workloads []string, planner PlannerVersion) (map[string][]ShortStatisticalSingleResult, error) {
 	results := make(map[string][]ShortStatisticalSingleResult)
 	for _, workload := range workloads {
-		resultsForType, err := getSummaryLast30Days(workload, planner, client)
+		workloadResult, err := getSummaryLast30Days(workload, planner, client)
 		if err != nil {
 			return nil, err
 		}
 
-		for _, result := range resultsForType {
+		for _, result := range workloadResult {
 			// If we do not have a decent number of results in the set of benchmark, let's skip the result.
 			if len(result.Results) < 6 {
 				continue

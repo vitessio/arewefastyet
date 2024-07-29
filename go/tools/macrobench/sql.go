@@ -55,7 +55,7 @@ func getExecutionGroupResults(workload string, ref string, planner PlannerVersio
             e.status = 'finished'
             AND e.git_ref = ? 
             AND info.vtgate_planner_version = ? 
-            AND info.type = ?
+            AND info.workload = ?
         ORDER BY 
             e.uuid, m.name
     `
@@ -159,7 +159,7 @@ func getExecutionGroupResultsFromLast30Days(workload string, planner PlannerVers
             AND e.source = 'cron'
             AND e.status = 'finished'
             AND info.vtgate_planner_version = ? 
-            AND info.type = ?
+            AND info.workload = ?
         ORDER BY 
             e.finished_at ASC, e.uuid, m.name
     `
@@ -266,7 +266,7 @@ func getSummaryLast30Days(workload string, planner PlannerVersion, client storag
             AND e.status = "finished" 
             AND e.source = "cron" 
             AND info.vtgate_planner_version = ? 
-            AND info.type = ? 
+            AND info.workload = ? 
         ORDER BY 
             e.finished_at ASC
     `
@@ -312,10 +312,7 @@ func getSummaryLast30Days(workload string, planner PlannerVersion, client storag
 	return allResults, nil
 }
 
-// insertToMySQL inserts the given MacroBenchmarkResult to MySQL using a *mysql.Client.
-// The MacroBenchmarkResults gets added in one of macrobenchmark's children tables.
-// Depending on the MacroBenchmarkType, the insert will be routed to a specific children table.
-// The children table sysbenchQPS is also inserted.
+// insertToMySQL inserts the given sysbenchResult to MySQL.
 func (mbr *sysbenchResult) insertToMySQL(macrobenchmarkID int, client storage.SQLClient) error {
 	if client == nil {
 		return errors.New(mysql.ErrorClientConnectionNotInitialized)

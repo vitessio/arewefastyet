@@ -142,7 +142,7 @@ func (mabcfg Config) insertBenchmarkToSQL(client storage.SQLClient) (newMacroBen
 	if client == nil {
 		return 0, errors.New(mysql.ErrorClientConnectionNotInitialized)
 	}
-	query := "INSERT INTO macrobenchmark(exec_uuid, commit, vtgate_planner_version, type) VALUES(NULLIF(?, ''), ?, ?, ?)"
+	query := "INSERT INTO macrobenchmark(exec_uuid, commit, vtgate_planner_version, workload) VALUES(NULLIF(?, ''), ?, ?, ?)"
 	res, err := client.Write(query, mabcfg.execUUID, mabcfg.GitRef, mabcfg.VtgatePlannerVersion, mabcfg.Workload.ToUpper().String())
 	if err != nil {
 		return 0, err
