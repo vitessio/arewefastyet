@@ -28,7 +28,7 @@ export default function Macrobench({ data, gitRef, commits }) {
           Click
           <Link
             className="text-primary"
-            to={`/macrobench/queries/compare?ltag=${commits.old}&rtag=${commits.new}&type=${data.type}`}
+            to={`/macrobench/queries/compare?ltag=${commits.old}&rtag=${commits.new}&workload=${data.type}`}
           >
             here
           </Link>
