@@ -29,11 +29,13 @@ import {
 } from "@/components/ui/chart";
 import useApiCall from "@/utils/Hook";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {fixed} from "@/utils/Utils";
 
 const info = [
   { title: "Benchmark in total", content: "Total" },
   { title: "Benchmark this month", content: "Last30Days" },
-  { title: `Commits Benchmarked`, content: "Commits" },
+  { title: "Commits benchmarked", content: "Commits" },
+  { title: "Execution duration (avg)", content: "AvgDuration"},
 ];
 
 type DataStatusType = {
@@ -41,6 +43,7 @@ type DataStatusType = {
   Last30Days: number;
   Last7Days: number[];
   Commits: number;
+  AvgDuration: number;
 };
 
 const heroProps: HeroProps = {
@@ -87,10 +90,16 @@ export default function StatusHero() {
             className="w-[300px] h-[150px] md:min-h-[130px] border-border"
           >
             <CardHeader>
-              <CardTitle
-                className="counter text-4xl md:text-5xl text-primary"
-                style={{ ["--num" as string]: dataStatusMetrics?.[content as keyof DataStatusType] }}
-              ></CardTitle>
+              {content == "AvgDuration" ?
+                  <CardTitle
+                      className="text-4xl md:text-5xl text-primary"
+                  >{fixed(dataStatusMetrics?.[content as keyof DataStatusType] as number, 2)} min</CardTitle>
+              :
+                  <CardTitle
+                    className="counter text-4xl md:text-5xl text-primary"
+                    style={{ ["--num" as string]: dataStatusMetrics?.[content as keyof DataStatusType] }}
+                  ></CardTitle>
+              }
             </CardHeader>
             <CardFooter className="text-lg md:text-xl font-light md:font-medium">
               {title}
