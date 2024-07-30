@@ -123,6 +123,7 @@ export default function Compare() {
                         data={formattedData[index]}
                         new={gitRef.new}
                         old={gitRef.old}
+                        vitessRefs={vitessRefs}
                       />
                     </CardContent>
                   </Card>

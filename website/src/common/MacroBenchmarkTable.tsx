@@ -29,7 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MacroBenchmarkTableData, Range } from "@/types";
+import { MacroBenchmarkTableData, Range, VitessRefs } from "@/types";
 import {
   fixed,
   formatByte,
@@ -43,6 +43,7 @@ export type MacroBenchmarkTableProps = {
   old: string;
   new: string;
   isGitRef?: boolean;
+  vitessRefs: VitessRefs | null;
 };
 
 const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
@@ -92,9 +93,10 @@ const getValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
 
 export default function MacroBenchmarkTable({
   data,
-  new: newColumn,
+  new: newGitRef,
   old,
   isGitRef = true,
+  vitessRefs
 }: MacroBenchmarkTableProps) {
   if (!data) {
     return null;
@@ -120,6 +122,17 @@ export default function MacroBenchmarkTable({
       "bg-muted/80 border-b border-foreground dark:border-none",
   };
 
+  // check if old or new is in VitessRefs and return the name
+  const getRefName = (ref: string) => {
+    if (!vitessRefs) return ref;
+    const matchedTag = vitessRefs.tags.find((tag) => tag.commit_hash === ref);
+    if (matchedTag) return matchedTag.name;
+    const matchedRelease = vitessRefs.branches.find(
+      (branch) => branch.commit_hash === ref
+    );
+    return matchedRelease ? matchedRelease.name : formatGitRef(ref);
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -131,7 +144,7 @@ export default function MacroBenchmarkTable({
                 to={`https://github.com/vitessio/vitess/commit/${old}`}
                 target="__blank"
               >
-                {formatGitRef(old) || "N/A"}
+                {getRefName(old) || "N/A"}
               </Link>
             ) : (
               <>{old}</>
@@ -140,13 +153,13 @@ export default function MacroBenchmarkTable({
           <TableHead className="text-center text-primary font-semibold min-w-[150px]">
             {isGitRef ? (
               <Link
-                to={`https://github.com/vitessio/vitess/commit/${newColumn}`}
+                to={`https://github.com/vitessio/vitess/commit/${newGitRef}`}
                 target="__blank"
               >
-                {formatGitRef(newColumn) || "N/A"}
+                {getRefName(newGitRef) || "N/A"}
               </Link>
             ) : (
-              <>{newColumn}</>
+              <>{newGitRef}</>
             )}
           </TableHead>
           <TableHead className="lg:w-[150px] text-center font-semibold">
