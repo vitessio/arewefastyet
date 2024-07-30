@@ -45,7 +45,7 @@ export const formatTitle = (gitRef: string, vitessRefs: VitessRefs): string => {
 export default function ForeignKeys() {
   const urlParams = new URLSearchParams(window.location.search);
 
-  const [gitRef, setGitRef] = useState<string>(urlParams.get("tag") || "");
+  const [gitRef, setGitRef] = useState<string>(urlParams.get("sha") || "");
   const [workload, setWorkload] = useState<{ old: string; new: string }>({
     old: urlParams.get("oldWorkload") || "",
     new: urlParams.get("newWorkload") || "",
@@ -71,7 +71,7 @@ export default function ForeignKeys() {
 
   useEffect(() => {
     navigate(
-      `?tag=${gitRef}&oldWorkload=${workload.old}&newWorkload=${workload.new}`
+      `?sha=${gitRef}&oldWorkload=${workload.old}&newWorkload=${workload.new}`
     );
   }, [gitRef, workload.old, workload.new]);
 
