@@ -17,7 +17,7 @@ limitations under the License.
 import { Button } from "@/components/ui/button";
 import { cn } from "@/library/utils";
 import { VitessRefs } from "@/types";
-import React from "react";
+import React, { useEffect } from "react";
 import VitessRefsCommand from "./VitessRefsCommand";
 
 export type CompareActionsProps = {
@@ -46,6 +46,19 @@ export default function CompareAction(props: CompareActionsProps) {
     className,
   } = props;
   const isButtonDisabled = !oldGitRef || !newGitRef;
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && !isButtonDisabled) {
+        compareClicked();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [compareClicked, isButtonDisabled]);
 
   return (
     <div className={cn("flex flex-col md:flex-row gap-4", className)}>
