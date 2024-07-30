@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { CompareData, CompareResult, MacroBenchmarkTableData } from "@/types";
+import { CompareData, CompareResult, MacroBenchmarkTableData, VitessRefs } from "@/types";
 import bytes from "bytes";
 
 //FORMATTING BYTES TO Bytes
@@ -284,3 +284,18 @@ export function formatCompareResult(
     },
   };
 }
+
+export const getRefName = (gitRef: string, vitessRefs: VitessRefs): string => {
+  let title = formatGitRef(gitRef);
+  vitessRefs.branches.forEach((branch) => {
+    if (branch.commit_hash.match(gitRef)) {
+      title = branch.name;
+    }
+  });
+  vitessRefs.tags.forEach((branch) => {
+    if (branch.commit_hash.match(gitRef)) {
+      title = branch.name;
+    }
+  });
+  return title;
+};

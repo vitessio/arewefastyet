@@ -25,6 +25,7 @@ import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CompareHero from "./components/CompareHero";
+import { getRefName } from "@/utils/Utils";
 
 export default function Compare() {
   const navigate = useNavigate();
@@ -50,20 +51,16 @@ export default function Compare() {
   );
 
   useEffect(() => {
-    const getRefName = (ref: string) => {
-      if (!vitessRefs) return ref;
-      const matchedTag = vitessRefs.tags.find((tag) => tag.commit_hash === ref);
-      if (matchedTag) return matchedTag.name;
-      const matchedRelease = vitessRefs.branches.find(
-        (branch) => branch.commit_hash === ref
-      );
-      return matchedRelease ? matchedRelease.name : ref;
-    };
+    let oldRefName = "";
+    let newRefName = "";
+    if (vitessRefs) {
+      oldRefName = getRefName(gitRef.old, vitessRefs);
+      newRefName = getRefName(gitRef.new, vitessRefs);
+    }
 
-    const oldRefName = getRefName(gitRef.old);
-    const newRefName = getRefName(gitRef.new);
-
-    navigate(`?old=${oldRefName}&new=${newRefName}`);
+    navigate(
+      `?old=${oldRefName ?? gitRef.old}&new=${newRefName ?? gitRef.new}`
+    );
   }, [gitRef.old, gitRef.new, vitessRefs]);
 
   let formattedData: MacroBenchmarkTableData[] = [];

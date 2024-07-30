@@ -33,10 +33,10 @@ import { MacroBenchmarkTableData, Range, VitessRefs } from "@/types";
 import {
   fixed,
   formatByte,
-  formatGitRef,
-  secondToMicrosecond,
+  secondToMicrosecond
 } from "@/utils/Utils";
 import { Link } from "react-router-dom";
+import { getRefName } from "@/utils/Utils";
 
 export type MacroBenchmarkTableProps = {
   data: MacroBenchmarkTableData;
@@ -122,41 +122,30 @@ export default function MacroBenchmarkTable({
       "bg-muted/80 border-b border-foreground dark:border-none",
   };
 
-  // check if old or new is in VitessRefs and return the name
-  const getRefName = (ref: string) => {
-    if (!vitessRefs) return ref;
-    const matchedTag = vitessRefs.tags.find((tag) => tag.commit_hash === ref);
-    if (matchedTag) return matchedTag.name;
-    const matchedRelease = vitessRefs.branches.find(
-      (branch) => branch.commit_hash === ref
-    );
-    return matchedRelease ? matchedRelease.name : formatGitRef(ref);
-  };
-
   return (
     <Table>
       <TableHeader>
         <TableRow className="hover:bg-background border-b">
           <TableHead className="w-[200px]"></TableHead>
           <TableHead className="text-center text-primary font-semibold min-w-[150px]">
-            {isGitRef ? (
+            {isGitRef && vitessRefs? (
               <Link
                 to={`https://github.com/vitessio/vitess/commit/${old}`}
                 target="__blank"
               >
-                {getRefName(old) || "N/A"}
+                {getRefName(old, vitessRefs) || "N/A"}
               </Link>
             ) : (
               <>{old}</>
             )}
           </TableHead>
           <TableHead className="text-center text-primary font-semibold min-w-[150px]">
-            {isGitRef ? (
+            {isGitRef && vitessRefs ? (
               <Link
                 to={`https://github.com/vitessio/vitess/commit/${newGitRef}`}
                 target="__blank"
               >
-                {getRefName(newGitRef) || "N/A"}
+                {getRefName(newGitRef, vitessRefs) || "N/A"}
               </Link>
             ) : (
               <>{newGitRef}</>

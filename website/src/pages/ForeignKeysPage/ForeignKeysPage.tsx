@@ -26,21 +26,7 @@ import useApiCall from "@/utils/Hook";
 import { errorApi, formatCompareResult, formatGitRef } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ForeignKeysHero from "./components/ForeignKeysHero";
-
-export const formatTitle = (gitRef: string, vitessRefs: VitessRefs): string => {
-  let title = formatGitRef(gitRef);
-  vitessRefs.branches.forEach((branch) => {
-    if (branch.commit_hash.match(gitRef)) {
-      title = branch.name;
-    }
-  });
-  vitessRefs.tags.forEach((branch) => {
-    if (branch.commit_hash.match(gitRef)) {
-      title = branch.name;
-    }
-  });
-  return title;
-};
+import { getRefName } from "@/utils/Utils";
 
 export default function ForeignKeys() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -116,12 +102,16 @@ export default function ForeignKeys() {
                 <Card className="border-border">
                   <CardHeader className="flex flex-col gap-4 md:gap-0 md:flex-row justify-between pt-6">
                     <CardTitle className="text-2xl md:text-4xl text-primary">
-                      {gitRef == "" ? "N/A" : <Link
+                      {gitRef == "" ? (
+                        "N/A"
+                      ) : (
+                        <Link
                           to={`https://github.com/vitessio/vitess/commit/${gitRef}`}
                           target="__blank"
-                      >
-                        {formatTitle(gitRef, vitessRefs)}
-                      </Link>}
+                        >
+                          {getRefName(gitRef, vitessRefs)}
+                        </Link>
+                      )}
                     </CardTitle>
                     <Button
                       variant="outline"
@@ -142,6 +132,7 @@ export default function ForeignKeys() {
                       new={workload.new}
                       old={workload.old}
                       isGitRef={false}
+                      vitessRefs={null}
                     />
                   </CardContent>
                 </Card>
