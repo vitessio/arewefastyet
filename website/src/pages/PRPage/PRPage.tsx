@@ -101,7 +101,7 @@ export default function PRPage() {
                       <p>
                         {format(
                           prData?.CreatedAt,
-                          "MMM d, yyyy, h:mm a 'GMT'XXX"
+                          "MMM d, yyyy, h:mm a 'GMT'XXX",
                         )}
                       </p>
                     </TooltipContent>

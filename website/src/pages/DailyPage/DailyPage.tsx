@@ -25,7 +25,7 @@ import DailyHero from "./components/DailyHero";
 export default function DailyPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const [workload, setWorkload] = useState<string>(
-    urlParams.get("workload") ?? "OLTP"
+    urlParams.get("workload") ?? "OLTP",
   );
 
   const navigate = useNavigate();

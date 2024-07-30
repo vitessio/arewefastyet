@@ -93,7 +93,11 @@ const Footer: React.FC = () => {
               <h5 className="font-bold md:text-lg text-base">{item.title}</h5>
               <div className="my-4 md:my-7 flex flex-col gap-y-2">
                 {item.links.map((link, key) => (
-                  <Link className="md:text-base text-xs text-foreground/80 hover:text-primary/80" key={key} to={link.to}>
+                  <Link
+                    className="md:text-base text-xs text-foreground/80 hover:text-primary/80"
+                    key={key}
+                    to={link.to}
+                  >
                     {link.title}
                   </Link>
                 ))}
