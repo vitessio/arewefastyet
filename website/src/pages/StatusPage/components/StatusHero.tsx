@@ -54,6 +54,7 @@ const heroProps: HeroProps = {
       sequentially on our benchmarking server. Each execution has a status that
       can be either: <b>started</b>started, <b>failed</b> or <b>finished</b>.
       When a benchmark is marked as finished it means that it ran successfully.
+      Only the last 1000 executions are shown in the previous executions.
     </>
   ),
 };
