@@ -425,7 +425,7 @@ func (e *Exec) handleStepEnd(err error) {
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	var res []*Exec
-	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, workload, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 300"
+	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, workload, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 1000"
 	result, err := client.Read(query)
 	if err != nil {
 		return nil, err
