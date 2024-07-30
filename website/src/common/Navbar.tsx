@@ -45,8 +45,6 @@ const navItems: NavItem[] = [
   { to: "/status", title: "Status" },
   { to: "/daily", title: "Daily" },
   { to: "/compare", title: "Compare" },
-  { to: "/search", title: "Search" },
-  { to: "/macro", title: "Macro" },
   { to: "/fk", title: "Foreign Keys" },
   { to: "/pr", title: "PR" },
   { to: "/history", title: "History" },
