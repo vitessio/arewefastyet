@@ -26,6 +26,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { CommandMenu } from "./CommandMenu";
 
 /**
  * @description Defines the structure of a navigation item.
@@ -78,8 +79,8 @@ export default function Navbar(): JSX.Element {
                     isPending
                       ? "pointer-events-none opacity-50"
                       : isActive
-                        ? "text-primary"
-                        : ""
+                      ? "text-primary"
+                      : ""
                   )
                 }
               >
@@ -88,6 +89,7 @@ export default function Navbar(): JSX.Element {
             ))}
           </div>
           <ModeToggle />
+          <CommandMenu />
 
           <Sheet>
             <SheetTrigger asChild>
@@ -130,8 +132,8 @@ export default function Navbar(): JSX.Element {
                           isPending
                             ? "pointer-events-none "
                             : isActive
-                              ? "text-primary"
-                              : ""
+                            ? "text-primary"
+                            : ""
                         )
                       }
                     >
@@ -147,8 +149,8 @@ export default function Navbar(): JSX.Element {
                             isPending
                               ? "pointer-events-none "
                               : isActive
-                                ? "text-primary"
-                                : ""
+                              ? "text-primary"
+                              : ""
                           )
                         }
                       >

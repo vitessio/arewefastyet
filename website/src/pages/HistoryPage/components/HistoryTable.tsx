@@ -47,18 +47,20 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterConfigs: FilterConfigs[];
+  initialGitRef?: string;
 }
 
 export function HistoryTable<TData, TValue>({
   columns,
   data,
   filterConfigs,
+  initialGitRef,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    initialGitRef ? [{ id: "sha", value: initialGitRef }] : []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -86,7 +88,11 @@ export function HistoryTable<TData, TValue>({
 
   return (
     <div>
-      <DataTableToolbar table={table} filterConfigs={filterConfigs} />
+      <DataTableToolbar
+        table={table}
+        filterConfigs={filterConfigs}
+        initialGitRef={initialGitRef}
+      />
       <div className="rounded-md border-border border">
         <Table>
           <TableHeader>
@@ -134,7 +140,7 @@ export function HistoryTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No executions or benchmarks found for this commit.
                 </TableCell>
               </TableRow>
             )}

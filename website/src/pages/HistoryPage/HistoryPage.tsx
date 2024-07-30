@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { FilterConfigs } from "@/types";
 import useApiCall from "@/utils/Hook";
-import HistoryHero from "./components/HistoryHero";
+import { useSearchParams } from "react-router-dom";
 import { columns, HistoryType } from "./components/Columns";
+import HistoryHero from "./components/HistoryHero";
 import { HistoryTable } from "./components/HistoryTable";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HistoryPage() {
   let {
@@ -27,6 +28,8 @@ export default function HistoryPage() {
     isLoading,
     error,
   } = useApiCall<HistoryType[]>(`${import.meta.env.VITE_API_URL}history`);
+  const [searchParams] = useSearchParams();
+  const gitRef = searchParams.get("gitRef") ?? "";
 
   const sources = dataHistory?.map((source) => source.source);
   const uniqueSources = Array.from(new Set(sources));
@@ -45,18 +48,16 @@ export default function HistoryPage() {
     <>
       <HistoryHero />
       <section className="mx-auto p-page lg:w-[60vw] my-12 flex flex-col">
-        {isLoading && (
-            <Skeleton className="h-[732px]"></Skeleton>
-        )}
+        {isLoading && <Skeleton className="h-[732px]"></Skeleton>}
         {error && (
           <div className="text-destructive text-center my-2">{error}</div>
         )}
-
         {dataHistory && (
           <HistoryTable
             columns={columns}
             data={dataHistory}
             filterConfigs={filterConfigs}
+            initialGitRef={gitRef}
           />
         )}
       </section>
