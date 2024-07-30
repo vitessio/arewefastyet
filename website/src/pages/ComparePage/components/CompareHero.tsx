@@ -32,22 +32,17 @@ export type CompareHeroProps = {
       new: string;
     }>
   >;
+  vitessRefs: VitessRefs | null;
 };
 
 export default function CompareHero(props: CompareHeroProps) {
-  const { gitRef, setGitRef } = props;
+  const { gitRef, setGitRef, vitessRefs } = props;
   const [oldGitRef, setOldGitRef] = useState(gitRef.old);
   const [newGitRef, setNewGitRef] = useState(gitRef.new);
-
-  const { data: vitessRefs } = useApiCall<VitessRefs>(
-    `${import.meta.env.VITE_API_URL}vitess/refs`
-  );
 
   const compareClicked = () => {
     setGitRef({ old: oldGitRef, new: newGitRef });
   };
-
-  useEffect(() => {}, [vitessRefs]);
 
   useEffect(() => {
     setOldGitRef(gitRef.old);

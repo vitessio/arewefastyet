@@ -18,7 +18,7 @@ import MacroBenchmarkTable from "@/common/MacroBenchmarkTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CompareData, MacroBenchmarkTableData } from "@/types";
+import { CompareData, MacroBenchmarkTableData, VitessRefs } from "@/types";
 import useApiCall from "@/utils/Hook";
 import { formatCompareData } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
@@ -27,18 +27,13 @@ import { Link, useNavigate } from "react-router-dom";
 import CompareHero from "./components/CompareHero";
 
 export default function Compare() {
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
 
   const [gitRef, setGitRef] = useState({
     old: urlParams.get("old") || "",
     new: urlParams.get("new") || "",
   });
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
-  }, [gitRef.old, gitRef.new]);
 
   const {
     data: data,
@@ -50,6 +45,27 @@ export default function Compare() {
     }`
   );
 
+  const { data: vitessRefs } = useApiCall<VitessRefs>(
+    `${import.meta.env.VITE_API_URL}vitess/refs`
+  );
+
+  useEffect(() => {
+    const getRefName = (ref: string) => {
+      if (!vitessRefs) return ref;
+      const matchedTag = vitessRefs.tags.find((tag) => tag.commit_hash === ref);
+      if (matchedTag) return matchedTag.name;
+      const matchedRelease = vitessRefs.branches.find(
+        (branch) => branch.commit_hash === ref
+      );
+      return matchedRelease ? matchedRelease.name : ref;
+    };
+
+    const oldRefName = getRefName(gitRef.old);
+    const newRefName = getRefName(gitRef.new);
+
+    navigate(`?old=${oldRefName}&new=${newRefName}`);
+  }, [gitRef.old, gitRef.new, vitessRefs]);
+
   let formattedData: MacroBenchmarkTableData[] = [];
 
   if (data !== null && data.length > 0) {
@@ -58,7 +74,11 @@ export default function Compare() {
 
   return (
     <>
-      <CompareHero gitRef={gitRef} setGitRef={setGitRef} />
+      <CompareHero
+        gitRef={gitRef}
+        setGitRef={setGitRef}
+        vitessRefs={vitessRefs}
+      />
       {macrobenchError && (
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
       )}
