@@ -110,25 +110,40 @@ export default function PRPage() {
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col gap-3">
                   <Label className="md:text-xl font-semibold">Base</Label>
-                  <Link
-                    target="_blank"
-                    to={`https://github.com/vitessio/vitess/commit/${prData?.Base}`}
-                  >
-                    <p className="text-xs md:text-lg text-primary">{prData?.Base}</p>
-                  </Link>
+                  {prData?.Base ? (
+                    <Link
+                      target="_blank"
+                      to={`https://github.com/vitessio/vitess/commit/${prData?.Base}`}
+                    >
+                      <p className="text-xs md:text-lg text-primary">
+                        {prData?.Base}
+                      </p>
+                    </Link>
+                  ) : (
+                    <p className="text-xs md:text-lg text-red-500">No base</p>
+                  )}
                   <Separator />
                   <Label className="md:text-xl font-semibold">Head</Label>
-                  <Link
-                    target="_blank"
-                    to={`https://github.com/vitessio/vitess/commit/${prData?.Head}`}
-                  >
-                    <p className="text-xs md:text-lg text-primary">{prData?.Head}</p>
-                  </Link>{" "}
+                  {prData?.Head ? (
+                    <Link
+                      target="_blank"
+                      to={`https://github.com/vitessio/vitess/commit/${prData?.Head}`}
+                    >
+                      <p className="text-xs md:text-lg text-primary">
+                        {prData?.Head}
+                      </p>
+                    </Link>
+                  ) : (
+                    <p className="text-xs md:text-lg text-red-500">No head</p>
+                  )}
                 </div>
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
-              <Button className="p-4 md:p-8">
+              <Button
+                className="p-4 md:p-8"
+                disabled={!prData?.Base || !prData?.Head}
+              >
                 <Link
                   to={`/compare?old=${prData?.Base}&new=${prData?.Head}`}
                   className="text-lg"
