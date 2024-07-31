@@ -17,28 +17,6 @@ limitations under the License.
 import { CompareData, CompareResult, MacroBenchmarkTableData } from "@/types";
 import bytes from "bytes";
 
-// BACKGROUND STATUS
-export const getStatusClass = (status) => {
-  if (status != "finished" && status != "failed" && status != "started") {
-    return "default";
-  }
-  return status;
-};
-
-// FORMATDATE
-export const formatDate = (date) => {
-  if (!date || date === 0) return null;
-
-  date = new Date(date);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${month}/${day}/${year} ${hours}:${minutes}`;
-};
-
 //FORMATTING BYTES TO Bytes
 export const formatByte = (byte: number) => {
   const byteValue = bytes(byte);
@@ -72,40 +50,6 @@ export const errorApi: string =
 //NUMBER OF PIXELS TO OPEN AND CLOSE THE DROP-DOWN
 export const openDropDownValue = 1000;
 export const closeDropDownValue = 58;
-
-// OPEN DROP DOWN
-
-export const openDropDown = (currentValue, setOpenDropDown) => {
-  if (currentValue === closeDropDownValue) {
-    setOpenDropDown(openDropDownValue);
-  } else {
-    setOpenDropDown(closeDropDownValue);
-  }
-};
-
-// CHANGE VALUE DROPDOWN
-
-export const valueDropDown = (
-  ref,
-  setDropDown,
-  setCommitHash,
-  setOpenDropDown,
-  setChangeUrl
-) => {
-  setDropDown(ref.Name);
-  setCommitHash(ref.CommitHash);
-  setOpenDropDown(closeDropDownValue);
-};
-
-// updateCommitHash: This function updates the value of CommitHash based on the provided Git reference and JSON data.
-export const updateCommitHash = (gitRef, setCommitHash, jsonDataRefs) => {
-  const obj = jsonDataRefs.find((item) => item.Name === gitRef);
-  setCommitHash(obj ? obj.CommitHash : null);
-};
-
-////THE NUMBER OF PIXELS THAT ARE USED TO OPEN AND CLOSE THE PREVIOUS EXECUTIONS AND MICROBENCH TABLES
-export const openTables = 400;
-export const closeTables = 70;
 
 export function formatGitRef(gitRef: string): string {
   return gitRef.slice(0, 8);
@@ -319,8 +263,7 @@ export function formatCompareResult(
       new: data.total_components_mem_stats_alloc_bytes.new,
       p: data.total_components_mem_stats_alloc_bytes.p,
       delta: data.total_components_mem_stats_alloc_bytes.delta,
-      insignificant:
-        data.total_components_mem_stats_alloc_bytes.insignificant,
+      insignificant: data.total_components_mem_stats_alloc_bytes.insignificant,
     },
     vtgateMemStatsAllocBytes: {
       title: "vtgate",
@@ -328,8 +271,7 @@ export function formatCompareResult(
       new: data.components_mem_stats_alloc_bytes.vtgate.new,
       p: data.components_mem_stats_alloc_bytes.vtgate.p,
       delta: data.components_mem_stats_alloc_bytes.vtgate.delta,
-      insignificant:
-        data.components_mem_stats_alloc_bytes.vtgate.insignificant,
+      insignificant: data.components_mem_stats_alloc_bytes.vtgate.insignificant,
     },
     vttabletMemStatsAllocBytes: {
       title: "vttablet",

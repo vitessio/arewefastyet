@@ -14,23 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
-import Error from "../utils/Error";
-import Layout from "../pages/Layout";
-import MacroPage from "./MacroPage/MacroPage";
+import Layout from "@/pages/Layout";
+import Error from "@/utils/Error";
 import ComparePage from "./ComparePage/ComparePage";
-import PRsPage from "./PRsPage/PRsPage";
-import HomePage from "./HomePage/HomePage";
-import StatusPage from "./StatusPage/StatusPage";
 import DailyPage from "./DailyPage/DailyPage";
-import SearchPage from "./SearchPage/SearchPage";
-import PRPage from "./PRPage/PRPage";
-import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
-import MicroPage from "./MicroPage/MicroPage";
 import ForeignKeysPage from "./ForeignKeysPage/ForeignKeysPage";
 import HistoryPage from "./HistoryPage/HistoryPage";
+import HomePage from "./HomePage/HomePage";
+import MacroQueriesComparePage from "./MacroQueriesComparePage/MacroQueriesComparePage";
+import PRPage from "./PRPage/PRPage";
+import PRsPage from "./PRsPage/PRsPage";
+import StatusPage from "./StatusPage/StatusPage";
 
 const PublicRoute = () => {
   return (
@@ -41,11 +37,8 @@ const PublicRoute = () => {
         <Route path="/home" element={<HomePage />} />
         <Route path="/status" element={<StatusPage />} />
         <Route path="/Daily" element={<DailyPage />} />
-        <Route path="/search" element={<SearchPage />} />
         <Route path="/compare" element={<ComparePage />} />
-        <Route path="/macro" element={<MacroPage />} />
         <Route path="/macrobench/queries/compare" element={<MacroQueriesComparePage />} />
-        <Route path="/micro" element={<MicroPage />} />
         <Route path="/pr" element={<PRsPage />} />
         <Route path="/pr/:pull_nb" element={<PRPage />} />
         <Route path="/fk" element={<ForeignKeysPage />} />
