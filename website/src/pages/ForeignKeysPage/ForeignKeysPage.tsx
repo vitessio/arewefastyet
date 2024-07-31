@@ -23,10 +23,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useApiCall from "@/utils/Hook";
-import { errorApi, formatCompareResult, formatGitRef } from "@/utils/Utils";
+import { formatCompareResult, getRefName } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ForeignKeysHero from "./components/ForeignKeysHero";
-import { getRefName } from "@/utils/Utils";
 
 export default function ForeignKeys() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -46,9 +45,11 @@ export default function ForeignKeys() {
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
   } = useApiCall<CompareResult>(
-    `${import.meta.env.VITE_API_URL}fk/compare?sha=${gitRef}&newWorkload=${
-      workload.new
-    }&oldWorkload=${workload.old}`
+    gitRef && workload.old && workload.new
+      ? `${import.meta.env.VITE_API_URL}fk/compare?sha=${gitRef}&newWorkload=${
+          workload.new
+        }&oldWorkload=${workload.old}`
+      : ""
   );
 
   let formattedData = data !== null ? formatCompareResult(data) : null;
@@ -73,15 +74,17 @@ export default function ForeignKeys() {
         />
       )}
 
-      {macrobenchError && (
-        <div className="text-red-500 text-center my-2">{macrobenchError}</div>
-      )}
-
-      {(formattedData === null || data === null) && !isMacrobenchLoading && (
-        <div className="text-red-500 text-center my-2">{errorApi}</div>
-      )}
-
       <section className="flex flex-col items-center">
+        {macrobenchError && (
+          <div className="text-destructive">{macrobenchError}</div>
+        )}
+
+        {!isMacrobenchLoading && data === null && (
+          <div className="md:text-xl text-primary">
+            Chose two commits to compare
+          </div>
+        )}
+
         {isMacrobenchLoading && (
           <>
             {[...Array(8)].map((_, index) => {
@@ -127,13 +130,19 @@ export default function ForeignKeys() {
                     </Button>
                   </CardHeader>
                   <CardContent className="w-full p-0">
-                    <MacroBenchmarkTable
-                      data={formattedData}
-                      new={workload.new}
-                      old={workload.old}
-                      isGitRef={false}
-                      vitessRefs={null}
-                    />
+                    {data.missing_results ? (
+                      <div className="text-center md:text-xl text-destructive pb-12">
+                        Missing results for this workloads
+                      </div>
+                    ) : (
+                      <MacroBenchmarkTable
+                        data={formattedData}
+                        new={workload.new}
+                        old={workload.old}
+                        isGitRef={false}
+                        vitessRefs={null}
+                      />
+                    )}
                   </CardContent>
                 </Card>
               </div>
