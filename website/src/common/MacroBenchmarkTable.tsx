@@ -33,10 +33,10 @@ import { MacroBenchmarkTableData, Range, VitessRefs } from "@/types";
 import {
   fixed,
   formatByte,
-  secondToMicrosecond
+  getRefName,
+  secondToMicrosecond,
 } from "@/utils/Utils";
 import { Link } from "react-router-dom";
-import { getRefName } from "@/utils/Utils";
 
 export type MacroBenchmarkTableProps = {
   data: MacroBenchmarkTableData;
@@ -96,7 +96,7 @@ export default function MacroBenchmarkTable({
   new: newGitRef,
   old,
   isGitRef = true,
-  vitessRefs
+  vitessRefs,
 }: MacroBenchmarkTableProps) {
   if (!data) {
     return null;
@@ -128,7 +128,7 @@ export default function MacroBenchmarkTable({
         <TableRow className="hover:bg-background border-b">
           <TableHead className="w-[200px]"></TableHead>
           <TableHead className="text-center text-primary font-semibold min-w-[150px]">
-            {isGitRef && vitessRefs? (
+            {isGitRef && vitessRefs ? (
               <Link
                 to={`https://github.com/vitessio/vitess/commit/${old}`}
                 target="__blank"

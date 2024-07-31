@@ -111,6 +111,7 @@ export interface CompareResult {
     vtgate: ComparedValue;
     vttablet: ComparedValue;
   };
+  missing_results: boolean;
 }
 
 export interface CompareData {
