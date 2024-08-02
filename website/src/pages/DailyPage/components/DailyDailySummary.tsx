@@ -16,8 +16,8 @@ limitations under the License.
 
 import DailySummary from "@/common/DailySummary";
 import { Skeleton } from "@/components/ui/skeleton";
+import useApiCall from "@/hooks/useApiCall";
 import useDailySummaryData from "@/hooks/useDailySummaryData";
-import useApiCall from "@/utils/Hook";
 
 export type DailDailySummaryProps = {
   workload: string;
@@ -26,9 +26,10 @@ export type DailDailySummaryProps = {
 
 export default function DailyDailySummary(props: DailDailySummaryProps) {
   const { workload, setWorkload } = props;
-  const {data: workloads} = useApiCall<string[]>(
-    `${import.meta.env.VITE_API_URL}workloads`
-  );
+  const { data: workloads } = useApiCall<string[]>({
+    url: `${import.meta.env.VITE_API_URL}workloads`,
+    queryKey: "workloads",
+  });
 
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
     useDailySummaryData(workloads || []);
@@ -54,7 +55,7 @@ export default function DailyDailySummary(props: DailDailySummaryProps) {
             !dataDailySummary ||
             dataDailySummary.length === 0) && (
             <div className="text-red-500 text-center my-10">
-              {dailySummaryError || "No data available"}
+              {<>{{ dailySummaryError }} || "No data available"</>}
             </div>
           )}
 

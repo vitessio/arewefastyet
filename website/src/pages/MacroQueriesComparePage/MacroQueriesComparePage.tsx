@@ -16,7 +16,7 @@ limitations under the License.
 
 import { Separator } from "@/components/ui/separator";
 import { FilterConfigs } from "@/types";
-import useApiCall from "@/utils/Hook";
+import useApiCall from "@/hooks/useApiCall";
 import { columns, MacroQueriesPlan } from "./components/Columns";
 import MacroQueriesCompareHero from "./components/MacroQueriesCompareHero";
 import { MacroQueriesCompareTable } from "./components/MacroQueriesCompareTable";

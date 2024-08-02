@@ -18,8 +18,8 @@ import Hero, { HeroProps } from "@/common/Hero";
 import VitessRefsCommand from "@/common/VitessRefsCommand";
 import WorkloadsCommand from "@/common/WorkloadsCommand";
 import { Button } from "@/components/ui/button";
+import useApiCall from "@/hooks/useApiCall";
 import { VitessRefs } from "@/types";
-import useApiCall from "@/utils/Hook";
 import { useEffect, useState } from "react";
 
 const heroProps: HeroProps = {
@@ -48,11 +48,15 @@ export default function ForeignKeysHero(props: {
   const [oldWorkload, setOldWorkload] = useState(workload.old);
   const [newWorkload, setNewWorkload] = useState(workload.new);
   const [commit, setCommit] = useState(gitRef);
-  let { data: workloads } = useApiCall<string[]>(
-    `${import.meta.env.VITE_API_URL}workloads`
-  );
+  let { data: workloads } = useApiCall<string[]>({
+    url: `${import.meta.env.VITE_API_URL}workloads`,
+    queryKey: "workloads",
+  });
 
-  workloads = workloads?.filter((workload) => workload.includes("TPCC")) ?? [];
+  workloads =
+    workloads !== undefined
+      ? workloads.filter((workload) => workload.includes("TPCC")) ?? []
+      : [];
 
   const isButtonDisabled = !oldWorkload || !newWorkload || !commit;
 

@@ -15,8 +15,8 @@ limitations under the License.
 */
 
 import { Skeleton } from "@/components/ui/skeleton";
+import useApiCall from "@/hooks/useApiCall";
 import { FilterConfigs } from "@/types";
-import useApiCall from "@/utils/Hook";
 import { useSearchParams } from "react-router-dom";
 import { columns, HistoryType } from "./components/Columns";
 import HistoryHero from "./components/HistoryHero";
@@ -27,7 +27,10 @@ export default function HistoryPage() {
     data: dataHistory,
     isLoading,
     error,
-  } = useApiCall<HistoryType[]>(`${import.meta.env.VITE_API_URL}history`);
+  } = useApiCall<HistoryType[]>({
+    url: `${import.meta.env.VITE_API_URL}history`,
+    queryKey: "history",
+  });
   const [searchParams] = useSearchParams();
   const gitRef = searchParams.get("gitRef") ?? "";
 
@@ -50,7 +53,9 @@ export default function HistoryPage() {
       <section className="mx-auto p-page lg:w-[60vw] my-12 flex flex-col">
         {isLoading && <Skeleton className="h-[732px]"></Skeleton>}
         {error && (
-          <div className="text-destructive text-center my-2">{error}</div>
+          <div className="text-destructive text-center my-2">
+            {<>{error}</>}
+          </div>
         )}
         {dataHistory && (
           <HistoryTable

@@ -109,7 +109,7 @@ export default function HomePageHero() {
             !dataDailySummary ||
             dataDailySummary.length === 0) && (
             <div className="text-red-500 text-center my-10">
-              {dailySummaryError || "No data available"}
+              {<>{dailySummaryError || "No data available"}</>}
             </div>
           )}
         {!isLoadingDailySummary &&
@@ -122,7 +122,10 @@ export default function HomePageHero() {
                   dailySummary.name === "TPCC"
                 ) {
                   return (
-                    <Link key={index} to={`/daily?workload=${dailySummary.name}`}>
+                    <Link
+                      key={index}
+                      to={`/daily?workload=${dailySummary.name}`}
+                    >
                       <DailySummary
                         data={dailySummary}
                         workload={workload}

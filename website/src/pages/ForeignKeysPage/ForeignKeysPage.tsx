@@ -22,7 +22,7 @@ import MacroBenchmarkTable from "@/common/MacroBenchmarkTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import useApiCall from "@/utils/Hook";
+import useApiCall from "@/hooks/useApiCall";
 import { formatCompareResult, getRefName } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ForeignKeysHero from "./components/ForeignKeysHero";
@@ -35,10 +35,12 @@ export default function ForeignKeys() {
     old: urlParams.get("oldWorkload") || "",
     new: urlParams.get("newWorkload") || "",
   });
+  const navigate = useNavigate();
 
-  const { data: vitessRefs } = useApiCall<VitessRefs>(
-    `${import.meta.env.VITE_API_URL}vitess/refs`
-  );
+  const { data: vitessRefs } = useApiCall<VitessRefs>({
+    url: `${import.meta.env.VITE_API_URL}vitess/refs`,
+    queryKey: "vitessRefs",
+  });
 
   const {
     data: data,
@@ -46,15 +48,18 @@ export default function ForeignKeys() {
     error: macrobenchError,
   } = useApiCall<CompareResult>(
     gitRef && workload.old && workload.new
-      ? `${import.meta.env.VITE_API_URL}fk/compare?sha=${gitRef}&newWorkload=${
-          workload.new
-        }&oldWorkload=${workload.old}`
-      : ""
+      ? {
+          url: `${
+            import.meta.env.VITE_API_URL
+          }fk/compare?sha=${gitRef}&newWorkload=${workload.new}&oldWorkload=${
+            workload.old
+          }`,
+          queryKey: "compareResult",
+        }
+      : { url: "", queryKey: "" }
   );
 
-  let formattedData = data !== null ? formatCompareResult(data) : null;
-
-  const navigate = useNavigate();
+  let formattedData = data !== undefined ? formatCompareResult(data) : null;
 
   useEffect(() => {
     navigate(
@@ -76,10 +81,10 @@ export default function ForeignKeys() {
 
       <section className="flex flex-col items-center">
         {macrobenchError && (
-          <div className="text-destructive">{macrobenchError}</div>
+          <div className="text-destructive">{<>{macrobenchError}</>}</div>
         )}
 
-        {!isMacrobenchLoading && data === null && (
+        {!isMacrobenchLoading && data === undefined && (
           <div className="md:text-xl text-primary">
             Chose two commits to compare
           </div>
@@ -98,7 +103,7 @@ export default function ForeignKeys() {
         )}
         {!isMacrobenchLoading &&
           formattedData &&
-          data !== null &&
+          data !== undefined &&
           vitessRefs && (
             <>
               <div className="w-[80vw] xl:w-[60vw] my-12">
@@ -140,7 +145,7 @@ export default function ForeignKeys() {
                         new={workload.new}
                         old={workload.old}
                         isGitRef={false}
-                        vitessRefs={null}
+                        vitessRefs={undefined}
                       />
                     )}
                   </CardContent>

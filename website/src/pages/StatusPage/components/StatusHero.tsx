@@ -27,15 +27,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import useApiCall from "@/utils/Hook";
+import useApiCall from "@/hooks/useApiCall";
+import { fixed } from "@/utils/Utils";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {fixed} from "@/utils/Utils";
 
 const info = [
   { title: "Benchmark in total", content: "Total" },
   { title: "Benchmark this month", content: "Last30Days" },
   { title: "Commits benchmarked", content: "Commits" },
-  { title: "Execution duration (avg)", content: "AvgDuration"},
+  { title: "Execution duration (avg)", content: "AvgDuration" },
 ];
 
 type DataStatusType = {
@@ -60,9 +60,10 @@ const heroProps: HeroProps = {
 };
 
 export default function StatusHero() {
-  const { data: dataStatusMetrics } = useApiCall<DataStatusType>(
-    `${import.meta.env.VITE_API_URL}status/stats`
-  );
+  const { data: dataStatusMetrics } = useApiCall<DataStatusType>({
+    url: `${import.meta.env.VITE_API_URL}status/stats`,
+    queryKey: "statusStats",
+  });
 
   const chartConfig = {
     day: {
@@ -73,7 +74,7 @@ export default function StatusHero() {
 
   let last7days: number[] = [];
 
-  if (dataStatusMetrics !== null) {
+  if (dataStatusMetrics !== undefined) {
     last7days = dataStatusMetrics.Last7Days;
   }
 
@@ -91,16 +92,25 @@ export default function StatusHero() {
             className="w-[300px] h-[150px] md:min-h-[130px] border-border"
           >
             <CardHeader>
-              {content == "AvgDuration" ?
-                  <CardTitle
-                      className="text-4xl md:text-5xl text-primary"
-                  >{fixed(dataStatusMetrics?.[content as keyof DataStatusType] as number, 2)} min</CardTitle>
-              :
-                  <CardTitle
-                    className="counter text-4xl md:text-5xl text-primary"
-                    style={{ ["--num" as string]: dataStatusMetrics?.[content as keyof DataStatusType] }}
-                  ></CardTitle>
-              }
+              {content == "AvgDuration" ? (
+                <CardTitle className="text-4xl md:text-5xl text-primary">
+                  {fixed(
+                    dataStatusMetrics?.[
+                      content as keyof DataStatusType
+                    ] as number,
+                    2
+                  )}{" "}
+                  min
+                </CardTitle>
+              ) : (
+                <CardTitle
+                  className="counter text-4xl md:text-5xl text-primary"
+                  style={{
+                    ["--num" as string]:
+                      dataStatusMetrics?.[content as keyof DataStatusType],
+                  }}
+                ></CardTitle>
+              )}
             </CardHeader>
             <CardFooter className="text-lg md:text-xl font-light md:font-medium">
               {title}

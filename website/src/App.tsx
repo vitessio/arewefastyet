@@ -16,17 +16,25 @@ limitations under the License.
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { GlobalProvider } from "./contexts/GlobalContext";
 import PublicRoute from "./pages/PublicRoute";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export default function App() {
   return (
     <>
-      <GlobalProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/*" element={<PublicRoute />} />
-          </Routes>
-        </BrowserRouter>
-      </GlobalProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen={false} />
+
+        <GlobalProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/*" element={<PublicRoute />} />
+            </Routes>
+          </BrowserRouter>
+        </GlobalProvider>
+      </QueryClientProvider>
     </>
   );
 }

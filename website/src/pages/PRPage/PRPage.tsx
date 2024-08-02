@@ -31,8 +31,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useApiCall from "@/hooks/useApiCall";
 import { PrData } from "@/types";
-import useApiCall from "@/utils/Hook";
 import { errorApi } from "@/utils/Utils";
 import { format, formatDistanceToNow } from "date-fns";
 import { Link, useParams } from "react-router-dom";
@@ -45,7 +45,10 @@ export default function PRPage() {
     data: prData,
     isLoading: prLoading,
     error: prError,
-  } = useApiCall<PrData>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
+  } = useApiCall<PrData>({
+    url: `${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`,
+    queryKey: "prInfo",
+  });
 
   if (
     prData?.error ==

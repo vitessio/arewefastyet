@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CompareContext } from "@/contexts/CompareContext";
 import { VitessRefs } from "@/types";
-import useApiCall from "@/utils/Hook";
+import useApiCall from "@/hooks/useApiCall";
 import { X } from "lucide-react";
 import { useContext, useRef } from "react";
 import Draggable from "react-draggable";
@@ -43,7 +43,7 @@ export default function CompareActionsWrapper() {
   };
 
   const { data: vitessRefs } = useApiCall<VitessRefs>(
-    `${import.meta.env.VITE_API_URL}vitess/refs`
+    `${import.meta.env.VITE_API_URL}vitess/refs`, "vitessRefs"
   );
 
   const nodeRef = useRef(null);

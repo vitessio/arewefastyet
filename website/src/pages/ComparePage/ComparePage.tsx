@@ -18,8 +18,8 @@ import MacroBenchmarkTable from "@/common/MacroBenchmarkTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import useApiCall from "@/hooks/useApiCall";
 import { CompareData, MacroBenchmarkTableData, VitessRefs } from "@/types";
-import useApiCall from "@/utils/Hook";
 import { formatCompareData, getRefName } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
@@ -41,15 +41,19 @@ export default function Compare() {
     error: macrobenchError,
   } = useApiCall<CompareData[]>(
     gitRef.old && gitRef.new
-      ? `${import.meta.env.VITE_API_URL}macrobench/compare?new=${
-          gitRef.new
-        }&old=${gitRef.old}`
-      : ``
+      ? {
+          url: `${import.meta.env.VITE_API_URL}macrobench/compare?new=${
+            gitRef.new
+          }&old=${gitRef.old}`,
+          queryKey: "compare",
+        }
+      : { url: ``, queryKey: "compare" }
   );
 
-  const { data: vitessRefs } = useApiCall<VitessRefs>(
-    `${import.meta.env.VITE_API_URL}vitess/refs`
-  );
+  const { data: vitessRefs } = useApiCall<VitessRefs>({
+    url: `${import.meta.env.VITE_API_URL}vitess/refs`,
+    queryKey: "vitessRefs",
+  });
 
   useEffect(() => {
     let oldRefName = gitRef.old;
@@ -64,7 +68,7 @@ export default function Compare() {
 
   let formattedData: MacroBenchmarkTableData[] = [];
 
-  if (data !== null && data.length > 0) {
+  if (data !== undefined && data.length > 0) {
     formattedData = formatCompareData(data);
   }
 
@@ -76,7 +80,7 @@ export default function Compare() {
         vitessRefs={vitessRefs}
       />
       {macrobenchError && (
-        <div className="text-red-500 text-center my-2">{macrobenchError}</div>
+        <div className="text-red-500 text-center my-2">{<>{macrobenchError}</>}</div>
       )}
 
       <section className="flex flex-col items-center">
@@ -91,12 +95,12 @@ export default function Compare() {
             })}
           </>
         )}
-        {!isMacrobenchLoading && data === null && (
+        {!isMacrobenchLoading && data === undefined && (
           <div className="md:text-xl text-primary">
             Chose two commits to compare
           </div>
         )}
-        {!isMacrobenchLoading && data !== null && data.length > 0 && (
+        {!isMacrobenchLoading && data !== undefined && data.length > 0 && (
           <>
             {data.map((macro, index) => {
               return (

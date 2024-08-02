@@ -17,7 +17,6 @@ limitations under the License.
 import CompareActions from "@/common/CompareActions";
 import Hero, { HeroProps } from "@/common/Hero";
 import { VitessRefs } from "@/types";
-import useApiCall from "@/utils/Hook";
 import { useEffect, useState } from "react";
 
 const heroProps: HeroProps = {
@@ -32,7 +31,7 @@ export type CompareHeroProps = {
       new: string;
     }>
   >;
-  vitessRefs: VitessRefs | null;
+  vitessRefs: VitessRefs | undefined;
 };
 
 export default function CompareHero(props: CompareHeroProps) {
