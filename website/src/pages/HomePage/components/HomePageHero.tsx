@@ -108,7 +108,7 @@ export default function HomePageHero() {
           (dailySummaryError ||
             !dataDailySummary ||
             dataDailySummary.length === 0) && (
-            <div className="text-red-500 text-center my-10">
+            <div className="text-destructive text-center my-10">
               {<>{dailySummaryError || "No data available"}</>}
             </div>
           )}

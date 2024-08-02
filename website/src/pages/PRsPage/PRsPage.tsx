@@ -43,7 +43,7 @@ export default function PRsPage() {
       )}
 
       {PRListError ? (
-        <div className="text-red-500 text-center my-2">
+        <div className="text-destructive text-center my-2">
           {<>{PRListError}</>}
         </div>
       ) : null}

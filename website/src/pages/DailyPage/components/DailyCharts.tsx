@@ -197,7 +197,7 @@ export default function DailyCharts(props: DailyChartsProps) {
             <Skeleton key={index} className="w-full border-border h-[400px]" />
           ))
         ) : dailyError || !chartData || chartData.length === 0 ? (
-          <div className="text-red-500 text-center my-10">
+          <div className="text-destructive text-center my-10">
             {<>{{ dailyError }} || "No data available"</>}
           </div>
         ) : (

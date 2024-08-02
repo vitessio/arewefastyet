@@ -80,7 +80,7 @@ export default function Compare() {
         vitessRefs={vitessRefs}
       />
       {macrobenchError && (
-        <div className="text-red-500 text-center my-2">{<>{macrobenchError}</>}</div>
+        <div className="text-destructive text-center my-2">{<>{macrobenchError}</>}</div>
       )}
 
       <section className="flex flex-col items-center">

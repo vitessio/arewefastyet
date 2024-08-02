@@ -34,7 +34,7 @@ const Error = () => {
       <div className="m-4 flex flex-col items-center">
         <h2 className="font-medium text-center ">OOPS! Something went wrong</h2>
         <Link to="/home">
-          <Button className="px-[22px] py-2.5 m-[20px] text-[1rem] rounded-[1rem]  bg-[#e77002]  text-white border-none cursor-pointer flex flex-row items-center gap-[10px]">
+          <Button className="px-[22px] py-2.5 m-[20px] text-[1rem] rounded-[1rem]  bg-primary text-white border-none cursor-pointer flex flex-row items-center gap-[10px]">
             Go Back
           </Button>
         </Link>

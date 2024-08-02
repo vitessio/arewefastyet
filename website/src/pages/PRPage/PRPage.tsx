@@ -69,7 +69,7 @@ export default function PRPage() {
         )}
 
         {prError && (
-          <div className="text-red-500 text-center my-2">{errorApi}</div>
+          <div className="text-destructive text-center my-2">{errorApi}</div>
         )}
 
         {!prLoading && prData && (
@@ -123,7 +123,7 @@ export default function PRPage() {
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-xs md:text-lg text-red-500">No base</p>
+                    <p className="text-xs md:text-lg text-destructive">No base</p>
                   )}
                   <Separator />
                   <Label className="md:text-xl font-semibold">Head</Label>
@@ -137,7 +137,7 @@ export default function PRPage() {
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-xs md:text-lg text-red-500">No head</p>
+                    <p className="text-xs md:text-lg text-destructive">No head</p>
                   )}
                 </div>
               </div>
