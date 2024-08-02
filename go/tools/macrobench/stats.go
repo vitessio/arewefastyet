@@ -87,6 +87,7 @@ type (
 
 		TotalComponentsMemStatsAllocBytes StatisticalResult            `json:"total_components_mem_stats_alloc_bytes"`
 		ComponentsMemStatsAllocBytes      map[string]StatisticalResult `json:"components_mem_stats_alloc_bytes"`
+		MissingResults                    bool                         `json:"missing_results"`
 	}
 )
 

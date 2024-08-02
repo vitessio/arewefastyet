@@ -218,7 +218,7 @@ func Compare(client storage.SQLClient, old, new string, workloads []string, plan
 				return
 			}
 
-			if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
+			if len(oldResult.Results) == 0 || len(newResult.Results) == 0 {
 				mu.Lock()
 				defer mu.Unlock()
 				results[workload] = StatisticalCompareResults{
@@ -230,6 +230,7 @@ func Compare(client storage.SQLClient, old, new string, workloads []string, plan
 						"vtgate":   {},
 						"vttablet": {},
 					},
+					MissingResults: true,
 				}
 				return
 			}
@@ -259,7 +260,7 @@ func CompareFKs(client storage.SQLClient, oldWorkload, newWorkload string, sha s
 		return StatisticalCompareResults{}, err
 	}
 
-	if len(oldResult.Results) == 0 && len(newResult.Results) == 0 {
+	if len(oldResult.Results) == 0 || len(newResult.Results) == 0 {
 		return StatisticalCompareResults{
 			ComponentsCPUTime: map[string]StatisticalResult{
 				"vtgate":   {},
@@ -269,6 +270,7 @@ func CompareFKs(client storage.SQLClient, oldWorkload, newWorkload string, sha s
 				"vtgate":   {},
 				"vttablet": {},
 			},
+			MissingResults: true,
 		}, nil
 	}
 

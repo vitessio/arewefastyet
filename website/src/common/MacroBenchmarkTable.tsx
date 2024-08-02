@@ -29,11 +29,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { MacroBenchmarkTableData, Range } from "@/types";
+import { MacroBenchmarkTableData, Range, VitessRefs } from "@/types";
 import {
   fixed,
   formatByte,
-  formatGitRef,
+  getRefName,
   secondToMicrosecond,
 } from "@/utils/Utils";
 import { Link } from "react-router-dom";
@@ -43,6 +43,7 @@ export type MacroBenchmarkTableProps = {
   old: string;
   new: string;
   isGitRef?: boolean;
+  vitessRefs: VitessRefs | null;
 };
 
 const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
@@ -92,9 +93,10 @@ const getValue = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
 
 export default function MacroBenchmarkTable({
   data,
-  new: newColumn,
+  new: newGitRef,
   old,
   isGitRef = true,
+  vitessRefs,
 }: MacroBenchmarkTableProps) {
   if (!data) {
     return null;
@@ -126,27 +128,27 @@ export default function MacroBenchmarkTable({
         <TableRow className="hover:bg-background border-b">
           <TableHead className="w-[200px]"></TableHead>
           <TableHead className="text-center text-primary font-semibold min-w-[150px]">
-            {isGitRef ? (
+            {isGitRef && vitessRefs ? (
               <Link
                 to={`https://github.com/vitessio/vitess/commit/${old}`}
                 target="__blank"
               >
-                {formatGitRef(old) || "N/A"}
+                {getRefName(old, vitessRefs) || "N/A"}
               </Link>
             ) : (
               <>{old}</>
             )}
           </TableHead>
           <TableHead className="text-center text-primary font-semibold min-w-[150px]">
-            {isGitRef ? (
+            {isGitRef && vitessRefs ? (
               <Link
-                to={`https://github.com/vitessio/vitess/commit/${newColumn}`}
+                to={`https://github.com/vitessio/vitess/commit/${newGitRef}`}
                 target="__blank"
               >
-                {formatGitRef(newColumn) || "N/A"}
+                {getRefName(newGitRef, vitessRefs) || "N/A"}
               </Link>
             ) : (
-              <>{newColumn}</>
+              <>{newGitRef}</>
             )}
           </TableHead>
           <TableHead className="lg:w-[150px] text-center font-semibold">

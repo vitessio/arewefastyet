@@ -18,15 +18,16 @@ import MacroBenchmarkTable from "@/common/MacroBenchmarkTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CompareData, MacroBenchmarkTableData } from "@/types";
+import { CompareData, MacroBenchmarkTableData, VitessRefs } from "@/types";
 import useApiCall from "@/utils/Hook";
-import { formatCompareData } from "@/utils/Utils";
+import { formatCompareData, getRefName } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CompareHero from "./components/CompareHero";
 
 export default function Compare() {
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
 
   const [gitRef, setGitRef] = useState({
@@ -34,21 +35,32 @@ export default function Compare() {
     new: urlParams.get("new") || "",
   });
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(`?old=${gitRef.old}&new=${gitRef.new}`);
-  }, [gitRef.old, gitRef.new]);
-
   const {
     data: data,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
   } = useApiCall<CompareData[]>(
-    `${import.meta.env.VITE_API_URL}macrobench/compare?new=${gitRef.new}&old=${
-      gitRef.old
-    }`
+    gitRef.old && gitRef.new
+      ? `${import.meta.env.VITE_API_URL}macrobench/compare?new=${
+          gitRef.new
+        }&old=${gitRef.old}`
+      : ``
   );
+
+  const { data: vitessRefs } = useApiCall<VitessRefs>(
+    `${import.meta.env.VITE_API_URL}vitess/refs`
+  );
+
+  useEffect(() => {
+    let oldRefName = gitRef.old;
+    let newRefName = gitRef.new;
+    if (vitessRefs) {
+      oldRefName = getRefName(gitRef.old, vitessRefs);
+      newRefName = getRefName(gitRef.new, vitessRefs);
+    }
+
+    navigate(`?old=${oldRefName}&new=${newRefName}`);
+  }, [gitRef.old, gitRef.new, vitessRefs]);
 
   let formattedData: MacroBenchmarkTableData[] = [];
 
@@ -58,7 +70,11 @@ export default function Compare() {
 
   return (
     <>
-      <CompareHero gitRef={gitRef} setGitRef={setGitRef} />
+      <CompareHero
+        gitRef={gitRef}
+        setGitRef={setGitRef}
+        vitessRefs={vitessRefs}
+      />
       {macrobenchError && (
         <div className="text-red-500 text-center my-2">{macrobenchError}</div>
       )}
@@ -75,6 +91,11 @@ export default function Compare() {
             })}
           </>
         )}
+        {!isMacrobenchLoading && data === null && (
+          <div className="md:text-xl text-primary">
+            Chose two commits to compare
+          </div>
+        )}
         {!isMacrobenchLoading && data !== null && data.length > 0 && (
           <>
             {data.map((macro, index) => {
@@ -89,6 +110,7 @@ export default function Compare() {
                         variant="outline"
                         size="sm"
                         className="h-8 w-fit border-dashed mt-4 md:mt-0"
+                        disabled={macro.result.missing_results}
                       >
                         <PlusCircledIcon className="mr-2 h-4 w-4 text-primary" />
                         <Link
@@ -99,11 +121,18 @@ export default function Compare() {
                       </Button>
                     </CardHeader>
                     <CardContent className="w-full p-0">
-                      <MacroBenchmarkTable
-                        data={formattedData[index]}
-                        new={gitRef.new}
-                        old={gitRef.old}
-                      />
+                      {macro.result.missing_results ? (
+                        <div className="text-center md:text-xl text-destructive pb-12">
+                          Missing results for this workload
+                        </div>
+                      ) : (
+                        <MacroBenchmarkTable
+                          data={formattedData[index]}
+                          new={gitRef.new}
+                          old={gitRef.old}
+                          vitessRefs={vitessRefs}
+                        />
+                      )}
                     </CardContent>
                   </Card>
                 </div>
