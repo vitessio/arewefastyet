@@ -16,7 +16,7 @@ limitations under the License.
 
 import HomePageHero from "./components/HomePageHero";
 import HowItWorks from "./components/HowItWorks";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import Diagram from "./components/Diagram";
 export default function HomePage() {
   return (

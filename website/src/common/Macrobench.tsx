@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
 import { fixed, formatByte, secondToMicrosecond } from "../utils/Utils";
@@ -165,7 +165,9 @@ export default function Macrobench({ data, gitRef, commits }) {
             oldVal={data.result.components_cpu_time.vttablet.old}
             newVal={data.result.components_cpu_time.vttablet.new}
             delta={data.result.components_cpu_time.vttablet.delta}
-            insignificant={data.result.components_cpu_time.vttablet.insignificant}
+            insignificant={
+              data.result.components_cpu_time.vttablet.insignificant
+            }
             p={fixed(data.result.components_cpu_time.vttablet.p, 3)}
             fmt={"time"}
           />
@@ -175,7 +177,9 @@ export default function Macrobench({ data, gitRef, commits }) {
             oldVal={data.result.total_components_mem_stats_alloc_bytes.old}
             newVal={data.result.total_components_mem_stats_alloc_bytes.new}
             delta={data.result.total_components_mem_stats_alloc_bytes.delta}
-            insignificant={data.result.total_components_mem_stats_alloc_bytes.insignificant}
+            insignificant={
+              data.result.total_components_mem_stats_alloc_bytes.insignificant
+            }
             p={fixed(data.result.total_components_mem_stats_alloc_bytes.p, 3)}
             fmt={"memory"}
           />
@@ -185,7 +189,9 @@ export default function Macrobench({ data, gitRef, commits }) {
             oldVal={data.result.components_mem_stats_alloc_bytes.vtgate.old}
             newVal={data.result.components_mem_stats_alloc_bytes.vtgate.new}
             delta={data.result.components_mem_stats_alloc_bytes.vtgate.delta}
-            insignificant={data.result.components_mem_stats_alloc_bytes.vtgate.insignificant}
+            insignificant={
+              data.result.components_mem_stats_alloc_bytes.vtgate.insignificant
+            }
             p={fixed(data.result.components_mem_stats_alloc_bytes.vtgate.p, 3)}
             fmt={"memory"}
           />
@@ -195,8 +201,14 @@ export default function Macrobench({ data, gitRef, commits }) {
             oldVal={data.result.components_mem_stats_alloc_bytes.vttablet.old}
             newVal={data.result.components_mem_stats_alloc_bytes.vttablet.new}
             delta={data.result.components_mem_stats_alloc_bytes.vttablet.delta}
-            insignificant={data.result.components_mem_stats_alloc_bytes.vttablet.insignificant}
-            p={fixed(data.result.components_mem_stats_alloc_bytes.vttablet.p, 3)}
+            insignificant={
+              data.result.components_mem_stats_alloc_bytes.vttablet
+                .insignificant
+            }
+            p={fixed(
+              data.result.components_mem_stats_alloc_bytes.vttablet.p,
+              3,
+            )}
             fmt={"memory"}
           />
         </tbody>
@@ -207,32 +219,35 @@ export default function Macrobench({ data, gitRef, commits }) {
 
 export function getRange(range) {
   if (range.infinite == true) {
-    return "∞"
+    return "∞";
   }
   if (range.unknown == true) {
-    return "?"
+    return "?";
   }
-  return "±"+fixed(range.value, 1)+"%"
+  return "±" + fixed(range.value, 1) + "%";
 }
 
 function Row({ title, oldVal, newVal, delta, insignificant, p, fmt }) {
-  let status = <span
+  let status = (
+    <span
       className={twMerge(
-          "text-lg text-white px-4 rounded-full",
-          insignificant == true && "bg-[#dd1a2a]",
-          insignificant == false && "bg-[#00aa00]",
-      )}>
+        "text-lg text-white px-4 rounded-full",
+        insignificant == true && "bg-[#dd1a2a]",
+        insignificant == false && "bg-[#00aa00]",
+      )}
+    >
       {insignificant == true ? "No" : "Yes"}
-  </span>
+    </span>
+  );
 
-  var oldValFmt = oldVal.center
-  var newValFmt = newVal.center
+  var oldValFmt = oldVal.center;
+  var newValFmt = newVal.center;
   if (fmt == "time") {
-    oldValFmt = secondToMicrosecond(oldVal.center)
-    newValFmt = secondToMicrosecond(newVal.center)
+    oldValFmt = secondToMicrosecond(oldVal.center);
+    newValFmt = secondToMicrosecond(newVal.center);
   } else if (fmt == "memory") {
-    oldValFmt = formatByte(oldVal.center)
-    newValFmt = formatByte(newVal.center)
+    oldValFmt = formatByte(oldVal.center);
+    newValFmt = formatByte(newVal.center);
   }
 
   return (
@@ -241,10 +256,14 @@ function Row({ title, oldVal, newVal, delta, insignificant, p, fmt }) {
         <span>{title}</span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
-        <span>{oldValFmt} ({getRange(oldVal.range)})</span>
+        <span>
+          {oldValFmt} ({getRange(oldVal.range)})
+        </span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
-        <span>{newValFmt} ({getRange(newVal.range)})</span>
+        <span>
+          {newValFmt} ({getRange(newVal.range)})
+        </span>
       </td>
       <td className="px-24 pt-4 pb-2 text-center">
         <span>{p || "?"}</span>
@@ -252,9 +271,7 @@ function Row({ title, oldVal, newVal, delta, insignificant, p, fmt }) {
       <td className="px-24 pt-4 pb-2 text-center">
         <span>{fixed(delta, 3) || 0}%</span>
       </td>
-      <td className="px-24 pt-4 pb-2 text-center">
-        {status}
-      </td>
+      <td className="px-24 pt-4 pb-2 text-center">{status}</td>
     </tr>
   );
 }
@@ -275,10 +292,10 @@ Row.propTypes = {
       infinite: PropTypes.bool.isRequired,
       unknown: PropTypes.bool.isRequired,
       value: PropTypes.number.isRequired,
-    })
+    }),
   }).isRequired,
   delta: PropTypes.number.isRequired,
   insignificant: PropTypes.bool.isRequired,
   p: PropTypes.string.isRequired,
-  fmt: PropTypes.oneOf(['none', 'time', 'memory']).isRequired,
+  fmt: PropTypes.oneOf(["none", "time", "memory"]).isRequired,
 };

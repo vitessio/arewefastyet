@@ -49,7 +49,7 @@ export default function ForeignKeysHero(props: {
   const [newWorkload, setNewWorkload] = useState(workload.new);
   const [commit, setCommit] = useState(gitRef);
   let { data: workloads } = useApiCall<string[]>(
-    `${import.meta.env.VITE_API_URL}workloads`
+    `${import.meta.env.VITE_API_URL}workloads`,
   );
 
   workloads = workloads?.filter((workload) => workload.includes("TPCC")) ?? [];

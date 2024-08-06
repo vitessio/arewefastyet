@@ -26,8 +26,8 @@ export type DailDailySummaryProps = {
 
 export default function DailyDailySummary(props: DailDailySummaryProps) {
   const { workload, setWorkload } = props;
-  const {data: workloads} = useApiCall<string[]>(
-    `${import.meta.env.VITE_API_URL}workloads`
+  const { data: workloads } = useApiCall<string[]>(
+    `${import.meta.env.VITE_API_URL}workloads`,
   );
 
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =

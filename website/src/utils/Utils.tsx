@@ -61,7 +61,7 @@ export function formatGitRef(gitRef: string): string {
 }
 
 export function formatCompareData(
-  data: CompareData[]
+  data: CompareData[],
 ): MacroBenchmarkTableData[] {
   return (
     data.map((data: CompareData) => {
@@ -179,7 +179,7 @@ export function formatCompareData(
 }
 
 export function formatCompareResult(
-  data: CompareResult
+  data: CompareResult,
 ): MacroBenchmarkTableData {
   return {
     qpsTotal: {

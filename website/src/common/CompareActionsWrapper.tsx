@@ -43,7 +43,7 @@ export default function CompareActionsWrapper() {
   };
 
   const { data: vitessRefs } = useApiCall<VitessRefs>(
-    `${import.meta.env.VITE_API_URL}vitess/refs`
+    `${import.meta.env.VITE_API_URL}vitess/refs`,
   );
 
   const nodeRef = useRef(null);

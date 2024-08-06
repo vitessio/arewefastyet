@@ -37,7 +37,7 @@ export type MacroQueriesCompareDialogProps = {
 };
 
 export default function MacroQueriesCompareDialog<MacroQueriesPlan, TValue>(
-  props: MacroQueriesCompareDialogProps
+  props: MacroQueriesCompareDialogProps,
 ) {
   const { data } = props;
 
