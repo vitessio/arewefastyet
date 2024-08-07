@@ -16,8 +16,11 @@ limitations under the License.
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { GlobalProvider } from "./contexts/GlobalContext";
 import PublicRoute from "./pages/PublicRoute";
+import ReactGA from "react-ga4";
 
 export default function App() {
+  ReactGA.initialize("G-QCJ7MJ5CPX");
+
   return (
     <>
       <GlobalProvider>
