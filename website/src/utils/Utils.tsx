@@ -307,3 +307,21 @@ export const getRefName = (gitRef: string, vitessRefs: VitessRefs): string => {
   });
   return title;
 };
+
+export const getGitRefFromRefName = (refName: string, vitessRefs: VitessRefs): string => {
+  if (refName === "") {
+    return "";
+  }
+  let gitRef = refName;
+  vitessRefs.branches.forEach((branch) => {
+    if (branch.name === refName) {
+      gitRef = branch.commit_hash;
+    }
+  });
+  vitessRefs.tags.forEach((tag) => {
+    if (tag.name === refName) {
+      gitRef = tag.commit_hash;
+    }
+  });
+  return gitRef;
+};

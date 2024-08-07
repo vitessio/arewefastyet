@@ -20,7 +20,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useApiCall from "@/hooks/useApiCall";
 import { CompareData, MacroBenchmarkTableData, VitessRefs } from "@/types";
-import { formatCompareData, getRefName } from "@/utils/Utils";
+import {
+  formatCompareData,
+  getGitRefFromRefName,
+  getRefName,
+} from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -37,6 +41,20 @@ export default function Compare() {
 
   const shouldFetchCompareData = gitRef.old && gitRef.new;
 
+  console.log({ shouldFetchCompareData });
+
+  const { data: vitessRefs } = useApiCall<VitessRefs>({
+    url: `${import.meta.env.VITE_API_URL}vitess/refs`,
+    queryKey: ["vitessRefs"],
+  });
+
+  const gitOldRef = vitessRefs
+    ? getGitRefFromRefName(gitRef.old, vitessRefs)
+    : gitRef.old;
+  const gitNewRef = vitessRefs
+    ? getGitRefFromRefName(gitRef.new, vitessRefs)
+    : gitRef.new;
+
   const {
     data: data,
     isLoading: isMacrobenchLoading,
@@ -44,18 +62,13 @@ export default function Compare() {
   } = useApiCall<CompareData[]>(
     shouldFetchCompareData
       ? {
-          url: `${import.meta.env.VITE_API_URL}macrobench/compare?new=${
-            gitRef.new
-          }&old=${gitRef.old}`,
-          queryKey: ["compare", gitRef.old, gitRef.new],
+          url: `${
+            import.meta.env.VITE_API_URL
+          }macrobench/compare?new=${gitNewRef}&old=${gitOldRef}`,
+          queryKey: ["compare", gitOldRef, gitNewRef],
         }
-      : { url: null, queryKey: ["compare", gitRef.old, gitRef.new] }
+      : { url: null, queryKey: ["compare", gitOldRef, gitNewRef] }
   );
-
-  const { data: vitessRefs } = useApiCall<VitessRefs>({
-    url: `${import.meta.env.VITE_API_URL}vitess/refs`,
-    queryKey: ["vitessRefs"],
-  });
 
   useEffect(() => {
     let oldRefName = gitRef.old;
