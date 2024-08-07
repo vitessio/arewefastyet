@@ -31,8 +31,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useApiCall from "@/hooks/useApiCall";
 import { PrData } from "@/types";
-import useApiCall from "@/utils/Hook";
 import { errorApi } from "@/utils/Utils";
 import { format, formatDistanceToNow } from "date-fns";
 import { Link, useParams } from "react-router-dom";
@@ -45,7 +45,10 @@ export default function PRPage() {
     data: prData,
     isLoading: prLoading,
     error: prError,
-  } = useApiCall<PrData>(`${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`);
+  } = useApiCall<PrData>({
+    url: `${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`,
+    queryKey: ["prInfo", pull_nb],
+  });
 
   if (
     prData?.error ==
@@ -66,7 +69,7 @@ export default function PRPage() {
         )}
 
         {prError && (
-          <div className="text-red-500 text-center my-2">{errorApi}</div>
+          <div className="text-destructive text-center my-2">{errorApi}</div>
         )}
 
         {!prLoading && prData && (
@@ -120,7 +123,9 @@ export default function PRPage() {
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-xs md:text-lg text-red-500">No base</p>
+                    <p className="text-xs md:text-lg text-destructive">
+                      No base
+                    </p>
                   )}
                   <Separator />
                   <Label className="md:text-xl font-semibold">Head</Label>
@@ -134,7 +139,9 @@ export default function PRPage() {
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-xs md:text-lg text-red-500">No head</p>
+                    <p className="text-xs md:text-lg text-destructive">
+                      No head
+                    </p>
                   )}
                 </div>
               </div>

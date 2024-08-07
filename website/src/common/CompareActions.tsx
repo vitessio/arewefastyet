@@ -26,7 +26,7 @@ export type CompareActionsProps = {
   newGitRef: string;
   setNewGitRef: React.Dispatch<React.SetStateAction<string>>;
   compareClicked: () => void;
-  vitessRefs: VitessRefs | null;
+  vitessRefs?: VitessRefs;
   keyboardShortcut?: {
     old: string;
     new: string;

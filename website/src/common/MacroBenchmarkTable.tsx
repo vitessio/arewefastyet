@@ -43,7 +43,7 @@ export type MacroBenchmarkTableProps = {
   old: string;
   new: string;
   isGitRef?: boolean;
-  vitessRefs: VitessRefs | null;
+  vitessRefs: VitessRefs | undefined;
 };
 
 const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {

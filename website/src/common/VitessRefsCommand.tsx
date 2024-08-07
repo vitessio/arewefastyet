@@ -31,7 +31,7 @@ type VitessRefsCommandProps = {
   inputLabel: string;
   gitRef: string;
   setGitRef: (value: string) => void;
-  vitessRefs: VitessRefs | null;
+  vitessRefs?: VitessRefs;
   keyboardShortcut?: string;
 };
 
