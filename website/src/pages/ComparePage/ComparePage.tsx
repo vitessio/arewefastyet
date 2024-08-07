@@ -35,24 +35,26 @@ export default function Compare() {
     new: urlParams.get("new") || "",
   });
 
+  const shouldFetchCompareData = gitRef.old && gitRef.new;
+
   const {
     data: data,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
   } = useApiCall<CompareData[]>(
-    gitRef.old && gitRef.new
+    shouldFetchCompareData
       ? {
           url: `${import.meta.env.VITE_API_URL}macrobench/compare?new=${
             gitRef.new
           }&old=${gitRef.old}`,
-          queryKey: "compare",
+          queryKey: ["compare", gitRef.old, gitRef.new],
         }
-      : { url: ``, queryKey: "compare" }
+      : { url: null, queryKey: ["compare", gitRef.old, gitRef.new] }
   );
 
   const { data: vitessRefs } = useApiCall<VitessRefs>({
     url: `${import.meta.env.VITE_API_URL}vitess/refs`,
-    queryKey: "vitessRefs",
+    queryKey: ["vitessRefs"],
   });
 
   useEffect(() => {
@@ -80,7 +82,9 @@ export default function Compare() {
         vitessRefs={vitessRefs}
       />
       {macrobenchError && (
-        <div className="text-destructive text-center my-2">{<>{macrobenchError}</>}</div>
+        <div className="text-destructive text-center my-2">
+          {<>{macrobenchError}</>}
+        </div>
       )}
 
       <section className="flex flex-col items-center">

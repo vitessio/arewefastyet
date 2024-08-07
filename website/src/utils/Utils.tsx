@@ -294,7 +294,7 @@ export const getRefName = (gitRef: string, vitessRefs: VitessRefs): string => {
   if (gitRef === "") {
     return "";
   }
-  let title = formatGitRef(gitRef);
+  let title = gitRef;
   vitessRefs.branches.forEach((branch) => {
     if (branch.commit_hash.match(gitRef)) {
       title = branch.name;

@@ -28,15 +28,13 @@ export default function useApiCall<T>({
   url,
   queryKey,
 }: {
-  url: string;
-  queryKey: string;
+  url: string | null;
+  queryKey: QueryKey;
 }): { data: T | undefined; error: Error | null; isLoading: boolean } {
-  if (!url) {
-    return { data: undefined, error: null, isLoading: false };
-  }
   const { data, error, isLoading } = useQuery<T, Error, T, QueryKey>({
     queryKey: [queryKey],
-    queryFn: async () => fetchData(url),
+    queryFn: async () => fetchData(url!),
+    enabled: !!url, // This ensures the query is only run if the URL is truthy
   });
 
   return {
