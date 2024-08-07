@@ -23,7 +23,7 @@ export default function PreviousExecution() {
   const { data: dataPreviousExecution, isLoading } =
     useApiCall<PreviousExecution>({
       url: `${import.meta.env.VITE_API_URL}recent`,
-      queryKey: "recent",
+      queryKey: ["recent"],
     });
 
   const filterConfigs: FilterConfigs[] = [

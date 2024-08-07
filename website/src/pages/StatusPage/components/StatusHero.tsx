@@ -62,7 +62,7 @@ const heroProps: HeroProps = {
 export default function StatusHero() {
   const { data: dataStatusMetrics } = useApiCall<DataStatusType>({
     url: `${import.meta.env.VITE_API_URL}status/stats`,
-    queryKey: "statusStats",
+    queryKey: ["statusStats"],
   });
 
   const chartConfig = {

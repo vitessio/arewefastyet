@@ -139,7 +139,7 @@ export default function DailyCharts(props: DailyChartsProps) {
     isLoading: dailyLoading,
   } = useApiCall<MacroData[]>({
     url: `${import.meta.env.VITE_API_URL}daily?workload=${workload}`,
-    queryKey: "dailyWorkload",
+    queryKey: ["dailyWorkload", workload],
   });
 
   let chartData: DailyDataType[] = [];

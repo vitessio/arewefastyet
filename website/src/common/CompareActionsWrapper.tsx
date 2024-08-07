@@ -42,9 +42,10 @@ export default function CompareActionsWrapper() {
     closeCompare();
   };
 
-  const { data: vitessRefs } = useApiCall<VitessRefs>(
-    `${import.meta.env.VITE_API_URL}vitess/refs`, "vitessRefs"
-  );
+  const { data: vitessRefs } = useApiCall<VitessRefs>({
+    url: `${import.meta.env.VITE_API_URL}vitess/refs`,
+    queryKey: ["vitessRefs"],
+  });
 
   const nodeRef = useRef(null);
 

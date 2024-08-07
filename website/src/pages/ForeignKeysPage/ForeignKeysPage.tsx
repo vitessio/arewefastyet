@@ -39,24 +39,29 @@ export default function ForeignKeys() {
 
   const { data: vitessRefs } = useApiCall<VitessRefs>({
     url: `${import.meta.env.VITE_API_URL}vitess/refs`,
-    queryKey: "vitessRefs",
+    queryKey: ["vitessRefs"],
   });
+
+  const shouldFetchCompareData = workload.old && workload.new && gitRef;
 
   const {
     data: data,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
   } = useApiCall<CompareResult>(
-    gitRef && workload.old && workload.new
+    shouldFetchCompareData
       ? {
           url: `${
             import.meta.env.VITE_API_URL
           }fk/compare?sha=${gitRef}&newWorkload=${workload.new}&oldWorkload=${
             workload.old
           }`,
-          queryKey: "compareResult",
+          queryKey: ["compareResult", gitRef, workload.old, workload.new],
         }
-      : { url: "", queryKey: "" }
+      : {
+          url: null,
+          queryKey: ["compareResult", gitRef, workload.old, workload.new],
+        }
   );
 
   let formattedData = data !== undefined ? formatCompareResult(data) : null;

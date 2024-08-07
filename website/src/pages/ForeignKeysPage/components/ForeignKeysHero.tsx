@@ -50,7 +50,7 @@ export default function ForeignKeysHero(props: {
   const [commit, setCommit] = useState(gitRef);
   let { data: workloads } = useApiCall<string[]>({
     url: `${import.meta.env.VITE_API_URL}workloads`,
-    queryKey: "workloads",
+    queryKey: ["workloads"],
   });
 
   workloads =

@@ -29,7 +29,7 @@ export default function HistoryPage() {
     error,
   } = useApiCall<HistoryType[]>({
     url: `${import.meta.env.VITE_API_URL}history`,
-    queryKey: "history",
+    queryKey: ["history"],
   });
   const [searchParams] = useSearchParams();
   const gitRef = searchParams.get("gitRef") ?? "";

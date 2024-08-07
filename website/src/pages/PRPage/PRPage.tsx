@@ -47,7 +47,7 @@ export default function PRPage() {
     error: prError,
   } = useApiCall<PrData>({
     url: `${import.meta.env.VITE_API_URL}pr/info/${pull_nb}`,
-    queryKey: "prInfo",
+    queryKey: ["prInfo", pull_nb],
   });
 
   if (
@@ -123,7 +123,9 @@ export default function PRPage() {
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-xs md:text-lg text-destructive">No base</p>
+                    <p className="text-xs md:text-lg text-destructive">
+                      No base
+                    </p>
                   )}
                   <Separator />
                   <Label className="md:text-xl font-semibold">Head</Label>
@@ -137,7 +139,9 @@ export default function PRPage() {
                       </p>
                     </Link>
                   ) : (
-                    <p className="text-xs md:text-lg text-destructive">No head</p>
+                    <p className="text-xs md:text-lg text-destructive">
+                      No head
+                    </p>
                   )}
                 </div>
               </div>

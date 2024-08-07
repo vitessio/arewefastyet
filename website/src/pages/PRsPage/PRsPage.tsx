@@ -29,7 +29,7 @@ export default function PRsPage() {
     error: PRListError,
   } = useApiCall<PrData[]>({
     url: `${import.meta.env.VITE_API_URL}pr/list`,
-    queryKey: "prList",
+    queryKey: ["prList"],
   });
 
   return (

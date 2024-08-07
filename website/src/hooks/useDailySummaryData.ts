@@ -28,7 +28,7 @@ export default function useDailySummaryData(workloads: string[]) {
     url: `${
       import.meta.env.VITE_API_URL
     }daily/summary?workload=${workloadsQuery}`,
-    queryKey: "dailySummary",
+    queryKey: ["dailySummary", workloadsQuery],
   });
 
   if (dailySummaryError || dataDailySummary?.length === 0) {

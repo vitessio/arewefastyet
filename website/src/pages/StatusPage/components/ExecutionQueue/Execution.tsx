@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { FilterConfigs } from "@/types";
 import useApiCall from "@/hooks/useApiCall";
+import { FilterConfigs } from "@/types";
 import {
   ExecutionQueueExecution,
   ExecutionQueueType,
@@ -27,7 +27,7 @@ export default function ExecutionQueue() {
   const { data: dataExecutionQueue, isLoading } =
     useApiCall<ExecutionQueueType>({
       url: `${import.meta.env.VITE_API_URL}queue`,
-      queryKey: "queue",
+      queryKey: ["queue"],
     });
 
   if (
