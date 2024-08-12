@@ -41,8 +41,6 @@ export default function Compare() {
 
   const shouldFetchCompareData = gitRef.old && gitRef.new;
 
-  console.log({ shouldFetchCompareData });
-
   const { data: vitessRefs } = useApiCall<VitessRefs>({
     url: `${import.meta.env.VITE_API_URL}vitess/refs`,
     queryKey: ["vitessRefs"],

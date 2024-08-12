@@ -31,7 +31,6 @@ export default function useApiCall<T>({
   url: string | null;
   queryKey: QueryKey;
 }): { data: T | undefined; error: Error | null; isLoading: boolean } {
-  console.log({ url, queryKey });
   const { data, error, isLoading } = useQuery<T, Error, T, QueryKey>({
     queryKey: [queryKey],
     queryFn: async () => fetchData(url!),
