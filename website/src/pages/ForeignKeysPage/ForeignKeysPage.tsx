@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useApiCall from "@/hooks/useApiCall";
-import { formatCompareResult, getRefName } from "@/utils/Utils";
+import { errorApi, formatCompareResult, getRefName } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import ForeignKeysHero from "./components/ForeignKeysHero";
 
@@ -74,7 +74,6 @@ export default function ForeignKeys() {
 
   return (
     <>
-      {vitessRefs && (
         <ForeignKeysHero
           gitRef={gitRef}
           setGitRef={setGitRef}
@@ -82,11 +81,10 @@ export default function ForeignKeys() {
           setWorkload={setWorkload}
           vitessRefs={vitessRefs}
         />
-      )}
 
       <section className="flex flex-col items-center">
         {macrobenchError && (
-          <div className="text-destructive">{<>{macrobenchError}</>}</div>
+          <div className="text-destructive">{errorApi}</div>
         )}
 
         {!isMacrobenchLoading && data === undefined && (

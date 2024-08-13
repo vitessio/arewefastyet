@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import useApiCall from "@/hooks/useApiCall";
 import { CompareData, MacroBenchmarkTableData, VitessRefs } from "@/types";
 import {
+  errorApi,
   formatCompareData,
   getGitRefFromRefName,
   getRefName,
@@ -94,7 +95,7 @@ export default function Compare() {
       />
       {macrobenchError && (
         <div className="text-destructive text-center my-2">
-          {<>{macrobenchError}</>}
+          {errorApi}
         </div>
       )}
 

@@ -18,6 +18,7 @@ import useApiCall from "@/hooks/useApiCall";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { PrData } from "@/types";
+import { errorApi } from "@/utils/Utils";
 import { columns } from "./components/Columns";
 import PRHero from "./components/PRHero";
 import PRTable from "./components/PRTable";
@@ -42,11 +43,10 @@ export default function PRsPage() {
         </div>
       )}
 
-      {PRListError ? (
-        <div className="text-destructive text-center my-2">
-          {<>{PRListError}</>}
-        </div>
-      ) : null}
+      {!isPRListLoading &&
+        (PRListError || !dataPRList || dataPRList.length === 0) && (
+          <div className="text-destructive text-center my-10">{errorApi}</div>
+        )}
 
       {!isPRListLoading && dataPRList && (
         <div className="lg:mx-auto w-full p-page xl:w-[80vw] my-12 flex flex-col">

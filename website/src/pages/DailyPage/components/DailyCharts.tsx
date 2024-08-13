@@ -19,7 +19,7 @@ import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import useApiCall from "@/hooks/useApiCall";
 import { MacroData } from "@/types";
-import { formatGitRef } from "@/utils/Utils";
+import { errorApi, formatGitRef } from "@/utils/Utils";
 import { useEffect, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 
@@ -198,7 +198,7 @@ export default function DailyCharts(props: DailyChartsProps) {
           ))
         ) : dailyError || !chartData || chartData.length === 0 ? (
           <div className="text-destructive text-center my-10">
-            {<>{{ dailyError }} || "No data available"</>}
+            {errorApi}
           </div>
         ) : (
           chartMetadas.map((chartMetadata, chartMetadataIndex) => (

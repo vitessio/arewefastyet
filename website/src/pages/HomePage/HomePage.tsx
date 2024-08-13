@@ -14,10 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { Separator } from "@/components/ui/separator";
+import Diagram from "./components/Diagram";
 import HomePageHero from "./components/HomePageHero";
 import HowItWorks from "./components/HowItWorks";
-import { Separator } from "@/components/ui/separator"
-import Diagram from "./components/Diagram";
+
 export default function HomePage() {
   return (
     <>

@@ -68,11 +68,11 @@ export default function PRPage() {
           </div>
         )}
 
-        {prError && (
+        {!prLoading && (prError || !prData) && (
           <div className="text-destructive text-center my-2">{errorApi}</div>
         )}
 
-        {!prLoading && prData && (
+        {!prLoading && !prError && prData && (
           <Card className="w-fit border-border">
             <CardHeader>
               <CardTitle className="text-lg md:text-2xl flex flex-row gap-10 justify-between">

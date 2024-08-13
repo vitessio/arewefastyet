@@ -42,7 +42,7 @@ export default function ForeignKeysHero(props: {
   setWorkload: React.Dispatch<
     React.SetStateAction<{ old: string; new: string }>
   >;
-  vitessRefs: VitessRefs;
+  vitessRefs: VitessRefs | undefined;
 }) {
   const { gitRef, setGitRef, workload, setWorkload, vitessRefs } = props;
   const [oldWorkload, setOldWorkload] = useState(workload.old);

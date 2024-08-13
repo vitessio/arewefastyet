@@ -18,6 +18,7 @@ import DailySummary from "@/common/DailySummary";
 import { Skeleton } from "@/components/ui/skeleton";
 import useApiCall from "@/hooks/useApiCall";
 import useDailySummaryData from "@/hooks/useDailySummaryData";
+import { errorApi } from "@/utils/Utils";
 
 export type DailDailySummaryProps = {
   workload: string;
@@ -39,7 +40,7 @@ export default function DailyDailySummary(props: DailDailySummaryProps) {
       <section className="flex p-page flex-wrap justify-center gap-12 p-4">
         {isLoadingDailySummary && (
           <>
-            {workloads?.map((_, index) => {
+            {Array.from([, , , , , , ,]).map((_, index) => {
               return (
                 <Skeleton
                   key={index}
@@ -54,9 +55,7 @@ export default function DailyDailySummary(props: DailDailySummaryProps) {
           (dailySummaryError ||
             !dataDailySummary ||
             dataDailySummary.length === 0) && (
-            <div className="text-destructive text-center my-10">
-              {<>{{ dailySummaryError }} || "No data available"</>}
-            </div>
+            <div className="text-destructive text-center my-10">{errorApi}</div>
           )}
 
         {!isLoadingDailySummary &&

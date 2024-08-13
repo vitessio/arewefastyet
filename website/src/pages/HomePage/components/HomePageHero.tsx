@@ -19,6 +19,7 @@ import Icon from "@/common/Icon";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import useDailySummaryData from "@/hooks/useDailySummaryData";
+import { errorApi } from "@/utils/Utils";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -27,6 +28,12 @@ export default function HomePageHero() {
 
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
     useDailySummaryData(["OLTP", "TPCC"]);
+
+  console.log({
+    dataDailySummary,
+    isLoadingDailySummary,
+    dailySummaryError,
+  });
 
   return (
     <section className="flex flex-col items-center h-fit my-12">
@@ -108,9 +115,7 @@ export default function HomePageHero() {
           (dailySummaryError ||
             !dataDailySummary ||
             dataDailySummary.length === 0) && (
-            <div className="text-destructive text-center my-10">
-              {<>{dailySummaryError || "No data available"}</>}
-            </div>
+            <div className="text-destructive text-center my-10">{errorApi}</div>
           )}
         {!isLoadingDailySummary &&
           dataDailySummary &&

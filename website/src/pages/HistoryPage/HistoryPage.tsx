@@ -21,9 +21,10 @@ import { useSearchParams } from "react-router-dom";
 import { columns, HistoryType } from "./components/Columns";
 import HistoryHero from "./components/HistoryHero";
 import { HistoryTable } from "./components/HistoryTable";
+import { errorApi } from "@/utils/Utils";
 
 export default function HistoryPage() {
-  let {
+  const {
     data: dataHistory,
     isLoading,
     error,
@@ -52,9 +53,12 @@ export default function HistoryPage() {
       <HistoryHero />
       <section className="mx-auto p-page lg:w-[60vw] my-12 flex flex-col">
         {isLoading && <Skeleton className="h-[732px]"></Skeleton>}
-        {error && (
+        {!isLoading &&
+          (error ||
+            !dataHistory ||
+            dataHistory.length === 0) && (
           <div className="text-destructive text-center my-2">
-            {<>{error}</>}
+            {<>{errorApi}</>}
           </div>
         )}
         {dataHistory && (
