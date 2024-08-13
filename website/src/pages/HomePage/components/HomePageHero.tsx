@@ -29,12 +29,6 @@ export default function HomePageHero() {
   const { dataDailySummary, isLoadingDailySummary, dailySummaryError } =
     useDailySummaryData(["OLTP", "TPCC"]);
 
-  console.log({
-    dataDailySummary,
-    isLoadingDailySummary,
-    dailySummaryError,
-  });
-
   return (
     <section className="flex flex-col items-center h-fit my-12">
       <h1 className="flex flex-col gap-8 text-3xl md:text-6xl font-semibold text-center">
