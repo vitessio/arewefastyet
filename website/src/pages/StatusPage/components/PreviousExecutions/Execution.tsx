@@ -14,14 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import { Skeleton } from "@/components/ui/skeleton";
+import useApiCall from "@/hooks/useApiCall";
 import { FilterConfigs } from "@/types";
-import useApiCall from "@/utils/Hook";
+import { errorApi } from "@/utils/Utils";
 import { columns, type PreviousExecution } from "./Columns";
 import { PreviousExecutionQueueTable } from "./ExecutionTable";
 
 export default function PreviousExecution() {
-  const { data: dataPreviousExecution, isLoading } =
-    useApiCall<PreviousExecution>(`${import.meta.env.VITE_API_URL}recent`);
+  const {
+    data: dataPreviousExecution,
+    isLoading,
+    error,
+  } = useApiCall<PreviousExecution>({
+    url: `${import.meta.env.VITE_API_URL}recent`,
+    queryKey: ["recent"],
+  });
 
   const filterConfigs: FilterConfigs[] = [
     {
@@ -56,7 +64,15 @@ export default function PreviousExecution() {
         <h3 className="text-4xl md:text-5xl font-semibold text-primary mb-4 self-center">
           Previous Executions
         </h3>
-        {dataPreviousExecution !== null && (
+        {isLoading && <Skeleton className="h-[912px]"></Skeleton>}
+
+        {!isLoading && (error || !dataPreviousExecution) && (
+          <div className="text-destructive text-center my-2">
+            {<>{errorApi}</>}
+          </div>
+        )}
+
+        {dataPreviousExecution !== undefined && (
           <PreviousExecutionQueueTable
             columns={columns}
             data={dataPreviousExecution.executions}

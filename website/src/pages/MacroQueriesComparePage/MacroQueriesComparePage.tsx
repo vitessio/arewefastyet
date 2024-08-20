@@ -15,8 +15,8 @@ limitations under the License.
 */
 
 import { Separator } from "@/components/ui/separator";
+import useApiCall from "@/hooks/useApiCall";
 import { FilterConfigs } from "@/types";
-import useApiCall from "@/utils/Hook";
 import { columns, MacroQueriesPlan } from "./components/Columns";
 import MacroQueriesCompareHero from "./components/MacroQueriesCompareHero";
 import { MacroQueriesCompareTable } from "./components/MacroQueriesCompareTable";
@@ -33,11 +33,12 @@ export default function MacroQueriesComparePage() {
     data: data,
     isLoading: isMacrobenchLoading,
     error: macrobenchError,
-  } = useApiCall<MacroQueriesPlan[]>(
-    `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
+  } = useApiCall<MacroQueriesPlan[]>({
+    url: `${import.meta.env.VITE_API_URL}macrobench/compare/queries?ltag=${
       commits.oldGitRef
-    }&rtag=${commits.newGitRef}&workload=${workload}`
-  );
+    }&rtag=${commits.newGitRef}&workload=${workload}`,
+    queryKey: ["compare", commits.oldGitRef, commits.newGitRef, workload],
+  });
 
   let filterConfigs: FilterConfigs[] = [
     {

@@ -14,21 +14,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import useApiCall from "@/utils/Hook";
-import RingLoader from "react-spinners/RingLoader";
+import useApiCall from "@/hooks/useApiCall";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { PrData } from "@/types";
+import { errorApi } from "@/utils/Utils";
 import { columns } from "./components/Columns";
 import PRHero from "./components/PRHero";
 import PRTable from "./components/PRTable";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PRsPage() {
   const {
     data: dataPRList,
     isLoading: isPRListLoading,
     error: PRListError,
-  } = useApiCall<PrData[]>(`${import.meta.env.VITE_API_URL}pr/list`);
+  } = useApiCall<PrData[]>({
+    url: `${import.meta.env.VITE_API_URL}pr/list`,
+    queryKey: ["prList"],
+  });
 
   return (
     <>
@@ -40,9 +43,10 @@ export default function PRsPage() {
         </div>
       )}
 
-      {PRListError ? (
-        <div className="text-red-500 text-center my-2">{PRListError}</div>
-      ) : null}
+      {!isPRListLoading &&
+        (PRListError || !dataPRList || dataPRList.length === 0) && (
+          <div className="text-destructive text-center my-10">{errorApi}</div>
+        )}
 
       {!isPRListLoading && dataPRList && (
         <div className="lg:mx-auto w-full p-page xl:w-[80vw] my-12 flex flex-col">

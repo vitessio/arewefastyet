@@ -27,15 +27,16 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import useApiCall from "@/utils/Hook";
+import { Skeleton } from "@/components/ui/skeleton";
+import useApiCall from "@/hooks/useApiCall";
+import { errorApi, fixed } from "@/utils/Utils";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import {fixed} from "@/utils/Utils";
 
 const info = [
   { title: "Benchmark in total", content: "Total" },
   { title: "Benchmark this month", content: "Last30Days" },
   { title: "Commits benchmarked", content: "Commits" },
-  { title: "Execution duration (avg)", content: "AvgDuration"},
+  { title: "Execution duration (avg)", content: "AvgDuration" },
 ];
 
 type DataStatusType = {
@@ -60,9 +61,14 @@ const heroProps: HeroProps = {
 };
 
 export default function StatusHero() {
-  const { data: dataStatusMetrics } = useApiCall<DataStatusType>(
-    `${import.meta.env.VITE_API_URL}status/stats`
-  );
+  const {
+    data: dataStatusMetrics,
+    error: dataStatusError,
+    isLoading: isDataStatusLoading,
+  } = useApiCall<DataStatusType>({
+    url: `${import.meta.env.VITE_API_URL}status/stats`,
+    queryKey: ["statusStats"],
+  });
 
   const chartConfig = {
     day: {
@@ -73,7 +79,7 @@ export default function StatusHero() {
 
   let last7days: number[] = [];
 
-  if (dataStatusMetrics !== null) {
+  if (dataStatusMetrics !== undefined) {
     last7days = dataStatusMetrics.Last7Days;
   }
 
@@ -84,53 +90,82 @@ export default function StatusHero() {
 
   return (
     <Hero title={heroProps.title} description={heroProps.description}>
+
       <div className="flex flex-wrap justify-center gap-8 w-[80vw]">
-        {info.map(({ content, title }, key) => (
-          <Card
-            key={key}
-            className="w-[300px] h-[150px] md:min-h-[130px] border-border"
-          >
-            <CardHeader>
-              {content == "AvgDuration" ?
-                  <CardTitle
-                      className="text-4xl md:text-5xl text-primary"
-                  >{fixed(dataStatusMetrics?.[content as keyof DataStatusType] as number, 2)} min</CardTitle>
-              :
-                  <CardTitle
-                    className="counter text-4xl md:text-5xl text-primary"
-                    style={{ ["--num" as string]: dataStatusMetrics?.[content as keyof DataStatusType] }}
-                  ></CardTitle>
-              }
-            </CardHeader>
-            <CardFooter className="text-lg md:text-xl font-light md:font-medium">
-              {title}
-            </CardFooter>
-          </Card>
-        ))}
-        <Card className="w-[300px] h-[150px] border-border">
-          <CardContent className="w-full h-full">
-            <ChartContainer config={chartConfig}>
-              <BarChart
-                margin={{ top: 12, right: 0, left: -22, bottom: 0 }}
-                barSize={10}
-                accessibilityLayer
-                data={chartData}
+      {isDataStatusLoading && (
+        <>
+            {Array.from([, , , , ,]).map((_, index) => {
+              return (
+                <Skeleton key={index} className="w-[300px] h-[150px] md:min-h-[130px]"></Skeleton>
+
+              );
+            })}
+        </>
+      )}
+
+      {!isDataStatusLoading &&
+        (dataStatusError || !dataStatusMetrics || dataStatusMetrics) && (
+          <div className="text-destructive text-center my-10">{errorApi}</div>
+        )}
+        {!isDataStatusLoading && dataStatusMetrics && (
+          <>
+            {info.map(({ content, title }, key) => (
+              <Card
+                key={key}
+                className="w-[300px] h-[150px] md:min-h-[130px] border-border"
               >
-                <YAxis tickMargin={0} />
-                <XAxis tickMargin={0} tick={false} />
-                <CartesianGrid vertical={false} />
-                <ChartTooltip
-                  cursor={true}
-                  content={<ChartTooltipContent hideLabel />}
-                />
-                <Bar dataKey="executions" fill="var(--color-day)" />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-          <CardFooter className="text-xs text-primary flex justify-center md:text-sm font-light md:font-medium mt-[-28px]">
-            Benchmarks over the last 7 days
-          </CardFooter>
-        </Card>
+                <CardHeader>
+                  {content == "AvgDuration" ? (
+                    <CardTitle className="text-4xl md:text-5xl text-primary">
+                      {fixed(
+                        dataStatusMetrics?.[
+                          content as keyof DataStatusType
+                        ] as number,
+                        2
+                      )}{" "}
+                      min
+                    </CardTitle>
+                  ) : (
+                    <CardTitle
+                      className="counter text-4xl md:text-5xl text-primary"
+                      style={{
+                        ["--num" as string]:
+                          dataStatusMetrics?.[content as keyof DataStatusType],
+                      }}
+                    ></CardTitle>
+                  )}
+                </CardHeader>
+                <CardFooter className="text-lg md:text-xl font-light md:font-medium">
+                  {title}
+                </CardFooter>
+              </Card>
+            ))}
+            <Card className="w-[300px] h-[150px] border-border">
+              <CardContent className="w-full h-full">
+                <ChartContainer config={chartConfig}>
+                  <BarChart
+                    margin={{ top: 12, right: 0, left: -22, bottom: 0 }}
+                    barSize={10}
+                    accessibilityLayer
+                    data={chartData}
+                  >
+                    <YAxis tickMargin={0} />
+                    <XAxis tickMargin={0} tick={false} />
+                    <CartesianGrid vertical={false} />
+                    <ChartTooltip
+                      cursor={true}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Bar dataKey="executions" fill="var(--color-day)" />
+                  </BarChart>
+                </ChartContainer>
+              </CardContent>
+              <CardFooter className="text-xs text-primary flex justify-center md:text-sm font-light md:font-medium mt-[-28px]">
+                Benchmarks over the last 7 days
+              </CardFooter>
+            </Card>
+          </>
+        )}
       </div>
     </Hero>
   );

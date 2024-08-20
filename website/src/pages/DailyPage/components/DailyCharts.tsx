@@ -17,9 +17,9 @@ limitations under the License.
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import useApiCall from "@/hooks/useApiCall";
 import { MacroData } from "@/types";
-import useApiCall from "@/utils/Hook";
-import { formatGitRef } from "@/utils/Utils";
+import { errorApi, formatGitRef } from "@/utils/Utils";
 import { useEffect, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 
@@ -137,13 +137,14 @@ export default function DailyCharts(props: DailyChartsProps) {
     data: dataDaily,
     error: dailyError,
     isLoading: dailyLoading,
-  } = useApiCall<MacroData[]>(
-    `${import.meta.env.VITE_API_URL}daily?workload=${workload}`
-  );
+  } = useApiCall<MacroData[]>({
+    url: `${import.meta.env.VITE_API_URL}daily?workload=${workload}`,
+    queryKey: ["dailyWorkload", workload],
+  });
 
   let chartData: DailyDataType[] = [];
 
-  if (dataDaily !== null && dataDaily.length > 0) {
+  if (dataDaily !== undefined && dataDaily.length > 0) {
     chartData = dataDaily.map((item) => ({
       gitRef: formatGitRef(item.git_ref),
       qpsReads: item.reads_qps.center,
@@ -196,8 +197,8 @@ export default function DailyCharts(props: DailyChartsProps) {
             <Skeleton key={index} className="w-full border-border h-[400px]" />
           ))
         ) : dailyError || !chartData || chartData.length === 0 ? (
-          <div className="text-red-500 text-center my-10">
-            {dailyError || "No data available"}
+          <div className="text-destructive text-center my-10">
+            {errorApi}
           </div>
         ) : (
           chartMetadas.map((chartMetadata, chartMetadataIndex) => (
