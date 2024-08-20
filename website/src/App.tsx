@@ -20,8 +20,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
+import ReactGA from "react-ga4";
 
 export default function App() {
+  ReactGA.initialize("G-QCJ7MJ5CPX");
+
   return (
     <>
       <QueryClientProvider client={queryClient}>
