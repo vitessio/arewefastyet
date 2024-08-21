@@ -32,7 +32,7 @@ import (
 const (
 	ErrorIncorrectConfiguration = "incorrect configuration"
 
-	flagPort       = "web-port"
+	flagPort       = "admin-port"
 	flagVitessPath = "web-vitess-path"
 	flagMode       = "web-mode"
 )
