@@ -22,6 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/vitessio/arewefastyet/go/cmd/admin"
 	"github.com/vitessio/arewefastyet/go/cmd/api"
 	"github.com/vitessio/arewefastyet/go/cmd/exec"
 	"github.com/vitessio/arewefastyet/go/cmd/gen"
@@ -62,6 +63,7 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
+	rootCmd.AddCommand(admin.AdminCmd())
 	rootCmd.AddCommand(api.ApiCmd())
 	rootCmd.AddCommand(microbench.MicroBenchCmd())
 	rootCmd.AddCommand(macrobench.MacroBenchCmd())
