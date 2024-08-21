@@ -56,6 +56,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/glog v1.2.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/go-github v17.0.0+incompatible // indirect
 	github.com/google/go-github/v62 v62.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect

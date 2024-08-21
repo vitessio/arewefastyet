@@ -20,6 +20,9 @@ package admin
 
 import (
 	"errors"
+	"net/http"
+	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -32,7 +35,7 @@ import (
 const (
 	ErrorIncorrectConfiguration = "incorrect configuration"
 
-	flagPort       = "admin-port"
+	flagPort       = "web-port"
 	flagVitessPath = "web-vitess-path"
 	flagMode       = "web-mode"
 )
@@ -103,13 +106,15 @@ func (a *Admin) Run() error {
 		return errors.New(ErrorIncorrectConfiguration)
 	}
 
-	// err = a.ghApp.Init()
-	// if err != nil {
-	// 	return err
-	// }
+	_, b, _, _ := runtime.Caller(0)
+	basepath := filepath.Dir(b)
 
 	a.prepareGin()
 	a.router = gin.Default()
+
+	a.router.Static("/assets", filepath.Join(basepath, "assets"))
+
+	a.router.LoadHTMLGlob(filepath.Join(basepath, "templates/*"))
 
 	a.router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -121,9 +126,22 @@ func (a *Admin) Run() error {
 	}))
 
 	// API
-	a.router.GET("/api/helloadmin", a.helloAdmin)
+	a.router.GET("/", a.login)
+	a.router.GET("/login", a.handleGitHubLogin)
+	a.router.GET("/auth/callback", a.handleGitHubCallback)
+	a.router.GET("/dashboard", a.dashboard)
 
 	return a.router.Run(":" + a.port)
+}
+func (a *Admin) render(c *gin.Context, data gin.H, templateName string) {
+
+	switch c.Request.Header.Get("Accept") {
+	case "application/json":
+		c.JSON(http.StatusOK, data["payload"])
+	default:
+		c.HTML(http.StatusOK, templateName, data)
+	}
+
 }
 
 func (a *Admin) prepareGin() {
