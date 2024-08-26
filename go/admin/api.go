@@ -118,6 +118,7 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 		c.String(http.StatusForbidden, "You must be a maintainer in the %s organization to access this page.", orgName)
 	}
 }
+
 func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgName string) (bool, error) {
 	teams, _, err := client.Teams.ListTeams(context.Background(), orgName, nil)
 	if err != nil {

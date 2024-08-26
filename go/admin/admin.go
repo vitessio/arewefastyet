@@ -147,6 +147,7 @@ func (a *Admin) Run() error {
 
 	return a.router.Run(":" + a.port)
 }
+
 func (a *Admin) render(c *gin.Context, data gin.H, templateName string) {
 
 	switch c.Request.Header.Get("Accept") {
