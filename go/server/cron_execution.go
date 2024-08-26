@@ -44,7 +44,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	e, err = exec.NewExecWithConfig(config.file, identifier.UUID)
 
 	if err != nil {
-		nErr := fmt.Errorf(fmt.Sprintf("new exec error: %v", err))
+		nErr := fmt.Errorf("new exec error: %v", err)
 		slog.Error(nErr.Error())
 		return nErr
 	}
@@ -73,14 +73,14 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	slog.Info("Starting execution: UUID: [", e.UUID.String(), "], Git Ref: [", identifier.GitRef, "], Workload: [", identifier.Workload, "]")
 	err = e.Prepare()
 	if err != nil {
-		nErr := fmt.Errorf(fmt.Sprintf("prepare error: %v", err))
+		nErr := fmt.Errorf("prepare error: %v", err)
 		slog.Error(nErr.Error())
 		return nErr
 	}
 
 	err = e.SetOutputToDefaultPath()
 	if err != nil {
-		nErr := fmt.Errorf(fmt.Sprintf("prepare output error: %v", err))
+		nErr := fmt.Errorf("prepare output error: %v", err)
 		slog.Error(nErr.Error())
 		return nErr
 	}
@@ -91,7 +91,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	}
 	err = e.ExecuteWithTimeout(timeout)
 	if err != nil {
-		nErr := fmt.Errorf(fmt.Sprintf("execute with timeout error: %v", err))
+		nErr := fmt.Errorf("execute with timeout error: %v", err)
 		slog.Error(nErr.Error())
 		return nErr
 	}

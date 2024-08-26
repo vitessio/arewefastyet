@@ -117,7 +117,7 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 	if isMaintainer {
 		session := sessions.Default(c)
 		session.Set("user", user.GetLogin())
-		session.Save()
+		_ = session.Save()
 
 		c.Redirect(http.StatusSeeOther, "/admin/dashboard")
 	} else {
