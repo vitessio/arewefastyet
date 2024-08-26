@@ -8,6 +8,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/frankban/quicktest v1.14.6
 	github.com/gin-contrib/cors v1.7.2
+	github.com/gin-contrib/sessions v1.0.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/google/go-github v17.0.0+incompatible
@@ -15,6 +16,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/influxdata/influxdb-client-go/v2 v2.13.0
+	github.com/labstack/gommon v0.4.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/otiai10/copy v1.14.0
 	github.com/palantir/go-githubapp v0.27.0
@@ -50,7 +52,6 @@ require (
 	github.com/fatih/color v1.17.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.4 // indirect
-	github.com/gin-contrib/sessions v1.0.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
