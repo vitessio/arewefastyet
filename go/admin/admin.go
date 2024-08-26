@@ -26,6 +26,8 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -35,9 +37,11 @@ import (
 const (
 	ErrorIncorrectConfiguration = "incorrect configuration"
 
-	flagPort       = "web-port"
-	flagVitessPath = "web-vitess-path"
-	flagMode       = "web-mode"
+	flagPort           = "web-port"
+	flagVitessPath     = "web-vitess-path"
+	flagMode           = "web-mode"
+	flagAdminAppId     = "gh-admin-app-id"
+	flagAdminAppSecret = "gh-admin-app-secret"
 )
 
 type Admin struct {
@@ -45,6 +49,9 @@ type Admin struct {
 	router *gin.Engine
 
 	localVitessPath string
+
+	ghAppId     string
+	ghAppSecret string
 
 	dbCfg    *psdb.Config
 	dbClient *psdb.Client
@@ -56,10 +63,14 @@ func (a *Admin) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&a.port, flagPort, "8080", "Port used for the HTTP server")
 	cmd.Flags().StringVar(&a.localVitessPath, flagVitessPath, "/", "Absolute path where the vitess directory is located or where it should be cloned")
 	cmd.Flags().Var(&a.Mode, flagMode, "Specify the mode on which the server will run")
+	cmd.Flags().StringVar(&a.ghAppId, flagAdminAppId, "", "The ID of the GitHub App")
+	cmd.Flags().StringVar(&a.ghAppSecret, flagAdminAppSecret, "", "The secret of the GitHub App")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagVitessPath, cmd.Flags().Lookup(flagVitessPath))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
+	_ = viper.BindPFlag(flagAdminAppId, cmd.Flags().Lookup(flagAdminAppId))
+	_ = viper.BindPFlag(flagAdminAppSecret, cmd.Flags().Lookup(flagAdminAppSecret))
 
 	if a.dbCfg == nil {
 		a.dbCfg = &psdb.Config{}
@@ -68,7 +79,7 @@ func (a *Admin) AddToCommand(cmd *cobra.Command) {
 }
 
 func (a *Admin) isReady() bool {
-	return a.port != "" && a.localVitessPath != ""
+	return a.port != "" && a.localVitessPath != "" && a.ghAppId != "" && a.ghAppSecret != ""
 }
 
 func (a *Admin) Init() error {
@@ -112,6 +123,9 @@ func (a *Admin) Run() error {
 	a.prepareGin()
 	a.router = gin.Default()
 
+	store := cookie.NewStore([]byte("secret"))
+	a.router.Use(sessions.Sessions("mysession", store))
+
 	a.router.Static("/assets", filepath.Join(basepath, "assets"))
 
 	a.router.LoadHTMLGlob(filepath.Join(basepath, "templates/*"))
@@ -129,7 +143,7 @@ func (a *Admin) Run() error {
 	a.router.GET("/", a.login)
 	a.router.GET("/login", a.handleGitHubLogin)
 	a.router.GET("/auth/callback", a.handleGitHubCallback)
-	a.router.GET("/dashboard", a.dashboard)
+	a.router.GET("/dashboard", a.authMiddleware(), a.dashboard)
 
 	return a.router.Run(":" + a.port)
 }

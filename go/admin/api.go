@@ -22,9 +22,9 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	goGithub "github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -33,8 +33,8 @@ import (
 
 var (
 	oauthConf = &oauth2.Config{
-		ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
-		ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+		ClientID:     "",
+		ClientSecret: "",
 		Scopes:       []string{"read:org"}, // Request access to read organization membership
 		Endpoint:     github.Endpoint,
 		RedirectURL:  "http://localhost:9090/auth/callback",
@@ -50,11 +50,28 @@ func (a *Admin) dashboard(c *gin.Context) {
 	a.render(c, gin.H{}, "base.html")
 }
 
+func (a *Admin) authMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		session := sessions.Default(c)
+		user := session.Get("user")
+		if user == nil {
+			// User not authenticated, redirect to login
+			c.Redirect(http.StatusSeeOther, "/login")
+			c.Abort()
+			return
+		}
+
+		// User is authenticated, proceed to the next handler
+		c.Next()
+	}
+}
+
 func (a *Admin) handleGitHubLogin(c *gin.Context) {
+	oauthConf.ClientID = a.ghAppId
+	oauthConf.ClientSecret = a.ghAppSecret
 	url := oauthConf.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
-
 func (a *Admin) handleGitHubCallback(c *gin.Context) {
 	state := c.Query("state")
 	if state != oauthStateString {
@@ -91,13 +108,16 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 	}
 
 	if isMaintainer {
+		session := sessions.Default(c)
+		session.Set("user", user.GetLogin())
+		session.Save()
+
 		c.Redirect(http.StatusSeeOther, "/dashboard")
 	} else {
 		log.Printf("User %s is not a maintainer in %s organization", user.GetLogin(), orgName)
 		c.String(http.StatusForbidden, "You must be a maintainer in the %s organization to access this page.", orgName)
 	}
 }
-
 func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgName string) (bool, error) {
 	teams, _, err := client.Teams.ListTeams(context.Background(), orgName, nil)
 	if err != nil {
@@ -108,7 +128,7 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 			membership, _, err := client.Teams.GetTeamMembership(context.Background(), team.GetID(), username)
 			log.Println(membership)
 			if err != nil {
-                log.Println(err.Error())
+				log.Println(err.Error())
 				if strings.Contains(err.Error(), "404 Not Found") {
 					return false, nil
 				}
