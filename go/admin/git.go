@@ -37,7 +37,7 @@ func (a *Admin) setupLocalVitess() error {
 		}
 	}
 
-	_, err = git.ExecCmd(a.localVitessPath, "git", "clone", "https://github.com/vitessio/vitesa.git")
+	_, err = git.ExecCmd(a.localVitessPath, "git", "clone", "https://github.com/vitessio/vitess.git")
 
 	return err
 }

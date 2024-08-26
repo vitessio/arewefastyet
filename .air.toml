@@ -1,5 +1,5 @@
 [build]
-bin = "./main api --config ./config/dev/config.yaml --secrets ./config/dev/secrets.yaml --web-port=9090"
+bin = "./main api --config ./config/dev/config.yaml --secrets ./config/dev/secrets.yaml --web-port=9090 --web-vitess-path=../"
 cmd = "go build ./go/main.go"
 main = "main.go"
 include_ext = ["go", "html"]
