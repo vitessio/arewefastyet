@@ -36,8 +36,6 @@ import (
 )
 
 const (
-	errorIncorrectConfiguration = "incorrect configuration"
-
 	flagPort           = "admin-port"
 	flagMode           = "admin-mode"
 	flagAdminAppId     = "admin-gh-app-id"
@@ -80,7 +78,7 @@ func (a *Admin) isReady() bool {
 
 func (a *Admin) Init() error {
 	if !a.isReady() {
-		return errors.New(errorIncorrectConfiguration)
+		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
 	if a.Mode != "" && !a.Mode.Correct() {
@@ -106,7 +104,7 @@ func (a *Admin) Init() error {
 
 func (a *Admin) Run() error {
 	if !a.isReady() {
-		return errors.New(errorIncorrectConfiguration)
+		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
 	_, b, _, _ := runtime.Caller(0)
@@ -132,10 +130,10 @@ func (a *Admin) Run() error {
 	}))
 
 	// API
-	a.router.GET("/", a.login)
-	a.router.GET("/login", a.handleGitHubLogin)
-	a.router.GET("/auth/callback", a.handleGitHubCallback)
-	a.router.GET("/dashboard", a.authMiddleware(), a.dashboard)
+	a.router.GET("/admin", a.login)
+	a.router.GET("/admin/login", a.handleGitHubLogin)
+	a.router.GET("/admin/auth/callback", a.handleGitHubCallback)
+	a.router.GET("/admin/dashboard", a.authMiddleware(), a.dashboard)
 
 	return a.router.Run(":" + a.port)
 }

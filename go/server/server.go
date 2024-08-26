@@ -37,8 +37,6 @@ import (
 )
 
 const (
-	ErrorIncorrectConfiguration = "incorrect configuration"
-
 	flagPort                                 = "web-port"
 	flagVitessPath                           = "web-vitess-path"
 	flagMode                                 = "web-mode"
@@ -152,7 +150,7 @@ func (s *Server) isReady() bool {
 
 func (s *Server) Init() error {
 	if !s.isReady() {
-		return errors.New(ErrorIncorrectConfiguration)
+		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
 	if s.Mode != "" && !s.Mode.Correct() {
@@ -207,7 +205,7 @@ func (s *Server) Init() error {
 
 func (s *Server) Run() error {
 	if !s.isReady() {
-		return errors.New(ErrorIncorrectConfiguration)
+		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
 	err := s.createCrons()

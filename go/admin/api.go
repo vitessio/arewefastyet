@@ -20,26 +20,30 @@ package admin
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	goGithub "github.com/google/go-github/github"
+	"github.com/labstack/gommon/random"
+	"github.com/vitessio/arewefastyet/go/tools/server"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
 
 var (
 	oauthConf = &oauth2.Config{
-		ClientID:     "",
-		ClientSecret: "",
-		Scopes:       []string{"read:org"}, // Request access to read organization membership
-		Endpoint:     github.Endpoint,
-		RedirectURL:  "http://localhost:9090/auth/callback",
+		Scopes:      []string{"read:org"}, // Request access to read organization membership
+		Endpoint:    github.Endpoint,
+		RedirectURL: "http://localhost:8081/admin/auth/callback",
 	}
-	oauthStateString = "randomStateString" // A random string to protect against CSRF attacks
+	oauthStateString = random.String(10) // A random string to protect against CSRF attacks
+)
+
+const (
+	maintainerTeamGitHub   = "maintainers"
+	arewefastyetTeamGitHub = "arewefastyet"
 )
 
 func (a *Admin) login(c *gin.Context) {
@@ -56,7 +60,7 @@ func (a *Admin) authMiddleware() gin.HandlerFunc {
 		user := session.Get("user")
 		if user == nil {
 			// User not authenticated, redirect to login
-			c.Redirect(http.StatusSeeOther, "/login")
+			c.Redirect(http.StatusSeeOther, "/admin/login")
 			c.Abort()
 			return
 		}
@@ -67,15 +71,18 @@ func (a *Admin) authMiddleware() gin.HandlerFunc {
 }
 
 func (a *Admin) handleGitHubLogin(c *gin.Context) {
+	if a.Mode == server.ProductionMode {
+		oauthConf.RedirectURL = "https://benchmark.vitess.io/admin/auth/callback"
+	}
 	oauthConf.ClientID = a.ghAppId
 	oauthConf.ClientSecret = a.ghAppSecret
 	url := oauthConf.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
+
 func (a *Admin) handleGitHubCallback(c *gin.Context) {
 	state := c.Query("state")
 	if state != oauthStateString {
-		log.Println("Invalid OAuth state")
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
@@ -83,7 +90,7 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 	code := c.Query("code")
 	token, err := oauthConf.Exchange(context.Background(), code)
 	if err != nil {
-		log.Println("Code exchange failed: ", err)
+		slog.Error("Code exchange failed: ", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -92,17 +99,17 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 
 	user, _, err := client.Users.Get(context.Background(), "")
 	if err != nil {
-		log.Println("Failed to get user: ", err)
+		slog.Error("Failed to get user: ", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	log.Printf("Authenticated user: %s", user.GetLogin())
+	slog.Infof("Authenticated user: %s", user.GetLogin())
 
-	orgName := "github-go-htmx-oauth-test"
+	orgName := "vitessio"
 	isMaintainer, err := a.checkUserOrgMembership(client, user.GetLogin(), orgName)
 	if err != nil {
-		log.Printf("Error checking org membership: %v", err)
+		slog.Error("Error checking org membership: ", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -112,9 +119,8 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 		session.Set("user", user.GetLogin())
 		session.Save()
 
-		c.Redirect(http.StatusSeeOther, "/dashboard")
+		c.Redirect(http.StatusSeeOther, "/admin/dashboard")
 	} else {
-		log.Printf("User %s is not a maintainer in %s organization", user.GetLogin(), orgName)
 		c.String(http.StatusForbidden, "You must be a maintainer in the %s organization to access this page.", orgName)
 	}
 }
@@ -125,7 +131,7 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 		return false, err
 	}
 	for _, team := range teams {
-		if team.GetName() == "maintainers" {
+		if team.GetName() == maintainerTeamGitHub || team.GetName() == arewefastyetTeamGitHub {
 			membership, _, err := client.Teams.GetTeamMembership(context.Background(), team.GetID(), username)
 			if err != nil {
 				if strings.Contains(err.Error(), "404 Not Found") {

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2024 The Vitess Authora.
+ * Copyright 2024 The Vitess Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,34 +16,8 @@
  * /
  */
 
-package admin
+package server
 
-import (
-	"github.com/vitessio/arewefastyet/go/tools/server"
-	"go.uber.org/zap"
+const (
+	ErrorIncorrectConfiguration = "incorrect configuration"
 )
-
-var slog *zap.SugaredLogger
-
-func initLogger(mode server.Mode) (err error) {
-	var logger *zap.Logger
-	switch mode {
-	case server.ProductionMode:
-		logger, err = zap.NewProduction()
-	case server.DevelopmentMode:
-		logger, err = zap.NewDevelopment()
-	}
-	if err != nil {
-		return err
-	}
-	slog = logger.Sugar()
-	return nil
-}
-
-func (a *Admin) initLogger() (err error) {
-	return initLogger(a.Mode)
-}
-
-func cleanLogger() {
-	_ = slog.Sync()
-}
