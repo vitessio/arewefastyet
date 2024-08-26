@@ -19,8 +19,9 @@
 package server
 
 import (
-	qt "github.com/frankban/quicktest"
 	"testing"
+
+	qt "github.com/frankban/quicktest"
 )
 
 func TestMode_correct(t *testing.T) {
@@ -38,7 +39,7 @@ func TestMode_correct(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
-			got := tt.m.correct()
+			got := tt.m.Correct()
 			c.Assert(got, qt.Equals, tt.want)
 		})
 	}
@@ -58,7 +59,7 @@ func TestMode_useDefault(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 
-			tt.m.useDefault()
+			tt.m.UseDefault()
 			c.Assert(tt.m, qt.Equals, tt.want)
 		})
 	}

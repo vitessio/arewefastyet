@@ -32,23 +32,21 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
+	"github.com/vitessio/arewefastyet/go/tools/server"
 )
 
 const (
-	ErrorIncorrectConfiguration = "incorrect configuration"
+	errorIncorrectConfiguration = "incorrect configuration"
 
-	flagPort           = "web-port"
-	flagVitessPath     = "web-vitess-path"
-	flagMode           = "web-mode"
-	flagAdminAppId     = "gh-admin-app-id"
-	flagAdminAppSecret = "gh-admin-app-secret"
+	flagPort           = "admin-port"
+	flagMode           = "admin-mode"
+	flagAdminAppId     = "admin-gh-app-id"
+	flagAdminAppSecret = "admin-gh-app-secret"
 )
 
 type Admin struct {
 	port   string
 	router *gin.Engine
-
-	localVitessPath string
 
 	ghAppId     string
 	ghAppSecret string
@@ -56,18 +54,16 @@ type Admin struct {
 	dbCfg    *psdb.Config
 	dbClient *psdb.Client
 
-	Mode
+	server.Mode
 }
 
 func (a *Admin) AddToCommand(cmd *cobra.Command) {
-	cmd.Flags().StringVar(&a.port, flagPort, "8080", "Port used for the HTTP server")
-	cmd.Flags().StringVar(&a.localVitessPath, flagVitessPath, "/", "Absolute path where the vitess directory is located or where it should be cloned")
+	cmd.Flags().StringVar(&a.port, flagPort, "8081", "Port used for the HTTP server")
 	cmd.Flags().Var(&a.Mode, flagMode, "Specify the mode on which the server will run")
 	cmd.Flags().StringVar(&a.ghAppId, flagAdminAppId, "", "The ID of the GitHub App")
 	cmd.Flags().StringVar(&a.ghAppSecret, flagAdminAppSecret, "", "The secret of the GitHub App")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
-	_ = viper.BindPFlag(flagVitessPath, cmd.Flags().Lookup(flagVitessPath))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
 	_ = viper.BindPFlag(flagAdminAppId, cmd.Flags().Lookup(flagAdminAppId))
 	_ = viper.BindPFlag(flagAdminAppSecret, cmd.Flags().Lookup(flagAdminAppSecret))
@@ -79,18 +75,18 @@ func (a *Admin) AddToCommand(cmd *cobra.Command) {
 }
 
 func (a *Admin) isReady() bool {
-	return a.port != "" && a.localVitessPath != "" && a.ghAppId != "" && a.ghAppSecret != ""
+	return a.port != "" && a.ghAppId != "" && a.ghAppSecret != ""
 }
 
 func (a *Admin) Init() error {
 	if !a.isReady() {
-		return errors.New(ErrorIncorrectConfiguration)
+		return errors.New(errorIncorrectConfiguration)
 	}
 
-	if a.Mode != "" && !a.Mode.correct() {
-		return errors.New(ErrorIncorrectMode)
+	if a.Mode != "" && !a.Mode.Correct() {
+		return errors.New(server.ErrorIncorrectMode)
 	} else if a.Mode == "" {
-		a.Mode.useDefault()
+		a.Mode.UseDefault()
 	}
 
 	if slog == nil {
@@ -99,10 +95,6 @@ func (a *Admin) Init() error {
 			return err
 		}
 		defer cleanLogger()
-	}
-
-	if err := a.setupLocalVitess(); err != nil {
-		return err
 	}
 
 	if err := a.createStorages(); err != nil {
@@ -114,13 +106,13 @@ func (a *Admin) Init() error {
 
 func (a *Admin) Run() error {
 	if !a.isReady() {
-		return errors.New(ErrorIncorrectConfiguration)
+		return errors.New(errorIncorrectConfiguration)
 	}
 
 	_, b, _, _ := runtime.Caller(0)
 	basepath := filepath.Dir(b)
 
-	a.prepareGin()
+	a.Mode.SetGin()
 	a.router = gin.Default()
 
 	store := cookie.NewStore([]byte("secret"))
@@ -149,33 +141,10 @@ func (a *Admin) Run() error {
 }
 
 func (a *Admin) render(c *gin.Context, data gin.H, templateName string) {
-
 	switch c.Request.Header.Get("Accept") {
 	case "application/json":
 		c.JSON(http.StatusOK, data["payload"])
 	default:
 		c.HTML(http.StatusOK, templateName, data)
 	}
-
-}
-
-func (a *Admin) prepareGin() {
-	switch a.Mode {
-	case ProductionMode:
-		gin.SetMode(gin.ReleaseMode)
-	case DevelopmentMode:
-		gin.SetMode(gin.DebugMode)
-	}
-}
-
-func Run(port, localVitessPath string) error {
-	a := Admin{
-		port:            port,
-		localVitessPath: localVitessPath,
-	}
-	err := a.Init()
-	if err != nil {
-		return err
-	}
-	return a.Run()
 }

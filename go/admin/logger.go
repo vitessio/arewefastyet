@@ -18,16 +18,19 @@
 
 package admin
 
-import "go.uber.org/zap"
+import (
+	"github.com/vitessio/arewefastyet/go/tools/server"
+	"go.uber.org/zap"
+)
 
 var slog *zap.SugaredLogger
 
-func initLogger(mode Mode) (err error) {
+func initLogger(mode server.Mode) (err error) {
 	var logger *zap.Logger
 	switch mode {
-	case ProductionMode:
+	case server.ProductionMode:
 		logger, err = zap.NewProduction()
-	case DevelopmentMode:
+	case server.DevelopmentMode:
 		logger, err = zap.NewDevelopment()
 	}
 	if err != nil {
