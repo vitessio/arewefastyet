@@ -23,6 +23,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	goGithub "github.com/google/go-github/github"
@@ -55,55 +56,69 @@ func (a *Admin) handleGitHubLogin(c *gin.Context) {
 }
 
 func (a *Admin) handleGitHubCallback(c *gin.Context) {
-    state := c.Query("state")
-    if state != oauthStateString {
-        log.Println("Invalid OAuth state")
-        c.AbortWithStatus(http.StatusUnauthorized)
-        return
-    }
+	state := c.Query("state")
+	if state != oauthStateString {
+		log.Println("Invalid OAuth state")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
 
-    code := c.Query("code")
-    token, err := oauthConf.Exchange(context.Background(), code)
-    if err != nil {
-        log.Println("Code exchange failed: ", err)
-        c.AbortWithStatus(http.StatusInternalServerError)
-        return
-    }
+	code := c.Query("code")
+	token, err := oauthConf.Exchange(context.Background(), code)
+	if err != nil {
+		log.Println("Code exchange failed: ", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
-    client := goGithub.NewClient(oauthConf.Client(context.Background(), token))
+	client := goGithub.NewClient(oauthConf.Client(context.Background(), token))
 
-    user, _, err := client.Users.Get(context.Background(), "")
-    if err != nil {
-        log.Println("Failed to get user: ", err)
-        c.AbortWithStatus(http.StatusInternalServerError)
-        return
-    }
+	user, _, err := client.Users.Get(context.Background(), "")
+	if err != nil {
+		log.Println("Failed to get user: ", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
-    log.Printf("Authenticated user: %s", user.GetLogin())
+	log.Printf("Authenticated user: %s", user.GetLogin())
 
-    orgName := "github-go-htmx-oauth-test"
-    isMaintainer, err := a.checkUserOrgMembership(client, user.GetLogin(), orgName)
-    if err != nil {
-        log.Printf("Error checking org membership: %v", err)
-        c.AbortWithStatus(http.StatusInternalServerError)
-        return
-    }
+	orgName := "github-go-htmx-oauth-test"
+	isMaintainer, err := a.checkUserOrgMembership(client, user.GetLogin(), orgName)
+	if err != nil {
+		log.Printf("Error checking org membership: %v", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
-    if isMaintainer {
-        c.Redirect(http.StatusSeeOther, "/dashboard")
-    } else {
-        log.Printf("User %s is not a maintainer in %s organization", user.GetLogin(), orgName)
-        c.String(http.StatusForbidden, "You must be a maintainer in the %s organization to access this page.", orgName)
-    }
+	if isMaintainer {
+		c.Redirect(http.StatusSeeOther, "/dashboard")
+	} else {
+		log.Printf("User %s is not a maintainer in %s organization", user.GetLogin(), orgName)
+		c.String(http.StatusForbidden, "You must be a maintainer in the %s organization to access this page.", orgName)
+	}
 }
 
 func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgName string) (bool, error) {
-    membership, _, err := client.Organizations.GetOrgMembership(context.Background(), username, orgName)
-    if err != nil {
-        log.Printf("Failed to get org membership for user %s: %v", username, err)
-        return false, err
-    }
-
-    log.Printf("User %s role in %s: %s", username, orgName, membership.GetRole())
-    return membership.GetRole() == "admin" || membership.GetRole() == "maintainer", nil
+	teams, _, err := client.Teams.ListTeams(context.Background(), orgName, nil)
+	if err != nil {
+		return false, err
+	}
+	for _, team := range teams {
+		if team.GetName() == "maintainers" {
+			membership, _, err := client.Teams.GetTeamMembership(context.Background(), team.GetID(), username)
+			log.Println(membership)
+			if err != nil {
+                log.Println(err.Error())
+				if strings.Contains(err.Error(), "404 Not Found") {
+					return false, nil
+				}
+				return false, err
+			}
+			if membership.GetState() == "active" {
+				return true, nil
+			}
+			return false, nil
+		}
+	}
+	return false, nil
 }
