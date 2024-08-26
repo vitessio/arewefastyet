@@ -27,7 +27,7 @@ func AdminCmd() *cobra.Command {
 	var adm admin.Admin
 
 	cmd := &cobra.Command{
-		Use:   "api",
+		Use:   "admin",
 		Short: "Starts the admin application of arewefastyet",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := adm.Init()
