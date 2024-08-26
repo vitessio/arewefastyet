@@ -16,6 +16,7 @@ Vitess has to ensure it's delivering flawless performance to its users. In order
 
 ### SEE ALSO
 
+* [arewefastyet admin](arewefastyet_admin.md)	 - Starts the admin application of arewefastyet
 * [arewefastyet api](arewefastyet_api.md)	 - Starts the api server of arewefastyet and the CRON service
 * [arewefastyet completion](arewefastyet_completion.md)	 - Generate the autocompletion script for the specified shell
 * [arewefastyet exec](arewefastyet_exec.md)	 - Execute a task
