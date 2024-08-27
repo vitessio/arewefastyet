@@ -223,3 +223,5 @@ dist-ssr
 .env
 
 package-lock.json
+
+main

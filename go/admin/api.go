@@ -130,17 +130,22 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 	if err != nil {
 		return false, err
 	}
+
+	var isMember bool
 	for _, team := range teams {
 		if team.GetName() == maintainerTeamGitHub || team.GetName() == arewefastyetTeamGitHub {
 			membership, _, err := client.Teams.GetTeamMembership(context.Background(), team.GetID(), username)
 			if err != nil {
 				if strings.Contains(err.Error(), "404 Not Found") {
-					return false, nil
+					continue
 				}
 				return false, err
 			}
-			return membership.GetState() == "active", nil
+			if membership.GetState() == "active" {
+				isMember = true
+				break
+			}
 		}
 	}
-	return false, nil
+	return isMember, nil
 }
