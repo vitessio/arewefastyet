@@ -143,6 +143,7 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 			}
 			if membership.GetState() == "active" {
 				isMember = true
+				break
 			}
 		}
 	}
