@@ -104,7 +104,7 @@ export default function StatusHero() {
       )}
 
       {!isDataStatusLoading &&
-        (dataStatusError || !dataStatusMetrics || dataStatusMetrics) && (
+        (dataStatusError || !dataStatusMetrics) && (
           <div className="text-destructive text-center my-10">{errorApi}</div>
         )}
         {!isDataStatusLoading && dataStatusMetrics && (
