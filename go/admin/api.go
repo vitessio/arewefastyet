@@ -126,21 +126,25 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 }
 
 func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgName string) (bool, error) {
-	teams, _, err := client.Teams.ListTeams(context.Background(), orgName, nil)
-	if err != nil {
-		return false, err
-	}
-	for _, team := range teams {
-		if team.GetName() == maintainerTeamGitHub || team.GetName() == arewefastyetTeamGitHub {
-			membership, _, err := client.Teams.GetTeamMembership(context.Background(), team.GetID(), username)
-			if err != nil {
-				if strings.Contains(err.Error(), "404 Not Found") {
-					return false, nil
-				}
-				return false, err
-			}
-			return membership.GetState() == "active", nil
-		}
-	}
-	return false, nil
+    teams, _, err := client.Teams.ListTeams(context.Background(), orgName, nil)
+    if err != nil {
+        return false, err
+    }
+
+    var isMember bool
+    for _, team := range teams {
+        if team.GetName() == maintainerTeamGitHub || team.GetName() == arewefastyetTeamGitHub {
+            membership, _, err := client.Teams.GetTeamMembership(context.Background(), team.GetID(), username)
+            if err != nil {
+                if strings.Contains(err.Error(), "404 Not Found") {
+                    continue
+                }
+                return false, err
+            }
+            if membership.GetState() == "active" {
+                isMember = true
+            }
+        }
+    }
+    return isMember, nil
 }
