@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+
+<body class="bg-gray-900">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="bg-white w-1/4 p-4">
+            <div hx-get="/sidebar" hx-target="#sidebar" hx-swap="outerHTML">
+                Loading Sidebar...
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white flex-1 p-8">
+            <!-- Header -->
+            <div id="header" hx-get="/header" hx-target="#header" hx-swap="outerHTML">
+                Loading Header...
+            </div>
+
+            <!-- Dynamic Content -->
+            <div id="content" class="mt-4">
+                <div hx-get="/content" hx-target="#content" hx-swap="outerHTML">
+                    Loading Content...
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

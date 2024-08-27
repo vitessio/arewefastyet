@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	qt "github.com/frankban/quicktest"
+	"github.com/vitessio/arewefastyet/go/tools/server"
 )
 
 func TestRun(t *testing.T) {
@@ -35,8 +36,8 @@ func TestRun(t *testing.T) {
 		wantErr bool
 		err     string
 	}{
-		{name: "Missing port", args: args{localVitessPath: "~/"}, wantErr: true, err: ErrorIncorrectConfiguration},
-		{name: "Missing local vitess path", args: args{port: "8080"}, wantErr: true, err: ErrorIncorrectConfiguration},
+		{name: "Missing port", args: args{localVitessPath: "~/"}, wantErr: true, err: server.ErrorIncorrectConfiguration},
+		{name: "Missing local vitess path", args: args{port: "8080"}, wantErr: true, err: server.ErrorIncorrectConfiguration},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -60,7 +61,7 @@ func TestServer_Run(t *testing.T) {
 		wantErr bool
 		err     string
 	}{
-		{name: "Server not ready", s: &Server{}, wantErr: true, err: ErrorIncorrectConfiguration},
+		{name: "Server not ready", s: &Server{}, wantErr: true, err: server.ErrorIncorrectConfiguration},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

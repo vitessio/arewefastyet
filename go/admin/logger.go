@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2021 The Vitess Authors.
+ * Copyright 2024 The Vitess Authora.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * /
  */
 
-package server
+package admin
 
 import (
 	"github.com/vitessio/arewefastyet/go/tools/server"
@@ -40,15 +40,10 @@ func initLogger(mode server.Mode) (err error) {
 	return nil
 }
 
-func (s *Server) initLogger() (err error) {
-	return initLogger(s.Mode)
+func (a *Admin) initLogger() (err error) {
+	return initLogger(a.Mode)
 }
 
 func cleanLogger() {
 	_ = slog.Sync()
-}
-
-// SetSLogger sets the *zap.SugaredLogger of this package.
-func SetSLogger(newSlog *zap.SugaredLogger) {
-	slog = newSlog
 }

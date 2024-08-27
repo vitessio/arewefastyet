@@ -1,6 +1,6 @@
 /*
  *
- * Copyright 2021 The Vitess Authors.
+ * Copyright 2024 The Vitess Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  */
 
 package server
+
+import "github.com/gin-gonic/gin"
 
 type (
 	// Mode defines the type of mode on which to run the server.
@@ -45,7 +47,7 @@ const (
 	ErrorIncorrectMode = "incorrect mode"
 
 	// ProductionMode runs the server in production mode.
-	ProductionMode  = Mode("production")
+	ProductionMode = Mode("production")
 
 	// DevelopmentMode runs the server in development mode.
 	DevelopmentMode = Mode("development")
@@ -54,16 +56,25 @@ const (
 	DefaultMode = DevelopmentMode
 )
 
-func (m *Mode) useDefault() {
+func (m *Mode) UseDefault() {
 	*m = DefaultMode
 }
 
-func (m Mode) correct() bool {
+func (m *Mode) Correct() bool {
 	modes := []Mode{ProductionMode, DevelopmentMode}
 	for _, mode := range modes {
-		if mode == m {
+		if mode == *m {
 			return true
 		}
 	}
 	return false
+}
+
+func (m *Mode) SetGin() {
+	switch *m {
+	case ProductionMode:
+		gin.SetMode(gin.ReleaseMode)
+	case DevelopmentMode:
+		gin.SetMode(gin.DebugMode)
+	}
 }

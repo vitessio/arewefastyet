@@ -12,3 +12,6 @@ web-cron-schedule-pull-requests: "none"
 web-cron-schedule-tags: "none"
 
 ansible-root-directory: "./ansible/"
+
+admin-port: 8081
+admin-mode: "development"

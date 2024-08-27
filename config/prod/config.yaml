@@ -13,3 +13,6 @@ web-pr-label-trigger: '"Benchmark me"'
 web-pr-label-trigger-planner-v3: '"Benchmark me (V3)"'
 
 ansible-root-directory: ./ansible/
+
+admin-port: 8081
+admin-mode: "development"

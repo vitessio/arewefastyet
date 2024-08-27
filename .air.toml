@@ -1,0 +1,12 @@
+[build]
+bin = "./main admin --config ./config/dev/config.yaml --secrets ./config/dev/secrets.yaml"
+cmd = "go build ./go/main.go"
+main = "main.go"
+include_ext = ["go", "html"]
+exclude_dir = ["website", "tmp"]
+
+[log]
+level = "debug"
+
+[misc]
+clean_on_exit = true

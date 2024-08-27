@@ -29,6 +29,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/slack"
 	"github.com/vitessio/arewefastyet/go/storage/psdb"
 	"github.com/vitessio/arewefastyet/go/tools/github"
+	"github.com/vitessio/arewefastyet/go/tools/server"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
@@ -36,8 +37,6 @@ import (
 )
 
 const (
-	ErrorIncorrectConfiguration = "incorrect configuration"
-
 	flagPort                                 = "web-port"
 	flagVitessPath                           = "web-vitess-path"
 	flagMode                                 = "web-mode"
@@ -101,7 +100,7 @@ type Server struct {
 	requestRunKey string
 
 	// Mode used to run the server.
-	Mode
+	server.Mode
 }
 
 func (s *Server) AddToCommand(cmd *cobra.Command) {
@@ -151,13 +150,13 @@ func (s *Server) isReady() bool {
 
 func (s *Server) Init() error {
 	if !s.isReady() {
-		return errors.New(ErrorIncorrectConfiguration)
+		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
-	if s.Mode != "" && !s.Mode.correct() {
-		return errors.New(ErrorIncorrectMode)
+	if s.Mode != "" && !s.Mode.Correct() {
+		return errors.New(server.ErrorIncorrectMode)
 	} else if s.Mode == "" {
-		s.Mode.useDefault()
+		s.Mode.UseDefault()
 	}
 
 	if slog == nil {
@@ -206,7 +205,7 @@ func (s *Server) Init() error {
 
 func (s *Server) Run() error {
 	if !s.isReady() {
-		return errors.New(ErrorIncorrectConfiguration)
+		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
 	err := s.createCrons()
@@ -219,7 +218,7 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	s.prepareGin()
+	s.Mode.SetGin()
 	s.router = gin.Default()
 
 	s.router.Use(cors.New(cors.Config{
@@ -252,15 +251,6 @@ func (s *Server) Run() error {
 	s.router.GET("/api/run/delete", s.deleteRun)
 
 	return s.router.Run(":" + s.port)
-}
-
-func (s *Server) prepareGin() {
-	switch s.Mode {
-	case ProductionMode:
-		gin.SetMode(gin.ReleaseMode)
-	case DevelopmentMode:
-		gin.SetMode(gin.DebugMode)
-	}
 }
 
 func Run(port, localVitessPath string) error {
