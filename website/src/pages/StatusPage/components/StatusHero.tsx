@@ -90,21 +90,21 @@ export default function StatusHero() {
 
   return (
     <Hero title={heroProps.title} description={heroProps.description}>
-
       <div className="flex flex-wrap justify-center gap-8 w-[80vw]">
-      {isDataStatusLoading && (
-        <>
+        {isDataStatusLoading && (
+          <>
             {Array.from([, , , , ,]).map((_, index) => {
               return (
-                <Skeleton key={index} className="w-[300px] h-[150px] md:min-h-[130px]"></Skeleton>
-
+                <Skeleton
+                  key={index}
+                  className="w-[300px] h-[150px] md:min-h-[130px]"
+                ></Skeleton>
               );
             })}
-        </>
-      )}
+          </>
+        )}
 
-      {!isDataStatusLoading &&
-        (dataStatusError || !dataStatusMetrics) && (
+        {!isDataStatusLoading && (dataStatusError || !dataStatusMetrics) && (
           <div className="text-destructive text-center my-10">{errorApi}</div>
         )}
         {!isDataStatusLoading && dataStatusMetrics && (
@@ -121,7 +121,7 @@ export default function StatusHero() {
                         dataStatusMetrics?.[
                           content as keyof DataStatusType
                         ] as number,
-                        2
+                        2,
                       )}{" "}
                       min
                     </CardTitle>

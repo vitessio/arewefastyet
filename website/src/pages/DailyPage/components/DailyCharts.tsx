@@ -197,9 +197,7 @@ export default function DailyCharts(props: DailyChartsProps) {
             <Skeleton key={index} className="w-full border-border h-[400px]" />
           ))
         ) : dailyError || !chartData || chartData.length === 0 ? (
-          <div className="text-destructive text-center my-10">
-            {errorApi}
-          </div>
+          <div className="text-destructive text-center my-10">{errorApi}</div>
         ) : (
           chartMetadas.map((chartMetadata, chartMetadataIndex) => (
             <Card key={chartMetadataIndex} className="w-full border-border">

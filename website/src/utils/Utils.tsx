@@ -308,7 +308,10 @@ export const getRefName = (gitRef: string, vitessRefs: VitessRefs): string => {
   return title;
 };
 
-export const getGitRefFromRefName = (refName: string, vitessRefs: VitessRefs): string => {
+export const getGitRefFromRefName = (
+  refName: string,
+  vitessRefs: VitessRefs,
+): string => {
   if (refName === "") {
     return "";
   }
