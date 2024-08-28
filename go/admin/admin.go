@@ -42,6 +42,8 @@ const (
 	flagAdminAppSecret = "admin-gh-app-secret"
 )
 
+var workloads = []string{"OLTP", "OLTP-READONLY", "OLTP-SET", "TPCC", "TPCC_FK", "TPCC_FK_UNMANAGED", "TPCC_UNSHARDED"}
+
 type Admin struct {
 	port   string
 	router *gin.Engine

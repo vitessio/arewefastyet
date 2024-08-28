@@ -40,10 +40,10 @@ type (
 
 	executionIdentifier struct {
 		GitRef, Source, Workload, PlannerVersion string
-		PullNb                                        int
-		PullBaseRef                                   string
-		Version                                       git.Version
-		UUID                                          string
+		PullNb                                   int
+		PullBaseRef                              string
+		Version                                  git.Version
+		UUID                                     string
 	}
 
 	executionQueue map[executionIdentifier]*executionQueueElement
@@ -172,6 +172,10 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	}
 
 	// Add all the elements to the queue
+	s.appendToQueue(execElements)
+}
+
+func (s *Server) appendToQueue(execElements []*executionQueueElement) {
 	for _, execElement := range execElements {
 		// Check if the exact same benchmark is already in the queue
 		_, found := queue[execElement.identifier]

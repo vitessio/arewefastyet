@@ -13,22 +13,22 @@
     <div class="flex h-screen">
         <!-- Sidebar -->
         <div class="bg-white w-1/4 p-4">
-            <div hx-get="/sidebar" hx-target="#sidebar" hx-swap="outerHTML">
-                Loading Sidebar...
+            <div>
+                <div>{{ template "sidebar.html" . }}</div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="bg-white flex-1 p-8">
             <!-- Header -->
-            <div id="header" hx-get="/header" hx-target="#header" hx-swap="outerHTML">
-                Loading Header...
+            <div id="header">
+                <div>{{ template "header.html" . }}</div>
             </div>
 
             <!-- Dynamic Content -->
             <div id="content" class="mt-4">
-                <div hx-get="/content" hx-target="#content" hx-swap="outerHTML">
-                    Loading Content...
+                <div>
+                    <div>{{ template "content.html" . }}</div>
                 </div>
             </div>
         </div>
