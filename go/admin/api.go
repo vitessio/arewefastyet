@@ -22,8 +22,8 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	goGithub "github.com/google/go-github/github"
 	"github.com/labstack/gommon/random"
@@ -51,14 +51,20 @@ func (a *Admin) login(c *gin.Context) {
 }
 
 func (a *Admin) dashboard(c *gin.Context) {
-	a.render(c, gin.H{}, "base.html")
+	user, err := c.Cookie("ghtoken")
+	if err != nil {
+		c.Abort()
+		return
+	}
+	a.render(c, gin.H{
+		"ghtoken": user,
+	}, "base.html")
 }
 
 func (a *Admin) authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		session := sessions.Default(c)
-		user := session.Get("user")
-		if user == nil {
+		_, err := c.Cookie("ghtoken")
+		if err != nil {
 			// User not authenticated, redirect to login
 			c.Redirect(http.StatusSeeOther, "/admin/login")
 			c.Abort()
@@ -115,9 +121,7 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 	}
 
 	if isMaintainer {
-		session := sessions.Default(c)
-		session.Set("user", user.GetLogin())
-		_ = session.Save()
+		c.SetCookie("ghtoken", token.AccessToken, int(token.Expiry.Sub(time.Now()).Seconds()), "/", "localhost", true, true)
 
 		c.Redirect(http.StatusSeeOther, "/admin/dashboard")
 	} else {

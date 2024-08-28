@@ -26,8 +26,6 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -114,9 +112,6 @@ func (a *Admin) Run() error {
 
 	a.Mode.SetGin()
 	a.router = gin.Default()
-
-	store := cookie.NewStore([]byte("secret"))
-	a.router.Use(sessions.Sessions("mysession", store))
 
 	a.router.Static("/assets", filepath.Join(basepath, "assets"))
 

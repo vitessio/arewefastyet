@@ -224,7 +224,7 @@ func (s *Server) Run() error {
 	s.router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST"},
-		AllowHeaders:     []string{"Origin", "hx-request", "hx-current-url"},
+		AllowHeaders:     []string{"Origin", "hx-request", "hx-current-url", "admin-user"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
