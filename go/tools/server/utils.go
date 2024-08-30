@@ -32,53 +32,57 @@ const (
 	ErrorIncorrectConfiguration = "incorrect configuration"
 )
 
-func Encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
+func Encrypt(stringToEncrypt string, keyString string) (string, error) {
 	log.Println(stringToEncrypt, keyString)
 	key, _ := hex.DecodeString(keyString)
 	plaintext := []byte(stringToEncrypt)
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
 
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
 
 	nonce := make([]byte, aesGCM.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
+		return "", err
 	}
 
 	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
-	return fmt.Sprintf("%x", ciphertext)
+	return fmt.Sprintf("%x", ciphertext), nil
 }
 
-func Decrypt(encryptedString string, keyString string) (decryptedString string) {
+func Decrypt(encryptedString string, keyString string) (string, error) {
 
 	key, _ := hex.DecodeString(keyString)
 	enc, _ := hex.DecodeString(encryptedString)
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
 
 	aesGCM, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
 
 	nonceSize := aesGCM.NonceSize()
+
+	if len(enc) <= nonceSize {
+		return "", fmt.Errorf("Encrypted string is too short")
+	}
 
 	nonce, ciphertext := enc[:nonceSize], enc[nonceSize:]
 
 	plaintext, err := aesGCM.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
 
-	return fmt.Sprintf("%s", plaintext)
+	return fmt.Sprintf("%s", plaintext), nil
 }

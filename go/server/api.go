@@ -555,9 +555,21 @@ func (s *Server) addExecutions(c *gin.Context) {
 		return
 	}
 
-	decryptedToken := server.Decrypt(req.Auth, s.ghTokenSalt)
+	decryptedToken, err := server.Decrypt(req.Auth, s.ghTokenSalt)
 
-	slog.Info(req.Auth, decryptedToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
+		return
+	}
+
+	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
+
+	if err != nil || !isUserAuthenticated {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
+		return
+	}
+
+	slog.Info(decryptedToken)
 
 	if req.Source == "" || req.SHA == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument"})
@@ -582,7 +594,29 @@ func (s *Server) addExecutions(c *gin.Context) {
 		}
 	}
 
-	s.appendToQueue(newElements)
+	// s.appendToQueue(newElements)
 
 	c.JSON(http.StatusOK, "ok")
+}
+
+func IsUserAuthenticated(accessToken string) (bool, error) {
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+	if err != nil {
+		slog.Error("Error creating request to Github: %v", err)
+		return false, err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+	req.Header.Set("Accept", "application/vnd.github+json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error("Error making request to Github: %v", err)
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	return resp.StatusCode == http.StatusOK, nil
 }

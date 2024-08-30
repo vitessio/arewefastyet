@@ -227,7 +227,13 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	encryptedToken := server.Encrypt(token.AccessToken, a.auth)
+	encryptedToken, err := server.Encrypt(token.AccessToken, a.auth)
+
+	if err != nil {
+		slog.Error("Failed to encrypt token: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt token"})
+		return
+	}
 
 	requestPayload := ExecutionRequest{
 		Auth:               encryptedToken,
@@ -238,7 +244,6 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	}
 
 	jsonData, err := json.Marshal(requestPayload)
-
 
 	if err != nil {
 		slog.Error("Failed to marshal request payload: ", err)
