@@ -51,7 +51,7 @@ type Admin struct {
 
 	ghAppId     string
 	ghAppSecret string
-	ghTokenSalt string
+	auth string
 
 	dbCfg    *psdb.Config
 	dbClient *psdb.Client
@@ -64,7 +64,7 @@ func (a *Admin) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().Var(&a.Mode, flagMode, "Specify the mode on which the server will run")
 	cmd.Flags().StringVar(&a.ghAppId, flagAdminAppId, "", "The ID of the GitHub App")
 	cmd.Flags().StringVar(&a.ghAppSecret, flagAdminAppSecret, "", "The secret of the GitHub App")
-	cmd.Flags().StringVar(&a.ghTokenSalt, flagGhAuth, "", "The salt string to salt the GitHub Token")
+	cmd.Flags().StringVar(&a.auth, flagGhAuth, "", "The salt string to salt the GitHub Token")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
@@ -139,7 +139,7 @@ func (a *Admin) Run() error {
 	a.router.GET("/admin", a.login)
 	a.router.GET("/admin/login", a.handleGitHubLogin)
 	a.router.GET("/admin/auth/callback", a.handleGitHubCallback)
-	a.router.POST("/admin/executions/add", a.handleExecutionsAdd)
+	a.router.POST("/admin/executions/add", a.authMiddleware(), a.handleExecutionsAdd)
 	a.router.GET("/admin/dashboard", a.authMiddleware(), a.dashboard)
 
 	return a.router.Run(":" + a.port)
