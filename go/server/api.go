@@ -556,14 +556,13 @@ func (s *Server) addExecutions(c *gin.Context) {
 	}
 
 	decryptedToken, err := server.Decrypt(req.Auth, s.ghTokenSalt)
-
 	if err != nil {
+		slog.Error(err)
 		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
 		return
 	}
 
 	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
-
 	if err != nil || !isUserAuthenticated {
 		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "isUserAuthenticated Unauthorized"})
 		return

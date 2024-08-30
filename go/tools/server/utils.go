@@ -51,11 +51,10 @@ func Encrypt(stringToEncrypt string, keyString string) (string, error) {
 	}
 
 	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
-	return string(ciphertext), nil
+	return fmt.Sprintf("%x", ciphertext), nil
 }
 
 func Decrypt(encryptedString string, keyString string) (string, error) {
-
 	key, _ := hex.DecodeString(keyString)
 	enc, _ := hex.DecodeString(encryptedString)
 
