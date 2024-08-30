@@ -36,10 +36,8 @@ const (
 	flagMode           = "admin-mode"
 	flagAdminAppId     = "admin-gh-app-id"
 	flagAdminAppSecret = "admin-gh-app-secret"
-	flagGhAuth         = "auth"
+	flagGhAuth         = "admin-auth"
 )
-
-var workloads = []string{"OLTP", "OLTP-READONLY", "OLTP-SET", "TPCC", "TPCC_FK", "TPCC_FK_UNMANAGED", "TPCC_UNSHARDED"}
 
 type Admin struct {
 	port   string

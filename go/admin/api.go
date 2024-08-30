@@ -42,7 +42,6 @@ var (
 		RedirectURL: "http://localhost/admin/auth/callback",
 	}
 	oauthStateString = random.String(10) // A random string to protect against CSRF attacks
-	client           *goGithub.Client
 	orgName          = "vitessio"
 	tokens           = make(map[string]oauth2.Token)
 
@@ -258,26 +257,21 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	serverAPIURL := "http://localhost/api/executions/add"
-
+	serverAPIURL := "http://traefik/api/executions/add"
 	if a.Mode == server.ProductionMode {
 		serverAPIURL = "https://benchmark.vitess.io/api/executions/add"
 	}
 
 	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
-
 	if err != nil {
 		slog.Error("Failed to create new HTTP request: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request to server API"})
 		return
 	}
-
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
-
 	resp, err := client.Do(req)
-
 	if err != nil {
 		slog.Error("Failed to send request to server API: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to server API"})
