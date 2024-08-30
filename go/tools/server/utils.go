@@ -25,7 +25,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"log"
 )
 
 const (
@@ -33,7 +32,6 @@ const (
 )
 
 func Encrypt(stringToEncrypt string, keyString string) (string, error) {
-	log.Println(stringToEncrypt, keyString)
 	key, _ := hex.DecodeString(keyString)
 	plaintext := []byte(stringToEncrypt)
 

@@ -27,6 +27,11 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /arewefastyetcli ./go/main.go
 
 FROM debian:bookworm AS run-stage
 
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --reinstall ca-certificates \
+    && update-ca-certificates
+
 # Copy the source code to the working directory
 COPY --from=build-stage /arewefastyetcli /arewefastyetcli
 COPY --from=build-stage /build/go/admin/templates/ /go/admin/templates/

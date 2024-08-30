@@ -565,7 +565,7 @@ func (s *Server) addExecutions(c *gin.Context) {
 	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
 
 	if err != nil || !isUserAuthenticated {
-		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "isUserAuthenticated Unauthorized"})
 		return
 	}
 
