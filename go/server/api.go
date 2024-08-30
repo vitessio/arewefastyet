@@ -557,7 +557,7 @@ func (s *Server) addExecutions(c *gin.Context) {
 
 	decryptedToken := server.Decrypt(req.Auth, s.ghTokenSalt)
 
-	slog.Info(decryptedToken)
+	slog.Info(req.Auth, decryptedToken)
 
 	if req.Source == "" || req.SHA == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument"})

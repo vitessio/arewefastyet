@@ -84,9 +84,10 @@ func (a *Admin) authMiddleware() gin.HandlerFunc {
 		}
 
 		mu.Lock()
-		defer mu.Unlock()
 
 		token, ok := tokens[cookie]
+
+		mu.Unlock()
 
 		if !ok {
 			c.Redirect(http.StatusSeeOther, "/admin/login")
@@ -208,16 +209,25 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	token, err := c.Cookie("ghtoken")
+	tokenKey, err := c.Cookie("ghtoken")
 	if err != nil {
 		slog.Error("Failed to get token from cookie: ", err)
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
-	encryptedToken := server.Encrypt(token, a.auth)
+	mu.Lock()
+	defer mu.Unlock()
 
-	slog.Info("Encrypted token: ", encryptedToken)
+	token, exists := tokens[tokenKey]
+
+	if !exists {
+		slog.Error("Failed to get token from map")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	encryptedToken := server.Encrypt(token.AccessToken, a.auth)
 
 	requestPayload := ExecutionRequest{
 		Auth:               encryptedToken,
@@ -229,7 +239,6 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 
 	jsonData, err := json.Marshal(requestPayload)
 
-	slog.Infof("Request payload: %s", jsonData)
 
 	if err != nil {
 		slog.Error("Failed to marshal request payload: ", err)
