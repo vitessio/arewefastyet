@@ -21,13 +21,9 @@ package admin
 import (
 	"errors"
 	"net/http"
-	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,6 +36,7 @@ const (
 	flagMode           = "admin-mode"
 	flagAdminAppId     = "admin-gh-app-id"
 	flagAdminAppSecret = "admin-gh-app-secret"
+	flagGhAuth         = "admin-auth"
 )
 
 type Admin struct {
@@ -48,6 +45,7 @@ type Admin struct {
 
 	ghAppId     string
 	ghAppSecret string
+	auth        string
 
 	dbCfg    *psdb.Config
 	dbClient *psdb.Client
@@ -60,11 +58,13 @@ func (a *Admin) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().Var(&a.Mode, flagMode, "Specify the mode on which the server will run")
 	cmd.Flags().StringVar(&a.ghAppId, flagAdminAppId, "", "The ID of the GitHub App")
 	cmd.Flags().StringVar(&a.ghAppSecret, flagAdminAppSecret, "", "The secret of the GitHub App")
+	cmd.Flags().StringVar(&a.auth, flagGhAuth, "", "The salt string to salt the GitHub Token")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagMode, cmd.Flags().Lookup(flagMode))
 	_ = viper.BindPFlag(flagAdminAppId, cmd.Flags().Lookup(flagAdminAppId))
 	_ = viper.BindPFlag(flagAdminAppSecret, cmd.Flags().Lookup(flagAdminAppSecret))
+	_ = viper.BindPFlag(flagGhAuth, cmd.Flags().Lookup(flagGhAuth))
 
 	if a.dbCfg == nil {
 		a.dbCfg = &psdb.Config{}
@@ -107,24 +107,18 @@ func (a *Admin) Run() error {
 		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-
 	a.Mode.SetGin()
 	a.router = gin.Default()
 
-	store := cookie.NewStore([]byte("secret"))
-	a.router.Use(sessions.Sessions("mysession", store))
+	a.router.Static("/admin/assets", "/go/admin/assets")
 
-	a.router.Static("/assets", filepath.Join(basepath, "assets"))
-
-	a.router.LoadHTMLGlob(filepath.Join(basepath, "templates/*"))
+	a.router.LoadHTMLGlob("/go/admin/templates/*")
 
 	a.router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET"},
+		AllowMethods:     []string{"GET", "POST"},
 		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -133,6 +127,7 @@ func (a *Admin) Run() error {
 	a.router.GET("/admin", a.login)
 	a.router.GET("/admin/login", a.handleGitHubLogin)
 	a.router.GET("/admin/auth/callback", a.handleGitHubCallback)
+	a.router.POST("/admin/executions/add", a.authMiddleware(), a.handleExecutionsAdd)
 	a.router.GET("/admin/dashboard", a.authMiddleware(), a.dashboard)
 
 	return a.router.Run(":" + a.port)

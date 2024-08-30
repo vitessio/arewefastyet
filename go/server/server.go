@@ -50,6 +50,7 @@ const (
 	flagFilterBySource                       = "web-source-filter"
 	flagExcludeFilterBySource                = "web-source-exclude-filter"
 	flagRequestRunKey                        = "web-request-run-key"
+	flagGhAuth                               = "admin-auth"
 
 	// keyMinimumVitessVersion is used to define on which minimum Vitess version a given
 	// benchmark should be run. Only the major version is counted. This key/value is located
@@ -95,7 +96,8 @@ type Server struct {
 	sourceFilter        []string
 	excludeSourceFilter []string
 
-	ghApp *github.App
+	ghApp       *github.App
+	ghTokenSalt string
 
 	requestRunKey string
 
@@ -119,6 +121,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringSliceVar(&s.sourceFilter, flagFilterBySource, nil, "List of execution source that should be run. By default, all sources are ran.")
 	cmd.Flags().StringSliceVar(&s.excludeSourceFilter, flagExcludeFilterBySource, nil, "List of execution source to not execute. By default, all sources are ran.")
 	cmd.Flags().StringVar(&s.requestRunKey, flagRequestRunKey, "", "Key to authenticate requests for custom benchmark runs.")
+	cmd.Flags().StringVar(&s.ghTokenSalt, flagGhAuth, "", "The salt string to salt the GitHub Token")
 
 	_ = viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
 	_ = viper.BindPFlag(flagVitessPath, cmd.Flags().Lookup(flagVitessPath))
@@ -132,6 +135,7 @@ func (s *Server) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagFilterBySource, cmd.Flags().Lookup(flagFilterBySource))
 	_ = viper.BindPFlag(flagExcludeFilterBySource, cmd.Flags().Lookup(flagExcludeFilterBySource))
 	_ = viper.BindPFlag(flagRequestRunKey, cmd.Flags().Lookup(flagRequestRunKey))
+	_ = viper.BindPFlag(flagGhAuth, cmd.Flags().Lookup(flagGhAuth))
 
 	s.slackConfig.AddToCommand(cmd)
 	if s.dbCfg == nil {
@@ -223,8 +227,8 @@ func (s *Server) Run() error {
 
 	s.router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET"},
-		AllowHeaders:     []string{"Origin"},
+		AllowMethods:     []string{"GET", "POST"},
+		AllowHeaders:     []string{"Origin", "hx-request", "hx-current-url", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -249,6 +253,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/status/stats", s.getStatusStats)
 	s.router.GET("/api/run/request", s.requestRun)
 	s.router.GET("/api/run/delete", s.deleteRun)
+	s.router.POST("/api/executions/add", s.addExecutions)
 
 	return s.router.Run(":" + s.port)
 }

@@ -9,6 +9,7 @@ arewefastyet admin [flags]
 ### Options
 
 ```
+      --admin-auth string                      The salt string to salt the GitHub Token
       --admin-gh-app-id string                 The ID of the GitHub App
       --admin-gh-app-secret string             The secret of the GitHub App
       --admin-mode string                      Specify the mode on which the server will run

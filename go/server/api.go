@@ -27,11 +27,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/vitessio/arewefastyet/go/exec"
 	"github.com/vitessio/arewefastyet/go/tools/git"
 	"github.com/vitessio/arewefastyet/go/tools/github"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
+	"github.com/vitessio/arewefastyet/go/tools/server"
 	"golang.org/x/exp/slices"
 )
 
@@ -535,4 +537,83 @@ func (s *Server) getHistory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, results)
+}
+
+type ExecutionRequest struct {
+	Auth               string   `json:"auth"`
+	Source             string   `json:"source"`
+	SHA                string   `json:"sha"`
+	Workloads          []string `json:"workloads"`
+	NumberOfExecutions string   `json:"number_of_executions"`
+}
+
+func (s *Server) addExecutions(c *gin.Context) {
+	var req ExecutionRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	decryptedToken, err := server.Decrypt(req.Auth, s.ghTokenSalt)
+	if err != nil {
+		slog.Error(err)
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
+		return
+	}
+
+	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
+	if err != nil || !isUserAuthenticated {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "isUserAuthenticated Unauthorized"})
+		return
+	}
+
+	if req.Source == "" || req.SHA == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument"})
+		return
+	}
+
+	if len(req.Workloads) == 1 && req.Workloads[0] == "all" {
+		req.Workloads = s.workloads
+	}
+	execs, err := strconv.Atoi(req.NumberOfExecutions)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "numberOfExecutions must be an integer"})
+		return
+	}
+	newElements := make([]*executionQueueElement, 0, execs*len(req.Workloads))
+
+	for _, workload := range req.Workloads {
+		for i := 0; i < execs; i++ {
+			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, 0, git.Version{})
+			elem.identifier.UUID = uuid.NewString()
+			newElements = append(newElements, elem)
+		}
+	}
+
+	s.appendToQueue(newElements)
+
+	c.JSON(http.StatusCreated, "")
+}
+
+func IsUserAuthenticated(accessToken string) (bool, error) {
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+	if err != nil {
+		slog.Error("Error creating request to Github: %v", err)
+		return false, err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+	req.Header.Set("Accept", "application/vnd.github+json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error("Error making request to Github: %v", err)
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	return resp.StatusCode == http.StatusOK, nil
 }

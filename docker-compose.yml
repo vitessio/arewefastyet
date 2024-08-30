@@ -13,6 +13,9 @@
 # limitations under the License.
 
 version: "3.8"
+networks:
+  default:
+    driver: bridge
 
 services:
   traefik:
@@ -29,7 +32,6 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-    network_mode: bridge
 
   api:
     restart: always
@@ -51,7 +53,23 @@ services:
       - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=http"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-    network_mode: bridge
+
+  admin:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    image: "arewefastyet-admin"
+    container_name: "admin"
+    volumes:
+      - "./config/dev/config.yaml:/config/config.yaml"
+      - "./config/dev/secrets.yaml:/config/secrets.yaml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`localhost`)"
+      - "traefik.http.routers.admin.rule=PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.entrypoints=http"
+      - "traefik.http.services.admin.loadbalancer.server.port=8081"
 
   frontend:
     build:
@@ -67,7 +85,6 @@ services:
       - "traefik.http.routers.frontend.rule=Host(`localhost`)"
       - "traefik.http.routers.frontend.entrypoints=http"
       - "traefik.http.services.frontend.loadbalancer.server.port=5173"
-    network_mode: bridge
 
   cleanup_executions:
     image: alpine

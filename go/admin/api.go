@@ -19,11 +19,14 @@
 package admin
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	goGithub "github.com/google/go-github/github"
 	"github.com/labstack/gommon/random"
@@ -36,15 +39,27 @@ var (
 	oauthConf = &oauth2.Config{
 		Scopes:      []string{"read:org"}, // Request access to read organization membership
 		Endpoint:    github.Endpoint,
-		RedirectURL: "http://localhost:8081/admin/auth/callback",
+		RedirectURL: "http://localhost/admin/auth/callback",
 	}
 	oauthStateString = random.String(10) // A random string to protect against CSRF attacks
+	orgName          = "vitessio"
+	tokens           = make(map[string]oauth2.Token)
+
+	mu sync.Mutex
 )
 
 const (
 	maintainerTeamGitHub   = "maintainers"
 	arewefastyetTeamGitHub = "arewefastyet"
 )
+
+type ExecutionRequest struct {
+	Auth               string   `json:"auth"`
+	Source             string   `json:"source"`
+	SHA                string   `json:"sha"`
+	Workloads          []string `json:"workloads"`
+	NumberOfExecutions string   `json:"number_of_executions"`
+}
 
 func (a *Admin) login(c *gin.Context) {
 	a.render(c, gin.H{}, "login.html")
@@ -54,20 +69,60 @@ func (a *Admin) dashboard(c *gin.Context) {
 	a.render(c, gin.H{}, "base.html")
 }
 
+func CreateGhClient(token *oauth2.Token) *goGithub.Client {
+	return goGithub.NewClient(oauthConf.Client(context.Background(), token))
+}
+
 func (a *Admin) authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		session := sessions.Default(c)
-		user := session.Get("user")
-		if user == nil {
-			// User not authenticated, redirect to login
+		cookie, err := c.Cookie("tk")
+		if err != nil {
 			c.Redirect(http.StatusSeeOther, "/admin/login")
 			c.Abort()
 			return
 		}
 
-		// User is authenticated, proceed to the next handler
+		mu.Lock()
+		token, ok := tokens[cookie]
+		mu.Unlock()
+		if !ok {
+			c.Redirect(http.StatusSeeOther, "/admin/login")
+			c.Abort()
+			return
+		}
+
+		client := CreateGhClient(&token)
+
+		isMaintainer, err := a.GetUser(client)
+
+		if err != nil {
+			slog.Error("Error getting user: ", err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		if !isMaintainer {
+			c.String(http.StatusForbidden, "You must be a maintainer in the %s organization to access this page.", orgName)
+			c.Abort()
+			return
+		}
+
 		c.Next()
 	}
+}
+
+func (a *Admin) GetUser(client *goGithub.Client) (bool, error) {
+	user, _, err := client.Users.Get(context.Background(), "")
+	if err != nil {
+		return false, err
+	}
+
+	isMaintainer, err := a.checkUserOrgMembership(client, user.GetLogin(), orgName)
+	if err != nil {
+		return false, err
+	}
+
+	return isMaintainer, nil
 }
 
 func (a *Admin) handleGitHubLogin(c *gin.Context) {
@@ -95,29 +150,29 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 		return
 	}
 
-	client := goGithub.NewClient(oauthConf.Client(context.Background(), token))
+	client := CreateGhClient(token)
 
-	user, _, err := client.Users.Get(context.Background(), "")
+	isMaintainer, err := a.GetUser(client)
 	if err != nil {
-		slog.Error("Failed to get user: ", err)
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
-
-	slog.Infof("Authenticated user: %s", user.GetLogin())
-
-	orgName := "vitessio"
-	isMaintainer, err := a.checkUserOrgMembership(client, user.GetLogin(), orgName)
-	if err != nil {
-		slog.Error("Error checking org membership: ", err)
+		slog.Error("Failed to get user information: ", err)
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
 	if isMaintainer {
-		session := sessions.Default(c)
-		session.Set("user", user.GetLogin())
-		_ = session.Save()
+		mu.Lock()
+		defer mu.Unlock()
+
+		randomKey := random.String(32)
+		tokens[randomKey] = *token
+
+		domain := "localhost"
+
+		if a.Mode == server.ProductionMode {
+			domain = "benchmark.vitess.io"
+		}
+
+		c.SetCookie("tk", randomKey, int(time.Hour.Seconds()), "/", domain, true, true)
 
 		c.Redirect(http.StatusSeeOther, "/admin/dashboard")
 	} else {
@@ -148,4 +203,89 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 		}
 	}
 	return isMember, nil
+}
+
+func (a *Admin) handleExecutionsAdd(c *gin.Context) {
+	source := c.PostForm("source")
+	sha := c.PostForm("sha")
+	workloads := c.PostFormArray("workloads")
+	numberOfExecutions := c.PostForm("numberOfExecutions")
+
+	if source == "" || sha == "" || len(workloads) == 0 || numberOfExecutions == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source and/or SHA"})
+		return
+	}
+
+	tokenKey, err := c.Cookie("tk")
+	if err != nil {
+		slog.Error("Failed to get token from cookie: ", err)
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	token, exists := tokens[tokenKey]
+
+	if !exists {
+		slog.Error("Failed to get token from map")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	encryptedToken, err := server.Encrypt(token.AccessToken, a.auth)
+
+	if err != nil {
+		slog.Error("Failed to encrypt token: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt token"})
+		return
+	}
+
+	requestPayload := ExecutionRequest{
+		Auth:               encryptedToken,
+		Source:             source,
+		SHA:                sha,
+		Workloads:          workloads,
+		NumberOfExecutions: numberOfExecutions,
+	}
+
+	jsonData, err := json.Marshal(requestPayload)
+
+	if err != nil {
+		slog.Error("Failed to marshal request payload: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal request payload"})
+		return
+	}
+
+	serverAPIURL := "http://traefik/api/executions/add"
+	if a.Mode == server.ProductionMode {
+		serverAPIURL = "https://benchmark.vitess.io/api/executions/add"
+	}
+
+	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		slog.Error("Failed to create new HTTP request: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request to server API"})
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error("Failed to send request to server API: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to server API"})
+		return
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusCreated {
+		slog.Error("Server API returned an error: ", resp.Status)
+		c.JSON(resp.StatusCode, gin.H{"error": "Failed to process request on server API"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Execution(s) added successfully"})
 }

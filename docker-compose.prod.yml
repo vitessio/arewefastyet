@@ -13,6 +13,9 @@
 # limitations under the License.
 
 version: "3.8"
+networks:
+  default:
+    driver: bridge
 
 services:
   traefik:
@@ -31,7 +34,6 @@ services:
     volumes:
       - "/var/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    network_mode: bridge
 
   frontend:
     build:
@@ -46,7 +48,6 @@ services:
       - "traefik.http.routers.frontend.entrypoints=https"
       - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-    network_mode: bridge
 
   api:
     restart: always
@@ -68,7 +69,23 @@ services:
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-    network_mode: bridge
+
+  admin:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    image: "arewefastyet-admin"
+    container_name: "admin"
+    volumes:
+      - "./config/prod/config.yaml:/config/config.yaml"
+      - "./config/prod/secrets.yaml:/config/secrets.yaml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`benchmark.vitess.io`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.entrypoints=https"
+      - "traefik.http.routers.admin.tls.certresolver=tlsresolver"
+      - "traefik.http.services.admin.loadbalancer.server.port=8081"
 
   cleanup_executions:
     image: alpine
