@@ -21,13 +21,9 @@ package admin
 import (
 	"errors"
 	"net/http"
-	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -51,7 +47,7 @@ type Admin struct {
 
 	ghAppId     string
 	ghAppSecret string
-	auth string
+	auth        string
 
 	dbCfg    *psdb.Config
 	dbClient *psdb.Client
@@ -113,18 +109,12 @@ func (a *Admin) Run() error {
 		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-
 	a.Mode.SetGin()
 	a.router = gin.Default()
 
-	store := cookie.NewStore([]byte("secret"))
-	a.router.Use(sessions.Sessions("admin-session", store))
+	a.router.Static("/admin/assets", "/go/admin/assets")
 
-	a.router.Static("/assets", filepath.Join(basepath, "assets"))
-
-	a.router.LoadHTMLGlob(filepath.Join(basepath, "templates/*"))
+	a.router.LoadHTMLGlob("/go/admin/templates/*")
 
 	a.router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},

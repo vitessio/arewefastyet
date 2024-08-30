@@ -70,6 +70,24 @@ services:
       - "traefik.http.services.api.loadbalancer.server.port=8080"
     network_mode: bridge
 
+  admin:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    image: "arewefastyet-admin"
+    container_name: "admin"
+    volumes:
+      - "./config/prod/config.yaml:/config/config.yaml"
+      - "./config/prod/secrets.yaml:/config/secrets.yaml"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`benchmark.vitess.io`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.entrypoints=https"
+      - "traefik.http.routers.admin.tls.certresolver=tlsresolver"
+      - "traefik.http.services.admin.loadbalancer.server.port=8081"
+    network_mode: bridge
+
   cleanup_executions:
     image: alpine
     restart: on-failure

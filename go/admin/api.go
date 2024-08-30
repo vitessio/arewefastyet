@@ -39,7 +39,7 @@ var (
 	oauthConf = &oauth2.Config{
 		Scopes:      []string{"read:org"}, // Request access to read organization membership
 		Endpoint:    github.Endpoint,
-		RedirectURL: "http://localhost:8081/admin/auth/callback",
+		RedirectURL: "http://localhost/admin/auth/callback",
 	}
 	oauthStateString = random.String(10) // A random string to protect against CSRF attacks
 	client           *goGithub.Client
@@ -258,7 +258,7 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	serverAPIURL := "http://localhost:8080/api/executions/add"
+	serverAPIURL := "http://localhost/api/executions/add"
 
 	if a.Mode == server.ProductionMode {
 		serverAPIURL = "https://benchmark.vitess.io/api/executions/add"
