@@ -160,12 +160,17 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 
 func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	slog.Info("Adding execution")
-	token, err := c.Cookie("ghtoken")
 	source := c.PostForm("source")
 	sha := c.PostForm("sha")
 	workloads := c.PostFormArray("workloads")
 	numberOfExecutions := c.PostForm("numberOfExecutions")
 
+	if source == "" || sha == "" || len(workloads) == 0 || numberOfExecutions == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source and/or SHA"})
+		return
+	}
+
+	token, err := c.Cookie("ghtoken")
 	if err != nil {
 		slog.Error("Failed to get token from cookie: ", err)
 		c.AbortWithStatus(http.StatusUnauthorized)
@@ -205,12 +210,15 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
+
 	resp, err := client.Do(req)
+
 	if err != nil {
 		slog.Error("Failed to send request to server API: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to server API"})
 		return
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
@@ -219,5 +227,5 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Request forwarded to server API"})
+	c.JSON(http.StatusOK, gin.H{"message": "Execution(s) added successfully"})
 }

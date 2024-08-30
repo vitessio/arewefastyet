@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
+    <title>Arewefastyet Admin</title>
+    <link rel="icon" type="image/png" href="/assets/favicon.ico" />
     <link
       href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
       rel="stylesheet"
@@ -11,24 +12,11 @@
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
   </head>
 
-  <body class="bg-gray-900">
-    <div class="flex h-screen">
-      <div class="bg-white w-1/4 p-4">
-        <div>
-          <div>{{ template "sidebar.html" . }}</div>
-        </div>
-      </div>
-      <div class="bg-white flex-1 p-8">
-        <div id="header">
-          <div>{{ template "header.html" . }}</div>
-        </div>
-
-        <div id="content" class="mt-4">
-          <div>
-            <div>{{ template "content.html" . }}</div>
-          </div>
-        </div>
-      </div>
+  <body class="h-screen w-screen">
+    {{ template "header.html" . }}
+    <div class="flex h-full">
+      <div class="bg-white w-1/5 h-full">{{ template "sidebar.html" . }}</div>
+      <div class="bg-white flex-1 p-8">{{ template "content.html" . }}</div>
     </div>
   </body>
 </html>
