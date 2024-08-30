@@ -9,6 +9,7 @@ arewefastyet api [flags]
 ### Options
 
 ```
+      --admin-auth string                        The salt string to salt the GitHub Token
       --gh-app-id int                            ID of the GitHub App
       --gh-installation-id int                   GitHub installation ID of this app
       --gh-port string                           Port on which to run the github app (default "8181")
