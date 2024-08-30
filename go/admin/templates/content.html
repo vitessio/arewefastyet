@@ -130,4 +130,13 @@
     document.getElementById("response").classList.add("text-red-500");
     document.getElementById("response").innerHTML = errorMessage;
 });
+
+// Display success on 201
+document.body.addEventListener("htmx:afterOnLoad", function(e) {
+  if (e.detail.xhr.status == 201) {
+    document.getElementById("response").classList.remove("text-red-500");
+    document.getElementById("response").classList.add("text-green-500");
+    document.getElementById("response").innerHTML = "Execution added successfully!";
+  }
+});
 </script>

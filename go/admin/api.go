@@ -165,7 +165,14 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 
 		randomKey := random.String(32)
 		tokens[randomKey] = *token
-		c.SetCookie("ghtoken", randomKey, int(time.Hour.Seconds()), "/", "localhost", true, true)
+
+		domain := "localhost"
+
+		if a.Mode == server.ProductionMode {
+			domain = "benchmark.vitess.io"
+		}
+
+		c.SetCookie("ghtoken", randomKey, int(time.Hour.Seconds()), "/", domain, true, true)
 
 		c.Redirect(http.StatusSeeOther, "/admin/dashboard")
 	} else {
@@ -253,6 +260,10 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 
 	serverAPIURL := "http://localhost:8080/api/executions/add"
 
+	if a.Mode == server.ProductionMode {
+		serverAPIURL = "https://benchmark.vitess.io/api/executions/add"
+	}
+
 	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
 
 	if err != nil {
@@ -275,11 +286,11 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		slog.Error("Server API returned an error: ", resp.Status)
 		c.JSON(resp.StatusCode, gin.H{"error": "Failed to process request on server API"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Execution(s) added successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Execution(s) added successfully"})
 }

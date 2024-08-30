@@ -569,8 +569,6 @@ func (s *Server) addExecutions(c *gin.Context) {
 		return
 	}
 
-	slog.Info(decryptedToken)
-
 	if req.Source == "" || req.SHA == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument"})
 		return
@@ -594,9 +592,9 @@ func (s *Server) addExecutions(c *gin.Context) {
 		}
 	}
 
-	// s.appendToQueue(newElements)
+	s.appendToQueue(newElements)
 
-	c.JSON(http.StatusOK, "ok")
+	c.JSON(http.StatusCreated, "")
 }
 
 func IsUserAuthenticated(accessToken string) (bool, error) {
