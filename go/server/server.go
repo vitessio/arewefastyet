@@ -50,7 +50,7 @@ const (
 	flagFilterBySource                       = "web-source-filter"
 	flagExcludeFilterBySource                = "web-source-exclude-filter"
 	flagRequestRunKey                        = "web-request-run-key"
-	flagGhAuth                          = "auth"
+	flagGhAuth                               = "admin-auth"
 
 	// keyMinimumVitessVersion is used to define on which minimum Vitess version a given
 	// benchmark should be run. Only the major version is counted. This key/value is located

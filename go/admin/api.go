@@ -75,7 +75,7 @@ func CreateGhClient(token *oauth2.Token) *goGithub.Client {
 
 func (a *Admin) authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("ghtoken")
+		cookie, err := c.Cookie("tk")
 		if err != nil {
 			c.Redirect(http.StatusSeeOther, "/admin/login")
 			c.Abort()
@@ -83,11 +83,8 @@ func (a *Admin) authMiddleware() gin.HandlerFunc {
 		}
 
 		mu.Lock()
-
 		token, ok := tokens[cookie]
-
 		mu.Unlock()
-
 		if !ok {
 			c.Redirect(http.StatusSeeOther, "/admin/login")
 			c.Abort()
@@ -122,7 +119,6 @@ func (a *Admin) GetUser(client *goGithub.Client) (bool, error) {
 
 	isMaintainer, err := a.checkUserOrgMembership(client, user.GetLogin(), orgName)
 	if err != nil {
-		slog.Error("Error checking org membership: ", err)
 		return false, err
 	}
 
@@ -157,6 +153,11 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 	client := CreateGhClient(token)
 
 	isMaintainer, err := a.GetUser(client)
+	if err != nil {
+		slog.Error("Failed to get user information: ", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
 	if isMaintainer {
 		mu.Lock()
@@ -171,7 +172,7 @@ func (a *Admin) handleGitHubCallback(c *gin.Context) {
 			domain = "benchmark.vitess.io"
 		}
 
-		c.SetCookie("ghtoken", randomKey, int(time.Hour.Seconds()), "/", domain, true, true)
+		c.SetCookie("tk", randomKey, int(time.Hour.Seconds()), "/", domain, true, true)
 
 		c.Redirect(http.StatusSeeOther, "/admin/dashboard")
 	} else {
@@ -215,7 +216,7 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	tokenKey, err := c.Cookie("ghtoken")
+	tokenKey, err := c.Cookie("tk")
 	if err != nil {
 		slog.Error("Failed to get token from cookie: ", err)
 		c.AbortWithStatus(http.StatusUnauthorized)

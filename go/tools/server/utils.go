@@ -51,7 +51,7 @@ func Encrypt(stringToEncrypt string, keyString string) (string, error) {
 	}
 
 	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
-	return fmt.Sprintf("%x", ciphertext), nil
+	return string(ciphertext), nil
 }
 
 func Decrypt(encryptedString string, keyString string) (string, error) {
@@ -72,7 +72,7 @@ func Decrypt(encryptedString string, keyString string) (string, error) {
 	nonceSize := aesGCM.NonceSize()
 
 	if len(enc) <= nonceSize {
-		return "", fmt.Errorf("Encrypted string is too short")
+		return "", fmt.Errorf("encrypted string is too short")
 	}
 
 	nonce, ciphertext := enc[:nonceSize], enc[nonceSize:]
@@ -82,5 +82,5 @@ func Decrypt(encryptedString string, keyString string) (string, error) {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s", plaintext), nil
+	return string(plaintext), nil
 }
