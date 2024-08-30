@@ -33,6 +33,7 @@ import (
 	"github.com/vitessio/arewefastyet/go/tools/github"
 	"github.com/vitessio/arewefastyet/go/tools/macrobench"
 	"github.com/vitessio/arewefastyet/go/tools/microbench"
+	"github.com/vitessio/arewefastyet/go/tools/server"
 	"golang.org/x/exp/slices"
 )
 
@@ -538,30 +539,48 @@ func (s *Server) getHistory(c *gin.Context) {
 	c.JSON(http.StatusOK, results)
 }
 
-func (s *Server) addExecutions(c *gin.Context) {
-	source := c.PostForm("source")
-	sha := c.PostForm("sha")
-	workloads := c.PostFormArray("workloads")
-	numberOfExecutions := c.PostForm("numberOfExecutions")
+type ExecutionRequest struct {
+	Auth               string   `json:"auth"`
+	Source             string   `json:"source"`
+	SHA                string   `json:"sha"`
+	Workloads          []string `json:"workloads"`
+	NumberOfExecutions string   `json:"number_of_executions"`
+}
 
-	if source == "" || sha == "" || len(workloads) == 0 || numberOfExecutions == "" {
+func (s *Server) addExecutions(c *gin.Context) {
+	slog.Info("Adding execution")
+
+	var req ExecutionRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	decryptedToken := server.Decrypt(req.Auth, s.ghTokenSalt)
+
+	slog.Info(decryptedToken)
+
+	slog.Infof("source: %s, sha: %s, workloads: %v, numberOfExecutions: %s, token: %s", req.Source, req.SHA, req.Workloads, req.NumberOfExecutions, decryptedToken)
+
+	if req.Source == "" || req.SHA == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument"})
 		return
 	}
 
-	if len(workloads) == 1 && workloads[0] == "all" {
-		workloads = s.workloads
+	if len(req.Workloads) == 1 && req.Workloads[0] == "all" {
+		req.Workloads = s.workloads
 	}
-	execs, err := strconv.Atoi(numberOfExecutions)
+	execs, err := strconv.Atoi(req.NumberOfExecutions)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "numberOfExecutions must be an integer"})
 		return
 	}
-	newElements := make([]*executionQueueElement, 0, execs*len(workloads))
+	newElements := make([]*executionQueueElement, 0, execs*len(req.Workloads))
 
-	for _, workload := range workloads {
+	for _, workload := range req.Workloads {
 		for i := 0; i < execs; i++ {
-			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], source, sha, workload, string(macrobench.Gen4Planner), false, 0, git.Version{})
+			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, 0, git.Version{})
 			elem.identifier.UUID = uuid.NewString()
 			newElements = append(newElements, elem)
 		}

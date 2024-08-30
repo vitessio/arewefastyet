@@ -19,7 +19,9 @@
 package admin
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"strings"
 	"time"
@@ -39,6 +41,7 @@ var (
 		RedirectURL: "http://localhost:8081/admin/auth/callback",
 	}
 	oauthStateString = random.String(10) // A random string to protect against CSRF attacks
+	client           *goGithub.Client
 )
 
 const (
@@ -46,19 +49,20 @@ const (
 	arewefastyetTeamGitHub = "arewefastyet"
 )
 
+type ExecutionRequest struct {
+	Auth               string   `json:"auth"`
+	Source             string   `json:"source"`
+	SHA                string   `json:"sha"`
+	Workloads          []string `json:"workloads"`
+	NumberOfExecutions string   `json:"number_of_executions"`
+}
+
 func (a *Admin) login(c *gin.Context) {
 	a.render(c, gin.H{}, "login.html")
 }
 
 func (a *Admin) dashboard(c *gin.Context) {
-	user, err := c.Cookie("ghtoken")
-	if err != nil {
-		c.Abort()
-		return
-	}
-	a.render(c, gin.H{
-		"ghtoken": user,
-	}, "base.html")
+	a.render(c, gin.H{}, "base.html")
 }
 
 func (a *Admin) authMiddleware() gin.HandlerFunc {
@@ -152,4 +156,71 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 		}
 	}
 	return isMember, nil
+}
+
+func (a *Admin) handleExecutionsAdd(c *gin.Context) {
+	slog.Info("Adding execution")
+	token, err := c.Cookie("ghtoken")
+	source := c.PostForm("source")
+	sha := c.PostForm("sha")
+	workloads := c.PostFormArray("workloads")
+	numberOfExecutions := c.PostForm("numberOfExecutions")
+
+	if err != nil {
+		slog.Error("Failed to get token from cookie: ", err)
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	encryptedToken := server.Encrypt(token, a.ghTokenSalt)
+
+	requestPayload := ExecutionRequest{
+		Auth:               encryptedToken,
+		Source:             source,
+		SHA:                sha,
+		Workloads:          workloads,
+		NumberOfExecutions: numberOfExecutions,
+	}
+
+	jsonData, err := json.Marshal(requestPayload)
+
+	slog.Infof("Request payload: %s", jsonData)
+
+	if err != nil {
+		slog.Error("Failed to marshal request payload: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal request payload"})
+		return
+	}
+
+	serverAPIURL := "http://localhost:8080/api/executions/add"
+	// make a body with "admin-user": {encryptedToken}, "source": {source}, "sha": {sha}, "workloads": workloads, "numberOfExecutions": {numberOfExecutions}}
+
+	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
+
+	if err != nil {
+		slog.Error("Failed to create new HTTP request: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request to server API"})
+		return
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	// Execute the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error("Failed to send request to server API: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to server API"})
+		return
+	}
+	defer resp.Body.Close()
+
+	// Handle the response from the server API
+	if resp.StatusCode != http.StatusOK {
+		slog.Error("Server API returned an error: ", resp.Status)
+		c.JSON(resp.StatusCode, gin.H{"error": "Failed to process request on server API"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Request forwarded to server API"})
 }

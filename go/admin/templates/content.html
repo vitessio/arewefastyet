@@ -42,7 +42,7 @@
                 type="number" name="numberOfExecutions" value="1" min="1" max="10">
         </div>
 
-        <button hx-post="http://localhost:8080/api/executions/add" hx-headers='{"admin-user": "{{.ghtoken}}"}'
+        <button hx-post="/admin/executions/add"
             class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit">Add Execution</button>
     </form>
