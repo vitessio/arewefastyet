@@ -193,7 +193,6 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	}
 
 	serverAPIURL := "http://localhost:8080/api/executions/add"
-	// make a body with "admin-user": {encryptedToken}, "source": {source}, "sha": {sha}, "workloads": workloads, "numberOfExecutions": {numberOfExecutions}}
 
 	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
 
@@ -205,7 +204,6 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 
 	req.Header.Set("Content-Type", "application/json")
 
-	// Execute the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -215,7 +213,6 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 
-	// Handle the response from the server API
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("Server API returned an error: ", resp.Status)
 		c.JSON(resp.StatusCode, gin.H{"error": "Failed to process request on server API"})

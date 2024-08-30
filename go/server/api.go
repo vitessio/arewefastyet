@@ -548,8 +548,6 @@ type ExecutionRequest struct {
 }
 
 func (s *Server) addExecutions(c *gin.Context) {
-	slog.Info("Adding execution")
-
 	var req ExecutionRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -560,8 +558,6 @@ func (s *Server) addExecutions(c *gin.Context) {
 	decryptedToken := server.Decrypt(req.Auth, s.ghTokenSalt)
 
 	slog.Info(decryptedToken)
-
-	slog.Infof("source: %s, sha: %s, workloads: %v, numberOfExecutions: %s, token: %s", req.Source, req.SHA, req.Workloads, req.NumberOfExecutions, decryptedToken)
 
 	if req.Source == "" || req.SHA == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument"})
