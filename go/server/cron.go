@@ -191,3 +191,14 @@ func (s *Server) appendToQueue(execElements []*executionQueueElement) {
 		time.Sleep(100 * time.Millisecond)
 	}
 }
+
+func (s *Server) clearQueue() {
+	mtx.Lock()
+	defer mtx.Unlock()
+	for id, e := range queue {
+		if e.Executing {
+			continue
+		}
+		delete(queue, id)
+	}
+}

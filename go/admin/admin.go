@@ -123,12 +123,19 @@ func (a *Admin) Run() error {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// API
+	// OAuth
 	a.router.GET("/admin", a.login)
 	a.router.GET("/admin/login", a.handleGitHubLogin)
 	a.router.GET("/admin/auth/callback", a.handleGitHubCallback)
+
+	// API
 	a.router.POST("/admin/executions/add", a.authMiddleware(), a.handleExecutionsAdd)
-	a.router.GET("/admin/dashboard", a.authMiddleware(), a.dashboard)
+	a.router.POST("/admin/executions/clear", a.authMiddleware(), a.handleClearQueue)
+
+	// Pages
+	a.router.GET("/admin/dashboard", a.authMiddleware(), a.homePage)
+	a.router.GET("/admin/dashboard/newexec", a.authMiddleware(), a.newExecutionsPage)
+	a.router.GET("/admin/dashboard/clearqueue", a.authMiddleware(), a.clearQueuePage)
 
 	return a.router.Run(":" + a.port)
 }

@@ -254,6 +254,7 @@ func (s *Server) Run() error {
 	s.router.GET("/api/run/request", s.requestRun)
 	s.router.GET("/api/run/delete", s.deleteRun)
 	s.router.POST("/api/executions/add", s.addExecutions)
+	s.router.POST("/api/executions/clear", s.clearExecutionQueue)
 
 	return s.router.Run(":" + s.port)
 }

@@ -19,6 +19,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"sort"
@@ -555,16 +556,8 @@ func (s *Server) addExecutions(c *gin.Context) {
 		return
 	}
 
-	decryptedToken, err := server.Decrypt(req.Auth, s.ghTokenSalt)
-	if err != nil {
-		slog.Error(err)
-		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
-		return
-	}
-
-	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
-	if err != nil || !isUserAuthenticated {
-		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "isUserAuthenticated Unauthorized"})
+	if err := s.handleAuthentication(c, req.Auth); err != nil {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: err.Error()})
 		return
 	}
 
@@ -596,8 +589,41 @@ func (s *Server) addExecutions(c *gin.Context) {
 	c.JSON(http.StatusCreated, "")
 }
 
-func IsUserAuthenticated(accessToken string) (bool, error) {
+func (s *Server) clearExecutionQueue(c *gin.Context) {
+	var req struct {
+		Auth string `json:"auth"`
+	}
 
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if err := s.handleAuthentication(c, req.Auth); err != nil {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: err.Error()})
+		return
+	}
+
+	s.clearQueue()
+
+	c.JSON(http.StatusAccepted, "")
+}
+
+func (s *Server) handleAuthentication(c *gin.Context, auth string) error {
+	decryptedToken, err := server.Decrypt(auth, s.ghTokenSalt)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
+		return errors.New("unauthenticated")
+	}
+
+	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
+	if err != nil || !isUserAuthenticated {
+		return errors.New("unauthenticated")
+	}
+	return nil
+}
+
+func IsUserAuthenticated(accessToken string) (bool, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
 	if err != nil {

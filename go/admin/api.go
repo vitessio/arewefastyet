@@ -53,20 +53,34 @@ const (
 	arewefastyetTeamGitHub = "arewefastyet"
 )
 
-type ExecutionRequest struct {
-	Auth               string   `json:"auth"`
-	Source             string   `json:"source"`
-	SHA                string   `json:"sha"`
-	Workloads          []string `json:"workloads"`
-	NumberOfExecutions string   `json:"number_of_executions"`
-}
+type (
+	executionRequest struct {
+		Auth               string   `json:"auth"`
+		Source             string   `json:"source"`
+		SHA                string   `json:"sha"`
+		Workloads          []string `json:"workloads"`
+		NumberOfExecutions string   `json:"number_of_executions"`
+	}
+
+	clearQueueRequest struct {
+		Auth string `json:"auth"`
+	}
+)
 
 func (a *Admin) login(c *gin.Context) {
 	a.render(c, gin.H{}, "login.html")
 }
 
-func (a *Admin) dashboard(c *gin.Context) {
+func (a *Admin) homePage(c *gin.Context) {
 	a.render(c, gin.H{}, "base.html")
+}
+
+func (a *Admin) newExecutionsPage(c *gin.Context) {
+	a.render(c, gin.H{"Page": "newexec"}, "base.html")
+}
+
+func (a *Admin) clearQueuePage(c *gin.Context) {
+	a.render(c, gin.H{"Page": "clearqueue"}, "base.html")
 }
 
 func CreateGhClient(token *oauth2.Token) *goGithub.Client {
@@ -242,7 +256,7 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	requestPayload := ExecutionRequest{
+	requestPayload := executionRequest{
 		Auth:               encryptedToken,
 		Source:             source,
 		SHA:                sha,
@@ -258,10 +272,7 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	serverAPIURL := "http://traefik/api/executions/add"
-	if a.Mode == server.ProductionMode {
-		serverAPIURL = "https://benchmark.vitess.io/api/executions/add"
-	}
+	serverAPIURL := getAPIURL(a.Mode, "/executions/add")
 
 	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -288,4 +299,78 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Execution(s) added successfully"})
+}
+
+func (a *Admin) handleClearQueue(c *gin.Context) {
+	tokenKey, err := c.Cookie("tk")
+	if err != nil {
+		slog.Error("Failed to get token from cookie: ", err)
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	mu.Lock()
+	token, exists := tokens[tokenKey]
+	mu.Unlock()
+
+	if !exists {
+		slog.Error("Failed to get token from map")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	encryptedToken, err := server.Encrypt(token.AccessToken, a.auth)
+	if err != nil {
+		slog.Error("Failed to encrypt token: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt token"})
+		return
+	}
+
+	requestPayload := clearQueueRequest{
+		Auth: encryptedToken,
+	}
+
+	jsonData, err := json.Marshal(requestPayload)
+
+	if err != nil {
+		slog.Error("Failed to marshal request payload: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal request payload"})
+		return
+	}
+
+	serverAPIURL := getAPIURL(a.Mode, "/executions/clear")
+
+	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		slog.Error("Failed to create new HTTP request: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request to server API"})
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error("Failed to send request to server API: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to server API"})
+		return
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusAccepted {
+		slog.Error("Server API returned an error: ", resp.Status)
+		c.JSON(resp.StatusCode, gin.H{"error": "Failed to process request on server API"})
+		return
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{"message": "Execution(s) added successfully"})
+}
+
+func getAPIURL(mode server.Mode, endpoint string) string {
+	serverAPIURL := "http://traefik/api" + endpoint
+	if mode == server.ProductionMode {
+		serverAPIURL = "https://benchmark.vitess.io/api" + endpoint
+	}
+	return serverAPIURL
 }

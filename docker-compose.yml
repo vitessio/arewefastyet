@@ -64,6 +64,7 @@ services:
     volumes:
       - "./config/dev/config.yaml:/config/config.yaml"
       - "./config/dev/secrets.yaml:/config/secrets.yaml"
+      - "./go/admin/templates/:/go/admin/templates/"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.admin.rule=Host(`localhost`)"
