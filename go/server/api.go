@@ -469,7 +469,7 @@ func (s *Server) requestRun(c *gin.Context) {
 	}
 
 	// create execution element
-	elem := s.createSimpleExecutionQueueElement(cfg, "custom_run", sha, workload, string(macrobench.Gen4Planner), false, 0, currVersion)
+	elem := s.createSimpleExecutionQueueElement(cfg, "custom_run", sha, workload, string(macrobench.Gen4Planner), false, 0, currVersion, nil)
 
 	// to new element to the queue
 	s.addToQueue(elem)
@@ -546,6 +546,9 @@ type ExecutionRequest struct {
 	SHA                string   `json:"sha"`
 	Workloads          []string `json:"workloads"`
 	NumberOfExecutions string   `json:"number_of_executions"`
+	EnableProfile      bool     `json:"enable_profile-"`
+	BinaryToProfile    string   `json:"binary_to_profile"`
+	ProfileMode        string   `json:"profile_mode"`
 }
 
 func (s *Server) addExecutions(c *gin.Context) {
@@ -576,9 +579,17 @@ func (s *Server) addExecutions(c *gin.Context) {
 	}
 	newElements := make([]*executionQueueElement, 0, execs*len(req.Workloads))
 
+	var profileInformation *exec.ProfileInformation
+	if req.EnableProfile {
+		profileInformation = &exec.ProfileInformation{
+			Binary: req.BinaryToProfile,
+			Mode:   req.ProfileMode,
+		}
+	}
+
 	for _, workload := range req.Workloads {
 		for i := 0; i < execs; i++ {
-			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, 0, git.Version{})
+			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, 0, git.Version{}, profileInformation)
 			elem.identifier.UUID = uuid.NewString()
 			newElements = append(newElements, elem)
 		}

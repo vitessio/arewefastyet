@@ -60,6 +60,9 @@ type (
 		SHA                string   `json:"sha"`
 		Workloads          []string `json:"workloads"`
 		NumberOfExecutions string   `json:"number_of_executions"`
+		EnableProfile      bool     `json:"enable_profile"`
+		BinaryToProfile    string   `json:"binary_to_profile"`
+		ProfileMode        string   `json:"profile_mode"`
 	}
 
 	clearQueueRequest struct {
@@ -220,13 +223,23 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 }
 
 func (a *Admin) handleExecutionsAdd(c *gin.Context) {
-	source := c.PostForm("source")
-	sha := c.PostForm("sha")
-	workloads := c.PostFormArray("workloads")
-	numberOfExecutions := c.PostForm("numberOfExecutions")
+	requestPayload := executionRequest{
+		Source:             c.PostForm("source"),
+		SHA:                c.PostForm("sha"),
+		Workloads:          c.PostFormArray("workloads"),
+		NumberOfExecutions: c.PostForm("numberOfExecutions"),
+		EnableProfile:      c.PostForm("enableProfiling") != "",
+		BinaryToProfile:    c.PostForm("binaryToProfile"),
+		ProfileMode:        c.PostForm("profileMode"),
+	}
 
-	if source == "" || sha == "" || len(workloads) == 0 || numberOfExecutions == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source and/or SHA"})
+	if requestPayload.Source == "" || requestPayload.SHA == "" || len(requestPayload.Workloads) == 0 || requestPayload.NumberOfExecutions == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source, SHA, workflows, numberOfExecutions"})
+		return
+	}
+
+	if requestPayload.EnableProfile && (requestPayload.BinaryToProfile == "" || requestPayload.ProfileMode == "") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "When enabling profiling, please provide a binary to profile and a mode"})
 		return
 	}
 
@@ -248,20 +261,12 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	encryptedToken, err := server.Encrypt(token.AccessToken, a.auth)
+	requestPayload.Auth, err = server.Encrypt(token.AccessToken, a.auth)
 
 	if err != nil {
 		slog.Error("Failed to encrypt token: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt token"})
 		return
-	}
-
-	requestPayload := executionRequest{
-		Auth:               encryptedToken,
-		Source:             source,
-		SHA:                sha,
-		Workloads:          workloads,
-		NumberOfExecutions: numberOfExecutions,
 	}
 
 	jsonData, err := json.Marshal(requestPayload)

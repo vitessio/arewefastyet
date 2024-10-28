@@ -44,6 +44,7 @@ type (
 		PullBaseRef                              string
 		Version                                  git.Version
 		UUID                                     string
+		Profile                                  *exec.ProfileInformation
 	}
 
 	executionQueue map[executionIdentifier]*executionQueueElement

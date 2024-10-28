@@ -77,6 +77,12 @@ const (
 	// that will be used to execute the benchmark.
 	KeyVtgatePlanner = "vitess_planner_version"
 
+	// KeyProfileBinary sets which binary we want to profile (vtgate or vttablet)
+	KeyProfileBinary = "vitess_profile_binary"
+
+	// KeyProfileMode sets which mode of pprof we want to use.
+	KeyProfileMode = "vitess_profile_mode"
+
 	// KeyExtraFlagsVTGate represents the list of VTGate flag that will be passed down
 	// to VTGate during startup. The flags are represented as follows in the string:
 	// 		"--flag1 --flag2"

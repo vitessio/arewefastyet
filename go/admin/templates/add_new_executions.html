@@ -1,5 +1,6 @@
 <div id="content">
   <form>
+    <label class="text-lg font-semibold mt-4">Information</label>
     <div class="flex flex-row gap-4">
       <div>
         <label class="label">Source (execution's trigger/reason)</label>
@@ -20,7 +21,8 @@
         />
       </div>
     </div>
-    <label>Workloads</label>
+    <br>
+    <label class="text-lg font-semibold mt-4">Workloads</label>
     <div class="flex flex-row gap-4">
       <div class="flex flex-col">
         <label
@@ -100,6 +102,8 @@
         >
       </div>
     </div>
+    <br>
+    <label class="text-lg font-semibold mt-4">Settings</label>
     <div>
       <label class="label">Number of executions</label>
       <input
@@ -111,11 +115,43 @@
         max="10"
       />
     </div>
+    <br>
+    <label class="text-lg font-semibold mt-4">Profiling</label>
+    <div class="flex items-center space-x-4">
+      <label class="label flex items-center space-x-2">
+        <span>Enable profiling</span>
+        <input
+                type="checkbox"
+                id="enableProfilingCheckbox"
+                name="enableProfiling"
+                class="mr-2"
+                onclick="toggleProfilingFields()"
+        />
+      </label>
+    </div>
 
+    <div id="profilingFields" class="flex items-center space-x-4 mt-4 hidden">
+      <label class="label">Binary to profile</label>
+      <input
+              class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="text"
+              name="binaryToProfile"
+      />
+
+      <label class="label">Profile Mode</label>
+      <input
+              class="shadow appearance-none border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              type="text"
+              name="profileMode"
+      />
+    </div>
+
+
+    <br>
     <button
       hx-post="/admin/executions/add"
       hx-target="#response"
-      class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      class="bg-green-500 hover:green text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
       type="submit"
     >
       Add Execution
@@ -125,19 +161,27 @@
 </div>
 
 <script>
-  document.body.addEventListener("htmx:responseError", function(e) {
+  document.body.addEventListener("htmx:responseError", function (e) {
     error = e.detail.xhr.response;
     errorMessage = JSON.parse(error).error;
     document.getElementById("response").classList.add("text-red-500");
     document.getElementById("response").innerHTML = errorMessage;
-});
+  });
 
-// Display success on 201
-document.body.addEventListener("htmx:afterOnLoad", function(e) {
-  if (e.detail.xhr.status == 201) {
-    document.getElementById("response").classList.remove("text-red-500");
-    document.getElementById("response").classList.add("text-green-500");
-    document.getElementById("response").innerHTML = "Execution added successfully!";
+  // Display success on 201
+  document.body.addEventListener("htmx:afterOnLoad", function (e) {
+    if (e.detail.xhr.status == 201) {
+      document.getElementById("response").classList.remove("text-red-500");
+      document.getElementById("response").classList.add("text-green-500");
+      document.getElementById("response").innerHTML = "Execution added successfully!";
+    }
+  });
+
+  function toggleProfilingFields() {
+    const checkbox = document.getElementById('enableProfilingCheckbox');
+    const profilingFields = document.getElementById('profilingFields');
+
+    // Show the fields if checkbox is checked, otherwise hide them
+    profilingFields.classList.toggle('hidden', !checkbox.checked);
   }
-});
 </script>
