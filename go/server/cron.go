@@ -44,6 +44,7 @@ type (
 		PullBaseRef                              string
 		Version                                  git.Version
 		UUID                                     string
+		Profile                                  *exec.ProfileInformation
 	}
 
 	executionQueue map[executionIdentifier]*executionQueueElement
@@ -63,6 +64,19 @@ var (
 func (ei executionIdentifier) equalWithoutUUID(id executionIdentifier) bool {
 	ei.UUID = ""
 	id.UUID = ""
+
+	// If one has a profile and the other doesn't, it's not equal
+	if ei.Profile != nil && id.Profile == nil || ei.Profile == nil && id.Profile != nil {
+		return false
+	}
+	// If both have a profile, but they're different, it's not equal
+	if ei.Profile != nil && id.Profile != nil && *ei.Profile != *id.Profile {
+		return false
+	}
+	// Setting the profiles to nil so they don't mess up the equality comparison below
+	ei.Profile = nil
+	id.Profile = nil
+
 	return ei == id
 }
 
@@ -189,5 +203,16 @@ func (s *Server) appendToQueue(execElements []*executionQueueElement) {
 
 		// We sleep here to avoid adding too many similar elements to the queue at the same time.
 		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+func (s *Server) clearQueue() {
+	mtx.Lock()
+	defer mtx.Unlock()
+	for id, e := range queue {
+		if e.Executing {
+			continue
+		}
+		delete(queue, id)
 	}
 }

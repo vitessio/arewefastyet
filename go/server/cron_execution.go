@@ -55,6 +55,7 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	e.PullBaseBranchRef = identifier.PullBaseRef
 	e.VitessVersion = identifier.Version
 	e.NextBenchmarkIsTheSame = nextIsSame
+	e.ProfileInformation = identifier.Profile
 	e.RepoDir = s.getVitessPath()
 
 	// Check if the previous benchmark is the same and if it is
@@ -222,7 +223,7 @@ func (s *Server) cronExecutionQueueWatcher() {
 				if element.Executing {
 					continue
 				}
-				if element.identifier.equalWithoutUUID(nextExecuteElement.identifier) {
+				if nextExecuteElement.identifier.UUID != element.identifier.UUID && element.identifier.equalWithoutUUID(nextExecuteElement.identifier) {
 					nextBenchmarkIsTheSame = true
 					break
 				}

@@ -1,0 +1,31 @@
+<div id="content">
+  <form>
+    <button
+      hx-post="/admin/executions/clear"
+      hx-target="#response"
+      class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      type="submit"
+    >
+      Remove every pending executions in the execution queue
+    </button>
+  </form>
+  <div id="response" class="mt-4"></div>
+</div>
+
+<script>
+  document.body.addEventListener("htmx:responseError", function(e) {
+    error = e.detail.xhr.response;
+    errorMessage = JSON.parse(error).error;
+    document.getElementById("response").classList.add("text-red-500");
+    document.getElementById("response").innerHTML = errorMessage;
+});
+
+// Display success on 201
+document.body.addEventListener("htmx:afterOnLoad", function(e) {
+  if (e.detail.xhr.status == 202) {
+    document.getElementById("response").classList.remove("text-red-500");
+    document.getElementById("response").classList.add("text-green-500");
+    document.getElementById("response").innerHTML = "Execution queue cleared";
+  }
+});
+</script>

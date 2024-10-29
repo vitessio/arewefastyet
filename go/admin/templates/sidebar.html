@@ -1,9 +1,10 @@
 <div class="border-r-2 h-full p-4">
     <ul>
-      <li class="my-4 hover:bg-slate-400">
-        <a class="text-orange-500 font-semibold text-lg"
-          >Add new executions</a
-        >
-      </li>
+        <li class="my-4 hover:bg-slate-400">
+            <a class="{{if eq .Page "newexec"}}text-orange-500{{end}} font-semibold text-lg" href="/admin/dashboard/newexec">Add new executions</a>
+        </li>
+        <li class="my-4 hover:bg-slate-400">
+            <a class="{{if eq .Page "clearqueue"}}text-orange-500{{end}} font-semibold text-lg" href="/admin/dashboard/clearqueue">Clear the execution queue</a>
+        </li>
     </ul>
 </div>

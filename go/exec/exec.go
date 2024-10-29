@@ -150,6 +150,13 @@ type Exec struct {
 	vitessConfig    vitessConfig
 
 	vitessSchemaPath string
+
+	ProfileInformation *ProfileInformation
+}
+
+type ProfileInformation struct {
+	Binary string
+	Mode   string
 }
 
 const (
@@ -394,6 +401,11 @@ func (e *Exec) prepareAnsibleForExecution() error {
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessMajorVersion, e.VitessVersion.Major)
 	e.AnsibleConfig.AddExtraVar(ansible.KeyVitessSchema, e.vitessSchemaPath)
 	e.vitessConfig.addToAnsible(&e.AnsibleConfig)
+
+	if e.ProfileInformation != nil {
+		e.AnsibleConfig.AddExtraVar(ansible.KeyProfileBinary, e.ProfileInformation.Binary)
+		e.AnsibleConfig.AddExtraVar(ansible.KeyProfileMode, e.ProfileInformation.Mode)
+	}
 
 	// runtime related values
 	e.AnsibleConfig.AddExtraVar(ansible.KeyGoVersion, e.GolangVersion)

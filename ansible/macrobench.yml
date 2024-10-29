@@ -41,7 +41,15 @@
 
 - hosts: macrobench
   roles:
+    - profile
+
+- hosts: macrobench
+  roles:
     - macrobench
+
+- hosts: macrobench
+  roles:
+    - profile
 
 - name: Clean Post Macrobench
   when: arewefastyet_next_exec_is_same is undefined

@@ -53,20 +53,37 @@ const (
 	arewefastyetTeamGitHub = "arewefastyet"
 )
 
-type ExecutionRequest struct {
-	Auth               string   `json:"auth"`
-	Source             string   `json:"source"`
-	SHA                string   `json:"sha"`
-	Workloads          []string `json:"workloads"`
-	NumberOfExecutions string   `json:"number_of_executions"`
-}
+type (
+	executionRequest struct {
+		Auth               string   `json:"auth"`
+		Source             string   `json:"source"`
+		SHA                string   `json:"sha"`
+		Workloads          []string `json:"workloads"`
+		NumberOfExecutions string   `json:"number_of_executions"`
+		EnableProfile      bool     `json:"enable_profile"`
+		BinaryToProfile    string   `json:"binary_to_profile"`
+		ProfileMode        string   `json:"profile_mode"`
+	}
+
+	clearQueueRequest struct {
+		Auth string `json:"auth"`
+	}
+)
 
 func (a *Admin) login(c *gin.Context) {
 	a.render(c, gin.H{}, "login.html")
 }
 
-func (a *Admin) dashboard(c *gin.Context) {
+func (a *Admin) homePage(c *gin.Context) {
 	a.render(c, gin.H{}, "base.html")
+}
+
+func (a *Admin) newExecutionsPage(c *gin.Context) {
+	a.render(c, gin.H{"Page": "newexec"}, "base.html")
+}
+
+func (a *Admin) clearQueuePage(c *gin.Context) {
+	a.render(c, gin.H{"Page": "clearqueue"}, "base.html")
 }
 
 func CreateGhClient(token *oauth2.Token) *goGithub.Client {
@@ -206,13 +223,23 @@ func (a *Admin) checkUserOrgMembership(client *goGithub.Client, username, orgNam
 }
 
 func (a *Admin) handleExecutionsAdd(c *gin.Context) {
-	source := c.PostForm("source")
-	sha := c.PostForm("sha")
-	workloads := c.PostFormArray("workloads")
-	numberOfExecutions := c.PostForm("numberOfExecutions")
+	requestPayload := executionRequest{
+		Source:             c.PostForm("source"),
+		SHA:                c.PostForm("sha"),
+		Workloads:          c.PostFormArray("workloads"),
+		NumberOfExecutions: c.PostForm("numberOfExecutions"),
+		EnableProfile:      c.PostForm("enableProfiling") != "",
+		BinaryToProfile:    c.PostForm("binaryToProfile"),
+		ProfileMode:        c.PostForm("profileMode"),
+	}
 
-	if source == "" || sha == "" || len(workloads) == 0 || numberOfExecutions == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source and/or SHA"})
+	if requestPayload.Source == "" || requestPayload.SHA == "" || len(requestPayload.Workloads) == 0 || requestPayload.NumberOfExecutions == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source, SHA, workflows, numberOfExecutions"})
+		return
+	}
+
+	if requestPayload.EnableProfile && (requestPayload.BinaryToProfile == "" || requestPayload.ProfileMode == "") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "When enabling profiling, please provide a binary to profile and a mode"})
 		return
 	}
 
@@ -234,20 +261,12 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	encryptedToken, err := server.Encrypt(token.AccessToken, a.auth)
+	requestPayload.Auth, err = server.Encrypt(token.AccessToken, a.auth)
 
 	if err != nil {
 		slog.Error("Failed to encrypt token: ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt token"})
 		return
-	}
-
-	requestPayload := ExecutionRequest{
-		Auth:               encryptedToken,
-		Source:             source,
-		SHA:                sha,
-		Workloads:          workloads,
-		NumberOfExecutions: numberOfExecutions,
 	}
 
 	jsonData, err := json.Marshal(requestPayload)
@@ -258,10 +277,7 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	serverAPIURL := "http://traefik/api/executions/add"
-	if a.Mode == server.ProductionMode {
-		serverAPIURL = "https://benchmark.vitess.io/api/executions/add"
-	}
+	serverAPIURL := getAPIURL(a.Mode, "/executions/add")
 
 	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -288,4 +304,78 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Execution(s) added successfully"})
+}
+
+func (a *Admin) handleClearQueue(c *gin.Context) {
+	tokenKey, err := c.Cookie("tk")
+	if err != nil {
+		slog.Error("Failed to get token from cookie: ", err)
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	mu.Lock()
+	token, exists := tokens[tokenKey]
+	mu.Unlock()
+
+	if !exists {
+		slog.Error("Failed to get token from map")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	encryptedToken, err := server.Encrypt(token.AccessToken, a.auth)
+	if err != nil {
+		slog.Error("Failed to encrypt token: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt token"})
+		return
+	}
+
+	requestPayload := clearQueueRequest{
+		Auth: encryptedToken,
+	}
+
+	jsonData, err := json.Marshal(requestPayload)
+
+	if err != nil {
+		slog.Error("Failed to marshal request payload: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal request payload"})
+		return
+	}
+
+	serverAPIURL := getAPIURL(a.Mode, "/executions/clear")
+
+	req, err := http.NewRequest("POST", serverAPIURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		slog.Error("Failed to create new HTTP request: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request to server API"})
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		slog.Error("Failed to send request to server API: ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to server API"})
+		return
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusAccepted {
+		slog.Error("Server API returned an error: ", resp.Status)
+		c.JSON(resp.StatusCode, gin.H{"error": "Failed to process request on server API"})
+		return
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{"message": "Execution(s) added successfully"})
+}
+
+func getAPIURL(mode server.Mode, endpoint string) string {
+	serverAPIURL := "http://traefik/api" + endpoint
+	if mode == server.ProductionMode {
+		serverAPIURL = "https://benchmark.vitess.io/api" + endpoint
+	}
+	return serverAPIURL
 }

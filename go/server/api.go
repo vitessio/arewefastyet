@@ -19,6 +19,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"sort"
@@ -468,7 +469,7 @@ func (s *Server) requestRun(c *gin.Context) {
 	}
 
 	// create execution element
-	elem := s.createSimpleExecutionQueueElement(cfg, "custom_run", sha, workload, string(macrobench.Gen4Planner), false, 0, currVersion)
+	elem := s.createSimpleExecutionQueueElement(cfg, "custom_run", sha, workload, string(macrobench.Gen4Planner), false, 0, currVersion, nil)
 
 	// to new element to the queue
 	s.addToQueue(elem)
@@ -545,6 +546,9 @@ type ExecutionRequest struct {
 	SHA                string   `json:"sha"`
 	Workloads          []string `json:"workloads"`
 	NumberOfExecutions string   `json:"number_of_executions"`
+	EnableProfile      bool     `json:"enable_profile"`
+	BinaryToProfile    string   `json:"binary_to_profile"`
+	ProfileMode        string   `json:"profile_mode"`
 }
 
 func (s *Server) addExecutions(c *gin.Context) {
@@ -555,16 +559,8 @@ func (s *Server) addExecutions(c *gin.Context) {
 		return
 	}
 
-	decryptedToken, err := server.Decrypt(req.Auth, s.ghTokenSalt)
-	if err != nil {
-		slog.Error(err)
-		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
-		return
-	}
-
-	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
-	if err != nil || !isUserAuthenticated {
-		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "isUserAuthenticated Unauthorized"})
+	if err := s.handleAuthentication(c, req.Auth); err != nil {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: err.Error()})
 		return
 	}
 
@@ -583,21 +579,67 @@ func (s *Server) addExecutions(c *gin.Context) {
 	}
 	newElements := make([]*executionQueueElement, 0, execs*len(req.Workloads))
 
+	var profileInformation *exec.ProfileInformation
+	if req.EnableProfile {
+		profileInformation = &exec.ProfileInformation{
+			Binary: req.BinaryToProfile,
+			Mode:   req.ProfileMode,
+		}
+	}
+
 	for _, workload := range req.Workloads {
 		for i := 0; i < execs; i++ {
-			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, 0, git.Version{})
+			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, 0, git.Version{}, profileInformation)
 			elem.identifier.UUID = uuid.NewString()
 			newElements = append(newElements, elem)
 		}
 	}
 
-	s.appendToQueue(newElements)
+	addToQueue := func() {
+		mtx.Lock()
+		defer mtx.Unlock()
+		s.appendToQueue(newElements)
+	}
+	addToQueue()
 
 	c.JSON(http.StatusCreated, "")
 }
 
-func IsUserAuthenticated(accessToken string) (bool, error) {
+func (s *Server) clearExecutionQueue(c *gin.Context) {
+	var req struct {
+		Auth string `json:"auth"`
+	}
 
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if err := s.handleAuthentication(c, req.Auth); err != nil {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: err.Error()})
+		return
+	}
+
+	s.clearQueue()
+
+	c.JSON(http.StatusAccepted, "")
+}
+
+func (s *Server) handleAuthentication(c *gin.Context, auth string) error {
+	decryptedToken, err := server.Decrypt(auth, s.ghTokenSalt)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, &ErrorAPI{Error: "Unauthorized"})
+		return errors.New("unauthenticated")
+	}
+
+	isUserAuthenticated, err := IsUserAuthenticated(decryptedToken)
+	if err != nil || !isUserAuthenticated {
+		return errors.New("unauthenticated")
+	}
+	return nil
+}
+
+func IsUserAuthenticated(accessToken string) (bool, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
 	if err != nil {

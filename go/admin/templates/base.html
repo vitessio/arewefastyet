@@ -16,7 +16,11 @@
     {{ template "header.html" . }}
     <div class="flex h-full">
       <div class="bg-white w-1/5 h-full">{{ template "sidebar.html" . }}</div>
-      <div class="bg-white flex-1 p-8">{{ template "content.html" . }}</div>
+      {{ if eq .Page "newexec" }}
+      <div class="bg-white flex-1 p-8">{{ template "add_new_executions.html" . }}</div>
+      {{ else if eq .Page "clearqueue" }}
+      <div class="bg-white flex-1 p-8">{{ template "clear_queue.html" . }}</div>
+      {{ end }}
     </div>
   </body>
 </html>

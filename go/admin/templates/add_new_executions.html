@@ -1,0 +1,202 @@
+<div id="content">
+  <form>
+    <label class="text-lg font-semibold mt-4">Information</label>
+    <div>
+      <label class="label">Source (execution's trigger/reason)</label>
+      <input
+        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        type="text"
+        name="source"
+        value="admin"
+      />
+    </div>
+    <br>
+    <div>
+      <label class="label">SHA</label>
+      <input
+        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        type="text"
+        class="form-control"
+        name="sha"
+      />
+    </div>
+    <br>
+    <label class="text-lg font-semibold mt-4">Workloads</label>
+    <div class="flex flex-row gap-4">
+      <div class="flex flex-col">
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="all"
+            checked
+          />
+          All</label
+        >
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="OLTP"
+          />
+          OLTP</label
+        >
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="OLTP-READONLY"
+          />
+          OLTP-READONLY</label
+        >
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="OLTP-SET"
+          />
+          OLTP-SET</label
+        >
+      </div>
+      <div class="flex flex-col">
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="TPCC"
+          />
+          TPCC</label
+        >
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="TPCC_FK"
+          />
+          TPCC_FK</label
+        >
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="TPCC_FK_UNMANAGED"
+          />
+          TPCC_FK_UNMANAGED</label
+        >
+        <label
+          ><input
+            class="accent-orange-500"
+            type="checkbox"
+            name="workloads"
+            value="TPCC_UNSHARDED"
+          />
+          TPCC_UNSHARDED</label
+        >
+      </div>
+    </div>
+    <br>
+    <label class="text-lg font-semibold mt-4">Settings</label>
+    <div>
+      <label class="label">Number of executions</label>
+      <input
+        class="shadow appearance-none border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        type="number"
+        name="numberOfExecutions"
+        value="1"
+        min="1"
+        max="10"
+      />
+    </div>
+    <br>
+    <label class="text-lg font-semibold mt-4">Profiling</label>
+    <div class="flex items-center space-x-4">
+      <label class="label flex items-center space-x-2">
+        <span>Enable profiling</span>
+        <input
+                type="checkbox"
+                id="enableProfilingCheckbox"
+                name="enableProfiling"
+                class="mr-2"
+                onclick="toggleProfilingFields()"
+        />
+      </label>
+    </div>
+
+    <div id="profilingFields" class="flex items-center space-x-4 mt-4 hidden">
+      <label class="label">Binary to profile</label>
+      <select
+              class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              name="binaryToProfile"
+      >
+        <option value="" disabled selected>Select a binary</option>
+        <option value="binary1">vtgate</option>
+        <option value="binary2">vttablet</option>
+      </select>
+
+      <label class="label">Profile Mode</label>
+      <select
+              class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              name="profileMode"
+      >
+        <option value="" disabled selected>Select mode</option>
+        <option value="cpu">cpu</option>
+        <option value="mem_heap">mem_heap</option>
+        <option value="mem_allocs">mem_allocs</option>
+        <option value="mutex">mutex</option>
+        <option value="block">block</option>
+        <option value="trace">trace</option>
+        <option value="threads">threads</option>
+        <option value="goroutine">goroutine</option>
+      </select>
+    </div>
+
+    <br>
+    <button
+      hx-post="/admin/executions/add"
+      hx-target="#response"
+      class="bg-green-500 hover:green text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+      type="submit"
+      onclick="clearHelperText()"
+    >
+      Add Execution
+    </button>
+  </form>
+  <div id="response" class="mt-4"></div>
+</div>
+
+<script>
+  document.body.addEventListener("htmx:responseError", function (e) {
+    error = e.detail.xhr.response;
+    errorMessage = JSON.parse(error).error;
+    document.getElementById("response").classList.add("text-red-500");
+    document.getElementById("response").innerHTML = errorMessage;
+  });
+
+  // Display success on 201
+  document.body.addEventListener("htmx:afterOnLoad", function (e) {
+    if (e.detail.xhr.status == 201) {
+      document.getElementById("response").classList.remove("text-red-500");
+      document.getElementById("response").classList.add("text-green-500");
+      document.getElementById("response").innerHTML = "Execution added successfully!";
+    }
+  });
+
+  function clearHelperText() {
+    document.getElementById("response").innerHTML = "";
+  }
+
+  function toggleProfilingFields() {
+    const checkbox = document.getElementById('enableProfilingCheckbox');
+    const profilingFields = document.getElementById('profilingFields');
+
+    // Show the fields if checkbox is checked, otherwise hide them
+    profilingFields.classList.toggle('hidden', !checkbox.checked);
+  }
+</script>
