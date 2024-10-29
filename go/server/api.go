@@ -546,7 +546,7 @@ type ExecutionRequest struct {
 	SHA                string   `json:"sha"`
 	Workloads          []string `json:"workloads"`
 	NumberOfExecutions string   `json:"number_of_executions"`
-	EnableProfile      bool     `json:"enable_profile-"`
+	EnableProfile      bool     `json:"enable_profile"`
 	BinaryToProfile    string   `json:"binary_to_profile"`
 	ProfileMode        string   `json:"profile_mode"`
 }
