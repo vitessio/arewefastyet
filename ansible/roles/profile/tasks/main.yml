@@ -10,7 +10,7 @@
 # limitations under the License.
 
 ---
-- name: Stop profiling
+- name: Toggle profiling
   shell: |
     kill -s USR1 $(pgrep -d " " {{vitess_profile_binary}})
   when: vitess_profile_binary is defined
