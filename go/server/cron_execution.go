@@ -223,7 +223,7 @@ func (s *Server) cronExecutionQueueWatcher() {
 				if element.Executing {
 					continue
 				}
-				if element.identifier.equalWithoutUUID(nextExecuteElement.identifier) {
+				if nextExecuteElement.identifier.UUID != element.identifier.UUID && element.identifier.equalWithoutUUID(nextExecuteElement.identifier) {
 					nextBenchmarkIsTheSame = true
 					break
 				}
