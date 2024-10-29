@@ -131,20 +131,31 @@
 
     <div id="profilingFields" class="flex items-center space-x-4 mt-4 hidden">
       <label class="label">Binary to profile</label>
-      <input
+      <select
               class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="text"
               name="binaryToProfile"
-      />
+      >
+        <option value="" disabled selected>Select a binary</option>
+        <option value="binary1">vtgate</option>
+        <option value="binary2">vttablet</option>
+      </select>
 
       <label class="label">Profile Mode</label>
-      <input
-              class="shadow appearance-none border rounded w-20 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="text"
+      <select
+              class="shadow appearance-none border rounded w-40 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               name="profileMode"
-      />
+      >
+        <option value="" disabled selected>Select mode</option>
+        <option value="cpu">cpu</option>
+        <option value="mem_heap">mem_heap</option>
+        <option value="mem_allocs">mem_allocs</option>
+        <option value="mutex">mutex</option>
+        <option value="block">block</option>
+        <option value="trace">trace</option>
+        <option value="threads">threads</option>
+        <option value="goroutine">goroutine</option>
+      </select>
     </div>
-
 
     <br>
     <button
