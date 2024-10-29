@@ -40,8 +40,18 @@
         tasks_from: install
 
 - hosts: macrobench
+  include_role:
+    name: profile
+    tasks_from: start
+
+- hosts: macrobench
   roles:
     - macrobench
+
+- hosts: macrobench
+  include_role:
+    name: profile
+    tasks_from: stop
 
 - name: Clean Post Macrobench
   when: arewefastyet_next_exec_is_same is undefined
