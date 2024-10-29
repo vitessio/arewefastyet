@@ -595,7 +595,12 @@ func (s *Server) addExecutions(c *gin.Context) {
 		}
 	}
 
-	s.appendToQueue(newElements)
+	addToQueue := func() {
+		mtx.Lock()
+		defer mtx.Unlock()
+		s.appendToQueue(newElements)
+	}
+	addToQueue()
 
 	c.JSON(http.StatusCreated, "")
 }
