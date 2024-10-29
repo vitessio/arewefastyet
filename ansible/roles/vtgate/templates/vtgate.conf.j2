@@ -23,8 +23,8 @@ EXTRA_VTGATE_FLAGS="\
 		--vtgate-config-terse-errors \
 		--tablet_types_to_wait REPLICA \
 		{% if vitess_profile_binary == 'vtgate' %}\
-    --pprof=\"{{vitess_profile_mode}},waitSig,path=/pprof/{{arewefastyet_exec_uuid}}/vtgate-{{ gateway.id }}\" \
-    {% endif %}\
+		--pprof=\"{{vitess_profile_mode}},waitSig,path=/pprof/{{arewefastyet_exec_uuid}}/vtgate-{{ gateway.id }}\" \
+		{% endif %}\
 		{{gateway.extra_flags|default("")}} \
 		{{extra_vtgate_flags|default("")}} \
 "

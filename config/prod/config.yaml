@@ -1,12 +1,8 @@
 exec-go-version: "1.22.0"
 
-#web-cron-schedule: "@midnight"
-#web-cron-schedule-pull-requests: "*/5 * * * *"
-#web-cron-schedule-tags: "*/1 * * * *"
-
-web-cron-schedule: "none"
-web-cron-schedule-pull-requests: "none"
-web-cron-schedule-tags: "none"
+web-cron-schedule: "@midnight"
+web-cron-schedule-pull-requests: "*/5 * * * *"
+web-cron-schedule-tags: "*/1 * * * *"
 
 web-port: 8080
 web-benchmark-config-path: ./config/benchmarks/
