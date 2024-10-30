@@ -52,13 +52,13 @@ interface DataTableProps<TData, TValue> {
 export function PreviousExecutionQueueTable<TData, TValue>({
   columns,
   data,
-  filterConfigs
+  filterConfigs,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -86,7 +86,7 @@ export function PreviousExecutionQueueTable<TData, TValue>({
 
   return (
     <div>
-      <DataTableToolbar table={table} filterConfigs={filterConfigs}/>
+      <DataTableToolbar table={table} filterConfigs={filterConfigs} />
       <div className="rounded-md border-border border">
         <Table>
           <TableHeader>
@@ -102,7 +102,7 @@ export function PreviousExecutionQueueTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -122,7 +122,7 @@ export function PreviousExecutionQueueTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
