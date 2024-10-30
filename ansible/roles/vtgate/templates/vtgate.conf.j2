@@ -22,7 +22,7 @@ EXTRA_VTGATE_FLAGS="\
 		--vschema_ddl_authorized_users \"%\" \
 		--vtgate-config-terse-errors \
 		--tablet_types_to_wait REPLICA \
-		{% if vitess_profile_binary == 'vtgate' %}\
+		{% if vitess_profile_binary is defined and vitess_profile_binary == 'vtgate' %}\
 		--pprof=\"{{vitess_profile_mode}},waitSig,path=/pprof/{{arewefastyet_exec_uuid}}/vtgate-{{ gateway.id }}\" \
 		{% endif %}\
 		{{gateway.extra_flags|default("")}} \

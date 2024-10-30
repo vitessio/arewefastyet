@@ -44,7 +44,7 @@ EXTRA_VTTABLET_FLAGS="--alsologtostderr \
     {% endif %}
     --grpc_max_message_size=67108864 \
     --db_charset=utf8 \
-    {% if vitess_profile_binary == 'vttablet' %}\
+    {% if vitess_profile_binary is defined and vitess_profile_binary == 'vttablet' %}\
       --pprof=\"{{vitess_profile_mode}},waitSig,path=/pprof/{{arewefastyet_exec_uuid}}/vttablet-{{ tablet.id }}\" \
     {% endif %}\
     {{ tablet.extra_flags | default("") }} \
