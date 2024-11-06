@@ -277,7 +277,7 @@ func (s *Server) tagsCronHandler() {
 
 	configs := s.getConfigFiles()
 
-	releases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
+	releases, err := git.GetSupportedVitessReleases(s.getVitessPath())
 	if err != nil {
 		slog.Error(err)
 		return

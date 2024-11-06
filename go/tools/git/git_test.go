@@ -314,7 +314,7 @@ func TestGetLatestVitessReleaseCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
 	defer os.RemoveAll(tmpDir)
 	qt.Assert(t, err, qt.IsNil)
-	out, err := GetLatestVitessReleaseCommitHash(vitessPath)
+	out, err := GetSupportedVitessReleases(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
 	for _, release := range out {
 		qt.Assert(t, len(release.CommitHash), qt.Equals, 40)

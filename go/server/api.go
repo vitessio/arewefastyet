@@ -150,7 +150,7 @@ type VitessGitRefReleases struct {
 
 func (s *Server) getLatestVitessGitRef(c *gin.Context) {
 	var response VitessGitRefReleases
-	allReleases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
+	allReleases, err := git.GetAllComparableVitessReleases(s.getVitessPath())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: err.Error()})
 		slog.Error(err)

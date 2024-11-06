@@ -132,8 +132,11 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 	return res, nil
 }
 
-// GetLatestVitessReleaseCommitHash gets the lastest major vitess releases and the commit hashes given the directory of the clone of vitess
-func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
+// GetSupportedVitessReleases returns a slice of all the currently supported Vitess releases.
+// The last 3 releases are the currently supported releases.
+// With the VEP-6 (https://github.com/vitessio/enhancements/pull/12), starting from when we EOL v20.0
+// only two major releases will be supported in Vitess.
+func GetSupportedVitessReleases(repoDir string) ([]*Release, error) {
 	allReleases, err := GetAllVitessReleaseCommitHash(repoDir)
 	if err != nil || len(allReleases) == 0 {
 		return nil, err
@@ -147,6 +150,27 @@ func GetLatestVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 		}
 	}
 	return latestReleases, nil
+}
+
+// GetAllComparableVitessReleases returns a slice of all the Vitess releases that can safely be
+// compared in arewefastyet. Meaning, all the releases that have been benchmarked with a compatible
+// methodology as the one currently used in arewefastyet.
+func GetAllComparableVitessReleases(repoDir string) ([]*Release, error) {
+	allReleases, err := GetAllVitessReleaseCommitHash(repoDir)
+	if err != nil || len(allReleases) == 0 {
+		return nil, err
+	}
+	var comparableReleases []*Release
+
+	// This is the oldest major version of Vitess that contains up-to-date results on arewefastyet.
+	const firstComparableReleaseMajorVersion = 18
+	for _, release := range allReleases {
+		if release.Version.Major >= firstComparableReleaseMajorVersion {
+			comparableReleases = append(comparableReleases, release)
+		}
+	}
+
+	return comparableReleases, nil
 }
 
 // GetAllVitessReleaseBranchCommitHash gets all the vitess release branches and the commit hashes given the directory of the clone of vitess
