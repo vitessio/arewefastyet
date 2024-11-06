@@ -56,8 +56,8 @@ func GetPlannerVersions() []macrobench.PlannerVersion {
 	return []macrobench.PlannerVersion{macrobench.Gen4Planner}
 }
 
-// GetAllVitessReleaseCommitHash gets all the vitess releases and the commit hashes given the directory of the clone of vitess
-func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
+// getAllVitessReleases gets all the vitess releases and the commit hashes given the directory of the clone of vitess
+func getAllVitessReleases(repoDir string) ([]*Release, error) {
 	out, err := ExecCmd(repoDir, "git", "show-ref", "--tags", "-d")
 	if err != nil {
 		return nil, err
@@ -137,7 +137,7 @@ func GetAllVitessReleaseCommitHash(repoDir string) ([]*Release, error) {
 // With the VEP-6 (https://github.com/vitessio/enhancements/pull/12), starting from when we EOL v20.0
 // only two major releases will be supported in Vitess.
 func GetSupportedVitessReleases(repoDir string) ([]*Release, error) {
-	allReleases, err := GetAllVitessReleaseCommitHash(repoDir)
+	allReleases, err := getAllVitessReleases(repoDir)
 	if err != nil || len(allReleases) == 0 {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func GetSupportedVitessReleases(repoDir string) ([]*Release, error) {
 // compared in arewefastyet. Meaning, all the releases that have been benchmarked with a compatible
 // methodology as the one currently used in arewefastyet.
 func GetAllComparableVitessReleases(repoDir string) ([]*Release, error) {
-	allReleases, err := GetAllVitessReleaseCommitHash(repoDir)
+	allReleases, err := getAllVitessReleases(repoDir)
 	if err != nil || len(allReleases) == 0 {
 		return nil, err
 	}
@@ -238,18 +238,18 @@ func GetLatestVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) 
 	return latestReleaseBranches, nil
 }
 
-// GetLastReleaseAndCommitHash gets the last release number along with the commit hash given the directory of the clone of vitess
-func GetLastReleaseAndCommitHash(repoDir string) (*Release, error) {
-	res, err := GetAllVitessReleaseCommitHash(repoDir)
+// GetLastestRelease gets the last release number along with the commit hash given the directory of the clone of vitess
+func GetLastestRelease(repoDir string) (*Release, error) {
+	res, err := getAllVitessReleases(repoDir)
 	if err != nil {
 		return nil, err
 	}
 	return res[0], nil
 }
 
-// GetLastPatchReleaseAndCommitHash gets the last release number given the major and minor release number along with the commit hash given the directory of the clone of vitess
-func GetLastPatchReleaseAndCommitHash(repoDir string, version Version) (*Release, error) {
-	res, err := GetAllVitessReleaseCommitHash(repoDir)
+// GetLastestPatchReleaseOfGivenMajorVersion gets the last release number given the major and minor release number along with the commit hash given the directory of the clone of vitess
+func GetLastestPatchReleaseOfGivenMajorVersion(repoDir string, version Version) (*Release, error) {
+	res, err := getAllVitessReleases(repoDir)
 	if err != nil {
 		return nil, err
 	}
@@ -365,7 +365,7 @@ func GetVersionForCommitSHA(repoDir, sha string) (Version, error) {
 	matchRelease := regexp.MustCompile(`release-([0-9]+).0`)
 	for _, branch := range branches {
 		if strings.Contains(branch, "origin/main") {
-			lastRelease, err := GetLastReleaseAndCommitHash(repoDir)
+			lastRelease, err := GetLastestRelease(repoDir)
 			if err != nil {
 				return Version{}, err
 			}
@@ -380,7 +380,7 @@ func GetVersionForCommitSHA(repoDir, sha string) (Version, error) {
 			if err != nil {
 				return Version{}, err
 			}
-			lastPatch, err := GetLastPatchReleaseAndCommitHash(repoDir, Version{Major: majorV})
+			lastPatch, err := GetLastestPatchReleaseOfGivenMajorVersion(repoDir, Version{Major: majorV})
 			if err != nil {
 				return Version{}, err
 			}
