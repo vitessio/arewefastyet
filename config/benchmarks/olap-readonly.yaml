@@ -3,7 +3,7 @@ exec-workload: oltp-readonly-olap
 exec-schema: "./vitess-benchmark/sysbench.json"
 
 ## Minimum Vitess version on which the benchmark should be executed
-minimum-version: 18
+minimum-version: 14
 
 ## Ansible
 ansible-inventory-file: macrobench_sharded_inventory.yml
@@ -41,5 +41,5 @@ macrobench_run_warmup-time: 20
 
 # Vitess Extra Flags
 exec-vitess-config:
-  18: # will match >= v19.0.0
-    vtgate: -mysql_default_workload=OLAP
+  14: # will match >= v14.0.0
+    vtgate: --mysql_default_workload=OLAP
