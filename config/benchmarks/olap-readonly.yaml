@@ -41,7 +41,5 @@ macrobench_run_warmup-time: 20
 
 # Vitess Extra Flags
 exec-vitess-config:
-  12: # will match >= v12.0.0
-    vtgate: -mysql_default_workload=OLAP
   14: # will match >= v14.0.0
     vtgate: --mysql_default_workload=OLAP

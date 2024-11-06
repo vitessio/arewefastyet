@@ -182,24 +182,24 @@ func (s *Server) Init() error {
 	s.benchmarkConfig = map[string]benchmarkConfig{
 		// "micro":         {file: path.Join(s.benchmarkConfigPath, "micro.yaml"), v: viper.New(), skip: true},
 		"oltp":          {file: path.Join(s.benchmarkConfigPath, "oltp.yaml"), v: viper.New()},
-		"oltp-set":      {file: path.Join(s.benchmarkConfigPath, "oltp-set.yaml"), v: viper.New()},
 		"oltp-readonly": {file: path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"), v: viper.New()},
 
 		// TODO: oltp-readonly-olap benchmarks are skipped for now as they fail very often due to
 		// MySQL connections being dropped. This issue will be investigated soon.
-		"oltp-readonly-olap": {file: path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"), v: viper.New(), skip: true},
+		// "oltp-readonly-olap": {file: path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"), v: viper.New(), skip: true},
 
 		"tpcc":              {file: path.Join(s.benchmarkConfigPath, "tpcc.yaml"), v: viper.New()},
-		"tpcc_unsharded":    {file: path.Join(s.benchmarkConfigPath, "tpcc_unsharded.yaml"), v: viper.New()},
-		"tpcc_fk":           {file: path.Join(s.benchmarkConfigPath, "tpcc_fk.yaml"), v: viper.New()},
-		"tpcc_fk_unmanaged": {file: path.Join(s.benchmarkConfigPath, "tpcc_fk_unmanaged.yaml"), v: viper.New()},
+		"tpcc_unsharded":    {file: path.Join(s.benchmarkConfigPath, "tpcc_unsharded.yaml"), v: viper.New(), skip: true},
+		"tpcc_fk":           {file: path.Join(s.benchmarkConfigPath, "tpcc_fk.yaml"), v: viper.New(), skip: true},
+		"tpcc_fk_unmanaged": {file: path.Join(s.benchmarkConfigPath, "tpcc_fk_unmanaged.yaml"), v: viper.New(), skip: true},
 	}
 	for workload, config := range s.benchmarkConfig {
 		config.v.SetConfigFile(config.file)
 		if err := config.v.ReadInConfig(); err != nil {
 			slog.Error(err)
 		}
-		if workload == "micro" {
+		// skipping tpcc unsharded and fk workload for comparison
+		if workload == "micro" || strings.Contains(workload, "tpcc_") {
 			continue
 		}
 		s.workloads = append(s.workloads, strings.ToUpper(workload))
