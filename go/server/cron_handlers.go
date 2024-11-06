@@ -66,7 +66,7 @@ func (s *Server) mainBranchCronHandler() ([]*executionQueueElement, error) {
 	}
 
 	// getting the latest release from local fork of Vitess
-	lastRelease, err := git.GetLastReleaseAndCommitHash(vitessPath)
+	lastRelease, err := git.GetLastestRelease(vitessPath)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (s *Server) releaseBranchesCronHandler() ([]*executionQueueElement, error) 
 	for _, release := range releases {
 		ref := release.CommitHash
 		source := exec.SourceReleaseBranch + release.Name
-		lastPatchRelease, err := git.GetLastPatchReleaseAndCommitHash(vitesLocalPath, release.Version)
+		lastPatchRelease, err := git.GetLastestPatchReleaseOfGivenMajorVersion(vitesLocalPath, release.Version)
 		if err != nil && !strings.Contains(err.Error(), "could not find the latest patch release") {
 			slog.Warn(err.Error())
 			continue
@@ -277,7 +277,7 @@ func (s *Server) tagsCronHandler() {
 
 	configs := s.getConfigFiles()
 
-	releases, err := git.GetLatestVitessReleaseCommitHash(s.getVitessPath())
+	releases, err := git.GetSupportedVitessReleases(s.getVitessPath())
 	if err != nil {
 		slog.Error(err)
 		return

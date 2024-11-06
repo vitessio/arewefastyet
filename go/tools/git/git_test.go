@@ -51,7 +51,7 @@ func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
 	defer os.RemoveAll(tmpDir)
 	qt.Assert(t, err, qt.IsNil)
-	s, err := GetAllVitessReleaseCommitHash(vitessPath)
+	s, err := getAllVitessReleases(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
 
 	// ordered releases from v10.0.1 to v9.0.0-rc1
@@ -85,7 +85,7 @@ func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
 	defer os.RemoveAll(tmpDir)
 	qt.Assert(t, err, qt.IsNil)
-	s, err := GetAllVitessReleaseCommitHash(vitessPath)
+	s, err := getAllVitessReleases(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
 	qt.Assert(t, s, qt.Any(qt.DeepEquals), &Release{
 		Name:       "5.0.1",
@@ -314,7 +314,7 @@ func TestGetLatestVitessReleaseCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
 	defer os.RemoveAll(tmpDir)
 	qt.Assert(t, err, qt.IsNil)
-	out, err := GetLatestVitessReleaseCommitHash(vitessPath)
+	out, err := GetSupportedVitessReleases(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
 	for _, release := range out {
 		qt.Assert(t, len(release.CommitHash), qt.Equals, 40)
