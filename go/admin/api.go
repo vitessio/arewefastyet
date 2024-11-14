@@ -22,7 +22,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -337,8 +336,6 @@ func (a *Admin) handleClearQueue(c *gin.Context) {
 		Auth:                  encryptedToken,
 		RemoveAdminExecutions: c.PostForm("remove_admin") == "true",
 	}
-
-	log.Println(requestPayload)
 
 	jsonData, err := json.Marshal(requestPayload)
 
