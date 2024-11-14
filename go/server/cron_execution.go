@@ -183,31 +183,58 @@ func (s *Server) getNumberOfBenchmarksInDB(identifier executionIdentifier) (int,
 	return nb, nil
 }
 
+// cronExecutionQueueWatcher runs an infinite loop that watches the execution queue
+// it will send an item to the Executor based on different priority rules ordered that way:
+//  0. No executions that are in progress will get executed
+//  1. Admin executions always get executed first no matter what
+//  2. Execution of the same type (workload/commit) will be executed sequentially
+//  3. If none of this priority match, a random element is picked
 func (s *Server) cronExecutionQueueWatcher() {
 	var lastExecutedId executionIdentifier
 	queueWatch := func() {
 		mtx.Lock()
 		defer mtx.Unlock()
-		if currentCountExec >= maxConcurJob {
+		if currentCountExec >= maxConcurJob || len(queue) == 0 {
 			return
 		}
 
-		// Prioritize executing the same configuration of benchmark in a row
+		// Look for what's in the queue, specifically here is what we look for:
+		// 	- An execution that matches the previous execution
+		// 	- The first admin execution
 		var lastBenchmarkIsTheSame bool
 		var nextExecuteElement *executionQueueElement
+		var firstAdminExecuteElement *executionQueueElement
 		for _, element := range queue {
 			if element.Executing {
 				continue
 			}
-			if element.identifier.equalWithoutUUID(lastExecutedId) {
+
+			// Look if there is a matching execution in the queue
+			if nextExecuteElement == nil && element.identifier.equalWithoutUUID(lastExecutedId) {
 				nextExecuteElement = element
 				lastBenchmarkIsTheSame = true
+			}
+
+			// Look if there is any admin execution in the queue
+			if firstAdminExecuteElement == nil && element.identifier.Source == "admin" {
+				firstAdminExecuteElement = element
+			}
+
+			// If both the first admin and next execution are not nil, we found what we want, we can stop
+			if nextExecuteElement != nil && firstAdminExecuteElement != nil {
 				break
 			}
 		}
 
+		// If we found an admin execution and the next execution we found is either nil or not an admin
+		// we force execute the first admin execution we found.
+		if firstAdminExecuteElement != nil && (nextExecuteElement == nil || nextExecuteElement.identifier.Source != "admin") {
+			nextExecuteElement = firstAdminExecuteElement
+			lastBenchmarkIsTheSame = false
+		}
+
 		// If we did not find any matching element just go to the first one which is not executing
-		if nextExecuteElement == nil {
+		if firstAdminExecuteElement == nil && nextExecuteElement == nil {
 			for _, element := range queue {
 				if !element.Executing {
 					nextExecuteElement = element

@@ -19,6 +19,8 @@
 package api
 
 import (
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/vitessio/arewefastyet/go/server"
 )
@@ -30,6 +32,7 @@ func ApiCmd() *cobra.Command {
 		Use:   "api",
 		Short: "Starts the api server of arewefastyet and the CRON service",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			log.Println("Starting server...")
 			err := srv.Init()
 			if err != nil {
 				return err
