@@ -43,10 +43,12 @@ type ErrorAPI struct {
 }
 
 type ExecutionQueue struct {
-	Source   string `json:"source"`
-	GitRef   string `json:"git_ref"`
-	Workload string `json:"workload"`
-	PullNb   int    `json:"pull_nb"`
+	Source        string `json:"source"`
+	GitRef        string `json:"git_ref"`
+	Workload      string `json:"workload"`
+	PullNb        int    `json:"pull_nb"`
+	ProfileBinary string `json:"profile_binary"`
+	ProfileMode   string `json:"profile_mode"`
 }
 
 type RecentExecutions struct {
@@ -59,6 +61,8 @@ type RecentExecutions struct {
 	GolangVersion string     `json:"golang_version"`
 	StartedAt     *time.Time `json:"started_at"`
 	FinishedAt    *time.Time `json:"finished_at"`
+	ProfileBinary string     `json:"profile_binary"`
+	ProfileMode   string     `json:"profile_mode"`
 }
 
 type ExecutionMetadatas struct {
@@ -102,6 +106,8 @@ func (s *Server) getRecentExecutions(c *gin.Context) {
 			GolangVersion: e.GolangVersion,
 			StartedAt:     e.StartedAt,
 			FinishedAt:    e.FinishedAt,
+			ProfileBinary: e.ProfileInformation.Binary,
+			ProfileMode:   e.ProfileInformation.Mode,
 		})
 		if !slices.Contains(response.Workloads, e.Workload) {
 			response.Workloads = append(response.Workloads, e.Workload)
@@ -124,11 +130,18 @@ func (s *Server) getExecutionsQueue(c *gin.Context) {
 		if e.Executing {
 			continue
 		}
+		var profileBinary, profileMode string
+		if e.identifier.Profile != nil {
+			profileBinary = e.identifier.Profile.Binary
+			profileMode = e.identifier.Profile.Mode
+		}
 		response.Executions = append(response.Executions, ExecutionQueue{
-			Source:   e.identifier.Source,
-			GitRef:   e.identifier.GitRef,
-			Workload: e.identifier.Workload,
-			PullNb:   e.identifier.PullNb,
+			Source:        e.identifier.Source,
+			GitRef:        e.identifier.GitRef,
+			Workload:      e.identifier.Workload,
+			PullNb:        e.identifier.PullNb,
+			ProfileBinary: profileBinary,
+			ProfileMode:   profileMode,
 		})
 		if !slices.Contains(response.Workloads, e.identifier.Workload) {
 			response.Workloads = append(response.Workloads, e.identifier.Workload)
