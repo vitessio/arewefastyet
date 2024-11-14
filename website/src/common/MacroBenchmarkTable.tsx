@@ -46,6 +46,43 @@ export type MacroBenchmarkTableProps = {
   vitessRefs: VitessRefs | undefined;
 };
 
+const getSignificanceBadge = (p: number) => {
+  let backgroundColor = "";
+  let textColor = "";
+  let val = fixed(p, 3)
+
+  if (p <= 0.01) {
+    backgroundColor = "#2E7D32"
+    textColor = "#FFFFFF"
+  } else if (p <= 0.05) {
+    backgroundColor = "#388E3C"
+    textColor = "#FFFFFF"
+  } else if (p <= 0.10) {
+    backgroundColor = "#6A9A1F"
+    textColor = "#FFFFFF"
+  } else {
+    backgroundColor = "#9E9E9E"
+    textColor = "#000000"
+  }
+
+  return (
+      <Badge style={{backgroundColor: backgroundColor, color: textColor}}>
+        {val}
+      </Badge>
+  );
+};
+
+const getSignificanceText = (p: number) => {
+  if (p <= 0.01) {
+    return "Statistically Significant";
+  } else if (p <= 0.05) {
+    return "Moderate Significance";
+  } else if (p <= 0.10) {
+    return "Marginal Significance";
+  }
+  return "Not Statistically Significant";
+};
+
 const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
   if (delta === 0) {
     return "warning";
@@ -180,24 +217,20 @@ export default function MacroBenchmarkTable({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div>
-                        <Badge
-                          variant={row.p > 0.05 ? "destructive" : "success"}
-                        >
-                          {fixed(row.p, 3)}
-                        </Badge>
+                        {getSignificanceBadge(row.p)}
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>
-                        {row.insignificant ? "Insignificant" : "Significant"}
+                        {getSignificanceText(row.p)}
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </TableCell>
               <TableCell className="lg:w-[150px] text-center text-front">
-                {row.insignificant && <>{fixed(row.delta, 3)}%</>}
-                {!row.insignificant && (
+                {row.p > 0.1 && <>{fixed(row.delta, 3)}%</>}
+                {row.p <= 0.1 && (
                   <Badge variant={getDeltaBadgeVariant(key, row.delta, row.p)}>
                     {fixed(row.delta, 3)}%
                   </Badge>
