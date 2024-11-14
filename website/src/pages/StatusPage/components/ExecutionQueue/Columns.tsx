@@ -29,6 +29,8 @@ export type ExecutionQueueExecution = {
   git_ref: string;
   workload: string;
   pull_nb: number;
+  profile_binary: string;
+  profile_mode: string;
 };
 
 export const columns: ColumnDef<ExecutionQueueExecution>[] = [
@@ -72,5 +74,18 @@ export const columns: ColumnDef<ExecutionQueueExecution>[] = [
         </div>
       );
     },
+  },
+  {
+    header: "Profile",
+    accessorKey: "profile_binary",
+    cell: ({row}) => {
+      if (row.original.profile_mode !== "" && row.original.profile_binary !== "") {
+        return (
+            <div>
+              <Badge variant={"progress"}>{row.original.profile_binary}|{row.original.profile_mode}</Badge>
+            </div>
+        )
+      }
+    }
   },
 ];

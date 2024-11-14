@@ -63,6 +63,8 @@ export default function ExecutionQueue() {
         git_ref: value.git_ref,
         workload: value.workload,
         pull_nb: value.pull_nb,
+        profile_binary: value.profile_binary,
+        profile_mode: value.profile_mode,
       };
     });
 

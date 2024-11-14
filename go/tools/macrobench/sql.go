@@ -53,6 +53,7 @@ func getExecutionGroupResults(workload string, ref string, planner PlannerVersio
             metrics AS m ON e.uuid = m.exec_uuid
         WHERE 
             e.status = 'finished'
+            AND e.profile_binary IS NULL
             AND e.git_ref = ? 
             AND info.vtgate_planner_version = ? 
             AND info.workload = ?
@@ -156,6 +157,7 @@ func getExecutionGroupResultsFromLast30Days(workload string, planner PlannerVers
             metrics AS m ON e.uuid = m.exec_uuid
         WHERE 
             e.finished_at BETWEEN DATE(NOW()) - INTERVAL 30 DAY AND DATE(NOW() + INTERVAL 1 DAY)
+            AND e.profile_binary IS NULL
             AND e.source = 'cron'
             AND e.status = 'finished'
             AND info.vtgate_planner_version = ? 
@@ -262,7 +264,8 @@ func getSummaryLast30Days(workload string, planner PlannerVersion, client storag
         JOIN 
             macrobenchmark_results AS results ON info.macrobenchmark_id = results.macrobenchmark_id
         WHERE 
-            e.finished_at BETWEEN DATE(NOW()) - INTERVAL 30 DAY AND DATE(NOW() + INTERVAL 1 DAY) 
+            e.finished_at BETWEEN DATE(NOW()) - INTERVAL 30 DAY AND DATE(NOW() + INTERVAL 1 DAY)
+            AND e.profile_binary IS NULL
             AND e.status = "finished" 
             AND e.source = "cron" 
             AND info.vtgate_planner_version = ? 

@@ -279,16 +279,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Write(
-		"INSERT INTO execution(uuid, status, source, git_ref, workload, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		e.UUID.String(),
-		StatusCreated,
-		e.Source,
-		e.GitRef,
-		e.Workload,
-		e.PullNB,
-		e.GolangVersion,
-	); err != nil {
+	if err = e.insert(); err != nil {
 		return err
 	}
 	e.createdInDB = true
@@ -435,17 +426,35 @@ func (e *Exec) handleStepEnd(err error) {
 	}
 }
 
+func (e *Exec) insert() error {
+	_, err := e.clientDB.Write("INSERT INTO execution(uuid, status, source, git_ref, workload, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		e.UUID.String(),
+		StatusCreated,
+		e.Source,
+		e.GitRef,
+		e.Workload,
+		e.PullNB,
+		e.GolangVersion,
+	)
+	if e.ProfileInformation != nil {
+		_, err = e.clientDB.Write("UPDATE execution SET profile_binary = ?, profile_mode = ? WHERE uuid = ?", e.ProfileInformation.Binary, e.ProfileInformation.Mode, e.UUID.String())
+	}
+	return err
+}
+
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	var res []*Exec
-	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, workload, pull_nb, go_version FROM execution ORDER BY started_at DESC LIMIT 1000"
+	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, workload, pull_nb, go_version, IFNULL(profile_binary, ''), IFNULL(profile_mode, '') FROM execution ORDER BY started_at DESC LIMIT 1000"
 	result, err := client.Read(query)
 	if err != nil {
 		return nil, err
 	}
 	defer result.Close()
 	for result.Next() {
-		exec := &Exec{}
-		err = result.Scan(&exec.RawUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.Workload, &exec.PullNB, &exec.GolangVersion)
+		exec := &Exec{
+			ProfileInformation: &ProfileInformation{},
+		}
+		err = result.Scan(&exec.RawUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.Workload, &exec.PullNB, &exec.GolangVersion, &exec.ProfileInformation.Binary, &exec.ProfileInformation.Mode)
 		if err != nil {
 			return nil, err
 		}
@@ -534,23 +543,6 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, workl
 	return
 }
 
-// GetLatestDailyJobForMicrobenchmarks will fetch and return the commit sha for which
-// the last daily job for microbenchmarks was run
-func GetLatestDailyJobForMicrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
-	query := "select git_ref from execution where source = \"cron\" and status = \"finished\" and workload = \"micro\" order by started_at desc limit 1"
-	rows, err := client.Read(query)
-	if err != nil {
-		return "", err
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&gitSha)
-		return gitSha, err
-	}
-	return "", nil
-}
-
 // GetLatestDailyJobForMacrobenchmarks will fetch and return the commit sha for which
 // the last daily job for macrobenchmarks was run
 func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha string, err error) {
@@ -579,7 +571,7 @@ func Exists(client storage.SQLClient, gitRef, source, workload, status string) (
 }
 
 func CountMacroBenchmark(client storage.SQLClient, gitRef, source, workload, status, planner string) (int, error) {
-	query := "SELECT count(uuid) FROM execution e, macrobenchmark m WHERE e.status = ? AND e.git_ref = ? AND e.workload = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
+	query := "SELECT count(uuid) FROM execution e, macrobenchmark m WHERE e.profile_binary IS NULL AND e.status = ? AND e.git_ref = ? AND e.workload = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
 	result, err := client.Read(query, status, gitRef, workload, source, planner)
 	if err != nil {
 		return 0, err
@@ -633,7 +625,7 @@ func GetHistory(client storage.SQLClient) ([]*History, error) {
 					source,
 					workload
 				HAVING
-					COUNT(*) >= 10
+					COUNT(*) >= 1
 			) AS subquery
 			GROUP BY
 				git_ref,

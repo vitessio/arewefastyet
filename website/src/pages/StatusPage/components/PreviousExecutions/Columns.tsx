@@ -35,6 +35,8 @@ export type PreviousExecutionExecution = {
   golang_version: string;
   started_at: string;
   finished_at: string;
+  profile_binary: string;
+  profile_mode: string;
 };
 
 export type PreviousExecution = {
@@ -169,6 +171,19 @@ export const columns: ColumnDef<PreviousExecutionExecution>[] = [
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
+  },
+  {
+    header: "Profile",
+    accessorKey: "profile_binary",
+    cell: ({row}) => {
+      if (row.original.profile_mode !== "" && row.original.profile_binary !== "") {
+        return (
+            <div>
+              <Badge variant={"progress"}>{row.original.profile_binary}|{row.original.profile_mode}</Badge>
+            </div>
+        )
+      }
+    }
   },
   {
     id: "actions",
