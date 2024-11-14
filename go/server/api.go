@@ -607,7 +607,8 @@ func (s *Server) addExecutions(c *gin.Context) {
 
 func (s *Server) clearExecutionQueue(c *gin.Context) {
 	var req struct {
-		Auth string `json:"auth"`
+		Auth                  string `json:"auth"`
+		RemoveAdminExecutions bool   `json:"remove_admin_executions"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -620,7 +621,7 @@ func (s *Server) clearExecutionQueue(c *gin.Context) {
 		return
 	}
 
-	s.clearQueue()
+	s.clearQueue(req.RemoveAdminExecutions)
 
 	c.JSON(http.StatusAccepted, "")
 }
