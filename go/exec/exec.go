@@ -279,16 +279,7 @@ func (e *Exec) Prepare() error {
 	}
 
 	// insert new exec in SQL
-	if _, err = e.clientDB.Write(
-		"INSERT INTO execution(uuid, status, source, git_ref, workload, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
-		e.UUID.String(),
-		StatusCreated,
-		e.Source,
-		e.GitRef,
-		e.Workload,
-		e.PullNB,
-		e.GolangVersion,
-	); err != nil {
+	if err = e.insert(); err != nil {
 		return err
 	}
 	e.createdInDB = true
@@ -433,6 +424,22 @@ func (e *Exec) handleStepEnd(err error) {
 	if err != nil {
 		_, _ = e.clientDB.Write("UPDATE execution SET finished_at = CURRENT_TIME, status = ? WHERE uuid = ?", StatusFailed, e.UUID.String())
 	}
+}
+
+func (e *Exec) insert() error {
+	_, err := e.clientDB.Write("INSERT INTO execution(uuid, status, source, git_ref, workload, pull_nb, go_version) VALUES(?, ?, ?, ?, ?, ?, ?)",
+		e.UUID.String(),
+		StatusCreated,
+		e.Source,
+		e.GitRef,
+		e.Workload,
+		e.PullNB,
+		e.GolangVersion,
+	)
+	if e.ProfileInformation != nil {
+		_, err = e.clientDB.Write("UPDATE execution SET profile_binary = ?, profile_mode = ? WHERE uuid = ?", e.ProfileInformation.Binary, e.ProfileInformation.Mode, e.UUID.String())
+	}
+	return err
 }
 
 func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
