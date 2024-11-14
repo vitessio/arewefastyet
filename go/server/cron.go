@@ -206,11 +206,14 @@ func (s *Server) appendToQueue(execElements []*executionQueueElement) {
 	}
 }
 
-func (s *Server) clearQueue() {
+func (s *Server) clearQueue(removeAdmin bool) {
 	mtx.Lock()
 	defer mtx.Unlock()
 	for id, e := range queue {
 		if e.Executing {
+			continue
+		}
+		if id.Source == "admin" && !removeAdmin {
 			continue
 		}
 		delete(queue, id)

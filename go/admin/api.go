@@ -66,7 +66,8 @@ type (
 	}
 
 	clearQueueRequest struct {
-		Auth string `json:"auth"`
+		Auth                  string `json:"auth"`
+		RemoveAdminExecutions bool   `json:"remove_admin_executions"`
 	}
 )
 
@@ -332,7 +333,8 @@ func (a *Admin) handleClearQueue(c *gin.Context) {
 	}
 
 	requestPayload := clearQueueRequest{
-		Auth: encryptedToken,
+		Auth:                  encryptedToken,
+		RemoveAdminExecutions: c.PostForm("remove_admin") == "true",
 	}
 
 	jsonData, err := json.Marshal(requestPayload)
