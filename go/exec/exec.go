@@ -74,8 +74,7 @@ type Exec struct {
 	Workload string
 
 	// PullNB defines the pull request number linked to this execution.
-	PullNB            int
-	PullBaseBranchRef string
+	PullNB int
 
 	// Configuration used to interact with the SQL database.
 	configDB *psdb.Config
@@ -162,11 +161,10 @@ type ProfileInformation struct {
 const (
 	MaximumBenchmarkWithSameConfig = 10
 
-	SourceCron            = "cron"
-	SourcePullRequest     = "cron_pr"
-	SourcePullRequestBase = "cron_pr_base"
-	SourceTag             = "cron_tags_"
-	SourceReleaseBranch   = "cron_"
+	SourceCron          = "cron"
+	SourcePullRequest   = "cron_pr"
+	SourceTag           = "cron_tags_"
+	SourceReleaseBranch = "cron_"
 )
 
 // NewExec creates a new *Exec given the string representation of an uuid.UUID.
@@ -536,6 +534,54 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, workl
 	defer result.Close()
 	for result.Next() {
 		err = result.Scan(&execUUID, &gitRefOut)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func getGitRefOfLatestFinishedMatchingSource(client storage.SQLClient, source string) (gitRefOut string, err error) {
+	query := "SELECT e.git_ref FROM execution e WHERE e.source = ? AND e.status = 'finished' ORDER BY e.started_at DESC LIMIT 1"
+	result, err := client.Read(query, source)
+	if err != nil {
+		return
+	}
+	defer result.Close()
+	for result.Next() {
+		err = result.Scan(&gitRefOut)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+func getGitRefOfFinishedMatchingSourceGivenTimestamp(client storage.SQLClient, source string, t *time.Time) (gitRefOut string, err error) {
+	query := `
+        SELECT e.git_ref
+        FROM execution e
+        WHERE e.source = ? 
+          AND e.status = 'finished' 
+          AND e.started_at < ?
+          AND e.started_at = (
+              SELECT MIN(sub.started_at)
+              FROM execution sub
+              WHERE sub.git_ref = e.git_ref
+                AND sub.source = e.source
+                AND sub.status = e.status
+                AND sub.started_at < ?
+          )
+        ORDER BY e.started_at DESC
+        LIMIT 1
+    `
+	result, err := client.Read(query, source, t.Format(time.DateTime), t.Format(time.DateTime))
+	if err != nil {
+		return
+	}
+	defer result.Close()
+	for result.Next() {
+		err = result.Scan(&gitRefOut)
 		if err != nil {
 			return
 		}

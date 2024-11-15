@@ -52,7 +52,6 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 	e.GitRef = identifier.GitRef
 	e.VtgatePlannerVersion = identifier.PlannerVersion
 	e.PullNB = identifier.PullNb
-	e.PullBaseBranchRef = identifier.PullBaseRef
 	e.VitessVersion = identifier.Version
 	e.NextBenchmarkIsTheSame = nextIsSame
 	e.ProfileInformation = identifier.Profile

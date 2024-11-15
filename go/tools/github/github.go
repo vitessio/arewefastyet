@@ -113,12 +113,15 @@ func (a *App) Init() error {
 }
 
 type PRInfo struct {
-	ID        int
-	Author    string
-	Title     string
-	CreatedAt *time.Time
-	Base      string
-	Head      string
+	ID         int
+	Author     string
+	Title      string
+	CreatedAt  *time.Time
+	Base       string
+	BaseRef    string
+	Head       string
+	IsMerged   bool
+	MergedTime *time.Time
 }
 
 func (a *App) GetPullRequestInfo(prNumber int) (PRInfo, error) {
@@ -129,10 +132,14 @@ func (a *App) GetPullRequestInfo(prNumber int) (PRInfo, error) {
 	}
 
 	createAt := pr.GetCreatedAt().Time
+	mergedAt := pr.GetMergedAt()
 	return PRInfo{
-		ID:        prNumber,
-		Author:    pr.User.GetLogin(),
-		Title:     pr.GetTitle(),
-		CreatedAt: &createAt,
+		ID:         prNumber,
+		Author:     pr.User.GetLogin(),
+		Title:      pr.GetTitle(),
+		CreatedAt:  &createAt,
+		IsMerged:   pr.GetMerged(),
+		MergedTime: mergedAt.GetTime(),
+		BaseRef:    pr.GetBase().GetRef(),
 	}, nil
 }
