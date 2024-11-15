@@ -18,7 +18,13 @@
 
 package exec
 
-import "github.com/vitessio/arewefastyet/go/storage"
+import (
+	"errors"
+	"regexp"
+
+	"github.com/vitessio/arewefastyet/go/storage"
+	"github.com/vitessio/arewefastyet/go/tools/github"
+)
 
 func GetPullRequestList(client storage.SQLClient) ([]int, error) {
 	rows, err := client.Read("select pull_nb from execution where pull_nb > 0 group by pull_nb order by pull_nb desc")
@@ -41,12 +47,24 @@ func GetPullRequestList(client storage.SQLClient) ([]int, error) {
 }
 
 type pullRequestInfo struct {
-	Main string
-	PR   string
+	Base string
+	Head string
 }
 
-func GetPullRequestInfo(client storage.SQLClient, pullNumber int) (pullRequestInfo, error) {
-	rows, err := client.Read("select cron_pr.git_ref as pr, cron_pr_base.git_ref as main from (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr' order by started_at desc limit 1) cron_pr , (select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr_base' order by started_at desc limit 1) cron_pr_base ", pullNumber, pullNumber)
+func getSourceFromBranchName(branch string) (string, error) {
+	if branch == "main" {
+		return SourceCron, nil
+	}
+	matchRelease := regexp.MustCompile(`(release-[0-9]+.0)`)
+	matches := matchRelease.FindStringSubmatch(branch)
+	if len(matches) == 2 {
+		return SourceReleaseBranch + matches[1] + "-branch", nil
+	}
+	return "", errors.New("no match found")
+}
+
+func GetPullRequestInfo(client storage.SQLClient, pullNumber int, info github.PRInfo) (pullRequestInfo, error) {
+	rows, err := client.Read("select git_ref from execution where pull_nb = ? and status = 'finished' and source = 'cron_pr' order by started_at desc limit 1", pullNumber)
 	if err != nil {
 		return pullRequestInfo{}, err
 	}
@@ -55,10 +73,24 @@ func GetPullRequestInfo(client storage.SQLClient, pullNumber int) (pullRequestIn
 
 	var res pullRequestInfo
 	if rows.Next() {
-		err = rows.Scan(&res.PR, &res.Main)
+		err = rows.Scan(&res.Head)
 		if err != nil {
 			return pullRequestInfo{}, err
 		}
+	}
+
+	source, err := getSourceFromBranchName(info.BaseRef)
+	if err != nil {
+		return res, nil
+	}
+
+	if info.IsMerged {
+		res.Base, err = getGitRefOfFinishedMatchingSourceGivenTimestamp(client, source, info.MergedTime)
+	} else {
+		res.Base, err = getGitRefOfLatestFinishedMatchingSource(client, source)
+	}
+	if err != nil {
+		return pullRequestInfo{}, err
 	}
 	return res, nil
 }

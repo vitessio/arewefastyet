@@ -230,14 +230,14 @@ func (s *Server) pullRequestsCronHandler() {
 				}
 
 				if workload == "micro" {
-					elements = append(elements, s.createPullRequestElementWithBaseComparison(config, ref, workload, previousGitRef, "", pullNb, currVersion)...)
+					elements = append(elements, s.createPullRequestElement(config, ref, workload, "", pullNb, currVersion))
 				} else {
 					versions := []macrobench.PlannerVersion{macrobench.V3Planner}
 					if labelInfo.useGen4 {
 						versions = []macrobench.PlannerVersion{macrobench.Gen4Planner}
 					}
 					for _, version := range versions {
-						elements = append(elements, s.createPullRequestElementWithBaseComparison(config, ref, workload, previousGitRef, version, pullNb, currVersion)...)
+						elements = append(elements, s.createPullRequestElement(config, ref, workload, version, pullNb, currVersion))
 					}
 				}
 			}
@@ -249,20 +249,8 @@ func (s *Server) pullRequestsCronHandler() {
 	}
 }
 
-func (s *Server) createPullRequestElementWithBaseComparison(config benchmarkConfig, ref, workload, previousGitRef string, plannerVersion macrobench.PlannerVersion, pullNb int, gitVersion git.Version) []*executionQueueElement {
-	var elements []*executionQueueElement
-
-	newExecutionElement := s.createSimpleExecutionQueueElement(config, exec.SourcePullRequest, ref, workload, string(plannerVersion), true, pullNb, gitVersion, nil)
-	newExecutionElement.identifier.PullBaseRef = previousGitRef
-	elements = append(elements, newExecutionElement)
-
-	if previousGitRef != "" {
-		previousElement := s.createSimpleExecutionQueueElement(config, exec.SourcePullRequestBase, previousGitRef, workload, string(plannerVersion), false, pullNb, gitVersion, nil)
-		previousElement.compareWith = append(previousElement.compareWith, newExecutionElement.identifier)
-		newExecutionElement.compareWith = append(newExecutionElement.compareWith, previousElement.identifier)
-		elements = append(elements, previousElement)
-	}
-	return elements
+func (s *Server) createPullRequestElement(config benchmarkConfig, ref, workload string, plannerVersion macrobench.PlannerVersion, pullNb int, gitVersion git.Version) *executionQueueElement {
+	return s.createSimpleExecutionQueueElement(config, exec.SourcePullRequest, ref, workload, string(plannerVersion), true, pullNb, gitVersion, nil)
 }
 
 func (s *Server) tagsCronHandler() {
