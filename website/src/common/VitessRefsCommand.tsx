@@ -94,7 +94,7 @@ export default function VitessRefsCommand({
       <Button
         variant="outline"
         className={cn(
-          "relative justify-between rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-4 w-full md:w-40 lg:w-64"
+          "relative justify-between rounded-[0.5rem] bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-4 w-full md:w-40 lg:w-64",
         )}
         onClick={() => setOpen(true)}
       >

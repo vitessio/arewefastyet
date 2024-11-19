@@ -55,7 +55,7 @@ export default function ForeignKeysHero(props: {
 
   workloads =
     workloads !== undefined
-      ? workloads.filter((workload) => workload.includes("TPCC")) ?? []
+      ? (workloads.filter((workload) => workload.includes("TPCC")) ?? [])
       : [];
 
   const isButtonDisabled = !oldWorkload || !newWorkload || !commit;
