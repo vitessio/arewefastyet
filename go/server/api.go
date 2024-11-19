@@ -558,6 +558,7 @@ type ExecutionRequest struct {
 	Auth               string   `json:"auth"`
 	Source             string   `json:"source"`
 	SHA                string   `json:"sha"`
+	PR                 string   `json:"pr"`
 	Workloads          []string `json:"workloads"`
 	NumberOfExecutions string   `json:"number_of_executions"`
 	EnableProfile      bool     `json:"enable_profile"`
@@ -578,9 +579,29 @@ func (s *Server) addExecutions(c *gin.Context) {
 		return
 	}
 
-	if req.Source == "" || req.SHA == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
+	if req.Source == "" || len(req.Workloads) == 0 || req.NumberOfExecutions == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument"})
 		return
+	}
+
+	var pr int
+	if req.PR != "" {
+		var err error
+		pr, err = strconv.Atoi(req.PR)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "PR must be an integer"})
+			return
+		}
+		url := "https://api.github.com/repos/vitessio/vitess/pulls/" + req.PR
+		prInfo, err := git.GetPullRequestHeadAndBase(url)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "unable to get PR information"})
+		}
+		req.SHA = prInfo.SHA
+	}
+
+	if pr == 0 && req.SHA == "" {
+		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument PR or SHA"})
 	}
 
 	if len(req.Workloads) == 1 && req.Workloads[0] == "all" {
@@ -603,7 +624,7 @@ func (s *Server) addExecutions(c *gin.Context) {
 
 	for _, workload := range req.Workloads {
 		for i := 0; i < execs; i++ {
-			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, 0, git.Version{}, profileInformation)
+			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, pr, git.Version{}, profileInformation)
 			elem.identifier.UUID = uuid.NewString()
 			newElements = append(newElements, elem)
 		}

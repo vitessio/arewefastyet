@@ -58,6 +58,7 @@ type (
 		Auth               string   `json:"auth"`
 		Source             string   `json:"source"`
 		SHA                string   `json:"sha"`
+		PR                 string   `json:"pr"`
 		Workloads          []string `json:"workloads"`
 		NumberOfExecutions string   `json:"number_of_executions"`
 		EnableProfile      bool     `json:"enable_profile"`
@@ -227,6 +228,7 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 	requestPayload := executionRequest{
 		Source:             c.PostForm("source"),
 		SHA:                c.PostForm("sha"),
+		PR:                 c.PostForm("pr"),
 		Workloads:          c.PostFormArray("workloads"),
 		NumberOfExecutions: c.PostForm("numberOfExecutions"),
 		EnableProfile:      c.PostForm("enableProfiling") != "",
@@ -234,8 +236,13 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		ProfileMode:        c.PostForm("profileMode"),
 	}
 
-	if requestPayload.Source == "" || requestPayload.SHA == "" || len(requestPayload.Workloads) == 0 || requestPayload.NumberOfExecutions == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source, SHA, workflows, numberOfExecutions"})
+	if requestPayload.Source == "" || len(requestPayload.Workloads) == 0 || requestPayload.NumberOfExecutions == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields: Source, workflows, numberOfExecutions"})
+		return
+	}
+
+	if requestPayload.SHA == "" && requestPayload.PR == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide either a SHA or a PR number"})
 		return
 	}
 

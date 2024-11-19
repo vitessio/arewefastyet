@@ -26,11 +26,11 @@ import (
 
 type PRInfo struct {
 	Number int
-	Base string
-	SHA  string
+	Base   string
+	SHA    string
 }
 
-func getPullRequestHeadAndBase(url string) (PRInfo, error) {
+func GetPullRequestHeadAndBase(url string) (PRInfo, error) {
 	client := http.Client{}
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -44,7 +44,7 @@ func getPullRequestHeadAndBase(url string) (PRInfo, error) {
 
 	res := struct {
 		Number int `json:"number"`
-		Head struct {
+		Head   struct {
 			SHA string `json:"sha"`
 		} `json:"head"`
 		Base struct {
