@@ -33,7 +33,7 @@ func GetPullRequestsFromGitHub(labels []string, repo string) ([]PRInfo, error) {
 
 	prInfos := []PRInfo{}
 	for _, pull := range pulls {
-		prInfo, err := getPullRequestHeadAndBase(pull)
+		prInfo, err := GetPullRequestHeadAndBase(pull)
 		if err != nil {
 			return nil, err
 		}
