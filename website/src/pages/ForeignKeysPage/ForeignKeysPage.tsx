@@ -61,31 +61,29 @@ export default function ForeignKeys() {
       : {
           url: null,
           queryKey: ["compareResult", gitRef, workload.old, workload.new],
-        }
+        },
   );
 
   let formattedData = data !== undefined ? formatCompareResult(data) : null;
 
   useEffect(() => {
     navigate(
-      `?sha=${gitRef}&oldWorkload=${workload.old}&newWorkload=${workload.new}`
+      `?sha=${gitRef}&oldWorkload=${workload.old}&newWorkload=${workload.new}`,
     );
   }, [gitRef, workload.old, workload.new]);
 
   return (
     <>
-        <ForeignKeysHero
-          gitRef={gitRef}
-          setGitRef={setGitRef}
-          workload={workload}
-          setWorkload={setWorkload}
-          vitessRefs={vitessRefs}
-        />
+      <ForeignKeysHero
+        gitRef={gitRef}
+        setGitRef={setGitRef}
+        workload={workload}
+        setWorkload={setWorkload}
+        vitessRefs={vitessRefs}
+      />
 
       <section className="flex flex-col items-center">
-        {macrobenchError && (
-          <div className="text-destructive">{errorApi}</div>
-        )}
+        {macrobenchError && <div className="text-destructive">{errorApi}</div>}
 
         {!isMacrobenchLoading && data === undefined && (
           <div className="md:text-xl text-primary">

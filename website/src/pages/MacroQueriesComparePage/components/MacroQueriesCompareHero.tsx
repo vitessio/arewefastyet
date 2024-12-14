@@ -23,7 +23,7 @@ export type MacroQueriesCompareHeroProps = {
 };
 
 export default function MacroQueriesCompareHero(
-  props: MacroQueriesCompareHeroProps
+  props: MacroQueriesCompareHeroProps,
 ) {
   const { oldGitRef, newGitRef } = props.commits;
   const heroProps: HeroProps = {
