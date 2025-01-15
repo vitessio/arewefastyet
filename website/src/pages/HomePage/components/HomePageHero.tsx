@@ -82,7 +82,6 @@ export default function HomePageHero() {
               target="__blank"
             >
               Vitess
-              <Icon className="text-2xl" icon="vitess" />
             </Link>
           </Button>
         </div>
