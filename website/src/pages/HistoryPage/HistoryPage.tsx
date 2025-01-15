@@ -53,10 +53,7 @@ export default function HistoryPage() {
       <HistoryHero />
       <section className="mx-auto p-page lg:w-[60vw] my-12 flex flex-col">
         {isLoading && <Skeleton className="h-[732px]"></Skeleton>}
-        {!isLoading &&
-          (error ||
-            !dataHistory ||
-            dataHistory.length === 0) && (
+        {!isLoading && (error || !dataHistory || dataHistory.length === 0) && (
           <div className="text-destructive text-center my-2">
             {<>{errorApi}</>}
           </div>

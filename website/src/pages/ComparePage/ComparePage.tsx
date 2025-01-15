@@ -66,7 +66,7 @@ export default function Compare() {
           }macrobench/compare?new=${gitNewRef}&old=${gitOldRef}`,
           queryKey: ["compare", gitOldRef, gitNewRef],
         }
-      : { url: null, queryKey: ["compare", gitOldRef, gitNewRef] }
+      : { url: null, queryKey: ["compare", gitOldRef, gitNewRef] },
   );
 
   useEffect(() => {
@@ -94,9 +94,7 @@ export default function Compare() {
         vitessRefs={vitessRefs}
       />
       {macrobenchError && (
-        <div className="text-destructive text-center my-2">
-          {errorApi}
-        </div>
+        <div className="text-destructive text-center my-2">{errorApi}</div>
       )}
 
       <section className="flex flex-col items-center">
