@@ -35,7 +35,7 @@
       shell: |
         export TMPDIR=/root/tmp
         cd /go/src/vitess.io/vitess
-        make build
+        NOVTADMINBUILD=1 make build
 
     - name: Remove Vitess binaries
       shell: |
