@@ -30,13 +30,6 @@
       with_items:
         - /root/tmp
 
-    - name: Build Vitess Binaries
-      changed_when: false
-      shell: |
-        export TMPDIR=/root/tmp
-        cd /go/src/vitess.io/vitess
-        NOVTADMINBUILD=1 make build
-
     - name: Remove Vitess binaries
       shell: |
         rm -f /usr/local/bin/vt*
@@ -45,7 +38,7 @@
       shell: |
         export TMPDIR=/root/tmp
         cd /go/src/vitess.io/vitess
-        make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
+        NOVTADMINBUILD=1 make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
       changed_when: false
 
     - name: Install Vitess Other Binaries
