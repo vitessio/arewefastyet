@@ -8,7 +8,11 @@
     "start": "serve -s dist",
     "build": "vite --mode prod build",
     "lint": "eslint src --ext js,ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint:fix": "eslint . --ext .tsx --ext .ts --fix --max-warnings 0",
+    "typecheck": "tsc --pretty --noEmit",
+    "format:fix": "prettier --write \"**/*.{ts,tsx,json,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,css}\""
   },
   "dependencies": {
     "@nivo/core": "^0.83.0",
