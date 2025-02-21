@@ -18,7 +18,6 @@ import { Separator } from "@/components/ui/separator";
 import Diagram from "./components/Diagram";
 import HomePageHero from "./components/HomePageHero";
 import HowItWorks from "./components/HowItWorks";
-
 export default function HomePage() {
   return (
     <>
