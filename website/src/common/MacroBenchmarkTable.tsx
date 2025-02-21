@@ -90,7 +90,8 @@ const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
   if (
     key.includes("CpuTime") ||
     key.includes("Mem") ||
-    key.includes("latency")
+    key.includes("latency") ||
+    key.includes("errors")
   ) {
     if (delta < 0) {
       return "success";
