@@ -25,7 +25,9 @@ export default function Hero({ title, description, children }: HeroProps) {
   return (
     <section className="flex flex-col items-center p-12">
       <div className="flex flex-col items-center gap-4 max-w-screen-lg">
-        <h2 className="text-4xl md:text-6xl font-semibold text-primary mb-4">{title}</h2>
+        <h2 className="text-4xl md:text-6xl font-semibold text-primary mb-4">
+          {title}
+        </h2>
         <p className="md:my-6 leading-loose text-foreground/80">
           {description}
         </p>
