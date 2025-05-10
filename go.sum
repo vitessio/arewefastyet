@@ -258,5 +258,5 @@ gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 nullprogram.com/x/optparse v1.0.0/go.mod h1:KdyPE+Igbe0jQUrVfMqDMeJQIJZEuyV7pjYmp6pbG50=
 rsc.io/pdf v0.1.1/go.mod h1:n8OzWcQ6Sp37PL01nO98y4iUCRdTGarVfzxY20ICaU4=
-vitess.io/vitess v0.10.3-0.20240823191023-81ed3149d5da h1:fYimFBOQ31RVMZNPyDDmNYHiwqFB41QD6tAbYCvCbyE=
-vitess.io/vitess v0.10.3-0.20240823191023-81ed3149d5da/go.mod h1:NBV6XAw0sKZxRBQLhMFd06fJZj9XW8iusP1D5mgEjgM=
+vitess.io/vitess v0.19.8 h1:d3pUaIQD8fb38aaYMk3nFUrzZkrSUt1XVeBobIoSxiw=
+vitess.io/vitess v0.19.8/go.mod h1:P8ymq5DFC3ItCBzP2PFzesaaHzZRJHi65H7ZfSMCCZI=

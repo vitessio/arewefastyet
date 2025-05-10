@@ -33,7 +33,7 @@ require (
 	golang.org/x/oauth2 v0.21.0
 	golang.org/x/perf v0.0.0-20240716160700-783bcb78a185
 	golang.org/x/tools v0.23.0
-	vitess.io/vitess v0.10.3-0.20240823191023-81ed3149d5da
+	vitess.io/vitess v0.19.8
 )
 
 require (
