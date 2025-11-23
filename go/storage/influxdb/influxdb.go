@@ -21,6 +21,7 @@ package influxdb
 import (
 	"context"
 	"fmt"
+
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
@@ -45,10 +46,10 @@ func (c *Client) Select(query string) ([]map[string]interface{}, error) {
 			result = append(result, queryResult.Record().Values())
 		}
 		if queryResult.Err() != nil {
-			return result, fmt.Errorf("Query error: %s\n", queryResult.Err().Error())
+			return result, fmt.Errorf("Error executing query %q: %v\n", query, queryResult.Err())
 		}
 	} else {
-		return result, fmt.Errorf("Query error: %s\n", err.Error())
+		return result, fmt.Errorf("Error executing query %q: %v\n", query, err)
 	}
 	return result, nil
 }
