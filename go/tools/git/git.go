@@ -143,7 +143,7 @@ func GetSupportedVitessReleases(repoDir string) ([]*Release, error) {
 	}
 	var latestReleases []*Release
 
-	minimumRelease := allReleases[0].Version.Major - 2
+	minimumRelease := allReleases[0].Version.Major - 1
 	for _, release := range allReleases {
 		if release.Version.Major >= minimumRelease {
 			latestReleases = append(latestReleases, release)
@@ -229,7 +229,7 @@ func GetLatestVitessReleaseBranchCommitHash(repoDir string) ([]*Release, error) 
 	}
 	var latestReleaseBranches []*Release
 	// We take the 2 latest major release
-	minimumRelease := res[0].Version.Major - 2
+	minimumRelease := res[0].Version.Major - 1
 	for _, release := range res {
 		if release.Version.Major >= minimumRelease {
 			latestReleaseBranches = append(latestReleaseBranches, release)
