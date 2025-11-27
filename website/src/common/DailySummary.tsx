@@ -59,7 +59,7 @@ export default function DailySummary(props: DailySummaryProps) {
     <Card
       className={twMerge(
         "w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 hover:bg-muted border-border",
-        workload === data.name && "border-2 border-front"
+        workload === data.name && "border-2 border-front",
       )}
       onClick={() => getWorkload()}
     >

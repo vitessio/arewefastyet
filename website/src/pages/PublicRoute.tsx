@@ -38,7 +38,10 @@ const PublicRoute = () => {
         <Route path="/status" element={<StatusPage />} />
         <Route path="/Daily" element={<DailyPage />} />
         <Route path="/compare" element={<ComparePage />} />
-        <Route path="/macrobench/queries/compare" element={<MacroQueriesComparePage />} />
+        <Route
+          path="/macrobench/queries/compare"
+          element={<MacroQueriesComparePage />}
+        />
         <Route path="/pr" element={<PRsPage />} />
         <Route path="/pr/:pull_nb" element={<PRPage />} />
         <Route path="/fk" element={<ForeignKeysPage />} />

@@ -154,13 +154,13 @@ export default function DailyCharts(props: DailyChartsProps) {
       tps: item.tps.center,
       latency: item.latency.center,
       cpuTimeTotal: Number(
-        (item.total_components_cpu_time.center * 1000000).toFixed(2)
+        (item.total_components_cpu_time.center * 1000000).toFixed(2),
       ),
       cpuTimeVtgate: Number(
-        (item.components_cpu_time.vtgate.center * 1000000).toFixed(2)
+        (item.components_cpu_time.vtgate.center * 1000000).toFixed(2),
       ),
       cpuTimeVttablet: Number(
-        (item.components_cpu_time.vttablet.center * 1000000).toFixed(2)
+        (item.components_cpu_time.vttablet.center * 1000000).toFixed(2),
       ),
       memBytesTotal: item.total_components_mem_stats_alloc_bytes.center,
       memBytesVtgate: item.components_mem_stats_alloc_bytes.vtgate.center,
@@ -169,7 +169,7 @@ export default function DailyCharts(props: DailyChartsProps) {
   }
 
   const [expandedStates, setExpandedStates] = useState<boolean[]>(
-    Array(chartMetadas.length).fill(true)
+    Array(chartMetadas.length).fill(true),
   );
 
   const toggleExpand = (index: number) => {
@@ -197,9 +197,7 @@ export default function DailyCharts(props: DailyChartsProps) {
             <Skeleton key={index} className="w-full border-border h-[400px]" />
           ))
         ) : dailyError || !chartData || chartData.length === 0 ? (
-          <div className="text-destructive text-center my-10">
-            {errorApi}
-          </div>
+          <div className="text-destructive text-center my-10">{errorApi}</div>
         ) : (
           chartMetadas.map((chartMetadata, chartMetadataIndex) => (
             <Card key={chartMetadataIndex} className="w-full border-border">

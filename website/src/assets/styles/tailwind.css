@@ -18,7 +18,6 @@ limitations under the License.
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -47,13 +46,13 @@ limitations under the License.
 
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
-  
+
     --success: 120, 100%, 25%;
     --success-foreground: 60 9.1% 97.8%;
 
     --progress: 240, 83%, 58%;
     --progress-foreground: 60 9.1% 97.8%;
-  
+
     --border: 20 5.9% 90%;
     --input: 20 5.9% 90%;
     --ring: 24.6 95% 53.1%;
@@ -105,7 +104,7 @@ limitations under the License.
 
     --warning: 38 92% 50%;
     --warning-foreground: 48 96% 89%;
-  
+
     --border: 12 6.5% 15.1%;
     --input: 12 6.5% 15.1%;
     --ring: 20.5 90.2% 48.2%;
@@ -130,7 +129,6 @@ limitations under the License.
     --chart-memBytesVttablet: 0, 59%, 41%;
   }
 }
-
 
 @layer base {
   /* setting default background, text color and font */
@@ -165,7 +163,6 @@ limitations under the License.
 }
 
 @keyframes translateUpDown {
-
   0%,
   100% {
     transform: translateY(0);
