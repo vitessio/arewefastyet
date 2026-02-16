@@ -44,8 +44,8 @@ export type MacroQueriesPlan = {
   errors_diff: number;
   rows_returned_diff: number;
   same_plan: boolean;
-  right: MacroQueriesPlanCommit;
-  left: MacroQueriesPlanCommit;
+  right: MacroQueriesPlanCommit | null;
+  left: MacroQueriesPlanCommit | null;
 };
 
 export const columns: ColumnDef<MacroQueriesPlan>[] = [
