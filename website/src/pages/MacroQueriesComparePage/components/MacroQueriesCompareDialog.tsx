@@ -65,10 +65,10 @@ export default function MacroQueriesCompareDialog<MacroQueriesPlan, TValue>(
                   Execution Time
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.left.value.exec_time}
+                  {data.left?.value.exec_time ?? "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.right.value.exec_time}
+                  {data.right?.value.exec_time ?? "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
                   {data.exec_time_diff}
@@ -79,10 +79,10 @@ export default function MacroQueriesCompareDialog<MacroQueriesPlan, TValue>(
                   Rows Returned
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.left.value.rows_returned}
+                  {data.left?.value.rows_returned ?? "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.right.value.rows_returned}
+                  {data.right?.value.rows_returned ?? "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
                   {data.rows_returned_diff}
@@ -93,10 +93,10 @@ export default function MacroQueriesCompareDialog<MacroQueriesPlan, TValue>(
                   Errors
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.left.value.errors}
+                  {data.left?.value.errors ?? "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
-                  {data.right.value.errors}
+                  {data.right?.value.errors ?? "N/A"}
                 </TableCell>
                 <TableCell className="text-center">
                   {data.errors_diff}
@@ -105,30 +105,38 @@ export default function MacroQueriesCompareDialog<MacroQueriesPlan, TValue>(
             </TableBody>
           </Table>
         </div>
-        <DialogTitle className="text-primary text-center text-lg md:text-4xl">
-          Old query plan
-        </DialogTitle>
-        <div className="w-full px-4">
-          <ScrollArea className="max-w-full whitespace-nowrap rounded-md border">
-            <ReactJson
-              data={data.left.value.instructions}
-              className="text-sm md:text-base"
-            />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
-        <DialogTitle className="text-primary text-center text-lg md:text-4xl">
-          New query plan
-        </DialogTitle>
-        <div className="w-full px-4">
-          <ScrollArea className="max-w-full whitespace-nowrap rounded-md border">
-            <ReactJson
-              data={data.right.value.instructions}
-              className="text-sm md:text-base"
-            />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </div>
+        {data.left && (
+          <>
+            <DialogTitle className="text-primary text-center text-lg md:text-4xl">
+              Old query plan
+            </DialogTitle>
+            <div className="w-full px-4">
+              <ScrollArea className="max-w-full whitespace-nowrap rounded-md border">
+                <ReactJson
+                  data={data.left.value.instructions}
+                  className="text-sm md:text-base"
+                />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+          </>
+        )}
+        {data.right && (
+          <>
+            <DialogTitle className="text-primary text-center text-lg md:text-4xl">
+              New query plan
+            </DialogTitle>
+            <div className="w-full px-4">
+              <ScrollArea className="max-w-full whitespace-nowrap rounded-md border">
+                <ReactJson
+                  data={data.right.value.instructions}
+                  className="text-sm md:text-base"
+                />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+          </>
+        )}
       </div>
     </DialogContent>
   );
