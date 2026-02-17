@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.23.0-bookworm AS build-stage
+FROM golang:1.25-bookworm AS build-stage
 
 WORKDIR /build
 
