@@ -1,0 +1,10 @@
+---
+# Ansible Galaxy requirements for arewefastyet
+collections:
+  - name: prometheus.prometheus
+    version: ">=0.27.6"
+  - name: grafana.grafana
+    version: ">=6.0.6"
+
+roles:
+  - name: geerlingguy.htpasswd

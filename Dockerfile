@@ -46,7 +46,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Install ansible add-ons
-RUN ansible-galaxy install cloudalchemy.node_exporter && ansible-galaxy install cloudalchemy.prometheus
+RUN ansible-galaxy install -r ansible/requirements.yml
 
 # Copy the source code to the working directory
 COPY --from=build-stage /arewefastyetcli /arewefastyetcli

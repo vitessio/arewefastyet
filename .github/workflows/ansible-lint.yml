@@ -27,8 +27,7 @@ jobs:
     - name: Install ansible dependencies
       run: |
         source benchmark/bin/activate
-        ansible-galaxy install cloudalchemy.node_exporter
-        ansible-galaxy install cloudalchemy.prometheus
+        ansible-galaxy install -r ansible/requirements.yml
 
     - name: Lint Ansible Playbook
       uses: ansible/ansible-lint-action@main

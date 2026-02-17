@@ -29,7 +29,7 @@
 
 - hosts: metrics
   roles:
-    - role: cloudalchemy.prometheus
+    - role: prometheus.prometheus.prometheus
 
 - hosts: frontend
   tasks:
@@ -49,7 +49,7 @@
 
 - hosts: frontend
   roles:
-    - role: cloudalchemy.grafana
+    - role: grafana.grafana.grafana
 
 - hosts: frontend
   tasks:
