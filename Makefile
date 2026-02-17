@@ -15,7 +15,7 @@
 .ONESHELL:
 SHELL = /bin/bash
 
-PY_VERSION = 3.7
+PY_VERSION = 3.12
 VIRTUALENV_PATH = benchmark
 
 ANSIBLE_PATH = ansible
