@@ -15,8 +15,8 @@ all:
   hosts:
     DEVICE_IP_0:
       storage_device:
-        device: nvme1n1
-        partition: nvme1n1p1
+        device: sdb
+        partition: sdb1
   children:
     microbench:
       hosts:

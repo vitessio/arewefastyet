@@ -1,4 +1,4 @@
-ansible==7.0.0
+ansible==10.0.1
 molecule[ansible, docker]
 supervisor
 ansible_runner
