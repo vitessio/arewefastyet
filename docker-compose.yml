@@ -19,7 +19,7 @@ networks:
 
 services:
   traefik:
-    image: "traefik:v2.10"
+    image: "traefik:3.6"
     container_name: "traefik"
     command:
       - "--accesslog=false"
