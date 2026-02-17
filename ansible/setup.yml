@@ -15,7 +15,7 @@
     - all
   roles:
     - host
-    - cloudalchemy.node_exporter
+    - prometheus.prometheus.node_exporter
 
 - name: Setup Vitess deps
   hosts:
@@ -57,7 +57,7 @@
   tags:
     - prometheus
   roles:
-    - { role: cloudalchemy.prometheus, when: stats_remote_db_host is defined }
+    - { role: prometheus.prometheus.prometheus, when: stats_remote_db_host is defined }
   vars:
     vitess_cluster: 'main'
     mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"

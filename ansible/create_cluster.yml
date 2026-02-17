@@ -68,7 +68,7 @@
 
     - name: Apply VSchema
       shell: |
-        vtctlclient --server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -- --vschema="$(cat /tmp/vschema_sysbench.json)" main
+        vtctldclient --server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -- --vschema="$(cat /tmp/vschema_sysbench.json)" main
 
     - name: Print go version
       debug: msg="VSchema is applied."
