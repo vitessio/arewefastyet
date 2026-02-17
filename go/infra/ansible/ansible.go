@@ -94,7 +94,7 @@ func Run(c *Config) error {
 	applyRootToFiles(c.RootDir, &c.InventoryFile)
 
 	ansiblePlaybookConnectionOptions := &options.AnsibleConnectionOptions{
-		User:          "root",
+		User:          "ubuntu",
 		SSHCommonArgs: "-o StrictHostKeyChecking=no",
 	}
 
