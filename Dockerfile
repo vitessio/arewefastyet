@@ -46,6 +46,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 # Install ansible add-ons
+COPY ansible/requirements.yml ansible/requirements.yml
 RUN ansible-galaxy install -r ansible/requirements.yml
 
 # Copy the source code to the working directory
