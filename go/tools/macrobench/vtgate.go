@@ -155,6 +155,23 @@ func mergeVTGateQueryPlans(plansLeft, plansRight VTGateQueryPlanMap) VTGateQuery
 	return res
 }
 
+// vtgateQueryPlanInput matches the PascalCase JSON field names emitted
+// by VTGate's /debug/query_plans endpoint (e.g. "ExecCount", "ExecTime").
+// VTGateQueryPlanValue uses snake_case tags for the outward-facing API, so a
+// separate type is needed to parse the VTGate response correctly.
+type vtgateQueryPlanInput struct {
+	QueryType    string      `json:"QueryType"`
+	Original     string      `json:"Original"`
+	Instructions interface{} `json:"Instructions"`
+	ExecCount    int         `json:"ExecCount"`
+	ExecTime     int         `json:"ExecTime"`
+	ShardQueries int         `json:"ShardQueries"`
+	RowsReturned int         `json:"RowsReturned"`
+	RowsAffected int         `json:"RowsAffected"`
+	Errors       int         `json:"Errors"`
+	TablesUsed   interface{} `json:"TablesUsed"`
+}
+
 func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%s/debug/query_plans", port))
 	if err != nil {
@@ -167,7 +184,7 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 		return nil, err
 	}
 
-	var response map[string]VTGateQueryPlanValue
+	var response map[string]vtgateQueryPlanInput
 	err = json.NewDecoder(bytes.NewReader(respBytes)).Decode(&response)
 	if err != nil {
 		return getOldVTGateQueryPlans(respBytes)
@@ -178,8 +195,18 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 		if err != nil {
 			return nil, err
 		}
-		plan.Instructions = string(jsonPlan)
-		res[key] = plan
+		res[key] = VTGateQueryPlanValue{
+			QueryType:    plan.QueryType,
+			Original:     plan.Original,
+			Instructions: string(jsonPlan),
+			ExecCount:    plan.ExecCount,
+			ExecTime:     plan.ExecTime,
+			ShardQueries: plan.ShardQueries,
+			RowsReturned: plan.RowsReturned,
+			RowsAffected: plan.RowsAffected,
+			Errors:       plan.Errors,
+			TablesUsed:   plan.TablesUsed,
+		}
 	}
 	return res, nil
 }
