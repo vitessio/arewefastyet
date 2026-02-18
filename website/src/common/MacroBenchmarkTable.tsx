@@ -105,7 +105,7 @@ const getDeltaBadgeVariant = (key: string, delta: number, p: number) => {
   return "destructive";
 };
 
-const formatCellValue = (key: string, value: number) => {
+export const formatCellValue = (key: string, value: number) => {
   if (key.includes("CpuTime")) {
     return secondToMicrosecond(value);
   } else if (key.includes("MemStatsAllocBytes")) {
