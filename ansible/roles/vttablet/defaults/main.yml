@@ -37,8 +37,8 @@ clean_vttablet: True
 vitess_memory_ratio: 0.6
 vttablet_connection_pool_size: 300
 vttablet_transaction_cap: 300
-vttablet_stream_pool_size: 16
-vttablet_found_rows_pool_size: 16
+vttablet_stream_pool_size: 300
+vttablet_found_rows_pool_size: 300
 
 vttablet_max_goproc: 24
 
