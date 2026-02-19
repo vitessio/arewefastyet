@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import MacroBenchmarkTable from "@/common/MacroBenchmarkTable";
+import MacroBenchmarkTable, { formatCellValue, getRange } from "@/common/MacroBenchmarkTable";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,14 +22,16 @@ import useApiCall from "@/hooks/useApiCall";
 import { CompareData, MacroBenchmarkTableData, VitessRefs } from "@/types";
 import {
   errorApi,
+  fixed,
   formatCompareData,
   getGitRefFromRefName,
   getRefName,
 } from "@/utils/Utils";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CompareHero from "./components/CompareHero";
+import { Copy, Check } from "lucide-react";
 
 export default function Compare() {
   const navigate = useNavigate();
@@ -81,10 +83,83 @@ export default function Compare() {
   }, [gitRef.old, gitRef.new, vitessRefs]);
 
   let formattedData: MacroBenchmarkTableData[] = [];
-
   if (data !== undefined && data.length > 0) {
     formattedData = formatCompareData(data);
   }
+
+  const [copied, setCopied] = useState(false);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Generates a markdown summary of all workload comparison tables.
+  const generateCompareMarkdown = (): string => {
+    if (!data || data.length === 0) return "";
+    const oldName = vitessRefs
+      ? getRefName(gitRef.old, vitessRefs)
+      : gitRef.old;
+    const newName = vitessRefs
+      ? getRefName(gitRef.new, vitessRefs)
+      : gitRef.new;
+    const lines: string[] = [];
+
+    lines.push("# arewefastyet - Vitess benchmark comparison");
+    lines.push("");
+    const formatRef = (name: string, hash: string): string => {
+      if (name !== hash) {
+        return `${name} (\`${hash}\`)`;
+      }
+      return `\`${hash}\``;
+    };
+    lines.push(`**Old:** ${formatRef(oldName, gitOldRef)}`);
+    lines.push(`**New:** ${formatRef(newName, gitNewRef)}`);
+    lines.push("");
+    lines.push("---");
+    lines.push("");
+    // Per-workload tables.
+    data.forEach((macro, index) => {
+      if (macro.result.missing_results) return;
+      const tableData = formattedData[index];
+      if (!tableData) return;
+      lines.push(`## ${macro.workload}`);
+      lines.push("");
+      lines.push(
+        `| Metric | ${oldName} | ${newName} | P | Delta |`
+      );
+      lines.push(`|---|---|---|---|---|`);
+      const dataKeys = Object.keys(
+        tableData
+      ) as Array<keyof MacroBenchmarkTableData>;
+      dataKeys.forEach((key) => {
+        const row = tableData[key];
+        const oldVal = `${formatCellValue(key, Number(row.old.center))} (${getRange(row.old.range)})`;
+        const newVal = `${formatCellValue(key, Number(row.new.center))} (${getRange(row.new.range)})`;
+        const p = fixed(row.p, 3);
+        const delta = `${fixed(row.delta, 3)}%`;
+        lines.push(
+          `| ${row.title} | ${oldVal} | ${newVal} | ${p} | ${delta} |`
+        );
+      });
+
+      lines.push("");
+    });
+    return lines.join("\n");
+  };
+
+  const handleCopyMarkdown = async () => {
+    const markdown = generateCompareMarkdown();
+
+    try {
+      await navigator.clipboard.writeText(markdown);
+      setCopied(true);
+
+      if (copiedTimerRef.current) {
+        clearTimeout(copiedTimerRef.current);
+      }
+
+      copiedTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy markdown to clipboard:", err);
+    }
+  };
 
   return (
     <>
@@ -118,6 +193,21 @@ export default function Compare() {
         )}
         {!isMacrobenchLoading && data !== undefined && data.length > 0 && (
           <>
+            <div className="flex justify-end w-[80vw] xl:w-[60vw] mt-8">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 border-dashed"
+                onClick={handleCopyMarkdown}
+              >
+                {copied ? (
+                  <Check className="mr-2 h-4 w-4 text-primary" />
+                ) : (
+                  <Copy className="mr-2 h-4 w-4 text-primary" />
+                )}
+                {copied ? "Copied!" : "Copy as markdown"}
+              </Button>
+            </div>
             {data.map((macro, index) => {
               return (
                 <div className="w-[80vw] xl:w-[60vw] my-12" key={index}>
