@@ -1,19 +1,17 @@
 ## Exec Config
-exec-workload: oltp-readonly
-exec-schema: "./vitess-benchmark/sysbench.json"
-
-## Minimum Vitess version on which the benchmark should be executed
-minimum-version: 14
+exec-workload: oltp-with-settings
 
 ## Ansible
 ansible-inventory-file: macrobench_sharded_inventory.yml
 ansible-playbook-file: macrobench.yml
 
+exec-schema: "./vitess-benchmark/sysbench.json"
+
 ## Macrobench cmd
 macrobench-sysbench-executable: /usr/local/bin/sysbench
-macrobench-workload-path: oltp_read_only
+macrobench-workload-path: oltp_read_write_with_settings
 macrobench-skip-steps:
-macrobench-workload: oltp-readonly
+macrobench-workload: oltp-with-settings
 
 ## Sysbench all steps
 macrobench_all_mysql-db: main
