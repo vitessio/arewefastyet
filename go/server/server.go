@@ -189,6 +189,7 @@ func (s *Server) Init() error {
 		"oltp-readonly-olap": {file: path.Join(s.benchmarkConfigPath, "olap-readonly.yaml"), v: viper.New()},
 
 		"tpcc":              {file: path.Join(s.benchmarkConfigPath, "tpcc.yaml"), v: viper.New()},
+		"tpcc-olap":         {file: path.Join(s.benchmarkConfigPath, "tpcc-olap.yaml"), v: viper.New()},
 		"tpcc_unsharded":    {file: path.Join(s.benchmarkConfigPath, "tpcc_unsharded.yaml"), v: viper.New(), skip: true},
 		"tpcc_fk":           {file: path.Join(s.benchmarkConfigPath, "tpcc_fk.yaml"), v: viper.New(), skip: true},
 		"tpcc_fk_unmanaged": {file: path.Join(s.benchmarkConfigPath, "tpcc_fk_unmanaged.yaml"), v: viper.New(), skip: true},
