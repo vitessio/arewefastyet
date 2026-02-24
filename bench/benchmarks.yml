@@ -1,0 +1,92 @@
+benchmarks:
+  oltp:
+    vitess:
+      sharded: true
+      vschema: sysbench_sharded.json
+      vtgate_workload_mode: ""
+    sysbench:
+      workload: oltp_read_write
+      tables: 10
+      table_size: 10000
+      threads: 42
+      extra: "--auto-inc=off"
+      working_dir: ""
+      warmup_time: 20
+      run_time: 60
+
+  oltp-readonly:
+    vitess:
+      sharded: true
+      vschema: sysbench_sharded.json
+      vtgate_workload_mode: ""
+    sysbench:
+      workload: oltp_read_write_with_settings
+      tables: 10
+      table_size: 10000
+      threads: 42
+      extra: "--auto-inc=off"
+      working_dir: ""
+      warmup_time: 20
+      run_time: 60
+
+  olap:
+    vitess:
+      sharded: true
+      vschema: sysbench_sharded.json
+      vtgate_workload_mode: OLAP
+    sysbench:
+      workload: oltp_read_only
+      tables: 10
+      table_size: 10000
+      threads: 42
+      extra: "--auto-inc=off"
+      working_dir: ""
+      warmup_time: 20
+      run_time: 60
+
+  olap-sort:
+    vitess:
+      sharded: true
+      vschema: sysbench_sharded.json
+      vtgate_workload_mode: OLAP
+      vtgate_max_memory_rows: 500000
+      vttablet_extra_flags: "--consolidator-stream-total-size=0"
+    sysbench:
+      workload: olap_sort
+      tables: 10
+      table_size: 500000
+      threads: 16
+      extra: "--auto-inc=off --skip-trx"
+      working_dir: ""
+      warmup_time: 20
+      run_time: 60
+
+  tpcc:
+    vitess:
+      sharded: true
+      vschema: tpcc_sharded.json
+      vtgate_workload_mode: ""
+    sysbench:
+      workload: /src/sysbench-tpcc/tpcc.lua
+      tables: 1
+      scale: 2
+      threads: 42
+      extra: "--use_fk=0 --mysql-ignore-errors=all"
+      working_dir: /src/sysbench-tpcc
+      warmup_time: 20
+      run_time: 60
+
+  tpcc-unsharded:
+    vitess:
+      sharded: false
+      vschema: tpcc_unsharded.json
+      vtgate_workload_mode: ""
+    sysbench:
+      workload: /src/sysbench-tpcc/tpcc.lua
+      tables: 1
+      scale: 2
+      threads: 42
+      extra: "--use_fk=0 --mysql-ignore-errors=all"
+      working_dir: /src/sysbench-tpcc
+      warmup_time: 20
+      run_time: 60

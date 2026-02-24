@@ -1,0 +1,238 @@
+{
+  "id": null,
+  "uid": "vitess-bench",
+  "title": "Vitess Benchmark",
+  "tags": ["vitess", "benchmark"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "5s",
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "VTGate QPS",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "sum(rate(vtgate_api_count[1m])) by (db_type)",
+          "legendFormat": "{{db_type}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "VTTablet QPS",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "sum(rate(vttablet_query_counts[1m])) by (plan)",
+          "legendFormat": "{{plan}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "VTGate P99 Latency",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(vtgate_api_bucket[1m])) by (le, db_type))",
+          "legendFormat": "p99 {{db_type}}",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(vtgate_api_bucket[1m])) by (le, db_type))",
+          "legendFormat": "p95 {{db_type}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "VTTablet P99 Query Latency",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(vttablet_query_timings_by_tablet_type_bucket[1m])) by (le, tablet_type))",
+          "legendFormat": "p99 {{tablet_type}}",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(vttablet_query_timings_by_tablet_type_bucket[1m])) by (le, tablet_type))",
+          "legendFormat": "p95 {{tablet_type}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "CPU Usage",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "rate(process_cpu_seconds_total{job=\"vtgate\"}[1m]) * 100",
+          "legendFormat": "vtgate",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(process_cpu_seconds_total{job=~\"vttablet.*\"}[1m]) * 100",
+          "legendFormat": "{{job}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Memory (RSS)",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 16, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes{job=\"vtgate\"}",
+          "legendFormat": "vtgate",
+          "refId": "A"
+        },
+        {
+          "expr": "process_resident_memory_bytes{job=~\"vttablet.*\"}",
+          "legendFormat": "{{job}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "VTGate Memory Detail",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 24, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "go_memstats_alloc_bytes{job=\"vtgate\"}",
+          "legendFormat": "heap alloc",
+          "refId": "A"
+        },
+        {
+          "expr": "go_memstats_heap_inuse_bytes{job=\"vtgate\"}",
+          "legendFormat": "heap in-use",
+          "refId": "B"
+        },
+        {
+          "expr": "go_memstats_sys_bytes{job=\"vtgate\"}",
+          "legendFormat": "sys (total obtained)",
+          "refId": "C"
+        },
+        {
+          "expr": "process_resident_memory_bytes{job=\"vtgate\"}",
+          "legendFormat": "RSS",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "MySQL QPS",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 32, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "rate(mysql_global_status_queries[1m])",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {"lineWidth": 2}
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "InnoDB Buffer Pool Hit Rate",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 32, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": ""},
+      "targets": [
+        {
+          "expr": "1 - rate(mysql_global_status_innodb_buffer_pool_reads[1m]) / rate(mysql_global_status_innodb_buffer_pool_read_requests[1m])",
+          "legendFormat": "hit rate {{instance}}",
+          "refId": "A"
+        },
+        {
+          "expr": "mysql_global_status_buffer_pool_dirty_pages / mysql_global_status_buffer_pool_pages_total",
+          "legendFormat": "dirty pages ratio {{instance}}",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {"lineWidth": 2},
+          "min": 0,
+          "max": 1
+        }
+      }
+    }
+  ]
+}

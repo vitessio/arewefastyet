@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+  external_labels:
+    workload: "oltp"
+    sharding: "sharded"
+    vitess_ref: "main"
+scrape_configs:
+  - job_name: vttablet-2001
+    static_configs:
+      - targets: ["mysql-2001:16021", "mysql-2001:9104"]
+remote_write:
+  - url: http://prometheus:9090/api/v1/write

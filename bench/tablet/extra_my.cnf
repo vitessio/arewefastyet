@@ -1,0 +1,38 @@
+# MySQL configuration for Vitess tablets in Docker
+# Adapted from ansible/roles/vttablet/templates/extra_my.cnf.j2
+# Key changes for Docker/overlay2 compatibility:
+#   - Removed innodb_flush_method=O_DIRECT (unreliable on overlay2 filesystem)
+#   - Fixed innodb_buffer_pool_size=512M (no dynamic formula)
+
+[mysqld]
+# InnoDB settings
+innodb_buffer_pool_size = 512M
+innodb_log_file_size = 256M
+innodb_flush_log_at_trx_commit = 1
+innodb_file_per_table = 1
+innodb_open_files = 65535
+innodb_io_capacity = 2000
+innodb_io_capacity_max = 6000
+
+# Binlog dependency tracking (required by Vitess)
+binlog_transaction_dependency_tracking = WRITESET
+transaction_write_set_extraction = XXHASH64
+binlog_row_image = minimal
+
+# Replication
+relay_log_recovery = 1
+slave_preserve_commit_order = 1
+
+# Performance
+performance_schema = OFF
+max_connections = 1024
+table_open_cache = 4096
+thread_cache_size = 32
+
+# General settings
+sql_mode = STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+character_set_server = utf8mb4
+collation_server = utf8mb4_general_ci
+
+# Disable features not needed for benchmarking
+skip_name_resolve = 1

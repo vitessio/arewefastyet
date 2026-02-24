@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+  external_labels:
+    workload: "tpcc"
+    sharding: "sharded"
+    vitess_ref: "main"
+scrape_configs:
+  - job_name: vtgate
+    static_configs:
+      - targets: ["vtgate:15001"]
+remote_write:
+  - url: http://prometheus:9090/api/v1/write

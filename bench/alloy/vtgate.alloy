@@ -1,0 +1,39 @@
+pyroscope.write "pyroscope" {
+  endpoint {
+    url = "http://pyroscope:4040"
+  }
+}
+
+pyroscope.scrape "vtgate" {
+  targets = [
+    {
+      "__address__"  = "vtgate:15001",
+      "service_name" = "vtgate",
+      "workload"     = env("ALLOY_WORKLOAD"),
+      "sharding"     = env("ALLOY_SHARDING"),
+      "vitess_ref"   = env("ALLOY_VITESS_REF"),
+    },
+  ]
+
+  scrape_interval = "15s"
+
+  profiling_config {
+    profile.process_cpu {
+      enabled = true
+    }
+    profile.memory {
+      enabled = true
+    }
+    profile.mutex {
+      enabled = true
+    }
+    profile.block {
+      enabled = true
+    }
+    profile.goroutine {
+      enabled = true
+    }
+  }
+
+  forward_to = [pyroscope.write.pyroscope.receiver]
+}
