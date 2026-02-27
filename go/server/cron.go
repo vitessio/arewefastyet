@@ -115,9 +115,6 @@ func (s *Server) createCrons() error {
 		if err != nil {
 			return err
 		}
-
-		// Trigger CRONs upon creation of the server
-		go c.f()
 	}
 	go s.cronExecutionQueueWatcher()
 	return nil
@@ -195,7 +192,7 @@ func (s *Server) appendToQueue(execElements []*executionQueueElement) {
 		_, found := queue[execElement.identifier]
 		if found {
 			slog.Infof("not adding %+v, already in the queue", execElement.identifier)
-			return
+			continue
 		}
 
 		queue[execElement.identifier] = execElement
