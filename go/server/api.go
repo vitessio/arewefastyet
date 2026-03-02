@@ -584,7 +584,14 @@ func (s *Server) addExecutions(c *gin.Context) {
 		return
 	}
 
-	var pr int
+	var (
+		pr            int
+		versionRefSHA string
+		vitessVersion git.Version
+	)
+	// versionRefSHA is the commit used to infer the Vitess release line for this run.
+	// For PR-triggered requests, we infer from the base branch commit so version-gated
+	// benchmark flags match the target branch version.
 	if req.PR != "" {
 		var err error
 		pr, err = strconv.Atoi(req.PR)
@@ -596,17 +603,46 @@ func (s *Server) addExecutions(c *gin.Context) {
 		prInfo, err := git.GetPullRequestHeadAndBase(url)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "unable to get PR information"})
+			return
 		}
 		req.SHA = prInfo.SHA
+		// Keep the execution SHA as the PR head, but infer version from the PR base.
+		versionRefSHA = prInfo.Base
 	}
 
 	if pr == 0 && req.SHA == "" {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "missing argument PR or SHA"})
+		return
 	}
 
-	if len(req.Workloads) == 1 && req.Workloads[0] == "all" {
+	allWorkloadsRequested := len(req.Workloads) == 1 && req.Workloads[0] == "all"
+	if allWorkloadsRequested {
 		req.Workloads = s.workloads
 	}
+
+	// For direct-SHA requests, infer version from the requested commit itself.
+	if versionRefSHA == "" {
+		versionRefSHA = req.SHA
+	}
+
+	// Resolve the Vitess version before queueing so version-gated exec-vitess-config
+	// entries are applied for admin-triggered executions as well.
+	s.vitessPathMu.Lock()
+	err := s.pullLocalVitess()
+	if err == nil {
+		vitessVersion, err = git.GetVersionForCommitSHA(s.getVitessPath(), versionRefSHA)
+	}
+	s.vitessPathMu.Unlock()
+	if err != nil {
+		slog.Error(err)
+		if strings.Contains(err.Error(), "release not found") {
+			c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "unable to infer Vitess version for requested SHA/PR"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, &ErrorAPI{Error: "unable to prepare local Vitess repository"})
+		return
+	}
+
 	execs, err := strconv.Atoi(req.NumberOfExecutions)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "numberOfExecutions must be an integer"})
@@ -621,10 +657,16 @@ func (s *Server) addExecutions(c *gin.Context) {
 			Mode:   req.ProfileMode,
 		}
 	}
-
+	// Validate each requested workload before enqueueing execution elements.
 	for _, workload := range req.Workloads {
+		cfg, ok := s.benchmarkConfig[strings.ToLower(workload)]
+		if !ok {
+			c.JSON(http.StatusBadRequest, &ErrorAPI{Error: "unknown benchmark workload: " + strings.ToUpper(workload)})
+			return
+		}
+
 		for i := 0; i < execs; i++ {
-			elem := s.createSimpleExecutionQueueElement(s.benchmarkConfig[strings.ToLower(workload)], req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, pr, git.Version{}, profileInformation)
+			elem := s.createSimpleExecutionQueueElement(cfg, req.Source, req.SHA, workload, string(macrobench.Gen4Planner), false, pr, vitessVersion, profileInformation)
 			elem.identifier.UUID = uuid.NewString()
 			newElements = append(newElements, elem)
 		}
