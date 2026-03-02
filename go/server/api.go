@@ -586,12 +586,15 @@ func (s *Server) addExecutions(c *gin.Context) {
 
 	var (
 		pr            int
+		
+		// versionRefSHA is the commit used to infer the Vitess release line for this run.
+		// For PR-triggered requests, we infer from the base branch commit so version-gated
+		// benchmark flags match the target branch version.
 		versionRefSHA string
+		
 		vitessVersion git.Version
 	)
-	// versionRefSHA is the commit used to infer the Vitess release line for this run.
-	// For PR-triggered requests, we infer from the base branch commit so version-gated
-	// benchmark flags match the target branch version.
+
 	if req.PR != "" {
 		var err error
 		pr, err = strconv.Atoi(req.PR)
@@ -606,6 +609,7 @@ func (s *Server) addExecutions(c *gin.Context) {
 			return
 		}
 		req.SHA = prInfo.SHA
+		
 		// Keep the execution SHA as the PR head, but infer version from the PR base.
 		versionRefSHA = prInfo.Base
 	}
