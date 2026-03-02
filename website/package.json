@@ -9,9 +9,7 @@
     "build": "vite --mode prod build",
     "lint": "eslint src --ext js,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test": "vitest run"
   },
   "dependencies": {
     "@nivo/core": "^0.83.0",
