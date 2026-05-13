@@ -30,8 +30,7 @@ jobs:
         ansible-galaxy install -r ansible/requirements.yml
 
     - name: Lint Ansible Playbook
-      uses: ansible/ansible-lint@a2bc8b8b13a80802215856c56823d85007d3baf5 # v25.12.2
+      uses: ansible/ansible-lint@24ac1cdb1ae30a273a844ac869fadd8d7b544ef5 # v6.22.2
       with:
-        python_version: '3.12'
-        requirements_file: ansible/requirements.yml
+        setup_python: 'false'
         args: "-x 301,302,303,305,306,204,208 ansible/"
