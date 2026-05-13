@@ -1,0 +1,82 @@
+name: Run ansible-lint
+description: Install and run ansible-lint from a pinned upstream commit.
+
+inputs:
+  args:
+    description: Arguments to pass to ansible-lint.
+    required: true
+
+  ansible_lint_ref:
+    description: The ansible-lint commit SHA to install.
+    required: true
+
+  expected_return_code:
+    description: The expected ansible-lint exit code.
+    required: false
+    default: "0"
+
+  virtualenv_path:
+    description: The virtualenv where ansible-lint should be installed.
+    required: false
+    default: benchmark
+
+  working_directory:
+    description: The directory where ansible-lint should run.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve paths
+      id: inputs
+      shell: bash
+      run: |
+        working_directory="${{ inputs.working_directory }}"
+        if [[ -z "${working_directory}" ]]; then
+          working_directory="${GITHUB_WORKSPACE}"
+        elif [[ "${working_directory}" != /* ]]; then
+          working_directory="${GITHUB_WORKSPACE}/${working_directory}"
+        fi
+
+        virtualenv_path="${{ inputs.virtualenv_path }}"
+        if [[ "${virtualenv_path}" != /* ]]; then
+          virtualenv_path="${working_directory}/${virtualenv_path}"
+        fi
+
+        echo "working_directory=${working_directory}" >> "$GITHUB_OUTPUT"
+        echo "virtualenv_path=${virtualenv_path}" >> "$GITHUB_OUTPUT"
+
+    - name: Install ansible-lint
+      shell: bash
+      env:
+        ANSIBLE_LINT_REF: ${{ inputs.ansible_lint_ref }}
+        VIRTUALENV_PATH: ${{ steps.inputs.outputs.virtualenv_path }}
+      run: |
+        if [[ ! -f "${VIRTUALENV_PATH}/bin/activate" ]]; then
+          echo "::error::virtualenv not found at ${VIRTUALENV_PATH}"
+          exit 1
+        fi
+
+        source "${VIRTUALENV_PATH}/bin/activate"
+
+        python -m pip install "ansible-lint[lock] @ git+https://github.com/ansible/ansible-lint@${ANSIBLE_LINT_REF}"
+        ansible-lint --version
+
+    - name: Run ansible-lint
+      shell: bash
+      working-directory: ${{ steps.inputs.outputs.working_directory }}
+      env:
+        ANSIBLE_LINT_ARGS: ${{ inputs.args }}
+        EXPECTED_RETURN_CODE: ${{ inputs.expected_return_code }}
+        VIRTUALENV_PATH: ${{ steps.inputs.outputs.virtualenv_path }}
+      run: |
+        source "${VIRTUALENV_PATH}/bin/activate"
+
+        exit_code=0
+        ansible-lint ${ANSIBLE_LINT_ARGS} || exit_code=$?
+
+        if [[ "${exit_code}" != "${EXPECTED_RETURN_CODE}" ]]; then
+          echo "::error::ansible-lint exited with ${exit_code}, expected ${EXPECTED_RETURN_CODE}"
+          exit 1
+        fi
