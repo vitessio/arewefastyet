@@ -31,6 +31,3 @@ jobs:
 
     - name: Lint Ansible Playbook
       uses: ./.github/actions/ansible-lint
-      with:
-        ansible_lint_ref: 5fac056c45595896c973fbde871f01f6cb14d74c # v26.4.0
-        args: "-x 301,302,303,305,306,204,208 ansible/"
