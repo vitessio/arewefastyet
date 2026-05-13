@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+    - uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4.9.1
       with:
         python-version: '3.12'
 
@@ -30,12 +30,8 @@ jobs:
         ansible-galaxy install -r ansible/requirements.yml
 
     - name: Lint Ansible Playbook
-      uses: ansible/ansible-lint-action@main
+      uses: ansible/ansible-lint@a2bc8b8b13a80802215856c56823d85007d3baf5 # v25.12.2
       with:
-        path: ansible/
-
-        override-deps: |
-          ansible==2.10.7
-          ansible-lint==4.3.7
-
-        args: "-x 301,302,303,305,306,204,208"
+        python_version: '3.12'
+        requirements_file: ansible/requirements.yml
+        args: "-x 301,302,303,305,306,204,208 ansible/"
