@@ -181,8 +181,9 @@ func (s *Server) Init() error {
 
 	s.benchmarkConfig = map[string]benchmarkConfig{
 		// "micro":         {file: path.Join(s.benchmarkConfigPath, "micro.yaml"), v: viper.New(), skip: true},
-		"oltp":          {file: path.Join(s.benchmarkConfigPath, "oltp.yaml"), v: viper.New()},
-		"oltp-readonly": {file: path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"), v: viper.New()},
+		"oltp":           {file: path.Join(s.benchmarkConfigPath, "oltp.yaml"), v: viper.New()},
+		"oltp-readonly":  {file: path.Join(s.benchmarkConfigPath, "oltp-readonly.yaml"), v: viper.New()},
+		"oltp-writeonly": {file: path.Join(s.benchmarkConfigPath, "oltp-writeonly.yaml"), v: viper.New()},
 
 		"oltp-with-settings": {file: path.Join(s.benchmarkConfigPath, "oltp-with-settings.yaml"), v: viper.New()},
 
