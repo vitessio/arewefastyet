@@ -34,6 +34,8 @@ const (
 	flagServerAddress        = "exec-server-address"
 	flagVitessConfig         = "exec-vitess-config"
 	flagVitessSchema         = "exec-schema"
+
+	defaultGolangVersion = "1.26.3"
 )
 
 func (e *Exec) AddToViper(v *viper.Viper) (err error) {
@@ -61,7 +63,12 @@ func (e *Exec) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&e.Workload, flagExecWorkload, "", "Defines the execution workload (oltp, tpcc, micro).")
 	cmd.Flags().StringVar(&e.VtgatePlannerVersion, flagVtgatePlannerVersion, "V3", "Defines the vtgate planner version to use. Valid values are: V3, Gen4, Gen4Greedy and Gen4Fallback.")
 	cmd.Flags().IntVar(&e.PullNB, flagExecPullNB, 0, "Defines the number of the pull request against which to execute.")
-	cmd.Flags().StringVar(&e.GolangVersion, flagGolangVersion, "1.17", "Defines the golang version that will be used by this execution.")
+	cmd.Flags().StringVar(
+		&e.GolangVersion,
+		flagGolangVersion,
+		defaultGolangVersion,
+		"Defines the golang version that will be used by this execution.",
+	)
 	cmd.Flags().StringVar(&e.ServerAddress, flagServerAddress, "", "The IP address of the server on which the benchmark will be executed.")
 	cmd.Flags().StringVar(&e.vitessSchemaPath, flagVitessSchema, "", "Path to the VSchema for this benchmark.")
 

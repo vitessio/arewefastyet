@@ -18,7 +18,7 @@ arewefastyet exec [flags]
       --ansible-playbook-file string           Playbook file used by Ansible
       --ansible-root-directory string          Root directory of Ansible
       --exec-git-ref string                    Git reference on which the benchmarks will run.
-      --exec-go-version string                 Defines the golang version that will be used by this execution. (default "1.17")
+      --exec-go-version string                 Defines the golang version that will be used by this execution. (default "1.26.3")
       --exec-pull-nb int                       Defines the number of the pull request against which to execute.
       --exec-root-dir string                   Path to the root directory of exec.
       --exec-schema string                     Path to the VSchema for this benchmark.

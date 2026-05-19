@@ -13,10 +13,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@7b8cf10d4e4a01d4992d18a89f4d7dc5a3e6d6f4 # v4.3.0
         with:
-          go-version: 1.23.0
+          go-version-file: go.mod
 
       - name: Install golangci-lint
-        run: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.60.1
+        run: GOBIN=$(go env GOPATH)/bin go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 
       - name: Clean Env
         run: $(go env GOPATH)/bin/golangci-lint cache clean
