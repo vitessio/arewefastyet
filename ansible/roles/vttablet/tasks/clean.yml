@@ -10,31 +10,30 @@
 # limitations under the License.
 
 ---
-- name: reinstall systemd unit if needed
-  include_tasks: systemd.yml
-
-- name: clean all vttablet
-  include_tasks: clean_one.yml
-  loop: '{{ all_tablets }}'
+- name: Reinstall systemd unit if needed
+  ansible.builtin.include_tasks: systemd.yml
+- name: Clean all vttablet
+  ansible.builtin.include_tasks: clean_one.yml
+  loop: "{{ all_tablets }}"
   loop_control:
     loop_var: tablet
 
-- name: remove old config
-  become: yes
+- name: Remove old config
+  become: true
   become_user: root
   with_items:
-    - '/etc/systemd/system/vttablet@.service'
-    - '/etc/systemd/system/mysqlctld@.service'
-    - '/etc/systemd/system/mysqld_exporter@.service'
-  file:
+    - "/etc/systemd/system/vttablet@.service"
+    - "/etc/systemd/system/mysqlctld@.service"
+    - "/etc/systemd/system/mysqld_exporter@.service"
+  ansible.builtin.file:
     state: absent
-    path: '{{ item }}'
+    path: "{{ item }}"
 
-- name: systemctl daemon-reload
-  become: yes
+- name: Systemctl daemon-reload
+  become: true
   become_user: root
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
 
-- name: remove binary
-  shell: rm -f $(which vttablet mysqlctld mysqlctl)
+- name: Remove binary
+  ansible.builtin.shell: rm -f $(which vttablet mysqlctld mysqlctl)

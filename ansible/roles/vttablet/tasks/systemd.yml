@@ -10,8 +10,8 @@
 # limitations under the License.
 
 ---
-- name: install systemd units
-  become: yes
+- name: Install systemd units
+  become: true
   become_user: root
   with_items:
     - s: vttablet@.service
@@ -20,16 +20,16 @@
       d: /etc/systemd/system/mysqlctld@.service
     - s: mysqld_exporter@.service
       d: /etc/systemd/system/mysqld_exporter@.service
-  template:
-    src: '{{ item.s }}.j2'
-    dest: '{{ item.d }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
+  ansible.builtin.template:
+    src: "{{ item.s }}.j2"
+    dest: "{{ item.d }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
+    mode: "0644"
 
-- name: systemctl daemon-reload
-  become: yes
+- name: Systemctl daemon-reload
+  become: true
   become_user: root
   changed_when: false
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true

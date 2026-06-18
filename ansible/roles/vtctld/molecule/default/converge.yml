@@ -15,6 +15,6 @@
   tasks:
     - name: "Prepare vtctld"
       vars:
-        - clean_vtctld: False
-      include_role:
+        clean_vtctld: false
+      ansible.builtin.include_role:
         name: "vtctld"

@@ -10,27 +10,27 @@
 # limitations under the License.
 
 ---
-etcd_master_group: 'etcd'
+etcd_master_group: "etcd"
 
-vitess_user: 'vitess'
-vitess_group: 'vitess'
-vitess_cluster: 'main'
-cell: 'local'
+vitess_user: "vitess"
+vitess_group: "vitess"
+vitess_cluster: "main"
+cell: "local"
 
-vitess_root: '/vt'
+vitess_root: "/vt"
 
 gateways:
-  - id: '1'
-    port: '15001'
-    mysql_port: '3306'
-    grpc_port: '15306'
+  - id: "1"
+    port: "15001"
+    mysql_port: "3306"
+    grpc_port: "15306"
 
-vtgate_port: '15001'
-vtgate_mysql_port: '3306'
-vtgate_grpc_port: '15306'
+vtgate_port: "15001"
+vtgate_mysql_port: "3306"
+vtgate_grpc_port: "15306"
 
-enable_vtgate: True
-clean_vtgate: True
+enable_vtgate: true
+clean_vtgate: true
 
 vtgate_max_goproc: 24
 
