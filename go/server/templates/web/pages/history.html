@@ -1,0 +1,160 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg text-center">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">History</h2>
+    <p class="md:my-6 leading-loose text-foreground/80">
+      All commits that arewefastyet has benchmarked, most recent first. Use the row actions to add a commit to the
+      "Compare Versions" panel as the old or new side, or to filter this table down to a single commit.
+    </p>
+  </div>
+</section>
+
+<hr class="w-4/5 mx-auto border-border" />
+
+<section class="mx-auto p-page lg:w-[60vw] my-12 flex flex-col">
+  {{ if .Error }}
+  <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else }}
+  <div x-data="historyTable()" data-rows="{{ .RowsJSON }}" data-initial="{{ .InitialGitRef }}">
+    <!-- Toolbar: text filter, source faceted filter, reset, column visibility -->
+    <div class="flex items-center justify-between gap-4 py-4 flex-wrap">
+      <div class="flex flex-1 items-center gap-4">
+        <input
+          x-model="query"
+          @input="page = 0"
+          type="text"
+          placeholder="Filter History..."
+          class="h-9 w-full max-w-[250px] rounded-md border border-border bg-background px-3 text-sm"
+        />
+
+        <div x-data="{ open: false }" class="relative">
+          <button
+            @click="open = !open"
+            class="inline-flex items-center gap-2 rounded-md border border-dashed border-border h-8 px-3 text-sm hover:bg-muted"
+          >
+            <i class="fa-solid fa-circle-plus text-primary"></i>Source
+            <template x-if="sources.length">
+              <span class="ml-1 rounded-sm bg-muted px-1 text-xs" x-text="sources.length"></span>
+            </template>
+          </button>
+          <div
+            x-show="open"
+            x-cloak
+            @click.outside="open = false"
+            class="absolute z-[60] mt-2 w-44 rounded-md border border-border bg-popover text-popover-foreground p-2 shadow-lg"
+          >
+            {{ range .Sources }}
+            <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer">
+              <input type="checkbox" :checked="sources.includes('{{ . }}')" @change="toggleSource('{{ . }}')" />
+              <span>{{ . }}</span>
+            </label>
+            {{ else }}
+            <div class="px-2 py-1 text-sm text-muted-foreground">No sources</div>
+            {{ end }}
+          </div>
+        </div>
+
+        <button
+          x-show="query || sources.length"
+          @click="reset()"
+          class="inline-flex items-center gap-2 h-8 px-3 text-sm hover:bg-muted rounded-md"
+        >
+          Reset<i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div x-data="{ open: false }" class="relative">
+        <button
+          @click="open = !open"
+          class="inline-flex items-center gap-2 rounded-md border border-border h-8 px-3 text-sm hover:bg-muted"
+        >
+          <i class="fa-solid fa-sliders text-primary"></i>View
+        </button>
+        <div
+          x-show="open"
+          x-cloak
+          @click.outside="open = false"
+          class="absolute right-0 z-[60] mt-2 w-48 rounded-md border border-border bg-popover text-popover-foreground p-2 shadow-lg"
+        >
+          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.sha" />SHA</label>
+          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.source" />Source</label>
+          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.workloads" />Workloads Benchmarked</label>
+          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.started" />Started</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="rounded-md border border-border overflow-x-auto">
+      <table class="w-full caption-bottom text-sm">
+        <thead>
+          <tr class="border-b border-border">
+            <th x-show="showCol.sha" class="h-12 px-4 text-center align-middle font-semibold text-foreground">SHA</th>
+            <th x-show="showCol.source" class="h-12 px-4 text-center align-middle font-semibold text-foreground">Source</th>
+            <th x-show="showCol.workloads" class="h-12 px-4 text-center align-middle font-semibold text-foreground">Workloads Benchmarked</th>
+            <th x-show="showCol.started" class="h-12 px-4 text-center align-middle font-semibold text-foreground">Started</th>
+            <th class="h-12 px-4 text-center align-middle font-semibold text-foreground"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="(r, i) in paged()" :key="i">
+            <tr class="border-b border-border text-center">
+              <td x-show="showCol.sha" class="p-4 align-middle">
+                <span class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold bg-primary text-primary-foreground" x-text="r.shaShort"></span>
+              </td>
+              <td x-show="showCol.source" class="p-4 align-middle" x-text="r.source"></td>
+              <td x-show="showCol.workloads" class="p-4 align-middle" x-text="r.workloads"></td>
+              <td x-show="showCol.started" class="p-4 align-middle">
+                <span class="underline" :title="r.startedTitle" x-text="r.startedRel"></span>
+              </td>
+              <td class="p-4 align-middle">
+                <div x-data="{ openMenu: false }" class="relative inline-block">
+                  <button @click="openMenu = !openMenu" class="h-9 w-9 inline-flex items-center justify-center rounded-md hover:bg-muted" aria-label="Open menu">
+                    <i class="fa-solid fa-ellipsis"></i>
+                  </button>
+                  <div
+                    x-show="openMenu"
+                    x-cloak
+                    @click.outside="openMenu = false"
+                    class="absolute right-0 z-[70] mt-2 w-44 rounded-md border border-border bg-popover text-popover-foreground p-1 shadow-lg text-left"
+                  >
+                    <div class="px-2 py-1 text-xs text-muted-foreground">Actions</div>
+                    <button @click="$store.compare.addOld(r.sha); openMenu = false" class="block w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted">Add as old</button>
+                    <button @click="$store.compare.addNew(r.sha); openMenu = false" class="block w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted">Add as new</button>
+                    <a :href="'/history?gitRef=' + r.sha" class="block w-full text-left px-2 py-1.5 text-sm rounded hover:bg-muted">Benchmarks History</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </template>
+          <tr x-show="paged().length === 0">
+            <td colspan="5" class="h-24 text-center text-muted-foreground">No executions or benchmarks found for this commit.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-end gap-4 py-4 text-sm">
+      <span class="text-muted-foreground">
+        Page <span x-text="pageCount() ? page + 1 : 0"></span> of <span x-text="pageCount()"></span>
+      </span>
+      <button
+        @click="prevPage()"
+        :disabled="page === 0"
+        class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      <button
+        @click="nextPage()"
+        :disabled="page + 1 >= pageCount()"
+        class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+  {{ end }}
+</section>
+{{ end }}

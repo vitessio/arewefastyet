@@ -1,0 +1,80 @@
+{{ define "compare_widget" }}
+<!--
+  Global "Compare Versions" widget, mirroring the React CompareActionsWrapper that
+  Layout.tsx mounted on every page. Visibility and the staged old/new refs live in
+  the Alpine $store.compare (see app.js); per-row "Add as old/new" actions push to
+  it. The card itself is draggable via compareWidget() and links through to the
+  /compare page.
+-->
+<div
+  x-data="compareWidget()"
+  x-show="$store.compare.visible"
+  x-cloak
+  @mousemove.window="onDrag($event)"
+  @mouseup.window="endDrag()"
+  @keydown.escape.window="$store.compare.close()"
+  :style="style()"
+  class="fixed bottom-6 right-6 z-[100] w-80 rounded-lg border border-border bg-card text-card-foreground shadow-2xl"
+>
+  <div
+    @mousedown.prevent="startDrag($event)"
+    class="flex items-center justify-between gap-2 rounded-t-lg border-b border-border bg-muted px-4 py-2 cursor-move select-none"
+  >
+    <div class="flex items-center gap-2 text-sm font-semibold">
+      <i class="fa-solid fa-code-compare text-primary"></i>Compare Versions
+    </div>
+    <button
+      @click="$store.compare.close()"
+      class="h-7 w-7 inline-flex items-center justify-center rounded-md hover:bg-background"
+      aria-label="Close"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-3 p-4">
+    <label class="flex flex-col gap-1 text-xs text-muted-foreground">
+      Old
+      <input
+        x-model="$store.compare.old"
+        type="text"
+        list="compare-widget-refs"
+        placeholder="commit SHA or ref"
+        class="h-9 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground"
+      />
+    </label>
+    <label class="flex flex-col gap-1 text-xs text-muted-foreground">
+      New
+      <input
+        x-model="$store.compare.new"
+        type="text"
+        list="compare-widget-refs"
+        placeholder="commit SHA or ref"
+        class="h-9 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground"
+      />
+    </label>
+
+    <div class="flex items-center justify-end gap-2">
+      <button
+        @click="$store.compare.close()"
+        class="inline-flex items-center h-9 px-3 rounded-md border border-border text-sm hover:bg-muted"
+      >
+        Clear
+      </button>
+      <button
+        @click="$store.compare.go()"
+        :disabled="!$store.compare.old || !$store.compare.new"
+        class="inline-flex items-center gap-2 h-9 px-3 rounded-md bg-primary text-primary-foreground text-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Compare<i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <datalist id="compare-widget-refs">
+    <template x-for="ref in $store.compare.refs" :key="ref">
+      <option :value="ref"></option>
+    </template>
+  </datalist>
+</div>
+{{ end }}

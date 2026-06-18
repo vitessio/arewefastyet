@@ -1,0 +1,48 @@
+{{ define "footer" }}
+<footer class="m-auto w-full border-border/40 lg:px-60 md:px-12 sm:px-6 py-12 text-foreground border-t">
+  <div class="flex flex-col gap-8 lg:gap-28 lg:flex-row md:justify-center text-sm font-light tracking-tight lg:pr-64">
+    <div class="md:flex m-auto lg:m-0 flex-col gap-y-4 lg:gap-y-12 lg:order-1 order-2">
+      <div class="flex gap-x-2 items-center">
+        <img src="/static/logo.png" alt="vitess logo" class="aspect-square h-10 w-10 md:h-12 md:w-12 md:shrink-0" />
+        <h2 class="text-3xl font-normal">arewefastyet</h2>
+      </div>
+      <div class="my-2 flex justify-between md:justify-center px-5 md:px-0 gap-x-4">
+        <div class="flex items-center gap-x-8">
+          <a href="https://github.com/vitessio/arewefastyet" target="_blank" rel="noreferrer">
+            <i class="fa-brands fa-github text-foreground hover:text-primary/80 md:text-4xl text-2xl"></i>
+          </a>
+          <a href="https://vitess.io/slack" target="_blank" rel="noreferrer">
+            <i class="fa-brands fa-slack text-foreground hover:text-primary/80 md:text-4xl text-2xl"></i>
+          </a>
+          <a href="https://twitter.com/vitessio" target="_blank" rel="noreferrer">
+            <i class="fa-brands fa-x-twitter text-foreground hover:text-primary/80 md:text-4xl text-2xl"></i>
+          </a>
+          <a href="https://stackoverflow.com/search?q=vitess" target="_blank" rel="noreferrer">
+            <i class="fa-brands fa-stack-overflow text-foreground hover:text-primary/80 md:text-4xl text-2xl"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="flex order-1 md:gap-[12em] gap-[6em] xl:pl-24 m-auto md:justify-center">
+      <div class="flex flex-col">
+        <h5 class="font-bold md:text-lg text-base">Benchmarks</h5>
+        <div class="my-4 md:my-7 flex flex-col gap-y-2">
+          <a class="md:text-base text-xs text-foreground/80 hover:text-primary/80" href="/daily">Daily</a>
+          <a class="md:text-base text-xs text-foreground/80 hover:text-primary/80" href="/compare">Compare</a>
+          <a class="md:text-base text-xs text-foreground/80 hover:text-primary/80" href="/pr">PR</a>
+          <a class="md:text-base text-xs text-foreground/80 hover:text-primary/80" href="/history">History</a>
+        </div>
+      </div>
+      <div class="flex flex-col">
+        <h5 class="font-bold md:text-lg text-base">Vitess</h5>
+        <div class="my-4 md:my-7 flex flex-col gap-y-2">
+          <a class="md:text-base text-xs text-foreground/80 hover:text-primary/80" href="https://vitess.io/docs">Docs</a>
+          <a class="md:text-base text-xs text-foreground/80 hover:text-primary/80" href="https://vitess.io/blog">Blog</a>
+          <a class="md:text-base text-xs text-foreground/80 hover:text-primary/80" href="https://vitess.io/community">Community</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-8 lg:mt-4 text-center md:text-center text-medium">@vitessio/arewefastyet</div>
+</footer>
+{{ end }}

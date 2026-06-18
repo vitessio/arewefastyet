@@ -1,0 +1,45 @@
+{{ define "content" }}
+<section class="flex flex-col items-center py-[15vh] p-page">
+  {{ if .NotFound }}
+  <div class="text-destructive text-center text-xl">Pull request {{ .Number }} not found</div>
+  {{ else if .Error }}
+  <div class="text-destructive text-center my-2">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else }}{{ with .PR }}
+  <div class="w-fit max-w-full rounded-lg border border-border bg-card text-card-foreground shadow-sm">
+    <div class="flex flex-col space-y-1.5 p-6">
+      <div class="text-lg md:text-2xl font-semibold flex flex-row gap-10 justify-between">
+        <span>{{ .Title }}</span>
+        <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/pull/{{ .Number }}">#{{ .Number }}</a>
+      </div>
+      <div class="py-4 text-sm text-muted-foreground">
+        <span class="underline" title="{{ .CreatedTitle }}">By {{ .Author }} at {{ .CreatedRel }}</span>
+      </div>
+    </div>
+    <div class="p-6 pt-0">
+      <div class="flex flex-col gap-3">
+        <span class="md:text-xl font-semibold">Base</span>
+        {{ if .Base }}
+        <a class="text-xs md:text-lg text-primary break-all" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/commit/{{ .Base }}">{{ .Base }}</a>
+        {{ else }}
+        <p class="text-xs md:text-lg text-destructive">No base</p>
+        {{ end }}
+        <hr class="border-border" />
+        <span class="md:text-xl font-semibold">Head</span>
+        {{ if .Head }}
+        <a class="text-xs md:text-lg text-primary break-all" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/commit/{{ .Head }}">{{ .Head }}</a>
+        {{ else }}
+        <p class="text-xs md:text-lg text-destructive">No head</p>
+        {{ end }}
+      </div>
+    </div>
+    <div class="flex items-center justify-end p-6 pt-0">
+      {{ if .CanCompare }}
+      <a href="/compare?old={{ .Base }}&new={{ .Head }}" class="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground p-4 md:p-8 text-lg font-medium hover:bg-primary/90">Compare with Base Commit</a>
+      {{ else }}
+      <span class="inline-flex items-center justify-center rounded-md bg-primary/50 text-primary-foreground p-4 md:p-8 text-lg font-medium cursor-not-allowed" aria-disabled="true">Compare with Base Commit</span>
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}{{ end }}
+</section>
+{{ end }}

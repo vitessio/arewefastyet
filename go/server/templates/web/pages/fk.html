@@ -1,0 +1,61 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">Foreign Keys</h2>
+    <p class="md:my-6 leading-loose text-foreground/80">
+      Foreign Keys Management is a new feature that was added in version 18 of Vitess. This page enables the comparison of
+      two different Foreign Keys workloads on the same commit, allowing you to see the performance of a workflow with
+      Vitess-managed foreign keys versus one where foreign keys are either not enabled, or not managed by Vitess.
+    </p>
+
+    <form method="get" action="/fk" hx-get="/fk" hx-target="#fk-results" hx-swap="innerHTML" hx-push-url="true" class="flex flex-col md:flex-row gap-4 items-end">
+      <div class="flex flex-col">
+        <label class="text-primary mb-2">Old Workload</label>
+        <select name="oldWorkload" class="h-9 rounded-md border border-border bg-background px-3 text-sm">
+          <option value="">Select workload...</option>
+          {{ range .Workloads }}
+          <option value="{{ . }}" {{ if eq . $.OldWorkload }}selected{{ end }}>{{ . }}</option>
+          {{ end }}
+        </select>
+      </div>
+      <div class="flex flex-col">
+        <label class="text-primary mb-2">New Workload</label>
+        <select name="newWorkload" class="h-9 rounded-md border border-border bg-background px-3 text-sm">
+          <option value="">Select workload...</option>
+          {{ range .Workloads }}
+          <option value="{{ . }}" {{ if eq . $.NewWorkload }}selected{{ end }}>{{ . }}</option>
+          {{ end }}
+        </select>
+      </div>
+      <div class="flex flex-col">
+        <label class="text-primary mb-2">Commit</label>
+        <input name="sha" value="{{ .SHA }}" placeholder="Commit SHA..." class="h-9 rounded-md border border-border bg-background px-3 text-sm" />
+      </div>
+      <button type="submit" class="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-9 px-4 text-sm font-medium hover:bg-primary/90">Compare</button>
+    </form>
+  </div>
+</section>
+
+<section class="flex flex-col items-center p-page" id="fk-results">{{ template "fk_results" . }}</section>
+{{ end }}
+
+{{ define "fk_results" }}
+  {{ if .Error }}
+  <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else if not .HasQuery }}
+  <div class="md:text-xl text-primary my-10">Choose two commits to compare</div>
+  {{ else if .MissingResults }}
+  <div class="text-center md:text-xl text-destructive my-10">Missing results for this workloads</div>
+  {{ else }}
+  <div class="w-[80vw] xl:w-[60vw] my-12">
+    <div class="rounded-lg border border-border overflow-x-auto">
+      <div class="p-6">
+        <h3 class="text-2xl md:text-4xl text-primary">
+          <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/commit/{{ .SHA }}">{{ .SHA }}</a>
+        </h3>
+      </div>
+      {{ template "macroCompareTable" . }}
+    </div>
+  </div>
+  {{ end }}
+{{ end }}

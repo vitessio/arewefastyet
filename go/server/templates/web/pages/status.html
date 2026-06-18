@@ -1,0 +1,113 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">Status</h2>
+    <p class="md:my-6 leading-loose text-foreground/80">
+      Arewefastyet has a single execution queue with tasks that are executed sequentially on our benchmarking server. Each
+      execution has a status that can be either: <b>started</b>, <b>failed</b> or <b>finished</b>. When a benchmark is marked
+      as finished it means that it ran successfully. Only the last 1000 executions are shown in the previous executions.
+    </p>
+
+    <div class="flex flex-wrap justify-center gap-8 w-[80vw]">
+      {{ if .StatsError }}
+      <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+      {{ else }}
+      {{ range .Cards }}
+      <div class="w-[300px] h-[150px] md:min-h-[130px] rounded-lg border border-border bg-card text-card-foreground shadow-sm flex flex-col justify-between">
+        <div class="p-6 pb-0">
+          <span class="text-4xl md:text-5xl font-semibold text-primary">{{ .Value }}</span>
+        </div>
+        <div class="p-6 pt-0 text-lg md:text-xl font-light md:font-medium">{{ .Title }}</div>
+      </div>
+      {{ end }}
+      <div class="w-[300px] h-[150px] rounded-lg border border-border bg-card text-card-foreground shadow-sm flex flex-col">
+        <div class="flex-1 min-h-0 p-3">
+          <canvas data-barchart data-values="{{ .Last7DaysJSON }}"></canvas>
+        </div>
+        <div class="text-xs text-primary flex justify-center md:text-sm font-light md:font-medium pb-2">
+          Benchmarks over the last 7 days
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+<hr class="mx-auto w-[80%] border-border" />
+
+<section class="flex flex-col items-center p-page my-10">
+  <h3 class="text-2xl md:text-3xl font-semibold text-primary mb-6">Execution Queue</h3>
+  <div class="w-full xl:w-[80vw] rounded-lg border border-border overflow-x-auto">
+    <table class="w-full caption-bottom text-sm">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">SHA</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Source</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Workload</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">PR</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Profile</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .QueueRows }}
+        <tr class="border-b border-border transition-colors hover:bg-muted/50">
+          <td class="p-4 align-middle"><span class="{{ badgeClass "default" }}">{{ .SHAShort }}</span></td>
+          <td class="p-4 align-middle">{{ .Source }}</td>
+          <td class="p-4 align-middle">{{ .Workload }}</td>
+          <td class="p-4 align-middle"><span class="{{ badgeClass "default" }}">{{ .PRDisplay }}</span></td>
+          <td class="p-4 align-middle">{{ if .Profile }}<span class="{{ badgeClass "progress" }}">{{ .Profile }}</span>{{ end }}</td>
+        </tr>
+        {{ else }}
+        <tr><td colspan="5" class="p-4 text-center text-muted-foreground">The execution queue is empty.</td></tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="mx-auto w-[80%] border-border" />
+
+<section class="flex flex-col items-center p-page my-10">
+  <h3 class="text-2xl md:text-3xl font-semibold text-primary mb-6">Previous Executions</h3>
+  {{ if .ExecutionsError }}
+  <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else }}
+  <div class="w-full xl:w-[80vw] rounded-lg border border-border overflow-x-auto">
+    <table class="w-full caption-bottom text-sm">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">UUID</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">SHA</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Source</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Workload</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Started</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Finished</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">PR #</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Golang</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Profile</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .ExecutionRows }}
+        <tr class="border-b border-border transition-colors hover:bg-muted/50">
+          <td class="p-4 align-middle">{{ .UUIDShort }}</td>
+          <td class="p-4 align-middle"><span class="{{ badgeClass "default" }}">{{ .SHAShort }}</span></td>
+          <td class="p-4 align-middle">{{ .Source }}</td>
+          <td class="p-4 align-middle">{{ .Workload }}</td>
+          <td class="p-4 align-middle"><span class="underline" title="{{ .StartedTitle }}">{{ .StartedRel }}</span></td>
+          <td class="p-4 align-middle">{{ if .FinishedTitle }}<span class="underline" title="{{ .FinishedTitle }}">{{ .FinishedRel }}</span>{{ else }}{{ .FinishedRel }}{{ end }}</td>
+          <td class="p-4 align-middle"><span class="{{ badgeClass "default" }}">{{ .PRDisplay }}</span></td>
+          <td class="p-4 align-middle">{{ .Golang }}</td>
+          <td class="p-4 align-middle"><span class="{{ badgeClass .StatusVariant }}">{{ .Status }}</span></td>
+          <td class="p-4 align-middle">{{ if .Profile }}<span class="{{ badgeClass "progress" }}">{{ .Profile }}</span>{{ end }}</td>
+        </tr>
+        {{ else }}
+        <tr><td colspan="10" class="p-4 text-center text-muted-foreground">No previous executions.</td></tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+  {{ end }}
+</section>
+{{ end }}

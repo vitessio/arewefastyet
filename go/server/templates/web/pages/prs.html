@@ -1,0 +1,54 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">Pull Request</h2>
+    <p class="md:my-6 leading-loose text-foreground/80">
+      If a given Pull Request on vitessio/vitess is labelled with the
+      <span class="bg-red-800 text-white px-2 py-1 rounded-2xl ml-2">Benchmark Me</span> label the Pull Request will be
+      handled and benchmarked by arewefastyet. For each commit on the Pull Request there will be two benchmarks: one on the
+      Pull Request's HEAD and another on the base of the Pull Request.
+      <br /><br />
+      On this page you can find all benchmarked Pull Requests.
+    </p>
+  </div>
+</section>
+
+{{ if .Error }}
+<div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+{{ else }}
+<div class="lg:mx-auto w-full p-page xl:w-[80vw] my-12 flex flex-col">
+  <div class="rounded-lg border border-border overflow-x-auto">
+    <table class="w-full caption-bottom text-sm">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">#</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Title</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Author</th>
+          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Opened At</th>
+          <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range .Rows }}
+        <tr class="border-b border-border transition-colors hover:bg-muted/50">
+          <td class="p-4 align-middle">
+            <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/pull/{{ .ID }}">{{ .ID }}</a>
+          </td>
+          <td class="p-4 align-middle whitespace-nowrap">{{ .Title }}</td>
+          <td class="p-4 align-middle">
+            <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/{{ .Author }}">{{ .Author }}</a>
+          </td>
+          <td class="p-4 align-middle"><span class="underline" title="{{ .OpenedTitle }}">{{ .OpenedRel }}</span></td>
+          <td class="p-4 align-middle text-center">
+            <a href="/pr/{{ .ID }}" class="inline-flex text-lg text-primary duration-300 hover:scale-105"><i class="fa-solid fa-up-right-from-square"></i></a>
+          </td>
+        </tr>
+        {{ else }}
+        <tr><td colspan="5" class="p-4 text-center text-muted-foreground">No benchmarked pull requests.</td></tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+</div>
+{{ end }}
+{{ end }}

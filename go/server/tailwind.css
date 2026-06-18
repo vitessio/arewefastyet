@@ -1,0 +1,27 @@
+/*
+ * Tailwind input stylesheet for the server-rendered website. The standalone
+ * Tailwind CLI compiles this (plus the utilities scanned from the templates and
+ * app.js) into static/web/app.css at image-build time. The light/dark design
+ * tokens themselves live inline in base.html so the theme applies before paint.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-background text-front font-opensans scroll-smooth;
+  }
+  body {
+    @apply m-0 p-0;
+  }
+}
+
+@layer utilities {
+  .p-page {
+    @apply px-[5vw];
+  }
+  .absolute-cover {
+    @apply absolute top-0 left-0 w-full h-full;
+  }
+}

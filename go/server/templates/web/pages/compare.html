@@ -1,0 +1,63 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">Compare Versions</h2>
+
+    <form method="get" action="/compare" hx-get="/compare" hx-target="#compare-results" hx-swap="innerHTML" hx-push-url="true" class="flex flex-col md:flex-row gap-4 items-end">
+      <div class="flex flex-col">
+        <label class="text-primary mb-2" for="old">Old</label>
+        <input id="old" name="old" list="vitess-refs" value="{{ .OldRef }}" placeholder="Search commit or releases..." class="h-9 w-64 rounded-md border border-border bg-background px-3 text-sm" />
+      </div>
+      <div class="flex flex-col">
+        <label class="text-primary mb-2" for="new">New</label>
+        <input id="new" name="new" list="vitess-refs" value="{{ .NewRef }}" placeholder="Search commit or releases..." class="h-9 w-64 rounded-md border border-border bg-background px-3 text-sm" />
+      </div>
+      <button type="submit" class="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-9 px-4 text-sm font-medium hover:bg-primary/90">Compare</button>
+      <datalist id="vitess-refs">
+        {{ range .Refs }}<option value="{{ .Name }}"></option>{{ end }}
+      </datalist>
+    </form>
+  </div>
+</section>
+
+<section class="flex flex-col items-center" id="compare-results">{{ template "compare_results" . }}</section>
+{{ end }}
+
+{{ define "compare_results" }}
+  {{ if .Error }}
+  <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else if not .HasQuery }}
+  <div class="md:text-xl text-primary my-10">Choose two commits to compare</div>
+  {{ else }}
+  <div class="flex justify-end w-[80vw] xl:w-[60vw] mt-8">
+    <button type="button" onclick="copyCompareMarkdown(this)" class="inline-flex items-center rounded-md border border-dashed border-border h-8 px-3 text-sm hover:bg-muted">
+      <i class="fa-solid fa-copy mr-2 text-primary"></i><span data-copy-label>Copy as markdown</span>
+    </button>
+  </div>
+  <textarea id="compareMarkdown" class="hidden" aria-hidden="true">{{ .Markdown }}</textarea>
+
+  {{ range .Cards }}
+  <div class="w-[80vw] xl:w-[60vw] my-12">
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm overflow-x-auto">
+      <div class="flex flex-col gap-4 md:gap-0 md:flex-row justify-between items-start p-6">
+        <h3 class="text-2xl md:text-4xl">{{ .Workload }}</h3>
+        {{ if .MissingResults }}
+        <span class="inline-flex items-center rounded-md border border-dashed border-border h-8 px-3 text-sm text-muted-foreground cursor-not-allowed" aria-disabled="true">
+          <i class="fa-solid fa-circle-plus mr-2 text-primary"></i>See Query Plan
+        </span>
+        {{ else }}
+        <a href="{{ .QueryPlanHref }}" class="inline-flex items-center rounded-md border border-dashed border-border h-8 px-3 text-sm hover:bg-muted">
+          <i class="fa-solid fa-circle-plus mr-2 text-primary"></i>See Query Plan
+        </a>
+        {{ end }}
+      </div>
+      {{ if .MissingResults }}
+      <div class="text-center md:text-xl text-destructive pb-12">Missing results for this workload</div>
+      {{ else }}
+      {{ template "macroCompareTable" . }}
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+  {{ end }}
+{{ end }}

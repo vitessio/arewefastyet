@@ -1,0 +1,28 @@
+{{ define "macroCompareTable" }}
+<table class="w-full caption-bottom text-sm">
+  <thead>
+    <tr class="border-b border-border hover:bg-background">
+      <th class="w-[200px]"></th>
+      <th class="text-center text-primary font-semibold min-w-[150px] h-12 px-4">{{ if .OldHref }}<a class="text-primary hover:underline" target="_blank" rel="noreferrer" href="{{ .OldHref }}">{{ .OldLabel }}</a>{{ else }}{{ .OldLabel }}{{ end }}</th>
+      <th class="text-center text-primary font-semibold min-w-[150px] h-12 px-4">{{ if .NewHref }}<a class="text-primary hover:underline" target="_blank" rel="noreferrer" href="{{ .NewHref }}">{{ .NewLabel }}</a>{{ else }}{{ .NewLabel }}{{ end }}</th>
+      <th class="lg:w-[150px] text-center font-semibold h-12 px-4">P</th>
+      <th class="lg:w-[150px] text-center font-semibold h-12 px-4">Delta</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .Rows }}
+    <tr class="border-b border-border">
+      <td class="w-[200px] font-medium text-right border-r border-border p-4">{{ .Title }}</td>
+      <td class="text-center text-front p-4">{{ .Old }}</td>
+      <td class="text-center text-front border-r border-border p-4">{{ .New }}</td>
+      <td class="lg:w-[150px] text-center text-front p-4">
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style="background-color:{{ .PBg }};color:{{ .PFg }}" title="{{ .PText }}">{{ .P }}</span>
+      </td>
+      <td class="lg:w-[150px] text-center text-front p-4">
+        {{ if .ShowDeltaBadge }}<span class="{{ badgeClass .DeltaVariant }}">{{ .Delta }}</span>{{ else }}{{ .Delta }}{{ end }}
+      </td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+{{ end }}

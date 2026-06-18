@@ -1,0 +1,73 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">Daily</h2>
+    <p class="md:my-6 leading-loose text-foreground/80">
+      We run all macro benchmark workloads against the <i>main</i> branch every day. This is done to ensure the
+      consistency of the results over time. On this page, you can find graphs that show you the results of all workloads
+      over the last 30 days. Click on a workload to see the historical results of that workload.
+    </p>
+  </div>
+</section>
+
+<div id="daily-body">{{ template "daily_body" . }}</div>
+{{ end }}
+
+{{ define "daily_body" }}
+<section class="flex p-page flex-wrap justify-center gap-12 p-4">
+  {{ if .SummaryError }}
+  <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else }}
+  {{ range .Cards }}
+  <a href="/daily?workload={{ .Name }}" hx-get="/daily?workload={{ .Name }}" hx-target="#daily-body" hx-swap="innerHTML" hx-push-url="true" class="block">
+    <div class="w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 hover:bg-muted border border-border rounded-lg p-4 flex flex-col{{ if .Selected }} border-2 border-front{{ end }}">
+      <div class="flex flex-row justify-between items-center">
+        <span class="font-light text-sm">{{ .Name }}</span>
+        <i class="h-4 w-4 text-foreground fa-solid fa-arrow-right"></i>
+      </div>
+      <div class="flex-1 min-h-0 pt-2">
+        {{ if .HasData }}
+        <canvas data-sparkline data-qps="{{ .QPSJSON }}"></canvas>
+        {{ else }}
+        <div class="h-full flex items-center justify-center text-xs text-muted-foreground">No data</div>
+        {{ end }}
+      </div>
+    </div>
+  </a>
+  {{ else }}
+  <div class="text-muted-foreground text-center my-10">No workloads to display.</div>
+  {{ end }}
+  {{ end }}
+</section>
+<p class="text-center py-8">
+  Y-Axis: <span class="text-primary font-medium">Total QPS</span>
+  &emsp;&emsp;X-Axis: <span class="text-primary font-medium">Time</span>
+</p>
+
+<hr class="mx-auto w-[80%] border-border" />
+
+<section class="p-page my-12 flex flex-col gap-y-8">
+  <div class="flex flex-col items-center gap-4">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">{{ .Workload }}</h2>
+  </div>
+  {{ if .ChartsError }}
+  <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else }}
+  {{ range .Charts }}
+  <div x-data="{ open: true }" class="w-full border border-border rounded-lg bg-card text-card-foreground shadow-sm">
+    <div class="cursor-pointer hover:bg-muted duration-300 px-6 flex flex-col space-y-1.5" @click="open = !open">
+      <div class="flex items-center justify-between">
+        <h3 class="my-10 text-xl font-medium text-primary">{{ .Title }}</h3>
+        <i class="h-4 w-4 text-foreground fa-solid" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+      </div>
+    </div>
+    <div class="p-6 pt-0" x-show="open">
+      <div class="relative w-full h-[400px] mt-10">
+        <canvas data-linechart="{{ .DataJSON }}"></canvas>
+      </div>
+    </div>
+  </div>
+  {{ end }}
+  {{ end }}
+</section>
+{{ end }}
