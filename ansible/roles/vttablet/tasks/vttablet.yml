@@ -10,82 +10,82 @@
 # limitations under the License.
 
 ---
-- name: ensure vttablet directories
-  become: yes
+- name: Ensure vttablet directories
+  become: true
   become_user: root
   with_items:
-    - '{{ vitess_root }}/tmp/'
-    - '{{ vitess_root }}/tmp/vttablet-{{ tablet.id }}'
-  file:
+    - "{{ vitess_root }}/tmp/"
+    - "{{ vitess_root }}/tmp/vttablet-{{ tablet.id }}"
+  ansible.builtin.file:
     state: directory
-    path: '{{ item }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
+    path: "{{ item }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
 
-- name: install configs
-  become: yes
+- name: Install configs
+  become: true
   become_user: root
   with_items:
     - s: vttablet.conf
-      d: '/etc/vitess/conf/vttablet-{{ tablet.id }}.conf'
+      d: "/etc/vitess/conf/vttablet-{{ tablet.id }}.conf"
     - s: extra_my.cnf
-      d: '/etc/vitess/extra_my{{ tablet.id }}.cnf'
-  template:
-    src: '{{ item.s }}.j2'
-    dest: '{{ item.d }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
+      d: "/etc/vitess/extra_my{{ tablet.id }}.cnf"
+  ansible.builtin.template:
+    src: "{{ item.s }}.j2"
+    dest: "{{ item.d }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
+    mode: "0644"
 
-- name: start mysql
-  become: yes
+- name: Start mysql
+  become: true
   become_user: root
   when:
     - enable_vttablet | bool
-  service:
-    name: '{{ item }}'
-    enabled: yes
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
     state: started
   with_items:
-    - 'mysqlctld@{{ tablet.id }}'
-    - 'mysqld_exporter@{{ tablet.id }}'
+    - "mysqlctld@{{ tablet.id }}"
+    - "mysqld_exporter@{{ tablet.id }}"
   changed_when: false
 
-- name: wait for mysql socket
-  become: yes
+- name: Wait for mysql socket
+  become: true
   become_user: root
   when:
     - enable_vttablet | bool
-  wait_for:
-    path:  '{{ vitess_root }}/socket/mysql{{ tablet.id }}.sock'
+  ansible.builtin.wait_for:
+    path: "{{ vitess_root }}/socket/mysql{{ tablet.id }}.sock"
     delay: 5
     timeout: 60
     state: present
     msg: "mysql socket needs to be present {{ vitess_root }}/socket/mysql{{ tablet.id }}.sock"
   ignore_errors: true
 
-- name: wait for mysqlctl socket
-  become: yes
+- name: Wait for mysqlctl socket
+  become: true
   become_user: root
   when:
     - enable_vttablet | bool
-  wait_for:
-    path:  '{{ vitess_root }}/socket/mysqlctl{{ tablet.id }}.sock'
+  ansible.builtin.wait_for:
+    path: "{{ vitess_root }}/socket/mysqlctl{{ tablet.id }}.sock"
     delay: 5
     timeout: 60
     state: present
     msg: "mysqlctl socket needs to be present at {{ vitess_root }}/socket/mysqlctl{{ tablet.id }}.sock"
   ignore_errors: true
 
-- name: start vttablet
-  become: yes
+- name: Start vttablet
+  become: true
   become_user: root
   when:
     - enable_vttablet | bool
-  service:
-    name: '{{ item }}'
-    enabled: yes
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
     state: started
   with_items:
-    - 'vttablet@{{ tablet.id }}'
+    - "vttablet@{{ tablet.id }}"
   changed_when: false

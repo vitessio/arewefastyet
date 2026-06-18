@@ -1,3 +1,4 @@
+---
 # Copyright 2021 The Vitess Authors.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -10,25 +11,24 @@
 # limitations under the License.
 
 - name: Install deps
-  include_tasks: install_deps.yml
-
+  ansible.builtin.include_tasks: install_deps.yml
 - name: Turn on Jumbo Frames
   become: true
   become_user: root
-  shell: |
+  ansible.builtin.shell: |
     ip link set {{ device }} mtu 9000
   when: device != 'lo'
-  ignore_errors: yes
-  loop: '{{ ansible_interfaces }}'
+  ignore_errors: true
+  loop: "{{ ansible_interfaces }}"
   loop_control:
     loop_var: device
 
 - name: Set sysctl paramaters
   become: true
   become_user: root
-  shell: |
+  ansible.builtin.shell: |
     sysctl -w fs.aio-max-nr=1048576
   changed_when: false
 
 - name: Handle Disk
-  include_tasks: disk.yml
+  ansible.builtin.include_tasks: disk.yml

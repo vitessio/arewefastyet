@@ -11,7 +11,7 @@
 
 ---
 - name: Set sysbench dependencies
-  set_fact:
+  ansible.builtin.set_fact:
     sysbench_dependencies:
       - make
       - automake
@@ -24,7 +24,7 @@
   when: ansible_os_family == 'Debian'
 
 - name: Set sysbench dependencies
-  set_fact:
+  ansible.builtin.set_fact:
     sysbench_dependencies:
       - make
       - automake
@@ -37,10 +37,10 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Install sysbench dependencies
-  become: yes
+  become: true
   become_user: root
-  package:
-    name: '{{ sysbench_dependencies }}'
+  ansible.builtin.package:
+    name: "{{ sysbench_dependencies }}"
     state: present
     update_cache: true
   register: task_result

@@ -11,27 +11,28 @@
 
 ---
 - name: Stop load balancing
-  shell: |
+  ansible.builtin.shell: |
     iptables -t nat -F
   when: not loadbalancing | bool
   changed_when: false
 
 - name: Install iptables
   when: loadbalancing | bool
-  package:
-    name: 'iptables'
+  ansible.builtin.package:
+    name: "iptables"
     state: present
     update_cache: true
 
 - name: Flush all rules
-  shell: |
+  ansible.builtin.shell: |
     iptables -t nat -F OUTPUT
   when: loadbalancing | bool
   changed_when: false
 
 - name: Set up VTGate Loadbalancing
-  shell: iptables -t nat -A OUTPUT -p tcp --dport 13306 -m state --state NEW -m statistic --mode nth --every {{ ((gateways_loadbalance | length) - index) }} --packet 0 -j DNAT --to-destination {{ gateway }}
-  with_items: '{{ gateways_loadbalance }}'
+  ansible.builtin.command: iptables -t nat -A OUTPUT -p tcp --dport 13306 -m state --state NEW -m statistic --mode nth --every {{ ((gateways_loadbalance |
+    length) - index) }} --packet 0 -j DNAT --to-destination {{ gateway }}
+  with_items: "{{ gateways_loadbalance }}"
   changed_when: false
   when: loadbalancing | bool
   loop_control:

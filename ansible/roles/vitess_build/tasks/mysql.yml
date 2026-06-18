@@ -11,13 +11,13 @@
 
 ---
 - name: Install MySQL apt
-  apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
+  ansible.builtin.apt: name={{ item }} update_cache=yes cache_valid_time=3600 state=present
   with_items:
     - mysql-server
   when: ansible_os_family == 'Debian'
 
 - name: Install MySQL dnf
-  dnf:
+  ansible.builtin.dnf:
     name:
       - mysql-server
       - mysql-devel

@@ -12,7 +12,7 @@
 ---
 - name: Ensure Primary
   register: ensure_latest
-  shell: |
+  ansible.builtin.shell: |
     alias vc="vtctlclient --server {{ groups['vtctld'][0] }}:15999"
     for keyspace in $(vc GetKeyspaces); do
         echo "working on ${keyspace}"

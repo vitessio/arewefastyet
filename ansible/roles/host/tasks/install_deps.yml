@@ -11,7 +11,7 @@
 
 ---
 - name: Set base dependencies for RedHat distributions
-  set_fact:
+  ansible.builtin.set_fact:
     base_dependencies:
       - make
       - unzip
@@ -29,7 +29,7 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Set base dependencies for Ubuntu distributions
-  set_fact:
+  ansible.builtin.set_fact:
     base_dependencies:
       - make
       - unzip
@@ -47,10 +47,10 @@
   when: ansible_os_family == 'Debian'
 
 - name: Install base dependencies
-  become: yes
+  become: true
   become_user: root
-  package:
-    name: '{{ base_dependencies }}'
+  ansible.builtin.package:
+    name: "{{ base_dependencies }}"
     state: present
     update_cache: true
   register: task_result
