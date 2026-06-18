@@ -27,6 +27,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/vitessio/arewefastyet/go/storage"
@@ -440,25 +441,146 @@ func (e *Exec) insert() error {
 	return err
 }
 
-func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
+const recentExecutionsCols = "uuid, status, git_ref, started_at, finished_at, source, workload, pull_nb, go_version, IFNULL(profile_binary, ''), IFNULL(profile_mode, '')"
+
+func scanExecs(result *sql.Rows) ([]*Exec, error) {
 	var res []*Exec
-	query := "SELECT uuid, status, git_ref, started_at, finished_at, source, workload, pull_nb, go_version, IFNULL(profile_binary, ''), IFNULL(profile_mode, '') FROM execution ORDER BY started_at DESC LIMIT 1000"
-	result, err := client.Read(query)
-	if err != nil {
-		return nil, err
-	}
-	defer result.Close()
 	for result.Next() {
 		exec := &Exec{
 			ProfileInformation: &ProfileInformation{},
 		}
-		err = result.Scan(&exec.RawUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.Workload, &exec.PullNB, &exec.GolangVersion, &exec.ProfileInformation.Binary, &exec.ProfileInformation.Mode)
+		err := result.Scan(&exec.RawUUID, &exec.Status, &exec.GitRef, &exec.StartedAt, &exec.FinishedAt, &exec.Source, &exec.Workload, &exec.PullNB, &exec.GolangVersion, &exec.ProfileInformation.Binary, &exec.ProfileInformation.Mode)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, exec)
 	}
 	return res, nil
+}
+
+func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
+	query := "SELECT " + recentExecutionsCols + " FROM execution ORDER BY started_at DESC LIMIT 1000"
+	result, err := client.Read(query)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	return scanExecs(result)
+}
+
+// RecentExecutionsFilter holds the optional filters for the paginated web view,
+// mirroring the React status table's toolbar: a free-text match on git_ref plus
+// multi-select facets on source, status and workload.
+type RecentExecutionsFilter struct {
+	Query     string
+	Sources   []string
+	Statuses  []string
+	Workloads []string
+}
+
+// where builds the SQL WHERE clause (and its bind args) for the active filters.
+// It returns an empty string when no filter is set.
+func (f RecentExecutionsFilter) where() (string, []any) {
+	var conds []string
+	var args []any
+	if f.Query != "" {
+		conds = append(conds, "git_ref LIKE ?")
+		args = append(args, "%"+f.Query+"%")
+	}
+	addIn := func(col string, vals []string) {
+		if len(vals) == 0 {
+			return
+		}
+		placeholders := make([]string, len(vals))
+		for i, v := range vals {
+			placeholders[i] = "?"
+			args = append(args, v)
+		}
+		conds = append(conds, col+" IN ("+strings.Join(placeholders, ",")+")")
+	}
+	addIn("source", f.Sources)
+	addIn("status", f.Statuses)
+	addIn("workload", f.Workloads)
+	if len(conds) == 0 {
+		return "", nil
+	}
+	return " WHERE " + strings.Join(conds, " AND "), args
+}
+
+// GetRecentExecutionsPaged returns one page of executions matching filter,
+// ordered newest-first. Unlike GetRecentExecutions (which the JSON API caps at
+// 1000), the paginated web view can walk every execution, so there is no upper
+// bound here.
+func GetRecentExecutionsPaged(client storage.SQLClient, filter RecentExecutionsFilter, limit, offset int) ([]*Exec, error) {
+	where, args := filter.where()
+	query := "SELECT " + recentExecutionsCols + " FROM execution" + where + " ORDER BY started_at DESC LIMIT ? OFFSET ?"
+	args = append(args, limit, offset)
+	result, err := client.Read(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	return scanExecs(result)
+}
+
+// CountRecentExecutions returns the number of executions matching filter, used
+// to compute the page count for the paginated web view.
+func CountRecentExecutions(client storage.SQLClient, filter RecentExecutionsFilter) (int, error) {
+	where, args := filter.where()
+	result, err := client.Read("SELECT COUNT(*) FROM execution"+where, args...)
+	if err != nil {
+		return 0, err
+	}
+	defer result.Close()
+	var total int
+	if result.Next() {
+		if err := result.Scan(&total); err != nil {
+			return 0, err
+		}
+	}
+	return total, nil
+}
+
+// ExecutionFacets holds the distinct values available for the status table's
+// faceted filters, computed across every execution (not just the current page).
+type ExecutionFacets struct {
+	Sources   []string
+	Statuses  []string
+	Workloads []string
+}
+
+func distinctColumn(client storage.SQLClient, col string) ([]string, error) {
+	result, err := client.Read("SELECT DISTINCT " + col + " FROM execution WHERE " + col + " <> '' ORDER BY " + col)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+	var values []string
+	for result.Next() {
+		var v string
+		if err := result.Scan(&v); err != nil {
+			return nil, err
+		}
+		values = append(values, v)
+	}
+	return values, nil
+}
+
+// GetExecutionFacets returns the distinct source/status/workload values for the
+// status table's faceted filter dropdowns.
+func GetExecutionFacets(client storage.SQLClient) (ExecutionFacets, error) {
+	var facets ExecutionFacets
+	var err error
+	if facets.Sources, err = distinctColumn(client, "source"); err != nil {
+		return facets, err
+	}
+	if facets.Statuses, err = distinctColumn(client, "status"); err != nil {
+		return facets, err
+	}
+	if facets.Workloads, err = distinctColumn(client, "workload"); err != nil {
+		return facets, err
+	}
+	return facets, nil
 }
 
 func GetFinishedExecution(client storage.SQLClient, gitRef, source, workload, plannerVersion string, pullNb int) (string, error) {

@@ -1,13 +1,24 @@
 // Tailwind config for the server-rendered website, compiled at image-build time
 // by the standalone Tailwind CLI (no Node) into static/web/app.css, which is then
 // embedded into the binary. Mirrors the design tokens previously configured inline
-// via the Play CDN in base.html. `content` must include app.js so the dynamic
-// badge classes it builds (bg-success/bg-warning/bg-destructive) are not purged.
+// via the Play CDN in base.html.
+//
+// `safelist` pins the badge classes built by the Go badgeClass() helper
+// (web_pages.go): Tailwind only scans HTML/JS, so a variant passed dynamically
+// (e.g. `badgeClass .StatusVariant`) never appears as a literal anywhere and would
+// otherwise be purged, leaving status/profile badges colorless.
 module.exports = {
   darkMode: "class",
   content: [
     "./go/server/templates/web/**/*.html",
     "./go/server/static/web/*.js",
+  ],
+  safelist: [
+    "bg-primary", "text-primary-foreground",
+    "bg-success", "text-success-foreground",
+    "bg-destructive", "text-destructive-foreground",
+    "bg-warning", "text-warning-foreground",
+    "bg-progress", "text-progress-foreground",
   ],
   theme: {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },

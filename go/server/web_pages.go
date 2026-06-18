@@ -21,6 +21,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -208,42 +209,138 @@ func (s *Server) webStatus(c *gin.Context) {
 	})
 	extra["QueueRows"] = queueRows
 
-	// Previous (recent) executions.
-	execs, err := exec.GetRecentExecutions(s.dbClient)
+	// Previous (recent) executions — paginated and filtered server-side over every
+	// execution. Going between pages, changing the page size, or changing a filter
+	// fetches just that page and, when driven by HTMX, swaps only the table region.
+	perPage := execPerPage(c.Query("per"))
+	filter := exec.RecentExecutionsFilter{
+		Query:     strings.TrimSpace(c.Query("q")),
+		Sources:   c.QueryArray("source"),
+		Statuses:  c.QueryArray("status"),
+		Workloads: c.QueryArray("workload"),
+	}
+	extra["ExecQuery"] = filter.Query
+	extra["ExecFiltered"] = filter.Query != "" || len(filter.Sources) > 0 || len(filter.Statuses) > 0 || len(filter.Workloads) > 0
+
+	if facets, fErr := exec.GetExecutionFacets(s.dbClient); fErr != nil {
+		slog.Error(fErr)
+	} else {
+		extra["ExecFacets"] = []webFacet{
+			newWebFacet("source", "Source", facets.Sources, filter.Sources),
+			newWebFacet("status", "Status", facets.Statuses, filter.Statuses),
+			newWebFacet("workload", "Workload", facets.Workloads, filter.Workloads),
+		}
+	}
+
+	total, err := exec.CountRecentExecutions(s.dbClient, filter)
 	if err != nil {
 		slog.Error(err)
 		extra["ExecutionsError"] = true
 	} else {
-		rows := make([]webExecutionRow, 0, len(execs))
-		for _, e := range execs {
-			row := webExecutionRow{
-				UUIDShort:     shortStr(e.RawUUID, 8),
-				SHAShort:      shortStr(e.GitRef, 8),
-				Source:        e.Source,
-				Workload:      e.Workload,
-				PRDisplay:     prDisplay(e.PullNB),
-				Golang:        e.GolangVersion,
-				Status:        e.Status,
-				StatusVariant: statusVariant(e.Status),
-				Profile:       profileDisplay(e.ProfileInformation.Binary, e.ProfileInformation.Mode),
-				GitRef:        e.GitRef,
-			}
-			if e.StartedAt != nil {
-				row.StartedRel = humanize.Time(*e.StartedAt)
-				row.StartedTitle = e.StartedAt.Format(absTimeLayout)
-			}
-			if e.FinishedAt != nil {
-				row.FinishedRel = humanize.Time(*e.FinishedAt)
-				row.FinishedTitle = e.FinishedAt.Format(absTimeLayout)
-			} else {
-				row.FinishedRel = "N/A"
-			}
-			rows = append(rows, row)
+		pageCount := (total + perPage - 1) / perPage
+		page := 1
+		if p, perr := strconv.Atoi(c.Query("page")); perr == nil && p > 0 {
+			page = p
 		}
-		extra["ExecutionRows"] = rows
+		if page > pageCount {
+			page = pageCount
+		}
+		if page < 1 {
+			page = 1
+		}
+
+		var execs []*exec.Exec
+		if total > 0 {
+			execs, err = exec.GetRecentExecutionsPaged(s.dbClient, filter, perPage, (page-1)*perPage)
+		}
+		if err != nil {
+			slog.Error(err)
+			extra["ExecutionsError"] = true
+		} else {
+			rows := make([]webExecutionRow, 0, len(execs))
+			for _, e := range execs {
+				row := webExecutionRow{
+					UUIDShort:     shortStr(e.RawUUID, 8),
+					SHAShort:      shortStr(e.GitRef, 8),
+					Source:        e.Source,
+					Workload:      e.Workload,
+					PRDisplay:     prDisplay(e.PullNB),
+					Golang:        e.GolangVersion,
+					Status:        e.Status,
+					StatusVariant: statusVariant(e.Status),
+					Profile:       profileDisplay(e.ProfileInformation.Binary, e.ProfileInformation.Mode),
+					GitRef:        e.GitRef,
+				}
+				if e.StartedAt != nil {
+					row.StartedRel = humanize.Time(*e.StartedAt)
+					row.StartedTitle = e.StartedAt.Format(absTimeLayout)
+				}
+				if e.FinishedAt != nil {
+					row.FinishedRel = humanize.Time(*e.FinishedAt)
+					row.FinishedTitle = e.FinishedAt.Format(absTimeLayout)
+				} else {
+					row.FinishedRel = "N/A"
+				}
+				rows = append(rows, row)
+			}
+			extra["ExecutionRows"] = rows
+			extra["ExecPage"] = page
+			extra["ExecPageCount"] = pageCount
+			extra["ExecHasPrev"] = page > 1
+			extra["ExecHasNext"] = page < pageCount
+			extra["ExecPrevPage"] = page - 1
+			extra["ExecNextPage"] = page + 1
+			extra["ExecPerPage"] = perPage
+			extra["ExecPerOptions"] = execPerOptions
+		}
 	}
 
-	c.HTML(http.StatusOK, "status", webPage(c, "Status | Vitess Benchmark", extra))
+	renderWeb(c, "status", "status_executions", webPage(c, "Status | Vitess Benchmark", extra))
+}
+
+// execPerOptions are the allowed "rows per page" choices for the Previous
+// Executions table, mirroring the React data-table dropdown.
+var execPerOptions = []int{10, 20, 30, 40, 50}
+
+// execPerPage parses the ?per= query value, falling back to the default (10)
+// when it is absent or not one of the allowed options.
+func execPerPage(raw string) int {
+	if n, err := strconv.Atoi(raw); err == nil {
+		for _, opt := range execPerOptions {
+			if n == opt {
+				return n
+			}
+		}
+	}
+	return execPerOptions[0]
+}
+
+// webFacet is a single faceted-filter dropdown for the status table (source,
+// status or workload), mirroring the React DataTableFacetedFilter.
+type webFacet struct {
+	Name          string // form field name, e.g. "source"
+	Title         string // display label, e.g. "Source"
+	Options       []webFacetOption
+	SelectedCount int
+}
+
+type webFacetOption struct {
+	Value    string
+	Selected bool
+}
+
+// newWebFacet pairs the distinct values for a column with the currently-selected
+// ones (from the request) to render the dropdown's checkboxes.
+func newWebFacet(name, title string, values, selected []string) webFacet {
+	f := webFacet{Name: name, Title: title, Options: make([]webFacetOption, 0, len(values))}
+	for _, v := range values {
+		isSel := slices.Contains(selected, v)
+		if isSel {
+			f.SelectedCount++
+		}
+		f.Options = append(f.Options, webFacetOption{Value: v, Selected: isSel})
+	}
+	return f
 }
 
 // profileProto formats the profile badge for a queued execution.
@@ -256,6 +353,8 @@ func profileProto(id executionIdentifier) string {
 
 // ---- Pull Requests page ----
 
+// webPRRow is one benchmarked pull request, rendered server-side in the prs
+// template.
 type webPRRow struct {
 	ID          int
 	Title       string
@@ -270,8 +369,8 @@ func (s *Server) webPRs(c *gin.Context) {
 	prNumbers, err := exec.GetPullRequestList(s.dbClient)
 	if err != nil {
 		slog.Error(err)
-		extra["Error"] = true
-		c.HTML(http.StatusOK, "prs", webPage(c, "Pull Requests | Vitess Benchmark", extra))
+		extra["PRError"] = true
+		renderWeb(c, "prs", "pr_list", webPage(c, "Pull Requests | Vitess Benchmark", extra))
 		return
 	}
 
@@ -280,8 +379,8 @@ func (s *Server) webPRs(c *gin.Context) {
 		info, err := s.ghApp.GetPullRequestInfo(nb)
 		if err != nil {
 			slog.Error(err)
-			extra["Error"] = true
-			c.HTML(http.StatusOK, "prs", webPage(c, "Pull Requests | Vitess Benchmark", extra))
+			extra["PRError"] = true
+			renderWeb(c, "prs", "pr_list", webPage(c, "Pull Requests | Vitess Benchmark", extra))
 			return
 		}
 		row := webPRRow{ID: info.ID, Title: info.Title, Author: info.Author}
@@ -292,9 +391,56 @@ func (s *Server) webPRs(c *gin.Context) {
 		rows = append(rows, row)
 	}
 	sort.Slice(rows, func(i, j int) bool { return rows[i].ID > rows[j].ID })
-	extra["Rows"] = rows
 
-	c.HTML(http.StatusOK, "prs", webPage(c, "Pull Requests | Vitess Benchmark", extra))
+	// Free-text filter on the PR title (mirrors the React table's Title filter).
+	query := strings.TrimSpace(c.Query("q"))
+	extra["PRQuery"] = query
+	extra["PRFiltered"] = query != ""
+	if query != "" {
+		q := strings.ToLower(query)
+		filtered := make([]webPRRow, 0, len(rows))
+		for _, r := range rows {
+			if strings.Contains(strings.ToLower(r.Title), q) {
+				filtered = append(filtered, r)
+			}
+		}
+		rows = filtered
+	}
+
+	// Pagination over the (filtered) in-memory list.
+	perPage := execPerPage(c.Query("per"))
+	total := len(rows)
+	pageCount := (total + perPage - 1) / perPage
+	page := 1
+	if p, perr := strconv.Atoi(c.Query("page")); perr == nil && p > 0 {
+		page = p
+	}
+	if page > pageCount {
+		page = pageCount
+	}
+	if page < 1 {
+		page = 1
+	}
+	start := (page - 1) * perPage
+	if start > total {
+		start = total
+	}
+	end := start + perPage
+	if end > total {
+		end = total
+	}
+
+	extra["PRRows"] = rows[start:end]
+	extra["PRPage"] = page
+	extra["PRPageCount"] = pageCount
+	extra["PRHasPrev"] = page > 1
+	extra["PRHasNext"] = page < pageCount
+	extra["PRPrevPage"] = page - 1
+	extra["PRNextPage"] = page + 1
+	extra["PRPerPage"] = perPage
+	extra["PRPerOptions"] = execPerOptions
+
+	renderWeb(c, "prs", "pr_list", webPage(c, "Pull Requests | Vitess Benchmark", extra))
 }
 
 // ---- Pull Request detail page ----

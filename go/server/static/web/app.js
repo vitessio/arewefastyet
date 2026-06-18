@@ -380,6 +380,68 @@ function historyTable() {
   };
 }
 
+// tooltip is a small Alpine.js data factory for a hover tooltip, modeled on the
+// React shadcn/Radix Tooltip used on the Status page timestamps. Following Radix
+// (@radix-ui/react-tooltip + react-popper):
+//   - opens after a 200ms delay on pointer enter, closes on pointer leave;
+//   - default side "top", centered, with a 4px offset (Radix sideOffset);
+//   - flips to "bottom" when there isn't room above (collision detection);
+//   - closes on scroll (Radix dismisses on scroll), which also prevents a
+//     position:fixed bubble from being stranded after the page scrolls. We
+//     dismiss on wheel/touchmove too, not just scroll, because browsers defer
+//     scroll events until scrolling settles — wheel/touchmove fire at the very
+//     start of the gesture, so the bubble vanishes immediately.
+// The bubble is position:fixed (our equivalent of Radix's portal) with coords
+// from the trigger's bounding rect, so it escapes the executions table's
+// overflow:auto clipping. The content stays mounted (opacity-toggled) so it can
+// be measured for the flip decision and never gets stuck in a display:none state.
+var TOOLTIP_OFFSET = 4;
+
+function tooltip() {
+  return {
+    open: false,
+    side: "top",
+    x: 0,
+    y: 0,
+    _t: null,
+    _dismiss: null,
+    show(e) {
+      var trigger = e.currentTarget;
+      clearTimeout(this._t);
+      this._t = setTimeout(
+        function () {
+          var t = trigger.getBoundingClientRect();
+          var c = this.$refs.content.getBoundingClientRect();
+          this.x = t.left + t.width / 2;
+          if (t.top - c.height - TOOLTIP_OFFSET < 0) {
+            this.side = "bottom";
+            this.y = t.bottom + TOOLTIP_OFFSET;
+          } else {
+            this.side = "top";
+            this.y = t.top - TOOLTIP_OFFSET;
+          }
+          this.open = true;
+          this._dismiss = this.hide.bind(this);
+          window.addEventListener("scroll", this._dismiss, true);
+          window.addEventListener("wheel", this._dismiss, { capture: true, passive: true });
+          window.addEventListener("touchmove", this._dismiss, { capture: true, passive: true });
+        }.bind(this),
+        200
+      );
+    },
+    hide() {
+      clearTimeout(this._t);
+      this.open = false;
+      if (this._dismiss) {
+        window.removeEventListener("scroll", this._dismiss, true);
+        window.removeEventListener("wheel", this._dismiss, true);
+        window.removeEventListener("touchmove", this._dismiss, true);
+        this._dismiss = null;
+      }
+    },
+  };
+}
+
 // compareWidget is the Alpine.js data factory for the draggable header of the
 // global "Compare Versions" widget (see partials/compare_widget.html). It tracks
 // a translate offset updated on mouse drag; the widget's visibility and the
