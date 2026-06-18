@@ -49,7 +49,7 @@ func TestShortenSHA(t *testing.T) {
 
 func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	qt.Assert(t, err, qt.IsNil)
 	s, err := getAllVitessReleases(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
@@ -83,7 +83,7 @@ func TestGetAllVitessReleaseCommitHashOrdering(t *testing.T) {
 
 func TestGetAllVitessReleaseCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	qt.Assert(t, err, qt.IsNil)
 	s, err := getAllVitessReleases(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
@@ -266,7 +266,7 @@ func TestCompareReleaseNumbers(t *testing.T) {
 
 func TestGetCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	qt.Assert(t, err, qt.IsNil)
 	out, err := GetCommitHash(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
@@ -287,7 +287,7 @@ func createTemporaryVitessClone() (string, string, error) {
 
 func TestGetAllVitessReleaseBranchCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	qt.Assert(t, err, qt.IsNil)
 	out, err := GetAllVitessReleaseBranchCommitHash(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
@@ -299,7 +299,7 @@ func TestGetAllVitessReleaseBranchCommitHash(t *testing.T) {
 
 func TestGetLatestVitessReleaseBranchCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	qt.Assert(t, err, qt.IsNil)
 	out, err := GetLatestVitessReleaseBranchCommitHash(vitessPath)
 	qt.Assert(t, err, qt.IsNil)
@@ -312,7 +312,7 @@ func TestGetLatestVitessReleaseBranchCommitHash(t *testing.T) {
 
 func TestGetLatestVitessReleaseCommitHash(t *testing.T) {
 	tmpDir, vitessPath, err := createTemporaryVitessClone()
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	qt.Assert(t, err, qt.IsNil)
 	out, err := GetSupportedVitessReleases(vitessPath)
 	qt.Assert(t, err, qt.IsNil)

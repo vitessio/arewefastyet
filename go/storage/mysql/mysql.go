@@ -57,7 +57,7 @@ func (c *Client) Write(query string, args ...interface{}) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer stms.Close()
+	defer func() { _ = stms.Close() }()
 
 	res, err := stms.Exec(args...)
 	if err != nil {

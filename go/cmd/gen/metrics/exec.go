@@ -49,7 +49,7 @@ func GenExecMetricsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			defer rowsExecUUIDs.Close()
+			defer func() { _ = rowsExecUUIDs.Close() }()
 
 			for rowsExecUUIDs.Next() {
 				var uuid string
@@ -63,7 +63,7 @@ func GenExecMetricsCmd() *cobra.Command {
 					return err
 				}
 				exist := rowsExecMetrics.Next()
-				rowsExecMetrics.Close()
+				_ = rowsExecMetrics.Close()
 				if exist {
 					continue
 				}

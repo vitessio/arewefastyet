@@ -691,7 +691,7 @@ func IsUserAuthenticated(accessToken string) (bool, error) {
 		slog.Error("Error making request to Github: %v", err)
 		return false, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return resp.StatusCode == http.StatusOK, nil
 }

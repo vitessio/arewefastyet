@@ -29,7 +29,7 @@ func TestSetupLocalVitess(t *testing.T) {
 	// Create a temporary folder and try setup vitess
 	tmpDir, err := os.MkdirTemp("", "setup_vitess_*")
 	qt.Assert(t, err, qt.IsNil)
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	s := Server{
 		localVitessPath: tmpDir,
 	}
@@ -49,7 +49,7 @@ func TestSetupLocalVitess(t *testing.T) {
 	// Create a temporary directory and create a vitess folder manually
 	tmpDir, err = os.MkdirTemp("", "setup_vitess_*")
 	qt.Assert(t, err, qt.IsNil)
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	s = Server{
 		localVitessPath: tmpDir,
 	}
@@ -92,7 +92,7 @@ func TestPullLocalVitess(t *testing.T) {
 	// Create a temporary folder and try setup vitess
 	tmpDir, err := os.MkdirTemp("", "setup_vitess_*")
 	qt.Assert(t, err, qt.IsNil)
-	defer os.RemoveAll(tmpDir)
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 	s := Server{
 		localVitessPath: tmpDir,
 	}

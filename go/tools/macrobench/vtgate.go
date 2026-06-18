@@ -160,7 +160,7 @@ func getVTGateQueryPlans(port string) (VTGateQueryPlanMap, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	respBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -241,7 +241,7 @@ func GetVTGateSelectQueryPlansWithFilter(gitRef string, workload Workload, plann
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	parser, err := sqlparser.New(sqlparser.Options{})
 	if err != nil {
