@@ -44,7 +44,7 @@ func BenchmarkAllocs(b *testing.B) {
 		b.Error(err.Error())
 	}
 	for i := 0; i < b.N; i++ {
-		fmt.Fprintln(null, i)
+		_, _ = fmt.Fprintln(null, i)
 	}
 }
 
@@ -55,6 +55,6 @@ func BenchmarkBytes(b *testing.B) {
 	}
 	b.SetBytes(int64(len(b.Name())))
 	for i := 0; i < b.N; i++ {
-		fmt.Fprintln(null, b.Name())
+		_, _ = fmt.Fprintln(null, b.Name())
 	}
 }

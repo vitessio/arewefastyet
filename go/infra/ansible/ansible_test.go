@@ -44,8 +44,8 @@ func TestConfig_MoveRootFolder(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 			c.Cleanup(func() {
-				os.RemoveAll(tt.cfg.RootDir)
-				os.RemoveAll(tt.dir)
+				_ = os.RemoveAll(tt.cfg.RootDir)
+				_ = os.RemoveAll(tt.dir)
 			})
 
 			var testFile string

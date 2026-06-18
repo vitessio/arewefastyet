@@ -171,7 +171,7 @@ func GetExecutionMetricsSQL(client storage.SQLClient, execUUID string) (Executio
 	if err != nil {
 		return ExecutionMetrics{}, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	result := NewExecMetrics()
 	for rows.Next() {

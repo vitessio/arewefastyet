@@ -39,7 +39,7 @@ func insertMetaSliceToFile(values []string, file, root, token string) error {
 	}
 	var newContent string
 	for i, val := range values {
-		newContent = strings.Replace(string(content), fmt.Sprintf("%s_%d", token, i), val, -1)
+		newContent = strings.ReplaceAll(string(content), fmt.Sprintf("%s_%d", token, i), val)
 	}
 	err = os.WriteFile(file, []byte(newContent), 0)
 	if err != nil {

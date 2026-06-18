@@ -51,7 +51,7 @@ func Test_createDirFromUUID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := qt.New(t)
 			c.Cleanup(func() {
-				os.RemoveAll(tt.args.root)
+				_ = os.RemoveAll(tt.args.root)
 			})
 
 			gotDirPath, err := createDirFromUUID(tt.args.uuid, tt.args.root)

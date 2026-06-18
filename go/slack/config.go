@@ -51,5 +51,5 @@ func (c *Config) AddToCommand(cmd *cobra.Command) {
 }
 
 func (c Config) IsValid() bool {
-	return !(c.Token == "" || c.Channel == "")
+	return c.Token != "" && c.Channel != ""
 }
