@@ -1,3 +1,4 @@
+---
 # Copyright 2022 The Vitess Authors.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,45 +13,46 @@
 - name: Handle Secondary Storage
   become: true
   become_user: root
+  when: storage_device is defined
   block:
     - name: Install Parted
-      package:
+      ansible.builtin.package:
         name: parted
         state: present
         update_cache: true
 
     - name: Create the Drive
-      parted:
+      community.general.parted:
         label: gpt
         name: data
-        device: '/dev/{{ disk.key }}'
+        device: "/dev/{{ disk.key }}"
         number: 1
         state: present
-      loop: '{{ ansible_devices|dict2items }}'
+      loop: "{{ ansible_devices | dict2items }}"
       when: disk.key.startswith(storage_device.device) and ((disk.value.partitions | length) == 0)
       loop_control:
         loop_var: disk
 
     - name: Format the Drive
-      filesystem:
-        device: '/dev/{{ storage_device.partition }}'
+      community.general.filesystem:
+        device: "/dev/{{ storage_device.partition }}"
         fstype: xfs
 
-    - name: create folder for mount
-      file:
+    - name: Create folder for mount
+      ansible.builtin.file:
         path: /vt
         state: directory
-        recurse: yes
+        recurse: true
 
     - name: Mount the Drive
-      mount:
+      ansible.posix.mount:
         path: /vt
-        src: '/dev/{{ storage_device.partition }}'
+        src: "/dev/{{ storage_device.partition }}"
         fstype: xfs
         state: mounted
 
     - name: Register files to delete in /vt
-      find:
+      ansible.builtin.find:
         paths: /vt
         patterns: "*"
         file_type: any
@@ -58,8 +60,7 @@
       register: files_to_delete
 
     - name: Delete files in /vt
-      file:
+      ansible.builtin.file:
         path: "{{ item.path }}"
         state: absent
       with_items: "{{ files_to_delete.files }}"
-  when: storage_device is defined

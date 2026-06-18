@@ -10,35 +10,35 @@
 # limitations under the License.
 
 ---
-- name: check if there is a vtgate service
-  shell: service vtgate@{{ gateway.id }} status
+- name: Check if there is a vtgate service
+  ansible.builtin.command: service vtgate@{{ gateway.id }} status
   register: vtgate_status
   failed_when: not(vtgate_status.rc == 1 or vtgate_status.rc == 3 or vtgate_status.rc == 4 or vtgate_status.rc == 0)
 
-- name: stop old vtgate
-  become: yes
+- name: Stop old vtgate
+  become: true
   become_user: root
-  service:
-    name: 'vtgate@{{ gateway.id }}'
+  ansible.builtin.service:
+    name: "vtgate@{{ gateway.id }}"
     enabled: false
     state: stopped
   changed_when: false
   when: vtgate_status.rc == 0
   failed_when: false
 
-- name: remove old config
-  become: yes
+- name: Remove old config
+  become: true
   become_user: root
   with_items:
-    - '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
-  file:
+    - "/etc/vitess/conf/vtgate-{{ gateway.id }}.conf"
+  ansible.builtin.file:
     state: absent
-    path: '{{ item }}'
+    path: "{{ item }}"
   failed_when: false
 
-- name: systemctl daemon-reload
-  become: yes
+- name: Systemctl daemon-reload
+  become: true
   become_user: root
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
   failed_when: false

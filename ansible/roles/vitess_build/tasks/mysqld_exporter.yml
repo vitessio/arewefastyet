@@ -10,18 +10,21 @@
 # limitations under the License.
 
 ---
-- name: "Get checksum for {{ architecture }} architecture"
-  set_fact:
+- name: "Get checksum for architecture {{ architecture }}"
+  ansible.builtin.set_fact:
     __mysqld_exporter_checksum: "{{ item.split(' ')[0] }}"
   with_items:
     - "{{ lookup('url', 'https://github.com/prometheus/mysqld_exporter/releases/download/v' + mysqld_exporter_version + '/sha256sums.txt', wantlist=True) | list }}"
   when: "('linux-' + (architecture) + '.tar.gz') in item"
 
-- block:
+- name: Download mysqld_exporter binary locally
+  when: mysqld_exporter_binary_local_dir | length == 0
+  block:
     - name: Download mysqld_exporter binary to local folder
       become: false
-      get_url:
-        url: "https://github.com/prometheus/mysqld_exporter/releases/download/v{{ mysqld_exporter_version }}/mysqld_exporter-{{ mysqld_exporter_version }}.linux-{{ architecture }}.tar.gz"
+      ansible.builtin.get_url:
+        url: "https://github.com/prometheus/mysqld_exporter/releases/download/v{{ mysqld_exporter_version }}/mysqld_exporter-{{ mysqld_exporter_version }}.linux-{{
+          architecture }}.tar.gz"
         dest: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-{{ architecture }}.tar.gz"
         checksum: "sha256:{{ __mysqld_exporter_checksum }}"
       register: _download_binary
@@ -33,7 +36,7 @@
 
     - name: Unpack mysqld_exporter binary
       become: false
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-{{ architecture }}.tar.gz"
         dest: "/tmp"
         creates: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-{{ architecture }}/mysqld_exporter"
@@ -41,20 +44,18 @@
       check_mode: false
 
     - name: Propagate mysqld_exporter binaries
-      copy:
+      ansible.builtin.copy:
         src: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-{{ architecture }}/mysqld_exporter"
         dest: "/usr/local/bin/mysqld_exporter"
-        mode: 0755
+        mode: "0755"
         owner: root
         group: root
       when: not ansible_check_mode
-  when: mysqld_exporter_binary_local_dir | length == 0
-
-- name: propagate locally distributed mysqld_exporter binary
-  copy:
+- name: Propagate locally distributed mysqld_exporter binary
+  ansible.builtin.copy:
     src: "{{ mysqld_exporter_binary_local_dir }}/mysqld_exporter"
     dest: "/usr/local/bin/mysqld_exporter"
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
   when: mysqld_exporter_binary_local_dir | length > 0

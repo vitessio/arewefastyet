@@ -10,11 +10,11 @@
 # limitations under the License.
 
 ---
-- name: stopping Prometheus
+- name: Stopping Prometheus
   when: not prom_start | bool
-  become: yes
+  become: true
   become_user: root
-  service:
+  ansible.builtin.service:
     name: prometheus
     state: stopped
   changed_when: false

@@ -11,21 +11,21 @@
 
 ---
 - name: Install Vitess
-  include_role:
+  ansible.builtin.include_role:
     name: "vitess_build"
     tasks_from: install_vitess
 
 - name: Install arewefastyet
-  become: yes
+  become: true
   become_user: root
   block:
     - name: Remove old arewefastyet
-      shell: |
+      ansible.builtin.shell: |
         rm -Rf /go/src/github.com/vitessio/arewefastyet
       changed_when: false
 
-    - name: git clone arewefastyet
-      git:
+    - name: Git clone arewefastyet
+      ansible.builtin.git:
         repo: "{{ arewefastyet_git_repo }}"
         dest: /go/src/github.com/vitessio/arewefastyet
         version: "{{ arewefastyet_git_version }}"
@@ -33,18 +33,17 @@
         force: true
 
     - name: Build arewefastyet CLI
-      shell: |
+      ansible.builtin.shell: |
         cd /go/src/github.com/vitessio/arewefastyet
         go build -o arewefastyetcli ./go/main.go
       changed_when: false
 
     - name: Install arewefastyet CLI
-      shell: |
+      ansible.builtin.shell: |
         cd /go/src/github.com/vitessio/arewefastyet
         rm -f /usr/bin/arewefastyetcli
         cp arewefastyetcli /usr/bin/arewefastyetcli
       changed_when: false
-
 
 # TODO: fix this hacky trick to get config.yaml into Ansible.
 # There is perhaps something better and safer to do from Terraform
@@ -53,17 +52,17 @@
   ansible.builtin.copy:
     src: "{{ arewefastyet_configuration_file_path }}"
     dest: /tmp/config.yaml
-    mode: '0644'
+    mode: "0644"
 
 - name: Get microbenchmarks secrets.yaml
   ansible.builtin.copy:
     src: "{{ arewefastyet_secrets_file_path }}"
     dest: /tmp/secrets.yaml
-    mode: '0644'
+    mode: "0644"
 
 - name: Run microbenchmarks
-  shell: |
+  ansible.builtin.shell: |
     cd /go/src/vitess.io/vitess
     arewefastyetcli microbench run {{ microbenchmarks_vitess_package }} output.txt --config /tmp/config.yaml --secrets /tmp/secrets.yaml --microbench-exec-uuid {{ arewefastyet_exec_uuid }}
   register: arewefastyetcli
-  changed_when: False
+  changed_when: false

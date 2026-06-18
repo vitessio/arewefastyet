@@ -35,8 +35,8 @@ provisioner:
   inventory:
     host_vars:
       instance:
-        clean_vtctld: False
-        clean_vtgate: False
-        clean_vttablet: False
+        clean_vtctld: false
+        clean_vtgate: false
+        clean_vttablet: false
 verifier:
   name: ansible

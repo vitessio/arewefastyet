@@ -15,6 +15,6 @@
   tasks:
     - name: "Prepare vttablet"
       vars:
-        - clean_vttablet: False
-      include_role:
+        clean_vttablet: false
+      ansible.builtin.include_role:
         name: "vttablet"

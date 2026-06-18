@@ -12,16 +12,16 @@
 ---
 # MySQL Ctld
 
-- name: check if there is a mysqlctld service
-  shell: service mysqlctld@{{ tablet.id }} status
+- name: Check if there is a mysqlctld service
+  ansible.builtin.command: service mysqlctld@{{ tablet.id }} status
   register: mysql_status
   failed_when: not(mysql_status.rc == 3 or mysql_status.rc == 4 or mysql_status.rc == 0)
 
-- name: stop old mysqlctld
-  become: yes
+- name: Stop old mysqlctld
+  become: true
   become_user: root
-  service:
-    name: 'mysqlctld@{{ tablet.id }}'
+  ansible.builtin.service:
+    name: "mysqlctld@{{ tablet.id }}"
     enabled: false
     state: stopped
   changed_when: false
@@ -30,16 +30,16 @@
 
 # MySQLd Exporter
 
-- name: check if there is a mysqld_exporter service
-  shell: service mysqld_exporter@{{ tablet.id }} status
+- name: Check if there is a mysqld_exporter service
+  ansible.builtin.command: service mysqld_exporter@{{ tablet.id }} status
   register: mysqld_exporter_status
   failed_when: not(mysqld_exporter_status.rc == 3 or mysqld_exporter_status.rc == 4 or mysqld_exporter_status.rc == 0)
 
-- name: stop old mysqld_exporter
-  become: yes
+- name: Stop old mysqld_exporter
+  become: true
   become_user: root
-  service:
-    name: 'mysqld_exporter@{{ tablet.id }}'
+  ansible.builtin.service:
+    name: "mysqld_exporter@{{ tablet.id }}"
     enabled: false
     state: stopped
   changed_when: false
@@ -48,36 +48,36 @@
 
 # VTTablets
 
-- name: check if there is a vttablet service
-  shell: service vttablet@{{ tablet.id }} status
+- name: Check if there is a vttablet service
+  ansible.builtin.command: service vttablet@{{ tablet.id }} status
   register: vttablet_status
   failed_when: not(vttablet_status.rc == 3 or vttablet_status.rc == 4 or vttablet_status.rc == 0)
 
-- name: stop old vttablet
-  become: yes
+- name: Stop old vttablet
+  become: true
   become_user: root
-  service:
-    name: 'vttablet@{{ tablet.id }}'
+  ansible.builtin.service:
+    name: "vttablet@{{ tablet.id }}"
     enabled: false
     state: stopped
   changed_when: false
   when: vttablet_status.rc == 0
   failed_when: false
 
-- name: remove old config
-  become: yes
+- name: Remove old config
+  become: true
   become_user: root
   with_items:
-    - '/etc/vitess/conf/vttablet-{{ tablet.id }}.conf'
-    - '/etc/vitess/extra_my{{ tablet.id }}.conf'
-  file:
+    - "/etc/vitess/conf/vttablet-{{ tablet.id }}.conf"
+    - "/etc/vitess/extra_my{{ tablet.id }}.conf"
+  ansible.builtin.file:
     state: absent
-    path: '{{ item }}'
+    path: "{{ item }}"
   failed_when: false
 
-- name: systemctl daemon-reload
-  become: yes
+- name: Systemctl daemon-reload
+  become: true
   become_user: root
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true
   failed_when: false
