@@ -37,31 +37,133 @@
 
 <section class="flex flex-col items-center p-page my-10">
   <h3 class="text-2xl md:text-3xl font-semibold text-primary mb-6">Execution Queue</h3>
-  <div class="w-full xl:w-[80vw] rounded-lg border border-border overflow-x-auto">
-    <table class="w-full caption-bottom text-sm">
-      <thead>
-        <tr class="border-b border-border">
-          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">SHA</th>
-          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Source</th>
-          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Workload</th>
-          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">PR</th>
-          <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Profile</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{ range .QueueRows }}
-        <tr class="border-b border-border transition-colors hover:bg-muted/50">
-          <td class="p-4 align-middle"><span class="{{ badgeClass "default" }}">{{ .SHAShort }}</span></td>
-          <td class="p-4 align-middle">{{ .Source }}</td>
-          <td class="p-4 align-middle">{{ .Workload }}</td>
-          <td class="p-4 align-middle"><span class="{{ badgeClass "default" }}">{{ .PRDisplay }}</span></td>
-          <td class="p-4 align-middle">{{ if .Profile }}<span class="{{ badgeClass "progress" }}">{{ .Profile }}</span>{{ end }}</td>
-        </tr>
-        {{ else }}
-        <tr><td colspan="5" class="p-4 text-center text-muted-foreground">The execution queue is empty.</td></tr>
-        {{ end }}
-      </tbody>
-    </table>
+  <div class="w-full xl:w-[80vw]" x-data="queueTable()" data-rows="{{ .QueueRowsJSON }}">
+    <!-- Toolbar: text filter, Source + Workload faceted filters, reset (mirrors the React DataTableToolbar) -->
+    <div class="flex items-center gap-4 py-4 flex-wrap">
+      <input
+        x-model="query"
+        @input="page = 0"
+        type="text"
+        placeholder="Filter executions..."
+        class="h-9 w-full max-w-[250px] rounded-md border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+
+      <div x-data="{ open: false }" class="relative">
+        <button
+          @click="open = !open"
+          class="inline-flex items-center gap-2 rounded-md border border-dashed border-border h-8 px-3 text-sm hover:bg-muted"
+        >
+          <i class="fa-solid fa-circle-plus text-primary"></i>Source
+          <template x-if="sources.length">
+            <span class="ml-1 rounded-sm bg-muted px-1 text-xs" x-text="sources.length"></span>
+          </template>
+        </button>
+        <div
+          x-show="open"
+          x-cloak
+          @click.outside="open = false"
+          class="absolute z-[60] mt-2 w-44 rounded-md border border-border bg-popover text-popover-foreground p-2 shadow-lg"
+        >
+          {{ range .QueueSources }}
+          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer">
+            <input type="checkbox" :checked="sources.includes('{{ . }}')" @change="toggleSource('{{ . }}')" />
+            <span>{{ . }}</span>
+          </label>
+          {{ else }}
+          <div class="px-2 py-1 text-sm text-muted-foreground">No sources</div>
+          {{ end }}
+        </div>
+      </div>
+
+      <div x-data="{ open: false }" class="relative">
+        <button
+          @click="open = !open"
+          class="inline-flex items-center gap-2 rounded-md border border-dashed border-border h-8 px-3 text-sm hover:bg-muted"
+        >
+          <i class="fa-solid fa-circle-plus text-primary"></i>Workload
+          <template x-if="workloads.length">
+            <span class="ml-1 rounded-sm bg-muted px-1 text-xs" x-text="workloads.length"></span>
+          </template>
+        </button>
+        <div
+          x-show="open"
+          x-cloak
+          @click.outside="open = false"
+          class="absolute z-[60] mt-2 w-44 rounded-md border border-border bg-popover text-popover-foreground p-2 shadow-lg"
+        >
+          {{ range .QueueWorkloads }}
+          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer">
+            <input type="checkbox" :checked="workloads.includes('{{ . }}')" @change="toggleWorkload('{{ . }}')" />
+            <span>{{ . }}</span>
+          </label>
+          {{ else }}
+          <div class="px-2 py-1 text-sm text-muted-foreground">No workloads</div>
+          {{ end }}
+        </div>
+      </div>
+
+      <button
+        x-show="query || sources.length || workloads.length"
+        @click="reset()"
+        class="inline-flex items-center gap-2 h-8 px-3 text-sm hover:bg-muted rounded-md"
+      >
+        Reset<i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="rounded-lg border border-border overflow-x-auto">
+      <table class="w-full caption-bottom text-sm">
+        <thead>
+          <tr class="border-b border-border">
+            <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">SHA</th>
+            <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Source</th>
+            <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Workload</th>
+            <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">PR</th>
+            <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Profile</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="(r, i) in paged()" :key="i">
+            <tr class="border-b border-border transition-colors hover:bg-muted/50">
+              <td class="p-4 align-middle"><span class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold bg-primary text-primary-foreground" x-text="r.sha"></span></td>
+              <td class="p-4 align-middle" x-text="r.source"></td>
+              <td class="p-4 align-middle" x-text="r.workload"></td>
+              <td class="p-4 align-middle"><span class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold bg-primary text-primary-foreground" x-text="r.pr"></span></td>
+              <td class="p-4 align-middle">
+                <template x-if="r.profile">
+                  <span class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold bg-progress text-progress-foreground" x-text="r.profile"></span>
+                </template>
+              </td>
+            </tr>
+          </template>
+          <tr x-show="filtered().length === 0">
+            <td colspan="5" class="p-4 text-center text-muted-foreground" x-text="rows.length ? 'No matching executions.' : 'The execution queue is empty.'"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination (client-side; default 10 per page, mirrors the History table) -->
+    <div class="flex items-center justify-end gap-4 py-4 text-sm" x-show="filtered().length">
+      <span class="text-muted-foreground">
+        Page <span x-text="pageCount() ? page + 1 : 0"></span> of <span x-text="pageCount()"></span>
+      </span>
+      <button
+        @click="prevPage()"
+        :disabled="page === 0"
+        class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      <button
+        @click="nextPage()"
+        :disabled="page + 1 >= pageCount()"
+        class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </section>
 
@@ -150,17 +252,17 @@
   <table class="w-full caption-bottom text-sm">
     <thead>
       <tr class="border-b border-border">
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">UUID</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">SHA</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Source</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Workload</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Started</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Finished</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">PR #</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Golang</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Profile</th>
-        <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground"></th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">UUID</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">SHA</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Source</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Workload</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Started</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Finished</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">PR #</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Golang</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Status</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Profile</th>
+        <th class="h-12 px-4 text-center align-middle font-semibold text-foreground"></th>
       </tr>
     </thead>
     <tbody>

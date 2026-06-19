@@ -8,30 +8,102 @@
       Vitess-managed foreign keys versus one where foreign keys are either not enabled, or not managed by Vitess.
     </p>
 
-    <form method="get" action="/fk" hx-get="/fk" hx-target="#fk-results" hx-swap="innerHTML" hx-push-url="true" class="flex flex-col md:flex-row gap-4 items-end">
+    <form method="get" action="/fk" hx-get="/fk" hx-target="#fk-results" hx-swap="innerHTML" hx-push-url="true"
+      x-data="fkForm()" data-refs="{{ .RefsJSON }}" data-workloads="{{ .WorkloadsJSON }}"
+      data-old-workload="{{ .OldWorkload }}" data-new-workload="{{ .NewWorkload }}" data-sha="{{ .SHAInput }}"
+      @keydown.window.meta.o.prevent="show('oldWorkload')" @keydown.window.ctrl.o.prevent="show('oldWorkload')"
+      @keydown.window.meta.j.prevent="show('newWorkload')" @keydown.window.ctrl.j.prevent="show('newWorkload')"
+      @keydown.window.meta.m.prevent="show('sha')" @keydown.window.ctrl.m.prevent="show('sha')"
+      class="flex flex-col md:flex-row gap-4 items-end">
       <div class="flex flex-col">
         <label class="text-primary mb-2">Old Workload</label>
-        <select name="oldWorkload" class="h-9 rounded-md border border-border bg-background px-3 text-sm">
-          <option value="">Select workload...</option>
-          {{ range .Workloads }}
-          <option value="{{ . }}" {{ if eq . $.OldWorkload }}selected{{ end }}>{{ . }}</option>
-          {{ end }}
-        </select>
+        <button type="button" @click="show('oldWorkload')"
+          class="relative inline-flex items-center justify-between whitespace-nowrap rounded-[0.5rem] border border-input bg-muted/50 h-10 px-4 py-2 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground w-full md:w-48">
+          <span class="overflow-hidden text-ellipsis" x-text="oldWorkload || 'Select workload...'"></span>
+          <kbd class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <span class="text-xs">⌘</span>o
+          </kbd>
+        </button>
+        <input type="hidden" name="oldWorkload" :value="oldWorkload" />
       </div>
       <div class="flex flex-col">
         <label class="text-primary mb-2">New Workload</label>
-        <select name="newWorkload" class="h-9 rounded-md border border-border bg-background px-3 text-sm">
-          <option value="">Select workload...</option>
-          {{ range .Workloads }}
-          <option value="{{ . }}" {{ if eq . $.NewWorkload }}selected{{ end }}>{{ . }}</option>
-          {{ end }}
-        </select>
+        <button type="button" @click="show('newWorkload')"
+          class="relative inline-flex items-center justify-between whitespace-nowrap rounded-[0.5rem] border border-input bg-muted/50 h-10 px-4 py-2 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground w-full md:w-48">
+          <span class="overflow-hidden text-ellipsis" x-text="newWorkload || 'Select workload...'"></span>
+          <kbd class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <span class="text-xs">⌘</span>j
+          </kbd>
+        </button>
+        <input type="hidden" name="newWorkload" :value="newWorkload" />
       </div>
       <div class="flex flex-col">
         <label class="text-primary mb-2">Commit</label>
-        <input name="sha" value="{{ .SHA }}" placeholder="Commit SHA..." class="h-9 rounded-md border border-border bg-background px-3 text-sm" />
+        <button type="button" @click="show('sha')"
+          class="relative inline-flex items-center justify-between whitespace-nowrap rounded-[0.5rem] border border-input bg-muted/50 h-10 px-4 py-2 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground w-full md:w-48 lg:w-64">
+          <span class="overflow-hidden text-ellipsis" x-text="shaVal || 'Search commit or releases...'"></span>
+          <kbd class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <span class="text-xs">⌘</span>m
+          </kbd>
+        </button>
+        <input type="hidden" name="sha" :value="shaVal" />
       </div>
-      <button type="submit" class="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-9 px-4 text-sm font-medium hover:bg-primary/90">Compare</button>
+      <div class="flex md:items-end items-center justify-center mt-4 md:mt-0">
+        <button type="submit" :disabled="!oldWorkload || !newWorkload || !shaVal"
+          class="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none">Compare</button>
+      </div>
+
+      <!-- Shared command dialog: workloads (flat list) or commit refs (grouped), one open at a time -->
+      <div
+        x-show="open"
+        x-cloak
+        @keydown.escape.window="open = false"
+        class="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] bg-black/50"
+        @click.self="open = false"
+      >
+        <div class="w-full max-w-lg rounded-lg border border-border bg-popover text-popover-foreground shadow-xl overflow-hidden">
+          <div class="flex items-center border-b border-border px-3">
+            {{ template "iconMagnifyingGlass" "mr-2 h-4 w-4 shrink-0 opacity-50" }}
+            <input
+              x-ref="search"
+              x-model="query"
+              @keydown.enter.prevent="enter()"
+              type="text"
+              :placeholder="open === 'sha' ? 'Search commit or releases...' : 'Search workload...'"
+              class="flex h-11 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+            />
+          </div>
+          <ul class="max-h-72 overflow-y-auto p-1">
+            <!-- Workload options (old/new fields) -->
+            <template x-for="w in (open === 'sha' ? [] : workloadMatches())" :key="'w-' + w">
+              <li>
+                <button type="button" @click="select(w)" class="flex w-full items-center rounded-sm px-2 py-1.5 text-sm text-left hover:bg-accent hover:text-accent-foreground" x-text="w"></button>
+              </li>
+            </template>
+            <!-- Commit ref options (commit field), grouped Branches / Releases -->
+            <template x-if="open === 'sha' && branches().length">
+              <li class="px-2 py-1.5 text-xs font-medium text-muted-foreground">Branches</li>
+            </template>
+            <template x-for="ref in (open === 'sha' ? branches() : [])" :key="'b-' + ref.name">
+              <li>
+                <button type="button" @click="select(ref.name)" class="flex w-full items-center rounded-sm px-2 py-1.5 text-sm text-left hover:bg-accent hover:text-accent-foreground" x-text="ref.name"></button>
+              </li>
+            </template>
+            <template x-if="open === 'sha' && releases().length">
+              <li class="px-2 py-1.5 text-xs font-medium text-muted-foreground">Releases</li>
+            </template>
+            <template x-for="ref in (open === 'sha' ? releases() : [])" :key="'r-' + ref.name">
+              <li>
+                <button type="button" @click="select(ref.name)" class="flex w-full items-center rounded-sm px-2 py-1.5 text-sm text-left hover:bg-accent hover:text-accent-foreground" x-text="ref.name"></button>
+              </li>
+            </template>
+            <li
+              x-show="open === 'sha' ? (!branches().length && !releases().length) : !workloadMatches().length"
+              class="py-6 text-center text-sm text-muted-foreground"
+            >No results found.</li>
+          </ul>
+        </div>
+      </div>
     </form>
   </div>
 </section>
@@ -51,7 +123,7 @@
     <div class="rounded-lg border border-border overflow-x-auto">
       <div class="p-6">
         <h3 class="text-2xl md:text-4xl text-primary">
-          <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/commit/{{ .SHA }}">{{ .SHA }}</a>
+          <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/commit/{{ .SHA }}">{{ .SHALabel }}</a>
         </h3>
       </div>
       {{ template "macroCompareTable" . }}

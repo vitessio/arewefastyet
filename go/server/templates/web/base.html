@@ -21,6 +21,28 @@
       })();
     </script>
 
+    <!--
+      Google Analytics (GA4) — ports the React App.tsx `ReactGA.initialize("G-QCJ7MJ5CPX")`.
+      gtag's default config sends a page_view; because each SSR page is a full
+      navigation, every page is tracked (the React SPA only tracked the first load).
+      Skipped on localhost so local/docker dev traffic doesn't pollute the property.
+    -->
+    <script>
+      (function () {
+        var h = location.hostname;
+        if (h === "localhost" || h === "127.0.0.1" || h === "::1" || h.endsWith(".local")) return;
+        var id = "G-QCJ7MJ5CPX";
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        gtag("js", new Date());
+        gtag("config", id);
+      })();
+    </script>
+
     <!-- Open Sans font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link

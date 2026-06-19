@@ -16,7 +16,7 @@
   <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
   {{ else }}
   <div x-data="historyTable()" data-rows="{{ .RowsJSON }}" data-initial="{{ .InitialGitRef }}">
-    <!-- Toolbar: text filter, source faceted filter, reset, column visibility -->
+    <!-- Toolbar: text filter, source faceted filter, reset -->
     <div class="flex items-center justify-between gap-4 py-4 flex-wrap">
       <div class="flex flex-1 items-center gap-4">
         <input
@@ -62,26 +62,6 @@
           Reset<i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-
-      <div x-data="{ open: false }" class="relative">
-        <button
-          @click="open = !open"
-          class="inline-flex items-center gap-2 rounded-md border border-border h-8 px-3 text-sm hover:bg-muted"
-        >
-          <i class="fa-solid fa-sliders text-primary"></i>View
-        </button>
-        <div
-          x-show="open"
-          x-cloak
-          @click.outside="open = false"
-          class="absolute right-0 z-[60] mt-2 w-48 rounded-md border border-border bg-popover text-popover-foreground p-2 shadow-lg"
-        >
-          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.sha" />SHA</label>
-          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.source" />Source</label>
-          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.workloads" />Workloads Benchmarked</label>
-          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer"><input type="checkbox" x-model="showCol.started" />Started</label>
-        </div>
-      </div>
     </div>
 
     <!-- Table -->
@@ -89,22 +69,22 @@
       <table class="w-full caption-bottom text-sm">
         <thead>
           <tr class="border-b border-border">
-            <th x-show="showCol.sha" class="h-12 px-4 text-center align-middle font-semibold text-foreground">SHA</th>
-            <th x-show="showCol.source" class="h-12 px-4 text-center align-middle font-semibold text-foreground">Source</th>
-            <th x-show="showCol.workloads" class="h-12 px-4 text-center align-middle font-semibold text-foreground">Workloads Benchmarked</th>
-            <th x-show="showCol.started" class="h-12 px-4 text-center align-middle font-semibold text-foreground">Started</th>
+            <th class="h-12 px-4 text-center align-middle font-semibold text-foreground">SHA</th>
+            <th class="h-12 px-4 text-center align-middle font-semibold text-foreground">Source</th>
+            <th class="h-12 px-4 text-center align-middle font-semibold text-foreground">Workloads Benchmarked</th>
+            <th class="h-12 px-4 text-center align-middle font-semibold text-foreground">Started</th>
             <th class="h-12 px-4 text-center align-middle font-semibold text-foreground"></th>
           </tr>
         </thead>
         <tbody>
           <template x-for="(r, i) in paged()" :key="i">
             <tr class="border-b border-border text-center">
-              <td x-show="showCol.sha" class="p-4 align-middle">
+              <td class="p-4 align-middle">
                 <span class="inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold bg-primary text-primary-foreground" x-text="r.shaShort"></span>
               </td>
-              <td x-show="showCol.source" class="p-4 align-middle" x-text="r.source"></td>
-              <td x-show="showCol.workloads" class="p-4 align-middle" x-text="r.workloads"></td>
-              <td x-show="showCol.started" class="p-4 align-middle">
+              <td class="p-4 align-middle" x-text="r.source"></td>
+              <td class="p-4 align-middle" x-text="r.workloads"></td>
+              <td class="p-4 align-middle">
                 <span class="underline" :title="r.startedTitle" x-text="r.startedRel"></span>
               </td>
               <td class="p-4 align-middle">

@@ -122,12 +122,108 @@ function compareForm() {
   };
 }
 
+// fkForm backs the Foreign Keys page's pickers, mirroring the React FK hero's
+// WorkloadsCommand (old/new workload) + VitessRefsCommand (commit) palettes. Each
+// of the three fields is a button opening one shared command dialog: the two
+// workload fields list the page's TPCC workloads, the commit field lists the
+// vitess refs grouped into Branches/Releases (or accepts a pasted SHA). The
+// chosen values feed hidden inputs the form submits (server resolves ref name ->
+// SHA). Data (refs, workloads, initial values) is read from data-* attributes.
+function fkForm() {
+  return {
+    refs: [],
+    workloads: [],
+    oldWorkload: "",
+    newWorkload: "",
+    shaVal: "",
+    open: false, // false | "oldWorkload" | "newWorkload" | "sha"
+    query: "",
+    init() {
+      try {
+        this.refs = JSON.parse(this.$el.dataset.refs || "[]");
+      } catch (e) {
+        this.refs = [];
+      }
+      try {
+        this.workloads = JSON.parse(this.$el.dataset.workloads || "[]");
+      } catch (e) {
+        this.workloads = [];
+      }
+      this.oldWorkload = this.$el.dataset.oldWorkload || "";
+      this.newWorkload = this.$el.dataset.newWorkload || "";
+      this.shaVal = this.$el.dataset.sha || "";
+    },
+    show(field) {
+      this.open = field;
+      this.query = "";
+      this.$nextTick(
+        function () {
+          if (this.$refs.search) this.$refs.search.focus();
+        }.bind(this)
+      );
+    },
+    workloadMatches() {
+      var q = this.query.trim().toLowerCase();
+      return this.workloads.filter(function (w) {
+        return !q || w.toLowerCase().indexOf(q) !== -1;
+      });
+    },
+    matches(kind) {
+      var q = this.query.trim().toLowerCase();
+      return this.refs.filter(function (r) {
+        return r.kind === kind && (!q || r.name.toLowerCase().indexOf(q) !== -1);
+      });
+    },
+    branches() {
+      return this.matches("branch");
+    },
+    releases() {
+      return this.matches("release");
+    },
+    commit(value) {
+      if (this.open === "oldWorkload") this.oldWorkload = value;
+      else if (this.open === "newWorkload") this.newWorkload = value;
+      else this.shaVal = value;
+      this.open = false;
+    },
+    select(name) {
+      this.commit(name);
+    },
+    enter() {
+      var q = this.query.trim();
+      if (!q) {
+        this.open = false;
+        return;
+      }
+      this.commit(q);
+    },
+  };
+}
+
 // cssHSL resolves a Tailwind design-token variable (e.g. "--primary", stored as
 // "24.6 95% 53.1%") into a CSS hsl() color usable by Chart.js.
 function cssHSL(varName, fallback) {
   var v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
   if (!v) return fallback;
   return "hsl(" + v.replace(/,/g, " ") + ")";
+}
+
+// themedTooltip returns Chart.js tooltip options styled to match the site's
+// surface (light/dark) instead of Chart.js's default dark bubble, mirroring the
+// React custom tooltips. Pass per-chart title/label callbacks.
+function themedTooltip(callbacks) {
+  return {
+    enabled: true,
+    backgroundColor: cssHSL("--background", "#fff"),
+    titleColor: cssHSL("--foreground", "#000"),
+    bodyColor: cssHSL("--foreground", "#000"),
+    borderColor: cssHSL("--border", "#ddd"),
+    borderWidth: 1,
+    padding: 8,
+    cornerRadius: 6,
+    usePointStyle: true,
+    callbacks: callbacks || {},
+  };
 }
 
 // initSparklines draws a minimal QPS line chart into every uninitialized
@@ -201,14 +297,35 @@ function initBarCharts(root) {
             backgroundColor: color,
             borderColor: color,
             borderWidth: 1,
+            maxBarThickness: 10,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: true } },
-        scales: { x: { display: false }, y: { display: false } },
+        plugins: {
+          legend: { display: false },
+          // Value only, no x-axis (day) label — mirrors React's hideLabel tooltip.
+          tooltip: themedTooltip({
+            title: function () {
+              return "";
+            },
+            label: function (ctx) {
+              return String(ctx.parsed.y);
+            },
+          }),
+        },
+        // Y axis with ticks + horizontal gridlines; X axis without tick labels or
+        // vertical gridlines (mirrors recharts YAxis / XAxis tick=false /
+        // CartesianGrid vertical=false).
+        scales: {
+          x: { ticks: { display: false }, grid: { display: false } },
+          y: {
+            ticks: { color: cssHSL("--muted-foreground", "#888") },
+            grid: { color: cssHSL("--border", "#ddd") },
+          },
+        },
       },
     });
   });
@@ -252,7 +369,16 @@ function initLineCharts(root) {
         interaction: { mode: "index", intersect: false },
         plugins: {
           legend: { display: true, position: "bottom", labels: { color: axisColor, usePointStyle: true } },
-          tooltip: { enabled: true },
+          // "Commit: <ref>" header + integer-rounded per-series values, mirroring
+          // the React DailyCharts CustomTooltip.
+          tooltip: themedTooltip({
+            title: function (items) {
+              return items.length ? "Commit: " + items[0].label : "";
+            },
+            label: function (ctx) {
+              return ctx.dataset.label + ": " + Math.round(ctx.parsed.y);
+            },
+          }),
         },
         scales: {
           x: { ticks: { color: axisColor }, grid: { color: gridColor } },
@@ -289,11 +415,39 @@ function copyCompareMarkdown(btn) {
   });
 }
 
+// highlightJSON turns an (already indented) JSON string into HTML with per-token
+// spans, so the query-plan dialog can render it with the monokai colors defined
+// in tailwind.css (.json-pretty .*), mirroring the React react-json-pretty view.
+// HTML metacharacters in the source are escaped before the spans are added, so
+// plan content can't inject markup when rendered via x-html.
+function highlightJSON(jsonStr) {
+  if (!jsonStr) return "";
+  var s = String(jsonStr)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return s.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    function (match) {
+      var cls = "json-num";
+      if (/^"/.test(match)) {
+        cls = /:$/.test(match) ? "json-key" : "json-string";
+      } else if (/^(true|false)$/.test(match)) {
+        cls = "json-bool";
+      } else if (match === "null") {
+        cls = "json-null";
+      }
+      return '<span class="' + cls + '">' + match + "</span>";
+    }
+  );
+}
+
 // queryPlansTable is the Alpine.js data factory for the Compare Query Plans
 // table (see templates/web/pages/macro_queries_compare.html). It reads the row
 // data from the host element's data-rows attribute and handles the text/operator
 // filtering, exec-time sorting, pagination, and per-row plan dialog client-side,
-// mirroring the React TanStack table + dialog.
+// mirroring the React TanStack table + dialog. (Column-visibility toggles were
+// dropped to keep all tables consistent — see go/server/MIGRATION_PARITY.md.)
 function queryPlansTable() {
   return {
     rows: [],
@@ -304,7 +458,6 @@ function queryPlansTable() {
     pageSize: 10,
     modalOpen: false,
     current: {},
-    showCol: { query: true, execTime: true },
     init() {
       try {
         this.rows = JSON.parse(this.$el.dataset.rows || "[]");
@@ -375,7 +528,7 @@ function queryPlansTable() {
 // historyTable is the Alpine.js data factory for the History table (see
 // templates/web/pages/history.html). Like queryPlansTable it reads its rows from
 // the host element's data-rows attribute and handles the text filter, source
-// faceted filter, column visibility, and pagination client-side. The data-initial
+// faceted filter, and pagination client-side. The data-initial
 // attribute seeds the text filter from the ?gitRef= query param so a "Benchmarks
 // History" row action deep-links to a pre-filtered table.
 function historyTable() {
@@ -385,7 +538,6 @@ function historyTable() {
     sources: [],
     page: 0,
     pageSize: 10,
-    showCol: { sha: true, source: true, workloads: true, started: true },
     init() {
       try {
         this.rows = JSON.parse(this.$el.dataset.rows || "[]");
@@ -423,6 +575,77 @@ function historyTable() {
     paged() {
       var start = this.page * this.pageSize;
       return this.filteredAll().slice(start, start + this.pageSize);
+    },
+    prevPage() {
+      if (this.page > 0) this.page--;
+    },
+    nextPage() {
+      if (this.page + 1 < this.pageCount()) this.page++;
+    },
+  };
+}
+
+// queueTable is the Alpine.js data factory for the Status page's Execution Queue
+// table. The queue is small in-memory data, so it reads its rows from the host
+// element's data-rows attribute and filters client-side: a free-text match on the
+// SHA plus Source/Workload faceted filters, mirroring the React queue toolbar.
+// (No pagination — the queue is short; that matches the restored toolbar's scope.)
+function queueTable() {
+  return {
+    rows: [],
+    query: "",
+    sources: [],
+    workloads: [],
+    page: 0,
+    pageSize: 10,
+    init() {
+      try {
+        this.rows = JSON.parse(this.$el.dataset.rows || "[]");
+      } catch (e) {
+        this.rows = [];
+      }
+    },
+    toggleSource(src) {
+      var idx = this.sources.indexOf(src);
+      if (idx === -1) {
+        this.sources.push(src);
+      } else {
+        this.sources.splice(idx, 1);
+      }
+      this.page = 0;
+    },
+    toggleWorkload(w) {
+      var idx = this.workloads.indexOf(w);
+      if (idx === -1) {
+        this.workloads.push(w);
+      } else {
+        this.workloads.splice(idx, 1);
+      }
+      this.page = 0;
+    },
+    reset() {
+      this.query = "";
+      this.sources = [];
+      this.workloads = [];
+      this.page = 0;
+    },
+    filtered() {
+      var q = this.query.trim().toLowerCase();
+      var srcs = this.sources;
+      var wls = this.workloads;
+      return this.rows.filter(function (r) {
+        if (q && (r.sha || "").toLowerCase().indexOf(q) === -1) return false;
+        if (srcs.length && srcs.indexOf(r.source) === -1) return false;
+        if (wls.length && wls.indexOf(r.workload) === -1) return false;
+        return true;
+      });
+    },
+    pageCount() {
+      return Math.ceil(this.filtered().length / this.pageSize);
+    },
+    paged() {
+      var start = this.page * this.pageSize;
+      return this.filtered().slice(start, start + this.pageSize);
     },
     prevPage() {
       if (this.page > 0) this.page--;

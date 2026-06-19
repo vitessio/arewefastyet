@@ -30,7 +30,7 @@
   <div class="md:text-xl text-primary my-10 text-center">Provide an old commit, a new commit, and a workload to compare query plans.</div>
   {{ else }}
   <div class="w-[80vw] xl:w-[60vw] my-12" x-data="queryPlansTable()" data-rows="{{ .RowsJSON }}">
-    <!-- Toolbar: text filter, operator faceted filter, reset, column visibility -->
+    <!-- Toolbar: text filter, operator faceted filter, reset -->
     <div class="flex items-center justify-between gap-4 py-4 flex-wrap">
       <div class="flex flex-1 items-center gap-4">
         <input
@@ -74,28 +74,6 @@
           Reset<i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-
-      <div x-data="{ open: false }" class="relative">
-        <button
-          @click="open = !open"
-          class="inline-flex items-center gap-2 rounded-md border border-border h-8 px-3 text-sm hover:bg-muted"
-        >
-          <i class="fa-solid fa-sliders text-primary"></i>View
-        </button>
-        <div
-          x-show="open"
-          x-cloak
-          @click.outside="open = false"
-          class="absolute right-0 z-[60] mt-2 w-44 rounded-md border border-border bg-popover text-popover-foreground p-2 shadow-lg"
-        >
-          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer">
-            <input type="checkbox" x-model="showCol.query" />Query
-          </label>
-          <label class="flex items-center gap-2 px-2 py-1 text-sm hover:bg-muted rounded cursor-pointer">
-            <input type="checkbox" x-model="showCol.execTime" />Execution Time
-          </label>
-        </div>
-      </div>
     </div>
 
     <!-- Table -->
@@ -103,8 +81,8 @@
       <table class="w-full caption-bottom text-sm">
         <thead>
           <tr class="border-b border-border">
-            <th x-show="showCol.query" class="h-12 px-4 text-left align-middle font-semibold text-foreground">Query</th>
-            <th x-show="showCol.execTime" class="h-12 px-4 text-center align-middle font-semibold text-foreground">
+            <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Query</th>
+            <th class="h-12 px-4 text-center align-middle font-semibold text-foreground">
               <button @click="toggleSort()" class="inline-flex items-center gap-2 hover:text-primary">
                 Execution Time
                 <i class="fa-solid fa-sort"></i>
@@ -115,8 +93,8 @@
         <tbody>
           <template x-for="(r, i) in paged()" :key="i">
             <tr class="border-b border-border text-center cursor-pointer hover:bg-muted/50" @click="openModal(r)">
-              <td x-show="showCol.query" class="p-4 align-middle text-left min-w-fit" x-text="r.key"></td>
-              <td x-show="showCol.execTime" class="p-4 align-middle">
+              <td class="p-4 align-middle text-left min-w-fit" x-text="r.key"></td>
+              <td class="p-4 align-middle">
                 <span :class="badgeClasses(r.execTimeDiff)" x-text="r.execTimeDiff + '%'"></span>
               </td>
             </tr>
@@ -197,13 +175,13 @@
         <template x-if="current.hasOld">
           <div class="w-full">
             <h3 class="text-primary text-center text-lg md:text-4xl mb-4">Old query plan</h3>
-            <pre class="w-full overflow-auto rounded-md border border-border p-4 text-xs md:text-sm whitespace-pre" x-text="current.oldPlan"></pre>
+            <pre class="json-pretty w-full overflow-auto rounded-md border border-border p-4 text-xs md:text-sm whitespace-pre" x-html="highlightJSON(current.oldPlan)"></pre>
           </div>
         </template>
         <template x-if="current.hasNew">
           <div class="w-full">
             <h3 class="text-primary text-center text-lg md:text-4xl mb-4">New query plan</h3>
-            <pre class="w-full overflow-auto rounded-md border border-border p-4 text-xs md:text-sm whitespace-pre" x-text="current.newPlan"></pre>
+            <pre class="json-pretty w-full overflow-auto rounded-md border border-border p-4 text-xs md:text-sm whitespace-pre" x-html="highlightJSON(current.newPlan)"></pre>
           </div>
         </template>
       </div>

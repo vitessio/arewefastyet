@@ -91,11 +91,11 @@ type webStatCard struct {
 }
 
 type webQueueRow struct {
-	SHAShort  string
-	Source    string
-	Workload  string
-	PRDisplay string
-	Profile   string
+	SHAShort  string `json:"sha"`
+	Source    string `json:"source"`
+	Workload  string `json:"workload"`
+	PRDisplay string `json:"pr"`
+	Profile   string `json:"profile"`
 }
 
 type webExecutionRow struct {
@@ -207,7 +207,33 @@ func (s *Server) webStatus(c *gin.Context) {
 	sort.Slice(queueRows, func(i, j int) bool {
 		return queueRows[i].SHAShort > queueRows[j].SHAShort && queueRows[i].Source > queueRows[j].Source
 	})
-	extra["QueueRows"] = queueRows
+	// The queue is small in-memory data, so it's filtered client-side (free-text +
+	// Source/Workload facets) by queueTable() in app.js, mirroring the React queue
+	// toolbar. Rendering it server-side here would also collide with the Previous
+	// Executions HTMX form, which already owns the q/source/status/workload params.
+	if b, err := json.Marshal(queueRows); err == nil {
+		extra["QueueRowsJSON"] = string(b)
+	} else {
+		extra["QueueRowsJSON"] = "[]"
+	}
+	queueSourceSet := make(map[string]struct{})
+	queueWorkloadSet := make(map[string]struct{})
+	for _, r := range queueRows {
+		queueSourceSet[r.Source] = struct{}{}
+		queueWorkloadSet[r.Workload] = struct{}{}
+	}
+	queueSources := make([]string, 0, len(queueSourceSet))
+	for s := range queueSourceSet {
+		queueSources = append(queueSources, s)
+	}
+	sort.Strings(queueSources)
+	queueWorkloads := make([]string, 0, len(queueWorkloadSet))
+	for w := range queueWorkloadSet {
+		queueWorkloads = append(queueWorkloads, w)
+	}
+	sort.Strings(queueWorkloads)
+	extra["QueueSources"] = queueSources
+	extra["QueueWorkloads"] = queueWorkloads
 
 	// Previous (recent) executions — paginated and filtered server-side over every
 	// execution. Going between pages, changing the page size, or changing a filter
@@ -616,9 +642,14 @@ func compareRows(r macrobench.StatisticalCompareResults) []webCompareRow {
 }
 
 func (s *Server) webForeignKeys(c *gin.Context) {
-	sha := c.Query("sha")
+	shaRef := c.Query("sha")
 	oldWorkload := c.Query("oldWorkload")
 	newWorkload := c.Query("newWorkload")
+
+	// The commit picker mirrors the Compare page: the user selects a named vitess
+	// ref (or pastes a raw SHA), which we resolve to a commit hash and label.
+	opts := s.vitessRefOptions()
+	sha := resolveRef(shaRef, opts)
 
 	// Only TPCC workloads support the managed/unmanaged foreign-key comparison.
 	tpccWorkloads := make([]string, 0)
@@ -632,9 +663,21 @@ func (s *Server) webForeignKeys(c *gin.Context) {
 	extra := gin.H{
 		"Workloads":   tpccWorkloads,
 		"SHA":         sha,
+		"SHAInput":    shaRef,
+		"SHALabel":    refLabel(sha, opts),
 		"OldWorkload": oldWorkload,
 		"NewWorkload": newWorkload,
 		"HasQuery":    sha != "" && oldWorkload != "" && newWorkload != "",
+	}
+	if b, err := json.Marshal(opts); err == nil {
+		extra["RefsJSON"] = string(b)
+	} else {
+		extra["RefsJSON"] = "[]"
+	}
+	if b, err := json.Marshal(tpccWorkloads); err == nil {
+		extra["WorkloadsJSON"] = string(b)
+	} else {
+		extra["WorkloadsJSON"] = "[]"
 	}
 
 	if extra["HasQuery"].(bool) {
