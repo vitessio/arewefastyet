@@ -18,30 +18,20 @@
         {{ end }}
       </div>
 
-      <!-- Theme toggle -->
-      <div x-data="{ openMenu: false }" class="relative">
-        <button
-          @click="openMenu = !openMenu"
-          class="inline-flex items-center justify-center h-9 w-9 rounded-md border border-border hover:bg-muted"
-          aria-label="Toggle theme"
-        >
-          <i class="fa-solid fa-sun dark:hidden"></i>
-          <i class="fa-solid fa-moon hidden dark:inline"></i>
-        </button>
-        <div
-          x-show="openMenu"
-          x-transition
-          @click.outside="openMenu = false"
-          x-cloak
-          class="absolute right-0 mt-2 w-36 rounded-md border border-border bg-popover text-popover-foreground shadow-lg py-1 z-[60]"
-        >
-          <button @click="setTheme('light'); openMenu = false" class="block w-full text-left px-3 py-1.5 hover:bg-muted">Light</button>
-          <button @click="setTheme('dark'); openMenu = false" class="block w-full text-left px-3 py-1.5 hover:bg-muted">Dark</button>
-          <button @click="setTheme('system'); openMenu = false" class="block w-full text-left px-3 py-1.5 hover:bg-muted">System</button>
-        </div>
-      </div>
+      <!-- Theme toggle: direct dark/light toggle with animated Sun/Moon icons
+           (mirrors the React ModeToggle). -->
+      <button
+        type="button"
+        onclick="toggleTheme()"
+        class="relative inline-flex items-center justify-center h-10 w-10 rounded-md text-foreground hover:bg-accent hover:text-accent-foreground"
+        aria-label="Toggle theme"
+      >
+        {{ template "iconSun" "h-[1.5rem] w-[1.5rem] rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" }}
+        {{ template "iconMoon" "absolute h-[1.5rem] w-[1.5rem] rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" }}
+        <span class="sr-only">Toggle theme</span>
+      </button>
 
-      <!-- Command palette (Cmd/Ctrl+K) -->
+      <!-- Commit search (Cmd/Ctrl+K) -->
       <div
         x-data="commandPalette()"
         @keydown.window.meta.k.prevent="show()"
@@ -49,11 +39,13 @@
       >
         <button
           @click="show()"
-          class="inline-flex items-center gap-x-2 rounded-md border border-border px-3 h-9 text-sm text-muted-foreground hover:bg-muted"
+          class="relative inline-flex items-center justify-start whitespace-nowrap rounded-[0.5rem] border border-input bg-muted/50 h-8 px-4 py-2 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground w-40 lg:w-64 sm:pr-12"
         >
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <span class="hidden lg:inline">Search</span>
-          <kbd class="hidden lg:inline text-xs border border-border rounded px-1">⌘K</kbd>
+          <span class="hidden lg:inline-flex">Search a commit...</span>
+          <span class="inline-flex lg:hidden">Search...</span>
+          <kbd class="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 sm:flex">
+            <span class="text-xs">⌘</span>K
+          </kbd>
         </button>
 
         <div
@@ -64,26 +56,17 @@
           @click.self="open = false"
         >
           <div class="w-full max-w-lg rounded-lg border border-border bg-popover text-popover-foreground shadow-xl overflow-hidden">
-            <input
-              x-ref="search"
-              x-model="query"
-              @keydown.enter="enter()"
-              type="text"
-              placeholder="Type a command or search…"
-              class="w-full px-4 py-3 bg-transparent outline-none border-b border-border"
-            />
-            <ul class="max-h-72 overflow-y-auto py-2">
-              <template x-for="(item, i) in filtered()" :key="item.to">
-                <li>
-                  <a
-                    :href="item.to"
-                    class="block px-4 py-2 hover:bg-muted"
-                    x-text="item.title"
-                  ></a>
-                </li>
-              </template>
-              <li x-show="filtered().length === 0" class="px-4 py-2 text-muted-foreground">No results</li>
-            </ul>
+            <div class="flex items-center border-b border-border px-3">
+              {{ template "iconMagnifyingGlass" "mr-2 h-4 w-4 shrink-0 opacity-50" }}
+              <input
+                x-ref="search"
+                x-model="query"
+                @keydown.enter.prevent="enter()"
+                type="text"
+                placeholder="Search a commit..."
+                class="flex h-11 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
           </div>
         </div>
       </div>

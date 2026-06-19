@@ -14,17 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Top navigation shared with the Go template (see web.go webNavItems).
-var NAV_ITEMS = [
-  { to: "/status", title: "Status" },
-  { to: "/daily", title: "Daily" },
-  { to: "/compare", title: "Compare" },
-  { to: "/fk", title: "Foreign Keys" },
-  { to: "/pr", title: "PR" },
-  { to: "/history", title: "History" },
-  { to: "/", title: "Home" },
-];
-
 // setTheme applies and persists the light/dark/system theme. "system" clears the
 // stored preference and follows the OS setting.
 function setTheme(mode) {
@@ -39,12 +28,22 @@ function setTheme(mode) {
   }
 }
 
+// toggleTheme flips between dark and light based on the current document state,
+// mirroring the React ModeToggle. The Sun/Moon icons animate via CSS
+// transition-transform when the `dark` class on <html> changes.
+function toggleTheme() {
+  var isDark = document.documentElement.classList.contains("dark");
+  setTheme(isDark ? "light" : "dark");
+}
+
 // commandPalette is the Alpine.js data factory for the Cmd/Ctrl+K palette.
+// commandPalette backs the header "Search a commit…" box (Cmd/Ctrl+K), mirroring
+// the React CommandMenu: typing a commit SHA / git ref and pressing Enter jumps
+// to the History page filtered by that ref (/history?gitRef=…).
 function commandPalette() {
   return {
     open: false,
     query: "",
-    items: NAV_ITEMS,
     show() {
       this.open = true;
       this.query = "";
@@ -52,16 +51,73 @@ function commandPalette() {
         if (this.$refs.search) this.$refs.search.focus();
       });
     },
-    filtered() {
+    enter() {
+      var q = this.query.trim();
+      if (!q) return;
+      window.location.href = "/history?gitRef=" + encodeURIComponent(q);
+    },
+  };
+}
+
+// compareForm backs the Compare page's Old/New ref pickers. Each field is a
+// button that opens a shared command-palette dialog listing the vitess refs
+// (grouped into Branches/Releases), mirroring the React VitessRefsCommand. The
+// ref list and initial values are read from data-* attributes on the <form>;
+// the chosen names feed hidden inputs that the form submits (server resolves
+// names -> SHAs). Typing in the dialog and pressing Enter commits the raw text,
+// so a pasted commit SHA works too.
+function compareForm() {
+  return {
+    refs: [],
+    oldVal: "",
+    newVal: "",
+    open: false, // false | "old" | "new"
+    query: "",
+    init() {
+      try {
+        this.refs = JSON.parse(this.$el.dataset.refs || "[]");
+      } catch (e) {
+        this.refs = [];
+      }
+      this.oldVal = this.$el.dataset.old || "";
+      this.newVal = this.$el.dataset.new || "";
+    },
+    show(field) {
+      this.open = field;
+      this.query = "";
+      this.$nextTick(
+        function () {
+          if (this.$refs.search) this.$refs.search.focus();
+        }.bind(this)
+      );
+    },
+    matches(kind) {
       var q = this.query.trim().toLowerCase();
-      if (!q) return this.items;
-      return this.items.filter(function (i) {
-        return i.title.toLowerCase().includes(q) || i.to.toLowerCase().includes(q);
+      return this.refs.filter(function (r) {
+        return r.kind === kind && (!q || r.name.toLowerCase().indexOf(q) !== -1);
       });
     },
+    branches() {
+      return this.matches("branch");
+    },
+    releases() {
+      return this.matches("release");
+    },
+    commit(value) {
+      if (this.open === "new") this.newVal = value;
+      else this.oldVal = value;
+      this.open = false;
+    },
+    select(name) {
+      this.commit(name);
+    },
     enter() {
-      var f = this.filtered();
-      if (f.length) window.location.href = f[0].to;
+      var q = this.query.trim();
+      if (!q) {
+        this.open = false;
+        return;
+      }
+      this.commit(q);
     },
   };
 }
@@ -220,18 +276,15 @@ function copyCompareMarkdown(btn) {
   if (!ta) return;
   navigator.clipboard.writeText(ta.value).then(function () {
     var label = btn.querySelector("[data-copy-label]");
-    var icon = btn.querySelector("i");
+    var copyIcon = btn.querySelector("[data-copy-icon]");
+    var checkIcon = btn.querySelector("[data-check-icon]");
     if (label) label.textContent = "Copied!";
-    if (icon) {
-      icon.classList.remove("fa-copy");
-      icon.classList.add("fa-check");
-    }
+    if (copyIcon) copyIcon.classList.add("hidden");
+    if (checkIcon) checkIcon.classList.remove("hidden");
     setTimeout(function () {
       if (label) label.textContent = "Copy as markdown";
-      if (icon) {
-        icon.classList.remove("fa-check");
-        icon.classList.add("fa-copy");
-      }
+      if (copyIcon) copyIcon.classList.remove("hidden");
+      if (checkIcon) checkIcon.classList.add("hidden");
     }, 2000);
   });
 }
@@ -446,6 +499,12 @@ function tooltip() {
 // global "Compare Versions" widget (see partials/compare_widget.html). It tracks
 // a translate offset updated on mouse drag; the widget's visibility and the
 // old/new refs themselves live in the global $store.compare.
+// compareWidget backs the draggable "Compare Versions" card (see
+// partials/compare_widget.html), mirroring the React CompareActionsWrapper. The
+// staged old/new refs live in the $store.compare; this component owns the drag
+// state and the shared ref-picker dialog (open/query) used by the Old/New
+// fields. Interactive controls carry the .cancel-drag class so a click on them
+// does not start a drag.
 function compareWidget() {
   return {
     dragging: false,
@@ -455,7 +514,11 @@ function compareWidget() {
     oy: 0,
     sx: 0,
     sy: 0,
+    open: false, // false | "old" | "new"
+    query: "",
     startDrag(e) {
+      if (e.target.closest && e.target.closest(".cancel-drag")) return;
+      if (e.preventDefault) e.preventDefault();
       this.dragging = true;
       this.sx = e.clientX;
       this.sy = e.clientY;
@@ -473,14 +536,53 @@ function compareWidget() {
     style() {
       return "transform: translate(" + this.x + "px," + this.y + "px)";
     },
+    showPicker(field) {
+      if (!this.$store.compare.visible) return;
+      this.$store.compare.loadRefs();
+      this.open = field;
+      this.query = "";
+      this.$nextTick(
+        function () {
+          if (this.$refs.search) this.$refs.search.focus();
+        }.bind(this)
+      );
+    },
+    matches(kind) {
+      var q = this.query.trim().toLowerCase();
+      return (this.$store.compare.refs || []).filter(function (r) {
+        return r.kind === kind && (!q || r.name.toLowerCase().indexOf(q) !== -1);
+      });
+    },
+    branches() {
+      return this.matches("branch");
+    },
+    releases() {
+      return this.matches("release");
+    },
+    commit(value) {
+      if (this.open === "new") this.$store.compare.new = value;
+      else this.$store.compare.old = value;
+      this.open = false;
+    },
+    select(name) {
+      this.commit(name);
+    },
+    enter() {
+      var q = this.query.trim();
+      if (!q) {
+        this.open = false;
+        return;
+      }
+      this.commit(q);
+    },
   };
 }
 
 // The global compare store backs the cross-page "Compare Versions" widget,
-// mirroring the React CompareContext. Row actions on the History (and, later,
-// Status) tables call addOld/addNew to stage commits; go() navigates to the
-// /compare page. Vitess ref names are fetched lazily from the JSON API to
-// populate the input datalist, failing silently if unavailable.
+// mirroring the React CompareContext. Row actions on the History and Status
+// tables call addOld/addNew to stage commits; go() navigates to the /compare
+// page. Vitess refs ({name, kind}) are fetched lazily from the JSON API to feed
+// the widget's ref pickers, failing silently if unavailable.
 document.addEventListener("alpine:init", function () {
   Alpine.store("compare", {
     old: "",
@@ -523,10 +625,10 @@ document.addEventListener("alpine:init", function () {
           if (!d) return;
           var out = [];
           (d.branches || []).forEach(function (b) {
-            if (b && b.name) out.push(b.name);
+            if (b && b.name) out.push({ name: b.name, kind: "branch" });
           });
           (d.tags || []).forEach(function (t) {
-            if (t && t.name) out.push(t.name);
+            if (t && t.name) out.push({ name: t.name, kind: "release" });
           });
           self.refs = out;
         })

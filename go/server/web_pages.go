@@ -520,13 +520,27 @@ type webCompareRow struct {
 	Delta          string
 	ShowDeltaBadge bool
 	DeltaVariant   string
+	RowClass       string
 }
+
+// Per-row Tailwind classes mirroring the React MacroBenchmarkTable classNameMap:
+// metrics are visually grouped with an alternating muted background and a heavier
+// bottom border separating each group. These strings are built in Go and never
+// appear literally in a template, so they are pinned in the Tailwind safelist
+// (tailwind.config.js) the same way the badge classes are.
+const (
+	rowSep      = "border-b border-foreground dark:border-none transition-colors hover:bg-muted/50"
+	rowMuted    = "border-b border-border bg-muted/80 transition-colors hover:bg-muted/50"
+	rowMutedSep = "border-b border-foreground dark:border-none bg-muted/80 transition-colors hover:bg-muted/50"
+	rowBg       = "border-b border-border bg-background transition-colors hover:bg-muted/50"
+)
 
 type compareMetric struct {
 	title         string
 	res           macrobench.StatisticalResult
 	format        func(float64) string
 	lowerIsBetter bool
+	rowClass      string
 }
 
 func significance(p float64) (bg, fg, text string) {
@@ -565,19 +579,19 @@ func msFmt(v float64) string    { return webFixed(v, 2) + "ms" }
 // the template renders, mirroring the React MacroBenchmarkTable.
 func compareRows(r macrobench.StatisticalCompareResults) []webCompareRow {
 	metrics := []compareMetric{
-		{"QPS Total", r.TotalQPS, plainFmt, false},
-		{"Reads", r.ReadsQPS, plainFmt, false},
-		{"Writes", r.WritesQPS, plainFmt, false},
-		{"Other", r.OtherQPS, plainFmt, false},
-		{"TPS", r.TPS, plainFmt, false},
-		{"P95 Latency", r.Latency, msFmt, true},
-		{"Errors / Second", r.Errors, plainFmt, true},
-		{"Total CPU / Query", r.TotalComponentsCPUTime, webSecondToMicrosecond, true},
-		{"vtgate", r.ComponentsCPUTime["vtgate"], webSecondToMicrosecond, true},
-		{"vttablet", r.ComponentsCPUTime["vttablet"], webSecondToMicrosecond, true},
-		{"Total Allocated / Query", r.TotalComponentsMemStatsAllocBytes, webFormatByte, true},
-		{"vtgate", r.ComponentsMemStatsAllocBytes["vtgate"], webFormatByte, true},
-		{"vttablet", r.ComponentsMemStatsAllocBytes["vttablet"], webFormatByte, true},
+		{"QPS Total", r.TotalQPS, plainFmt, false, rowSep},
+		{"Reads", r.ReadsQPS, plainFmt, false, rowMuted},
+		{"Writes", r.WritesQPS, plainFmt, false, rowMuted},
+		{"Other", r.OtherQPS, plainFmt, false, rowMutedSep},
+		{"TPS", r.TPS, plainFmt, false, rowBg},
+		{"P95 Latency", r.Latency, msFmt, true, rowBg},
+		{"Errors / Second", r.Errors, plainFmt, true, rowBg},
+		{"Total CPU / Query", r.TotalComponentsCPUTime, webSecondToMicrosecond, true, rowSep},
+		{"vtgate", r.ComponentsCPUTime["vtgate"], webSecondToMicrosecond, true, rowMuted},
+		{"vttablet", r.ComponentsCPUTime["vttablet"], webSecondToMicrosecond, true, rowMutedSep},
+		{"Total Allocated / Query", r.TotalComponentsMemStatsAllocBytes, webFormatByte, true, rowSep},
+		{"vtgate", r.ComponentsMemStatsAllocBytes["vtgate"], webFormatByte, true, rowMuted},
+		{"vttablet", r.ComponentsMemStatsAllocBytes["vttablet"], webFormatByte, true, rowMutedSep},
 	}
 
 	rows := make([]webCompareRow, 0, len(metrics))
@@ -594,6 +608,7 @@ func compareRows(r macrobench.StatisticalCompareResults) []webCompareRow {
 			Delta:          webFixed(m.res.Delta, 3) + "%",
 			ShowDeltaBadge: m.res.P <= 0.10,
 			DeltaVariant:   deltaVariant(m.res.Delta, m.lowerIsBetter),
+			RowClass:       m.rowClass,
 		}
 		rows = append(rows, row)
 	}
@@ -799,9 +814,12 @@ func (s *Server) webDaily(c *gin.Context) {
 
 // webRefOption is one selectable vitess ref (a branch/release name and its
 // commit hash) used to populate the compare form and to resolve names ↔ SHAs.
+// Kind is "branch" or "release" so the compare search dialog can group options
+// into "Branches" and "Releases" like the React VitessRefsCommand did.
 type webRefOption struct {
-	Name string
-	Hash string
+	Name string `json:"name"`
+	Hash string `json:"hash"`
+	Kind string `json:"kind"`
 }
 
 // webCompareCard is one per-workload comparison card on the Compare page.
@@ -823,16 +841,16 @@ type webCompareCard struct {
 func (s *Server) vitessRefOptions() []webRefOption {
 	var opts []webRefOption
 	if sha, err := exec.GetLatestDailyJobForMacrobenchmarks(s.dbClient); err == nil && sha != "" {
-		opts = append(opts, webRefOption{Name: "main", Hash: sha})
+		opts = append(opts, webRefOption{Name: "main", Hash: sha, Kind: "branch"})
 	}
 	if branches, err := git.GetLatestVitessReleaseBranchCommitHash(s.getVitessPath()); err == nil {
 		for _, b := range branches {
-			opts = append(opts, webRefOption{Name: b.Name, Hash: b.CommitHash})
+			opts = append(opts, webRefOption{Name: b.Name, Hash: b.CommitHash, Kind: "branch"})
 		}
 	}
 	if tags, err := git.GetAllComparableVitessReleases(s.getVitessPath()); err == nil {
 		for _, t := range tags {
-			opts = append(opts, webRefOption{Name: t.Name, Hash: t.CommitHash})
+			opts = append(opts, webRefOption{Name: t.Name, Hash: t.CommitHash, Kind: "release"})
 		}
 	}
 	return opts
@@ -908,8 +926,12 @@ func (s *Server) webCompare(c *gin.Context) {
 	extra := gin.H{
 		"OldRef":   oldRef,
 		"NewRef":   newRef,
-		"Refs":     opts,
 		"HasQuery": oldSHA != "" && newSHA != "",
+	}
+	if b, err := json.Marshal(opts); err == nil {
+		extra["RefsJSON"] = string(b)
+	} else {
+		extra["RefsJSON"] = "[]"
 	}
 
 	if oldSHA != "" && newSHA != "" {

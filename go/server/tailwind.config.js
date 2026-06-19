@@ -19,6 +19,10 @@ module.exports = {
     "bg-destructive", "text-destructive-foreground",
     "bg-warning", "text-warning-foreground",
     "bg-progress", "text-progress-foreground",
+    // Per-row grouping classes for the macro compare table, built by
+    // compareRows() in web_pages.go and never present literally in a template.
+    "bg-muted/80", "bg-background", "border-foreground", "dark:border-none",
+    "transition-colors", "hover:bg-muted/50",
   ],
   theme: {
     container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
