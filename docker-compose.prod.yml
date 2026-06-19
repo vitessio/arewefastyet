@@ -35,20 +35,6 @@ services:
       - "/var/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-  frontend:
-    build:
-      context: ./website
-    image: "arewefastyet-frontend"
-    restart: always
-    container_name: "frontend"
-    command: "./entrypoint.sh"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`benchmark.vitess.io`)"
-      - "traefik.http.routers.frontend.entrypoints=https"
-      - "traefik.http.routers.frontend.tls.certresolver=tlsresolver"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-
   api:
     restart: always
     build:
@@ -65,7 +51,7 @@ services:
       - "./ansible:/ansible"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.rule=Host(`benchmark.vitess.io`)"
       - "traefik.http.routers.api.entrypoints=https"
       - "traefik.http.routers.api.tls.certresolver=tlsresolver"
       - "traefik.http.services.api.loadbalancer.server.port=8080"

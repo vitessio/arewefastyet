@@ -1,0 +1,30 @@
+{{ define "macroCompareTable" }}
+<div class="relative w-full overflow-auto">
+<table class="w-full caption-bottom text-sm">
+  <thead class="[&_tr]:border-b">
+    <tr class="border-b border-border transition-colors hover:bg-background">
+      <th class="h-12 px-4 align-middle font-medium text-muted-foreground w-[200px]"></th>
+      <th class="h-12 px-4 align-middle text-center text-primary font-semibold min-w-[150px]">{{ if .OldHref }}<a class="text-primary hover:underline" target="_blank" rel="noreferrer" href="{{ .OldHref }}">{{ .OldLabel }}</a>{{ else }}{{ .OldLabel }}{{ end }}</th>
+      <th class="h-12 px-4 align-middle text-center text-primary font-semibold min-w-[150px]">{{ if .NewHref }}<a class="text-primary hover:underline" target="_blank" rel="noreferrer" href="{{ .NewHref }}">{{ .NewLabel }}</a>{{ else }}{{ .NewLabel }}{{ end }}</th>
+      <th class="h-12 px-4 align-middle text-center font-semibold text-muted-foreground lg:w-[150px]">P</th>
+      <th class="h-12 px-4 align-middle text-center font-semibold text-muted-foreground lg:w-[150px]">Delta</th>
+    </tr>
+  </thead>
+  <tbody class="[&_tr:last-child]:border-0">
+    {{ range .Rows }}
+    <tr class="{{ .RowClass }}">
+      <td class="p-4 align-middle w-[200px] font-medium text-right border-r border-border">{{ .Title }}</td>
+      <td class="p-4 align-middle text-center text-front">{{ .Old }}</td>
+      <td class="p-4 align-middle text-center text-front border-r border-border">{{ .New }}</td>
+      <td class="p-4 align-middle lg:w-[150px] text-center text-front">
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold" style="background-color:{{ .PBg }};color:{{ .PFg }}" title="{{ .PText }}">{{ .P }}</span>
+      </td>
+      <td class="p-4 align-middle lg:w-[150px] text-center text-front">
+        {{ if .ShowDeltaBadge }}<span class="{{ badgeClass .DeltaVariant }}">{{ .Delta }}</span>{{ else }}{{ .Delta }}{{ end }}
+      </td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+</div>
+{{ end }}

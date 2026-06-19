@@ -22,6 +22,20 @@ RUN go mod download
 
 COPY . .
 
+# Compile the website CSS with the standalone Tailwind CLI (a single binary, no
+# Node) into the embedded static dir. Must run before `go build` so //go:embed
+# picks up the generated app.css.
+ARG TARGETARCH
+RUN TW_ARCH="$(case "${TARGETARCH:-amd64}" in arm64) echo arm64 ;; *) echo x64 ;; esac)" \
+    && wget -qO /usr/local/bin/tailwindcss \
+        "https://github.com/tailwindlabs/tailwindcss/releases/download/v3.4.19/tailwindcss-linux-${TW_ARCH}" \
+    && chmod +x /usr/local/bin/tailwindcss \
+    && tailwindcss \
+        --config go/server/tailwind.config.js \
+        --input go/server/tailwind.css \
+        --output go/server/static/web/app.css \
+        --minify
+
 # Build arewefastyet
 RUN CGO_ENABLED=0 GOOS=linux go build -o /arewefastyetcli ./go/main.go
 

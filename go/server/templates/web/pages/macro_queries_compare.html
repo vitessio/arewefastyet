@@ -1,0 +1,192 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg text-center">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">Compare Query Plans</h2>
+    {{ if .HasQuery }}
+    <p class="md:my-6 leading-loose text-foreground/80">
+      <b class="text-primary text-xl">Old</b> benchmarked commit
+      <a class="text-primary text-xl hover:underline" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/commit/{{ .OldSHA }}">{{ .OldLabel }}</a>
+      <br /><br />
+      <b class="text-primary text-xl">New</b> benchmarked commit
+      <a class="text-primary text-xl hover:underline" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/commit/{{ .NewSHA }}">{{ .NewLabel }}</a>
+      <br /><br />
+      Queries are ordered from the worst regression in execution time to the best. All executed queries are shown below.
+    </p>
+    {{ else }}
+    <p class="md:my-6 leading-loose text-foreground/80">
+      Compare the per-query execution plans between two benchmarked commits. Open this page from the Compare page's
+      "See Query Plan" button to populate the old and new commits and the workload.
+    </p>
+    {{ end }}
+  </div>
+</section>
+
+<hr class="w-4/5 mx-auto border-border" />
+
+<section class="flex flex-col items-center">
+  {{ if .Error }}
+  <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+  {{ else if not .HasQuery }}
+  <div class="md:text-xl text-primary my-10 text-center">Provide an old commit, a new commit, and a workload to compare query plans.</div>
+  {{ else }}
+  <div class="w-[80vw] xl:w-[60vw] my-12" x-data="queryPlansTable()" data-rows="{{ .RowsJSON }}">
+    <!-- Toolbar: text filter, operator faceted filter, reset -->
+    <div class="flex items-center justify-between gap-4 py-4 flex-wrap">
+      <div class="flex flex-1 items-center gap-4">
+        <input
+          x-model="query"
+          @input="page = 0"
+          type="text"
+          placeholder="Filter executions..."
+          class="h-9 w-full max-w-[250px] rounded-md border border-border bg-background px-3 text-sm"
+        />
+
+        <div x-data="{ open: false }" class="relative">
+          <button
+            @click="open = !open"
+            class="inline-flex items-center gap-2 rounded-md border border-dashed border-border h-8 px-3 text-sm hover:bg-muted"
+          >
+            <i class="fa-solid fa-circle-plus text-primary"></i>Operators
+            <template x-if="operators.length">
+              <span class="ml-1 rounded-sm bg-muted px-1 text-xs" x-text="operators.length"></span>
+            </template>
+          </button>
+          <div
+            x-show="open"
+            x-cloak
+            @click.outside="open = false"
+            class="absolute z-[60] mt-2 w-40 rounded-md border border-border bg-popover text-popover-foreground p-2 shadow-lg"
+          >
+            <template x-for="op in ['select', 'insert', 'update', 'delete']" :key="op">
+              <label class="flex items-center gap-2 px-2 py-1 text-sm capitalize hover:bg-muted rounded cursor-pointer">
+                <input type="checkbox" :checked="operators.includes(op)" @change="toggleOperator(op)" />
+                <span x-text="op"></span>
+              </label>
+            </template>
+          </div>
+        </div>
+
+        <button
+          x-show="query || operators.length"
+          @click="reset()"
+          class="inline-flex items-center gap-2 h-8 px-3 text-sm hover:bg-muted rounded-md"
+        >
+          Reset<i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="rounded-md border border-border overflow-x-auto">
+      <table class="w-full caption-bottom text-sm">
+        <thead>
+          <tr class="border-b border-border">
+            <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Query</th>
+            <th class="h-12 px-4 text-center align-middle font-semibold text-foreground">
+              <button @click="toggleSort()" class="inline-flex items-center gap-2 hover:text-primary">
+                Execution Time
+                <i class="fa-solid fa-sort"></i>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="(r, i) in paged()" :key="i">
+            <tr class="border-b border-border text-center cursor-pointer hover:bg-muted/50" @click="openModal(r)">
+              <td class="p-4 align-middle text-left min-w-fit" x-text="r.key"></td>
+              <td class="p-4 align-middle">
+                <span :class="badgeClasses(r.execTimeDiff)" x-text="r.execTimeDiff + '%'"></span>
+              </td>
+            </tr>
+          </template>
+          <tr x-show="paged().length === 0">
+            <td colspan="2" class="h-24 text-center text-muted-foreground">No results.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-end gap-4 py-4 text-sm">
+      <span class="text-muted-foreground">
+        Page <span x-text="pageCount() ? page + 1 : 0"></span> of <span x-text="pageCount()"></span>
+      </span>
+      <button
+        @click="prevPage()"
+        :disabled="page === 0"
+        class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      <button
+        @click="nextPage()"
+        :disabled="page + 1 >= pageCount()"
+        class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
+
+    <!-- Per-row statistics + query plan dialog -->
+    <div
+      x-show="modalOpen"
+      x-cloak
+      @keydown.escape.window="modalOpen = false"
+      class="fixed inset-0 z-[100] flex items-start justify-center pt-[8vh] bg-black/50 overflow-y-auto"
+      @click.self="modalOpen = false"
+    >
+      <div class="w-full max-w-[80vw] md:max-w-[60vw] max-h-[80vh] overflow-auto rounded-lg border border-border bg-popover text-popover-foreground shadow-xl p-6 flex flex-col items-center gap-6">
+        <button @click="modalOpen = false" class="self-end text-xl hover:text-primary" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+
+        <h3 class="text-primary text-center text-lg md:text-4xl">Statistics</h3>
+        <div class="w-full md:w-3/5">
+          <table class="w-full border border-border rounded-lg text-sm">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="p-2"></th>
+                <th class="p-2 text-center text-primary">Old</th>
+                <th class="p-2 text-center text-primary">New</th>
+                <th class="p-2 text-center">Delta (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-border">
+                <td class="p-2 text-center border-r border-border">Execution Time</td>
+                <td class="p-2 text-center" x-text="current.oldExecTime"></td>
+                <td class="p-2 text-center" x-text="current.newExecTime"></td>
+                <td class="p-2 text-center" x-text="current.execTimeDiff"></td>
+              </tr>
+              <tr class="border-b border-border">
+                <td class="p-2 text-center border-r border-border">Rows Returned</td>
+                <td class="p-2 text-center" x-text="current.oldRows"></td>
+                <td class="p-2 text-center" x-text="current.newRows"></td>
+                <td class="p-2 text-center" x-text="current.rowsDiff"></td>
+              </tr>
+              <tr>
+                <td class="p-2 text-center border-r border-border">Errors</td>
+                <td class="p-2 text-center" x-text="current.oldErrors"></td>
+                <td class="p-2 text-center" x-text="current.newErrors"></td>
+                <td class="p-2 text-center" x-text="current.errorsDiff"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <template x-if="current.hasOld">
+          <div class="w-full">
+            <h3 class="text-primary text-center text-lg md:text-4xl mb-4">Old query plan</h3>
+            <pre class="json-pretty w-full overflow-auto rounded-md border border-border p-4 text-xs md:text-sm whitespace-pre" x-html="highlightJSON(current.oldPlan)"></pre>
+          </div>
+        </template>
+        <template x-if="current.hasNew">
+          <div class="w-full">
+            <h3 class="text-primary text-center text-lg md:text-4xl mb-4">New query plan</h3>
+            <pre class="json-pretty w-full overflow-auto rounded-md border border-border p-4 text-xs md:text-sm whitespace-pre" x-html="highlightJSON(current.newPlan)"></pre>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+  {{ end }}
+</section>
+{{ end }}

@@ -1,0 +1,126 @@
+{{ define "compare_widget" }}
+<!--
+  Global "Compare Versions" widget, mirroring the React CompareActionsWrapper that
+  Layout.tsx mounted on every page. Visibility and the staged old/new refs live in
+  the Alpine $store.compare (see app.js); per-row "Add as old/new" actions push to
+  it. The card is draggable (compareWidget()); interactive controls carry the
+  .cancel-drag class so a click on them does not start a drag. Each Old/New field
+  opens a shared command dialog of vitess refs, like the compare page pickers.
+
+  The dialog is a sibling of the (transformed) card so dragging the card never
+  offsets the full-screen modal overlay.
+-->
+<div
+  x-data="compareWidget()"
+  x-show="$store.compare.visible"
+  x-cloak
+  @mousemove.window="onDrag($event)"
+  @mouseup.window="endDrag()"
+  @keydown.escape.window="open ? (open = false) : $store.compare.close()"
+  @keydown.window.meta.l.prevent="showPicker('old')"
+  @keydown.window.ctrl.l.prevent="showPicker('old')"
+  @keydown.window.meta.m.prevent="showPicker('new')"
+  @keydown.window.ctrl.m.prevent="showPicker('new')"
+>
+  <div
+    @mousedown="startDrag($event)"
+    :style="style()"
+    class="fixed bottom-4 right-4 z-[100] max-w-max w-3/5 md:w-max rounded-lg border border-border bg-card text-card-foreground shadow-lg cursor-move select-none"
+  >
+    <!-- Header -->
+    <div class="relative flex flex-col items-center p-6 pb-2">
+      <h3 class="text-primary text-lg font-medium">Compare Versions</h3>
+      <button
+        @click="$store.compare.close()"
+        class="cancel-drag absolute top-1 right-1 z-50 inline-flex items-center justify-center h-8 w-8 rounded-md text-foreground hover:bg-muted cursor-pointer"
+        aria-label="Close"
+      >
+        {{ template "iconX" "h-4 w-4" }}
+      </button>
+    </div>
+
+    <!-- Content: Old / New pickers + Compare -->
+    <div class="p-6 pt-2">
+      <div class="cancel-drag flex flex-col md:flex-row gap-4 cursor-auto">
+        <div class="flex flex-col">
+          <label class="text-primary mb-2">Old</label>
+          <button
+            type="button"
+            @click="showPicker('old')"
+            class="relative inline-flex items-center justify-between whitespace-nowrap rounded-[0.5rem] border border-input bg-muted/50 h-10 px-4 py-2 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground w-full md:w-40 lg:w-64"
+          >
+            <span class="overflow-hidden text-ellipsis" x-text="$store.compare.old || 'Search commit or releases...'"></span>
+            <kbd class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+              <span class="text-xs">⌘</span>l
+            </kbd>
+          </button>
+        </div>
+        <div class="flex flex-col">
+          <label class="text-primary mb-2">New</label>
+          <button
+            type="button"
+            @click="showPicker('new')"
+            class="relative inline-flex items-center justify-between whitespace-nowrap rounded-[0.5rem] border border-input bg-muted/50 h-10 px-4 py-2 text-sm font-normal text-muted-foreground shadow-none hover:bg-accent hover:text-accent-foreground w-full md:w-40 lg:w-64"
+          >
+            <span class="overflow-hidden text-ellipsis" x-text="$store.compare.new || 'Search commit or releases...'"></span>
+            <kbd class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+              <span class="text-xs">⌘</span>m
+            </kbd>
+          </button>
+        </div>
+        <div class="flex md:items-end items-center justify-center mt-4 md:mt-0">
+          <button
+            type="button"
+            @click="$store.compare.go()"
+            :disabled="!$store.compare.old || !$store.compare.new"
+            class="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:pointer-events-none"
+          >
+            Compare
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared ref-picker dialog (mirrors the React VitessRefsCommand CommandDialog) -->
+  <div
+    x-show="open"
+    x-cloak
+    class="fixed inset-0 z-[110] flex items-start justify-center pt-[15vh] bg-black/50"
+    @click.self="open = false"
+  >
+    <div class="w-full max-w-lg rounded-lg border border-border bg-popover text-popover-foreground shadow-xl overflow-hidden">
+      <div class="flex items-center border-b border-border px-3">
+        {{ template "iconMagnifyingGlass" "mr-2 h-4 w-4 shrink-0 opacity-50" }}
+        <input
+          x-ref="search"
+          x-model="query"
+          @keydown.enter.prevent="enter()"
+          type="text"
+          placeholder="Search commit or releases..."
+          class="flex h-11 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+        />
+      </div>
+      <ul class="max-h-72 overflow-y-auto p-1">
+        <template x-if="branches().length">
+          <li class="px-2 py-1.5 text-xs font-medium text-muted-foreground">Branches</li>
+        </template>
+        <template x-for="ref in branches()" :key="'b-' + ref.name">
+          <li>
+            <button type="button" @click="select(ref.name)" class="flex w-full items-center rounded-sm px-2 py-1.5 text-sm text-left hover:bg-accent hover:text-accent-foreground" x-text="ref.name"></button>
+          </li>
+        </template>
+        <template x-if="releases().length">
+          <li class="px-2 py-1.5 text-xs font-medium text-muted-foreground">Releases</li>
+        </template>
+        <template x-for="ref in releases()" :key="'r-' + ref.name">
+          <li>
+            <button type="button" @click="select(ref.name)" class="flex w-full items-center rounded-sm px-2 py-1.5 text-sm text-left hover:bg-accent hover:text-accent-foreground" x-text="ref.name"></button>
+          </li>
+        </template>
+        <li x-show="!branches().length && !releases().length" class="py-6 text-center text-sm text-muted-foreground">No results found.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{{ end }}

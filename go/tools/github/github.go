@@ -125,6 +125,14 @@ type PRInfo struct {
 }
 
 func (a *App) GetPullRequestInfo(prNumber int) (PRInfo, error) {
+	// In local development no GitHub App installation is configured
+	// (installationID == 0), so the GitHub API token cannot be minted and every
+	// request 404s. Serve deterministic fixture data instead so the PR pages
+	// render offline.
+	if a.installationID == 0 {
+		return devPRInfo(prNumber), nil
+	}
+
 	ctx := context.Background()
 	pr, _, err := a.client.PullRequests.Get(ctx, "vitessio", "vitess", prNumber)
 	if err != nil {

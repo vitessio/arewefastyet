@@ -1,0 +1,137 @@
+{{ define "content" }}
+<section class="flex flex-col items-center p-12">
+  <div class="flex flex-col items-center gap-4 max-w-screen-lg">
+    <h2 class="text-4xl md:text-6xl font-semibold text-primary mb-4">Pull Request</h2>
+    <p class="md:my-6 leading-loose text-foreground/80">
+      If a given Pull Request on vitessio/vitess is labelled with the
+      <span class="bg-red-800 text-white px-2 py-1 rounded-2xl ml-2">Benchmark Me</span> label the Pull Request will be
+      handled and benchmarked by arewefastyet. For each commit on the Pull Request there will be two benchmarks: one on the
+      Pull Request's HEAD and another on the base of the Pull Request.
+      <br /><br />
+      On this page you can find all benchmarked Pull Requests.
+    </p>
+  </div>
+</section>
+
+<div class="lg:mx-auto w-full p-page xl:w-[80vw] my-12 flex flex-col">
+  <form
+    x-data
+    hx-get="/pr"
+    hx-target="#pr-list"
+    hx-swap="innerHTML"
+    hx-push-url="true"
+    hx-trigger="submit, change"
+  >
+    <!-- Toolbar: free-text filter (mirrors the React DataTableToolbar) -->
+    <div class="flex items-center gap-4 py-4 flex-wrap">
+      <input
+        type="text"
+        name="q"
+        value="{{ .PRQuery }}"
+        placeholder="Filter Pull Requests..."
+        @input.debounce.400ms="$el.form.requestSubmit()"
+        class="h-9 w-full max-w-[250px] rounded-md border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+      {{ if .PRFiltered }}
+      <a href="/pr" class="inline-flex items-center gap-2 h-8 px-3 text-sm hover:bg-muted rounded-md">
+        Reset <i class="fa-solid fa-xmark"></i>
+      </a>
+      {{ end }}
+    </div>
+
+    <div id="pr-list">
+      {{ template "pr_list" . }}
+    </div>
+  </form>
+</div>
+{{ end }}
+
+{{ define "pr_list" }}
+{{ if .PRError }}
+<div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+{{ else }}
+<div class="rounded-lg border border-border overflow-x-auto">
+  <table class="w-full caption-bottom text-sm">
+    <thead>
+      <tr class="border-b border-border">
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">#</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Title</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Author</th>
+        <th class="h-12 px-4 text-left align-middle font-semibold text-foreground">Opened At</th>
+        <th class="h-12 px-4 text-center align-middle font-semibold text-foreground">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ range .PRRows }}
+      <tr class="border-b border-border transition-colors hover:bg-muted/50">
+        <td class="p-4 align-middle">
+          <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/vitessio/vitess/pull/{{ .ID }}">{{ .ID }}</a>
+        </td>
+        <td class="p-4 align-middle whitespace-nowrap">{{ .Title }}</td>
+        <td class="p-4 align-middle">
+          <a class="text-primary" target="_blank" rel="noreferrer" href="https://github.com/{{ .Author }}">{{ .Author }}</a>
+        </td>
+        <td class="p-4 align-middle">
+          <span x-data="tooltip()" @mouseenter="show($event)" @mouseleave="hide()" class="relative inline-block">
+            <span class="underline cursor-default">{{ .OpenedRel }}</span>
+            <span x-ref="content" x-cloak role="tooltip" :style="'left:'+x+'px;top:'+y+'px'"
+              :class="(open ? 'opacity-100' : 'opacity-0') + (side === 'top' ? ' -translate-y-full' : '')"
+              class="fixed z-50 -translate-x-1/2 pointer-events-none whitespace-nowrap rounded-md border border-border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md transition-opacity duration-150">{{ .OpenedTitle }}</span>
+          </span>
+        </td>
+        <td class="p-4 align-middle text-center">
+          <a href="/pr/{{ .ID }}" class="inline-flex text-lg text-primary duration-300 hover:scale-105"><i class="fa-solid fa-up-right-from-square"></i></a>
+        </td>
+      </tr>
+      {{ else }}
+      <tr><td colspan="5" class="p-4 text-center text-muted-foreground">No benchmarked pull requests.</td></tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination (server-side; HTMX swaps just this region) -->
+<div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 py-4 text-sm">
+  <div class="flex items-center gap-2">
+    <span class="font-medium">Rows per page</span>
+    <select name="per" class="h-8 w-[70px] rounded-md border border-border bg-background px-2">
+      {{ $per := .PRPerPage }}
+      {{ range .PRPerOptions }}
+      <option value="{{ . }}" {{ if eq . $per }}selected{{ end }}>{{ . }}</option>
+      {{ end }}
+    </select>
+  </div>
+
+  <span class="font-medium">Page {{ .PRPage }} of {{ .PRPageCount }}</span>
+
+  <div class="flex items-center gap-2">
+    <button
+      type="submit" name="page" value="1" {{ if not .PRHasPrev }}disabled{{ end }}
+      class="inline-flex items-center justify-center h-8 px-2 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      aria-label="Go to first page"
+    >
+      &laquo;
+    </button>
+    <button
+      type="submit" name="page" value="{{ .PRPrevPage }}" {{ if not .PRHasPrev }}disabled{{ end }}
+      class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      Previous
+    </button>
+    <button
+      type="submit" name="page" value="{{ .PRNextPage }}" {{ if not .PRHasNext }}disabled{{ end }}
+      class="inline-flex items-center h-8 px-3 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      Next
+    </button>
+    <button
+      type="submit" name="page" value="{{ .PRPageCount }}" {{ if not .PRHasNext }}disabled{{ end }}
+      class="inline-flex items-center justify-center h-8 px-2 rounded-md border border-border hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+      aria-label="Go to last page"
+    >
+      &raquo;
+    </button>
+  </div>
+</div>
+{{ end }}
+{{ end }}

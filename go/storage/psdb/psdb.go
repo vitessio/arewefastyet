@@ -36,6 +36,7 @@ const (
 	flagPsdbUserRead      = "planetscale-db-user-read"
 	flagPsdbHost          = "planetscale-db-host"
 	flagPsdbDatabase      = "planetscale-db-database"
+	flagPsdbTLS           = "planetscale-db-tls"
 
 	errorClientConnectionNotInitialized = "the client connection to the database is not initialized"
 
@@ -56,8 +57,12 @@ type (
 		organisation string
 		database     string
 		hostname     string
-		authWrite    auth
-		authRead     auth
+		// tls is the go-sql-driver TLS mode ("true", "false", "skip-verify", …).
+		// Empty defaults to "true" so PlanetScale connections stay encrypted; set
+		// "false" to reach a plain local MySQL in development.
+		tls       string
+		authWrite auth
+		authRead  auth
 	}
 
 	Client struct {
@@ -80,6 +85,7 @@ func (cfg *Config) AddToViper(v *viper.Viper) {
 	_ = v.UnmarshalKey(flagPsdbOrg, &cfg.organisation)
 	_ = v.UnmarshalKey(flagPsdbHost, &cfg.hostname)
 	_ = v.UnmarshalKey(flagPsdbDatabase, &cfg.database)
+	_ = v.UnmarshalKey(flagPsdbTLS, &cfg.tls)
 
 	// Write authentication
 	_ = v.UnmarshalKey(flagPsdbPasswordWrite, &cfg.authWrite.password)
@@ -95,9 +101,11 @@ func (cfg *Config) AddToCommand(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&cfg.organisation, flagPsdbOrg, "", "Name of the PlanetScaleDB organization.")
 	cmd.Flags().StringVar(&cfg.hostname, flagPsdbHost, "", "Hostname of the PlanetScaleDB database.")
 	cmd.Flags().StringVar(&cfg.database, flagPsdbDatabase, "", "PlanetScaleDB database name.")
+	cmd.Flags().StringVar(&cfg.tls, flagPsdbTLS, "true", "go-sql-driver TLS mode for the database connection (true, false, skip-verify). Use false for a plain local MySQL.")
 	_ = viper.BindPFlag(flagPsdbOrg, cmd.Flags().Lookup(flagPsdbOrg))
 	_ = viper.BindPFlag(flagPsdbHost, cmd.Flags().Lookup(flagPsdbHost))
 	_ = viper.BindPFlag(flagPsdbDatabase, cmd.Flags().Lookup(flagPsdbDatabase))
+	_ = viper.BindPFlag(flagPsdbTLS, cmd.Flags().Lookup(flagPsdbTLS))
 
 	// Write authentication
 	cmd.Flags().StringVar(&cfg.authWrite.username, flagPsdbUserWrite, "", "Username used to authenticate to the write servers of PlanetScaleDB.")
@@ -112,8 +120,15 @@ func (cfg *Config) AddToCommand(cmd *cobra.Command) {
 	_ = viper.BindPFlag(flagPsdbPasswordRead, cmd.Flags().Lookup(flagPsdbPasswordRead))
 }
 
+func (cfg *Config) tlsMode() string {
+	if cfg.tls == "" {
+		return "true"
+	}
+	return cfg.tls
+}
+
 func (cfg *Config) connectionString(a auth) string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&tls=true&interpolateParams=true", a.username, a.password, cfg.hostname, cfg.database)
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&tls=%s&interpolateParams=true", a.username, a.password, cfg.hostname, cfg.database, cfg.tlsMode())
 }
 
 func (cfg *Config) NewClient() (*Client, error) {

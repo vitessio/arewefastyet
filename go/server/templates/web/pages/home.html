@@ -1,0 +1,128 @@
+{{ define "content" }}
+<section class="flex flex-col items-center h-fit my-12">
+  <h1 class="flex flex-col gap-8 text-3xl md:text-6xl font-semibold text-center">
+    <p>Benchmarking</p>
+    <p>System for</p>
+    <p class="text-primary">Vitess</p>
+  </h1>
+
+  <div class="flex md:flex-row flex-col gap-4 mt-10">
+    <div class="flex flex-row gap-4">
+      <a
+        href="https://vitess.io/blog/2021-07-08-announcing-vitess-arewefastyet"
+        target="_blank"
+        rel="noreferrer"
+        class="rounded-lg border p-5 flex items-center gap-x-2 bg-background hover:bg-muted/90 dark:bg-front dark:hover:bg-front/90 dark:text-background text-foreground"
+      >
+        Blog Post <i class="fa-solid fa-bookmark text-2xl"></i>
+      </a>
+      <a
+        href="https://github.com/vitessio/arewefastyet"
+        target="_blank"
+        rel="noreferrer"
+        class="rounded-lg p-5 flex items-center gap-x-2 bg-front text-background hover:bg-front/90"
+      >
+        GitHub <i class="fa-brands fa-github text-2xl"></i>
+      </a>
+    </div>
+    <div class="flex justify-center">
+      <a
+        href="https://www.vitess.io"
+        target="_blank"
+        rel="noreferrer"
+        class="rounded-lg border p-5 flex items-center gap-x-2 bg-background hover:bg-muted/90 dark:bg-front dark:hover:bg-front/90 dark:text-background text-foreground"
+      >
+        Vitess
+      </a>
+    </div>
+  </div>
+
+  <h2 class="text-lg md:text-2xl font-medium mt-12">
+    Historical results on the
+    <a class="text-primary" href="https://github.com/vitessio/vitess/tree/main/" target="_blank" rel="noreferrer">main</a>
+    branch
+  </h2>
+
+  <section class="flex md:flex-row flex-col justify-center gap-10 my-20">
+    {{ range .Cards }}
+    {{ if and (not .Error) .HasData }}
+    <a href="/daily?workload={{ .Name }}">
+      <div class="w-[310px] h-[124px] md:w-[316px] md:h-[124px] hover:scale-105 duration-300 hover:bg-muted border border-border rounded-lg p-4 flex flex-col">
+        <div class="flex flex-row justify-between items-center">
+          <span class="font-light text-sm">{{ .Name }}</span>
+          <i class="h-4 w-4 text-foreground fa-solid fa-arrow-right"></i>
+        </div>
+        <div class="flex-1 min-h-0 pt-2">
+          <canvas data-sparkline data-qps="{{ .QPSJSON }}"></canvas>
+        </div>
+      </div>
+    </a>
+    {{ else }}
+    <div class="text-destructive text-center my-10">An error occurred while retrieving data from the server. Please try again.</div>
+    {{ end }}
+    {{ end }}
+  </section>
+
+  <a href="/daily" class="text-primary text-xs md:text-lg">See more historical results &gt;</a>
+</section>
+
+<hr class="mx-auto w-[80%] border-border" />
+
+<section class="relative flex flex-col items-center p-page pb-14 bg-background text-foreground">
+  <h1 class="text-4xl font-semibold my-14 text-primary dark:text-front">How it works</h1>
+  <div class="flex flex-col md:flex-row md:flex-wrap justify-center items-center md:justify-between md:items-start gap-y-12 px-5 md:px-10 md:relative z-1">
+    <div class="w-full h-fit md:w-[calc(50%_-_1.25rem)] border border-border rounded-xl overflow-hidden p-6">
+      <h3 class="text-base md:text-3xl dark:text-primary font-semibold mb-2">Workloads</h3>
+      <p class="text-xs md:text-lg mt-2 text-foreground">
+        Seven workloads are executed against every commit we decide to benchmark. These workloads define the SQL schema, the
+        queries we execute, the configuration of the Vitess cluster, and the configuration of sysbench. The settings of our
+        workload can be found on the
+        <a href="https://github.com/vitessio/arewefastyet/tree/main/config/benchmarks" class="text-primary">arewefastyet repository</a>.
+        <br /><br />
+        We have two categories of workloads: OLTP and TPCC, both are a modified version of the official workloads.
+      </p>
+    </div>
+    <div class="w-full h-fit md:w-[calc(50%_-_1.25rem)] border border-border rounded-xl overflow-hidden p-6">
+      <h3 class="text-base md:text-3xl dark:text-primary font-semibold mb-2">Frequency</h3>
+      <p class="text-xs md:text-lg mt-2 text-foreground">
+        There are three cron schedules that enable us to periodically benchmark Vitess, the definition of these schedules is
+        <a href="https://github.com/vitessio/arewefastyet/blob/main/config/prod/config.yaml#L3-L5" class="text-primary">available in our yaml configuration</a>.
+        <br /><br />
+        Generally, we benchmark the main and release branches of Vitess every night at midnight UTC. We also detect new PRs that
+        need to be benchmarked every five minutes, and new tags/releases every minute.
+      </p>
+    </div>
+    <div class="w-full h-fit md:w-[calc(50%_-_1.25rem)] border border-border rounded-xl overflow-hidden p-6">
+      <h3 class="text-base md:text-3xl dark:text-primary font-semibold mb-2">Methodology</h3>
+      <p class="text-xs md:text-lg mt-2 text-foreground">
+        Each commit is benchmarked ten times by each workload. Under the hood, we use sysbench with a custom configuration to
+        perform the benchmark. We then perform statistical analysis on the ten results of a given workload to get a more accurate
+        and reliable result.
+        <br /><br />
+        Every execution is done on the same hardware: 192Gb of RAM and 2x Intel Xeon Silver 4214 Processor 24-Core @ 2.20GHz.
+      </p>
+    </div>
+    <div class="w-full h-fit md:w-[calc(50%_-_1.25rem)] border border-border rounded-xl overflow-hidden p-6">
+      <h3 class="text-base md:text-3xl dark:text-primary font-semibold mb-2">Results</h3>
+      <p class="text-xs md:text-lg mt-2 text-foreground">
+        We collect the same results as sysbench (QPS, TPS, Error rate, latency, etc), along with several Golang metrics such as
+        the CPU used per query, and the total memory used per query.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="mx-auto w-[80%] border-border" />
+
+<section class="p-page flex flex-col items-center my-8">
+  <h2 class="text-4xl font-semibold my-14 text-primary dark:text-front">Architecture</h2>
+  <div class="w-full max-w-screen-xl my-8 border border-border rounded-lg">
+    <div class="flex justify-center p-6">
+      <div class="relative duration-1000">
+        <img class="duration-inherit" src="/static/images/execution-pipeline-dark.png" alt="execution pipeline" />
+        <img class="absolute-cover duration-inherit dark:opacity-0" src="/static/images/execution-pipeline.png" alt="execution pipeline" />
+      </div>
+    </div>
+  </div>
+</section>
+{{ end }}

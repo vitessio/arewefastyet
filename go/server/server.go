@@ -236,6 +236,9 @@ func (s *Server) Run() error {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// Server-side rendered public website (templates + static assets).
+	s.registerWebRoutes()
+
 	// API
 	s.router.GET("/api/workloads", s.getWorkloadList)
 	s.router.GET("/api/recent", s.getRecentExecutions)
