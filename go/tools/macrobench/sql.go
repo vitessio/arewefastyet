@@ -65,7 +65,7 @@ func getExecutionGroupResults(workload string, ref string, planner PlannerVersio
 	if err != nil {
 		return executionGroupResults{}, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	results := executionGroupResults{GitRef: ref}
 	var execRes *executionResults
@@ -170,7 +170,7 @@ func getExecutionGroupResultsFromLast30Days(workload string, planner PlannerVers
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var allResults []executionGroupResults
 	var results executionGroupResults
@@ -278,7 +278,7 @@ func getSummaryLast30Days(workload string, planner PlannerVersion, client storag
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var allResults []executionGroupResults
 	var results *executionGroupResults

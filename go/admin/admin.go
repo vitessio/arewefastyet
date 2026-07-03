@@ -81,10 +81,10 @@ func (a *Admin) Init() error {
 		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
-	if a.Mode != "" && !a.Mode.Correct() {
+	if a.Mode != "" && !a.Correct() {
 		return errors.New(server.ErrorIncorrectMode)
 	} else if a.Mode == "" {
-		a.Mode.UseDefault()
+		a.UseDefault()
 	}
 
 	if slog == nil {
@@ -107,7 +107,7 @@ func (a *Admin) Run() error {
 		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
-	a.Mode.SetGin()
+	a.SetGin()
 	a.router = gin.Default()
 
 	a.router.Static("/admin/assets", "/go/admin/assets")

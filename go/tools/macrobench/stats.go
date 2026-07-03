@@ -159,8 +159,8 @@ func compare(old, new []float64) StatisticalResult {
 		sr.Insignificant = true
 	}
 
-	switch {
-	case sr.Old.Center == sr.New.Center || sr.Old.Center == 0:
+	switch sr.Old.Center {
+	case sr.New.Center, 0:
 		sr.Delta = 0
 	default:
 		sr.Delta = ((sr.New.Center / sr.Old.Center) - 1.0) * 100.0

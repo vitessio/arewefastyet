@@ -157,10 +157,10 @@ func (s *Server) Init() error {
 		return errors.New(server.ErrorIncorrectConfiguration)
 	}
 
-	if s.Mode != "" && !s.Mode.Correct() {
+	if s.Mode != "" && !s.Correct() {
 		return errors.New(server.ErrorIncorrectMode)
 	} else if s.Mode == "" {
-		s.Mode.UseDefault()
+		s.UseDefault()
 	}
 
 	if slog == nil {
@@ -224,7 +224,7 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	s.Mode.SetGin()
+	s.SetGin()
 	s.router = gin.Default()
 
 	s.router.Use(cors.New(cors.Config{

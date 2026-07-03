@@ -410,7 +410,7 @@ func (e *Exec) Success() error {
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	if rows.Next() {
 		return nil
 	}
@@ -447,7 +447,7 @@ func GetRecentExecutions(client storage.SQLClient) ([]*Exec, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	for result.Next() {
 		exec := &Exec{
 			ProfileInformation: &ProfileInformation{},
@@ -478,7 +478,7 @@ func GetFinishedExecution(client storage.SQLClient, gitRef, source, workload, pl
 	if err != nil {
 		return "", err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	for result.Next() {
 		err = result.Scan(&eUUID)
 		if err != nil {
@@ -494,7 +494,7 @@ func IsLastExecutionFinished(client storage.SQLClient) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	var status string
 	if result.Next() {
 		err = result.Scan(&status)
@@ -513,7 +513,7 @@ func GetPreviousFromSourceMicrobenchmark(client storage.SQLClient, source, gitRe
 	if err != nil {
 		return
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	for result.Next() {
 		err = result.Scan(&execUUID, &gitRefOut)
 		if err != nil {
@@ -531,7 +531,7 @@ func GetPreviousFromSourceMacrobenchmark(client storage.SQLClient, source, workl
 	if err != nil {
 		return
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	for result.Next() {
 		err = result.Scan(&execUUID, &gitRefOut)
 		if err != nil {
@@ -547,7 +547,7 @@ func getGitRefOfLatestFinishedMatchingSource(client storage.SQLClient, source st
 	if err != nil {
 		return
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	for result.Next() {
 		err = result.Scan(&gitRefOut)
 		if err != nil {
@@ -579,7 +579,7 @@ func getGitRefOfFinishedMatchingSourceGivenTimestamp(client storage.SQLClient, s
 	if err != nil {
 		return
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	for result.Next() {
 		err = result.Scan(&gitRefOut)
 		if err != nil {
@@ -598,7 +598,7 @@ func GetLatestDailyJobForMacrobenchmarks(client storage.SQLClient) (gitSha strin
 		return "", err
 	}
 
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	for rows.Next() {
 		err = rows.Scan(&gitSha)
 		return gitSha, err
@@ -612,7 +612,7 @@ func Exists(client storage.SQLClient, gitRef, source, workload, status string) (
 	if err != nil {
 		return false, err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	return result.Next(), nil
 }
 
@@ -622,7 +622,7 @@ func CountMacroBenchmark(client storage.SQLClient, gitRef, source, workload, sta
 	if err != nil {
 		return 0, err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	var nb int
 	if result.Next() {
 		err = result.Scan(&nb)
@@ -683,7 +683,7 @@ func GetHistory(client storage.SQLClient) ([]*History, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 	res := make([]*History, 0)
 	for result.Next() {
 		history := &History{}

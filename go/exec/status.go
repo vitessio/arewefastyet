@@ -51,7 +51,7 @@ func GetBenchmarkStats(client storage.SQLClient) (BenchmarkStats, error) {
 		return BenchmarkStats{}, err
 	}
 
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var res BenchmarkStats
 	if rows.Next() {
@@ -61,7 +61,7 @@ func GetBenchmarkStats(client storage.SQLClient) (BenchmarkStats, error) {
 		}
 	}
 
-	rows.Close()
+	_ = rows.Close()
 
 	rows, err = client.Read(`SELECT 
 			COUNT(*)

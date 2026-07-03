@@ -41,6 +41,6 @@ func (cfg ConfigDB) NewClient() (*Client, error) {
 }
 
 func (cfg ConfigDB) IsValid() bool {
-	return !(cfg.Database == "" || cfg.User == "" || cfg.Host == "")
+	return cfg.Database != "" && cfg.User != "" && cfg.Host != ""
 }
 

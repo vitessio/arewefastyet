@@ -217,7 +217,7 @@ func GetResultsForGitRef(ref string, client storage.SQLClient) (mrs DetailsArray
 	if err != nil {
 		return nil, err
 	}
-	defer result.Close()
+	defer func() { _ = result.Close() }()
 
 	for result.Next() {
 		var res Details
@@ -243,7 +243,7 @@ func GetLatestResultsFor(name, subBenchmarkName string, count int, client storag
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var res Details

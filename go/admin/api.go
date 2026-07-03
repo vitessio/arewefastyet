@@ -303,7 +303,7 @@ func (a *Admin) handleExecutionsAdd(c *gin.Context) {
 		return
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusCreated {
 		slog.Error("Server API returned an error: ", resp.Status)
@@ -370,7 +370,7 @@ func (a *Admin) handleClearQueue(c *gin.Context) {
 		return
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode != http.StatusAccepted {
 		slog.Error("Server API returned an error: ", resp.Status)

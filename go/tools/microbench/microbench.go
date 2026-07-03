@@ -91,7 +91,7 @@ func (b *benchmark) execute(rootDir string, w *os.File) error {
 
 		if benchLine.benchType != "" {
 			log.Printf("%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
-			fmt.Fprintf(w, "%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
+			_, _ = fmt.Fprintf(w, "%s - %s %f ns/op\n", b.pkgName, benchLine.name, benchLine.results.NanosecondPerOp)
 			if b.sql != nil {
 				err = benchLine.InsertToMySQL(b.id, b.sql)
 				if err != nil {
@@ -116,7 +116,7 @@ func (b benchmark) executeProfile(rootDir, profileType string, w *os.File) error
 		return err
 	}
 	log.Printf("CPU profile generated %s\n", profileName)
-	fmt.Fprintf(w, "CPU profile generated %s\n", profileName)
+	_, _ = fmt.Fprintf(w, "CPU profile generated %s\n", profileName)
 	return nil
 }
 
@@ -132,7 +132,7 @@ func Run(cfg Config) error {
 		if err != nil {
 			return err
 		}
-		defer sqlClient.Close()
+		defer func() { _ = sqlClient.Close() }()
 	}
 
 	loaded, err := packages.Load(&packages.Config{
@@ -146,14 +146,14 @@ func Run(cfg Config) error {
 
 	benchmarks, err := findBenchmarks(loaded)
 	if err != nil {
-		return fmt.Errorf("%s:\n%s\n", errorInvalidPackageParsing, err)
+		return fmt.Errorf("%s:\n%s", errorInvalidPackageParsing, err)
 	}
 
 	w, err := os.Create(cfg.Output)
 	if err != nil {
 		return err
 	}
-	defer w.Close()
+	defer func() { _ = w.Close() }()
 
 	for _, benchmark := range benchmarks {
 		hash, err := git.GetCommitHash(cfg.RootDir)

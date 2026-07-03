@@ -41,7 +41,7 @@ func TestMicroBenchmark(t *testing.T) {
 				c.Assert(gotErr, qt.Not(qt.IsNil))
 
 				// regexp to catch the whole error
-				c.Assert(gotErr, qt.ErrorMatches, tt.errContains+`(.*\n)*`)
+				c.Assert(gotErr, qt.ErrorMatches, tt.errContains+`(?s).*`)
 				return
 			}
 			c.Assert(gotErr, qt.IsNil)

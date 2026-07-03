@@ -96,7 +96,7 @@ func Run(mabcfg Config) error {
 	if err != nil {
 		return err
 	}
-	defer sqlClient.Close()
+	defer func() { _ = sqlClient.Close() }()
 
 	// get metrics database client
 	metricsClient, err := createMetricsDatabaseClient(mabcfg.MetricsDatabaseConfig)
@@ -205,7 +205,7 @@ func handleSysBenchResults(resStr []byte, sqlClient *psdb.Client, macrobenchID i
 	var results []sysbenchResult
 	err := json.Unmarshal(resStr, &results)
 	if err != nil {
-		return sysbenchResult{}, fmt.Errorf("unmarshal results: %+v\n", err)
+		return sysbenchResult{}, fmt.Errorf("unmarshal results: %+v", err)
 	}
 	if len(results) == 0 {
 		return sysbenchResult{}, errors.New(ErrorNoSysBenchResult)

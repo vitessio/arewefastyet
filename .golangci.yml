@@ -1,0 +1,14 @@
+version: "2"
+
+# The default linter set is kept as-is; this file only filters out a single
+# false positive emitted by govet's "inline" analyzer. On generic standard
+# library helpers (e.g. slices.Contains) it reports
+#   "inline: cannot inline: type parameter inference is not yet supported"
+# which is a limitation of the analyzer, not an issue with our code. See
+# https://github.com/golang/go/issues/66260.
+linters:
+  exclusions:
+    rules:
+      - linters:
+          - govet
+        text: "cannot inline"

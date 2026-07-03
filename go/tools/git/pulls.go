@@ -40,7 +40,7 @@ func GetPullRequestHeadAndBase(url string) (PRInfo, error) {
 	if err != nil {
 		return PRInfo{}, err
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	res := struct {
 		Number int `json:"number"`
@@ -77,7 +77,7 @@ func getPullRequestsForLabels(labels, repo string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	res := struct {
 		Items []struct {

@@ -32,7 +32,7 @@ func GetPullRequestList(client storage.SQLClient) ([]int, error) {
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var res []int
 	for rows.Next() {
@@ -69,7 +69,7 @@ func GetPullRequestInfo(client storage.SQLClient, pullNumber int, info github.PR
 		return pullRequestInfo{}, err
 	}
 
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	var res pullRequestInfo
 	if rows.Next() {
