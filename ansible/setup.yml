@@ -22,17 +22,17 @@
     - all
   tasks:
     - name: Install Golang
-      include_role:
+      ansible.builtin.include_role:
         name: vitess_build
         tasks_from: golang
 
     - name: Install MySQL
-      include_role:
+      ansible.builtin.include_role:
         name: vitess_build
         tasks_from: mysql
 
     - name: Install mysqld_exporter
-      include_role:
+      ansible.builtin.include_role:
         name: vitess_build
         tasks_from: mysqld_exporter
 
@@ -42,7 +42,7 @@
   roles:
     - role: etcd
       vars:
-        - etcd_launch: False
+        etcd_launch: false
 
 - name: Setup sysbench
   hosts:
@@ -52,19 +52,24 @@
 
 - name: Setup prometheus
   hosts: all
-  become: yes
+  become: true
   become_user: root
   tags:
     - prometheus
   roles:
     - { role: prometheus.prometheus.prometheus, when: stats_remote_db_host is defined }
   vars:
-    vitess_cluster: 'main'
-    mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-    tablet_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (tablet.port | default(16001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-    gateway_targets: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (gateway.port | default(15001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
-    vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port | default(15000) | string )) }}{% endfor -%}{{ targets }}"
-    node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor -%}{{ targets }}"
+    vitess_cluster: "main"
+    mysqld_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+
+      (tablet.mysqld_exporter_port | default(9104) |string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
+    tablet_targets: "{% set targets = [] -%}{% for host in groups['vttablet'] -%}{% for tablet in hostvars[host]['tablets'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+
+      (tablet.port | default(16001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
+    gateway_targets: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+
+      (gateway.port | default(15001) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
+    vtctld_targets: "{% set targets = [] -%}{% for host in groups['vtctld'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+ (vtctld_port
+      | default(15000) | string )) }}{% endfor -%}{{ targets }}"
+    node_targets: "{% set targets= [] -%}{% for host in groups['all'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':9100' ) }}{% endfor
+      -%}{{ targets }}"
     prometheus_skip_install: false
     prometheus_version: 2.49.1
     prometheus_global:
@@ -73,45 +78,45 @@
       evaluation_interval: 15s
     prometheus_targets:
       tablets:
-        - targets: '{{ tablet_targets }}'
+        - targets: "{{ tablet_targets }}"
           labels:
             component: vttablet
             app: vitess
-            cluster: '{{ vitess_cluster }}'
-            region: '{{ cell }}'
-            keyspace: '{{ keyspace }}'
+            cluster: "{{ vitess_cluster }}"
+            region: "{{ cell }}"
+            keyspace: "{{ keyspace }}"
             exec_uuid: "exec_uuid"
       mysqld:
-        - targets: '{{ mysqld_targets }}'
+        - targets: "{{ mysqld_targets }}"
           labels:
             component: mysqld
             app: vitess
-            cluster: '{{ vitess_cluster }}'
-            region: '{{ cell }}'
-            keyspace: '{{ keyspace }}'
+            cluster: "{{ vitess_cluster }}"
+            region: "{{ cell }}"
+            keyspace: "{{ keyspace }}"
             exec_uuid: "exec_uuid"
       gateways:
-        - targets: '{{ gateway_targets }}'
+        - targets: "{{ gateway_targets }}"
           labels:
             component: vtgate
             app: vitess
-            cluster: '{{ vitess_cluster }}'
-            region: '{{ cell }}'
+            cluster: "{{ vitess_cluster }}"
+            region: "{{ cell }}"
             exec_uuid: "exec_uuid"
       vtctld:
-        - targets: '{{ vtctld_targets }}'
+        - targets: "{{ vtctld_targets }}"
           labels:
             component: vtctld
             app: vitess
-            cluster: '{{ vitess_cluster }}'
-            region: '{{ cell }}'
+            cluster: "{{ vitess_cluster }}"
+            region: "{{ cell }}"
             exec_uuid: "exec_uuid"
       nodes:
-        - targets: '{{ node_targets }}'
+        - targets: "{{ node_targets }}"
           labels:
             component: node
             app: vitess
-            cluster: '{{ vitess_cluster }}'
+            cluster: "{{ vitess_cluster }}"
             exec_uuid: "exec_uuid"
     prometheus_scrape_configs:
       - job_name: "node"
@@ -135,7 +140,7 @@
           - files:
               - "{{ prometheus_config_dir }}/file_sd/gateways.yml"
     prometheus_remote_write:
-      - url: "http://{{ stats_remote_db_host }}:{{ stats_remote_db_port }}/api/v1/prom/write?db={{ stats_remote_db_database }}&u={{ stats_remote_db_user }}&p={{ stats_remote_db_password }}"
+      - url: "http://{{ stats_remote_db_host }}:{{ stats_remote_db_port }}/api/v1/prom/write?db={{ stats_remote_db_database }}&u={{ stats_remote_db_user }}&p={{ stats_remote_db_password
+          }}"
     prometheus_external_labels:
       exec_uuid: "exec_uuid"
-

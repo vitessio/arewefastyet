@@ -10,26 +10,26 @@
 # limitations under the License.
 
 ---
-- name: install config
-  become: yes
+- name: Install config
+  become: true
   become_user: root
   with_items:
     - s: vtctld.conf
-      d: '/etc/vitess/conf/vtctld-{{ vitess_cell }}.conf'
+      d: "/etc/vitess/conf/vtctld-{{ vitess_cell }}.conf"
     - s: vtctld@.service
       d: /etc/systemd/system/vtctld@.service
     - s: cell@.service
       d: /etc/systemd/system/cell@.service
-  template:
-    src: '{{ item.s }}.j2'
-    dest: '{{ item.d }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
+  ansible.builtin.template:
+    src: "{{ item.s }}.j2"
+    dest: "{{ item.d }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
+    mode: "0644"
 
-- name: systemctl daemon-reload
-  become: yes
+- name: Systemctl daemon-reload
+  become: true
   become_user: root
   changed_when: false
-  systemd:
-    daemon_reload: yes
+  ansible.builtin.systemd:
+    daemon_reload: true

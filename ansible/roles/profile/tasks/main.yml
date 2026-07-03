@@ -11,6 +11,6 @@
 
 ---
 - name: Toggle profiling
-  shell: |
-    kill -s USR1 $(pgrep -d " " {{vitess_profile_binary}})
+  ansible.builtin.shell: |
+    kill -s USR1 $(pgrep -d " " {{ vitess_profile_binary }})
   when: vitess_profile_binary is defined

@@ -11,18 +11,18 @@
 
 ---
 - name: Turn off etcd
-  become: yes
+  become: true
   become_user: root
-  service:
+  ansible.builtin.service:
     name: etcd
     state: stopped
-  ignore_errors: yes
+  ignore_errors: true
   changed_when: false
 
-- name: remove storage
-  become: yes
+- name: Remove storage
+  become: true
   become_user: root
-  file:
+  ansible.builtin.file:
     state: absent
     path: /var/lib/etcd
   changed_when: false

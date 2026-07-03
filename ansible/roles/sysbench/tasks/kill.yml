@@ -11,5 +11,5 @@
 
 ---
 - name: Kill sysbench process
-  shell: "killall sysbench --wait"
+  ansible.builtin.command: "killall sysbench --wait"
   ignore_errors: true

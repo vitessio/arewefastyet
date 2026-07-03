@@ -10,38 +10,38 @@
 # limitations under the License.
 
 ---
-- name: ensure vtgate directories
-  become: yes
+- name: Ensure vtgate directories
+  become: true
   become_user: root
   with_items:
-    - '{{ vitess_root }}/tmp'
-    - '{{ vitess_root }}/tmp/vtgate-{{ gateway.id }}'
-  file:
+    - "{{ vitess_root }}/tmp"
+    - "{{ vitess_root }}/tmp/vtgate-{{ gateway.id }}"
+  ansible.builtin.file:
     state: directory
-    path: '{{ item }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
+    path: "{{ item }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
 
-- name: install config
-  become: yes
+- name: Install config
+  become: true
   become_user: root
   with_items:
     - s: vtgate.conf
-      d: '/etc/vitess/conf/vtgate-{{ gateway.id }}.conf'
-  template:
-    src: '{{ item.s }}.j2'
-    dest: '{{ item.d }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: '0644'
+      d: "/etc/vitess/conf/vtgate-{{ gateway.id }}.conf"
+  ansible.builtin.template:
+    src: "{{ item.s }}.j2"
+    dest: "{{ item.d }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
+    mode: "0644"
 
-- name: start vtgate
-  become: yes
+- name: Start vtgate
+  become: true
   become_user: root
   when:
     - enable_vtgate | bool
-  service:
-    name: 'vtgate@{{ gateway.id }}'
-    enabled: yes
+  ansible.builtin.service:
+    name: "vtgate@{{ gateway.id }}"
+    enabled: true
     state: started
   changed_when: false

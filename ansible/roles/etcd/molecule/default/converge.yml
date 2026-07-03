@@ -15,12 +15,12 @@
   tasks:
     - name: "Install etcd"
       vars:
-        - etcd_launch: False
-      include_role:
+        etcd_launch: false
+      ansible.builtin.include_role:
         name: "etcd"
 
     - name: "Start etcd"
       vars:
-        - etcd_launch: True
-      include_role:
+        etcd_launch: true
+      ansible.builtin.include_role:
         name: "etcd"

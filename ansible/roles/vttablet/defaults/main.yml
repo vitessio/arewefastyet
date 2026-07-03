@@ -10,30 +10,30 @@
 # limitations under the License.
 
 ---
-etcd_master_group: 'etcd'
+etcd_master_group: "etcd"
 
-vitess_user: 'vitess'
-vitess_group: 'vitess'
-vitess_root: '/vt'
-vitess_cluster: 'main'
-vitess_cell: 'local'
-default_tablet_type: 'replica'
-vitess_monitoring_user: 'vt_dba'
+vitess_user: "vitess"
+vitess_group: "vitess"
+vitess_root: "/vt"
+vitess_cluster: "main"
+vitess_cell: "local"
+default_tablet_type: "replica"
+vitess_monitoring_user: "vt_dba"
 keyspace: main
 
 tablets:
-  - id: '1001'
-    shard: '0'
-    keyspace: 'main'
-    type: 'replica'
+  - id: "1001"
+    shard: "0"
+    keyspace: "main"
+    type: "replica"
 
-vttablet_port: '16001'
-vttablet_grpc_port: '17001'
-vttablet_mysql_port: '18001'
-mysqld_exporter_port: '9104'
+vttablet_port: "16001"
+vttablet_grpc_port: "17001"
+vttablet_mysql_port: "18001"
+mysqld_exporter_port: "9104"
 
-enable_vttablet: True
-clean_vttablet: True
+enable_vttablet: true
+clean_vttablet: true
 vitess_memory_ratio: 0.6
 vttablet_connection_pool_size: 300
 vttablet_transaction_cap: 300

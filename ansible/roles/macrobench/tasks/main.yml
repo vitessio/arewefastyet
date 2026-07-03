@@ -11,17 +11,17 @@
 
 ---
 - name: Install arewefastyet
-  become: yes
+  become: true
   become_user: root
   when: arewefastyet_last_exec_is_same is undefined
   block:
     - name: Remove old arewefastyet
-      shell: |
+      ansible.builtin.shell: |
         rm -Rf /go/src/github.com/vitessio/arewefastyet
       changed_when: false
 
-    - name: git clone arewefastyet
-      git:
+    - name: Git clone arewefastyet
+      ansible.builtin.git:
         repo: "{{ arewefastyet_git_repo }}"
         dest: /go/src/github.com/vitessio/arewefastyet
         version: "{{ arewefastyet_git_version }}"
@@ -29,13 +29,13 @@
         force: true
 
     - name: Build arewefastyet CLI
-      shell: |
+      ansible.builtin.shell: |
         cd /go/src/github.com/vitessio/arewefastyet
         go build -o arewefastyetcli ./go/main.go
       changed_when: false
 
     - name: Install arewefastyet CLI
-      shell: |
+      ansible.builtin.shell: |
         cd /go/src/github.com/vitessio/arewefastyet
         rm -f /usr/bin/arewefastyetcli
         cp arewefastyetcli /usr/bin/arewefastyetcli
@@ -45,16 +45,16 @@
   ansible.builtin.copy:
     src: "{{ arewefastyet_configuration_file_path }}"
     dest: /tmp/config.yaml
-    mode: '0644'
+    mode: "0644"
 
 - name: Get macrobenchmarks secrets.yaml
   ansible.builtin.copy:
     src: "{{ arewefastyet_secrets_file_path }}"
     dest: /tmp/secrets.yaml
-    mode: '0644'
+    mode: "0644"
 
 - name: Run macrobenchmarks
-  shell: |
+  ansible.builtin.shell: |
     arewefastyetcli macrobench run --config /tmp/config.yaml --secrets /tmp/secrets.yaml --macrobench-git-ref {{ vitess_git_version }} --macrobench-exec-uuid {{ arewefastyet_exec_uuid }} --macrobench-vtgate-planner-version {{ vitess_planner_version }} --macrobench-vtgate-web-ports {{ vtgate_web_ports }}
   register: arewefastyetcli
-  changed_when: False
+  changed_when: false

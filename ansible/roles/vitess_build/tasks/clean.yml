@@ -12,23 +12,23 @@
 ---
 - name: Make sure vtctld is stopped
   when: clean_vtctld | bool
-  include_role:
+  ansible.builtin.include_role:
     name: "vtctld"
     tasks_from: clean
 
 - name: Make sure vtgate is stopped
   when: clean_vtgate | bool
-  include_role:
+  ansible.builtin.include_role:
     name: "vtgate"
     tasks_from: clean
 
-- name: make sure vttablet is stopped
+- name: Make sure vttablet is stopped
   when: clean_vttablet | bool
-  include_role:
+  ansible.builtin.include_role:
     name: "vttablet"
     tasks_from: "clean"
 
 - name: Handle Disk
-  include_role:
+  ansible.builtin.include_role:
     name: "host"
     tasks_from: disk

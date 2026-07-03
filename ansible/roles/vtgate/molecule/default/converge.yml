@@ -15,6 +15,6 @@
   tasks:
     - name: "Prepare vtgate"
       vars:
-        - clean_vtgate: False
-      include_role:
+        clean_vtgate: false
+      ansible.builtin.include_role:
         name: "vtgate"

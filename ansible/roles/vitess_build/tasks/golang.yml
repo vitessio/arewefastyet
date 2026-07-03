@@ -11,61 +11,57 @@
 
 ---
 - name: Set fact for arch i386
-  set_fact:
+  ansible.builtin.set_fact:
     architecture: 386
     golang_hash: "{{ golang_hash_linux_386[golang_gover] }}"
   when: ansible_architecture == 'i386'
 
 - name: Set fact for arch x86_64
-  set_fact:
+  ansible.builtin.set_fact:
     architecture: amd64
     golang_hash: "{{ golang_hash_linux_amd64[golang_gover] }}"
   when: ansible_architecture == 'x86_64'
 
 - name: Set fact for Linux
-  set_fact:
+  ansible.builtin.set_fact:
     go_url: "https://storage.googleapis.com/golang/go{{ golang_gover }}.linux-{{ architecture }}.tar.gz"
     go_dest: "/usr/local/go{{ golang_gover }}.linux-{{ architecture }}.tar.gz"
   when: ansible_system == 'Linux'
 
 - name: Check if golang archive is present
-  become: yes
+  become: true
   become_user: root
-  stat: path=/usr/local/go{{ golang_gover }}.linux-{{ architecture }}.tar.gz
+  ansible.builtin.stat: path=/usr/local/go{{ golang_gover }}.linux-{{ architecture }}.tar.gz
   register: goarchive
 
-- name: download recent golang
-  become: yes
+- name: Download recent golang
+  become: true
   become_user: root
-  get_url:
-    url='{{ go_url }}'
-    dest='{{ go_dest }}'
-    mode=0440
-    checksum='{{ golang_hash }}'
+  ansible.builtin.get_url: url='{{ go_url }}' dest='{{ go_dest }}' mode=0440 checksum='{{ golang_hash }}'
   when: not goarchive.stat.exists
 
 - name: Remove Go Binary
-  become: yes
+  become: true
   become_user: root
-  file:
+  ansible.builtin.file:
     state: absent
     path: /usr/local/go
-  changed_when: False
+  changed_when: false
 
 - name: Extract go archive to /usr/local
-  unarchive: "src={{ go_dest }} dest=/usr/local/ copy=no"
-  changed_when: False
+  ansible.builtin.unarchive: "src={{ go_dest }} dest=/usr/local/ copy=no"
+  changed_when: false
 
 - name: Add symlinks from /usr/local/go/bin to /usr/bin
-  file: src=/usr/local/go/bin/{{ item }} dest=/usr/bin/{{ item }} state=link
+  ansible.builtin.file: src=/usr/local/go/bin/{{ item }} dest=/usr/bin/{{ item }} state=link
   with_items:
     - go
     - gofmt
 
 - name: Go version
-  shell: go version
+  ansible.builtin.command: go version
   register: go
-  changed_when: False
+  changed_when: false
 
 - name: Print go version
-  debug: msg="{{ go.stdout }}"
+  ansible.builtin.debug: msg="{{ go.stdout }}"

@@ -11,11 +11,11 @@
 
 ---
 - name: Clean host
-  become: yes
+  become: true
   become_user: root
   block:
     - name: Remove tmp directories
-      shell: |
+      ansible.builtin.shell: |
         rm -Rf /tmp/
         mkdir /tmp
         chmod 1777 /tmp

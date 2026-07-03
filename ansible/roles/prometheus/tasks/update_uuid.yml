@@ -12,13 +12,13 @@
 ---
 - name: Replace prometheus exec_uuid label value
   with_items:
-    - 'prometheus.yml'
-    - 'file_sd/gateways.yml'
-    - 'file_sd/mysqld.yml'
-    - 'file_sd/nodes.yml'
-    - 'file_sd/tablets.yml'
-    - 'file_sd/vtctld.yml'
-  lineinfile:
-    path: '/etc/prometheus/{{ item }}'
-    regexp: '^(.*)exec_uuid:(.*)$'
-    line: '    exec_uuid: {{arewefastyet_exec_uuid}}'
+    - "prometheus.yml"
+    - "file_sd/gateways.yml"
+    - "file_sd/mysqld.yml"
+    - "file_sd/nodes.yml"
+    - "file_sd/tablets.yml"
+    - "file_sd/vtctld.yml"
+  ansible.builtin.lineinfile:
+    path: "/etc/prometheus/{{ item }}"
+    regexp: "^(.*)exec_uuid:(.*)$"
+    line: "    exec_uuid: {{ arewefastyet_exec_uuid }}"

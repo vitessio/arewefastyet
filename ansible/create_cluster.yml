@@ -18,9 +18,9 @@
   roles:
     - role: vitess_build
       vars:
-        - clean_vtgate: False
-        - clean_vttablet: False
-        - clean_vtctld: False
+        clean_vtgate: false
+        clean_vttablet: false
+        clean_vtctld: false
 
 - name: Start etcd
   hosts:
@@ -28,47 +28,52 @@
   roles:
     - role: etcd
       vars:
-        - etcd_launch: True
+        etcd_launch: true
 
-- hosts: vtctld
+- name: Start vtctld
+  hosts: vtctld
   roles:
     - role: vtctld
       vars:
-        - clean_vtctld: False
+        clean_vtctld: false
 
-- hosts: vtgate
+- name: Start vtgate
+  hosts: vtgate
   roles:
     - role: vtgate
       vars:
-        - clean_vtgate: False
-        - gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
+        clean_vtgate: false
+        gateways_loadbalance: "{% set targets = [] -%}{% for host in groups['vtgate'] -%}{% for gateway in hostvars[host]['gateways'] -%}{{ targets.append( hostvars[host]['ansible_default_ipv4']['address']+':'+(gateway.mysql_port
+          | default(13306) | string )) }}{% endfor -%}{% endfor -%}{{ targets }}"
 
-- hosts: vttablet
+- name: Start vttablet
+  hosts: vttablet
   roles:
     - role: vttablet
       vars:
-        - clean_vttablet: False
+        clean_vttablet: false
 
-- hosts: vtctld
+- name: Apply VSchema
+  hosts: vtctld
   tasks:
     - name: Gather facts
-      setup:
+      ansible.builtin.setup:
         gather_subset: network
 
-    - include_role:
+    - name: Ensure vtctld is configured
+      ansible.builtin.include_role:
         name: vtctld
         tasks_from: ensure
 
     - name: Get VSchema
-      copy:
+      ansible.builtin.copy:
         src: "{{ vitess_vschema_path }}"
         dest: /tmp/vschema_sysbench.json
-        mode: '0644'
+        mode: "0644"
         force: true
 
     - name: Apply VSchema
-      shell: |
+      ansible.builtin.shell: |
         vtctlclient --server {{ groups['vtctld'][0] }}:15999 ApplyVSchema -- --vschema="$(cat /tmp/vschema_sysbench.json)" main
-
     - name: Print go version
-      debug: msg="VSchema is applied."
+      ansible.builtin.debug: msg="VSchema is applied."

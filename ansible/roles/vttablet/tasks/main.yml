@@ -10,36 +10,35 @@
 # limitations under the License.
 
 ---
-- name: make sure vttablet is stopped
+- name: Make sure vttablet is stopped
   when: clean_vttablet | bool
-  include_role:
+  ansible.builtin.include_role:
     name: "vttablet"
     tasks_from: "clean"
 
 - name: Create users
-  include_role:
+  ansible.builtin.include_role:
     name: "vitess_build"
     tasks_from: create_users
 
-- name: ensure vitess directories
-  become: yes
+- name: Ensure vitess directories
+  become: true
   become_user: root
   with_items:
-    - '{{ vitess_root }}'
-    - '{{ vitess_root }}/socket'
-    - '/etc/vitess/conf'
-  file:
+    - "{{ vitess_root }}"
+    - "{{ vitess_root }}/socket"
+    - "/etc/vitess/conf"
+  ansible.builtin.file:
     state: directory
-    path:   '{{ item }}'
-    owner:  '{{ vitess_user }}'
-    group:  '{{ vitess_group }}'
-    mode: 0755
+    path: "{{ item }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
+    mode: "0755"
 
-- name: install systemd units
-  include_tasks: systemd.yml
-
-- name: install config files
-  include_tasks: vttablet.yml
-  loop: '{{ tablets }}'
+- name: Install systemd units
+  ansible.builtin.include_tasks: systemd.yml
+- name: Install config files
+  ansible.builtin.include_tasks: vttablet.yml
+  loop: "{{ tablets }}"
   loop_control:
     loop_var: tablet

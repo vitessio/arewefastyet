@@ -11,62 +11,60 @@
 
 ---
 - name: Create users
-  include_role:
+  ansible.builtin.include_role:
     name: "vitess_build"
     tasks_from: create_users
 
-- name: make sure vtctld is stopped
+- name: Make sure vtctld is stopped
   when: clean_vtctld | bool
-  include_role:
+  ansible.builtin.include_role:
     name: "vtctld"
     tasks_from: "clean"
 
-
-- name: ensure vitess directories
-  become: yes
+- name: Ensure vitess directories
+  become: true
   become_user: root
   with_items:
-    - '{{ vitess_root }}'
-    - '{{ vitess_root }}/tmp'
-  file:
+    - "{{ vitess_root }}"
+    - "{{ vitess_root }}/tmp"
+  ansible.builtin.file:
     state: directory
-    path: '{{ item }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
-    mode: 0755
+    path: "{{ item }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
+    mode: "0755"
 
-- name: ensure config directories
-  become: yes
+- name: Ensure config directories
+  become: true
   become_user: root
   with_items:
     - /etc/vitess/conf
-  file:
+  ansible.builtin.file:
     state: directory
-    path: '{{ item }}'
-    owner: '{{ vitess_user }}'
-    group: '{{ vitess_group }}'
+    path: "{{ item }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
 
-- name: install systemd unit
-  include_tasks: systemd.yml
-
-- name: start cell
-  become: yes
+- name: Install systemd unit
+  ansible.builtin.include_tasks: systemd.yml
+- name: Start cell
+  become: true
   become_user: root
   when:
     - enable_vtctld | bool
-  service:
+  ansible.builtin.service:
     name: cell@{{ vitess_cell }}
-    enabled: yes
+    enabled: true
     state: started
   changed_when: false
 
-- name: start vtctld
-  become: yes
+- name: Start vtctld
+  become: true
   become_user: root
   when:
     - enable_vtctld | bool
-  service:
+  ansible.builtin.service:
     name: vtctld@{{ vitess_cell }}
-    enabled: yes
+    enabled: true
     state: started
   changed_when: false

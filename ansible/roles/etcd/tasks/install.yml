@@ -10,45 +10,46 @@
 # limitations under the License.
 
 ---
-- name: check for installation of etcd
-  become: yes
+- name: Check for installation of etcd
+  become: true
   become_user: root
-  stat:
-    path: '{{ etcd_install_dir }}/{{ etcd_name }}'
+  ansible.builtin.stat:
+    path: "{{ etcd_install_dir }}/{{ etcd_name }}"
   changed_when: false
   register: etcd_binary_dir
 
-- when: not etcd_binary_dir.stat.exists
-  become: yes
+- name: Download and install etcd
+  when: not etcd_binary_dir.stat.exists
+  become: true
   become_user: root
   block:
-    - name: download etcd
-      get_url:
-        url: '{{ etcd_archive_url }}'
+    - name: Download etcd
+      ansible.builtin.get_url:
+        url: "{{ etcd_archive_url }}"
         dest: /tmp/{{ etcd_archive }}
-        checksum: '{{ etcd_checksum }}'
-        timeout: '{{ etcd_download_timeout_seconds }}'
-    - name: unachive etcd
-      become: yes
+        checksum: "{{ etcd_checksum }}"
+        timeout: "{{ etcd_download_timeout_seconds }}"
+    - name: Unachive etcd
+      become: true
       become_user: root
-      unarchive:
-        remote_src: yes
+      ansible.builtin.unarchive:
+        remote_src: true
         src: /tmp/{{ etcd_archive }}
-        dest: '{{ etcd_install_dir }}'
-        creates: '{{ etcd_install_dir }}/{{ etcd_name }}'
+        dest: "{{ etcd_install_dir }}"
+        creates: "{{ etcd_install_dir }}/{{ etcd_name }}"
   always:
-    - name: delete archive
-      file:
+    - name: Delete archive
+      ansible.builtin.file:
         path: /tmp/{{ etcd_archive }}
         state: absent
 
-- name: link etcd and etcdctl
-  become: yes
+- name: Link etcd and etcdctl
+  become: true
   become_user: root
-  file:
-    src: '{{ etcd_install_dir }}/{{ etcd_name }}/{{ item }}'
-    dest: '{{ etcd_install_dir }}/{{ item }}'
+  ansible.builtin.file:
+    src: "{{ etcd_install_dir }}/{{ etcd_name }}/{{ item }}"
+    dest: "{{ etcd_install_dir }}/{{ item }}"
     state: link
   with_items:
-    - etcd{{ etcd_exe_suffix|default("") }}
-    - etcdctl{{ etcd_exe_suffix|default("") }}
+    - etcd{{ etcd_exe_suffix | default("") }}
+    - etcdctl{{ etcd_exe_suffix | default("") }}

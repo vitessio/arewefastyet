@@ -11,5 +11,5 @@
 
 ---
 - name: Kill arewefastyet process
-  shell: "killall arewefastyetcli --wait"
+  ansible.builtin.command: "killall arewefastyetcli --wait"
   ignore_errors: true

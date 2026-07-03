@@ -10,11 +10,12 @@
 # limitations under the License.
 
 ---
-- hosts: all
+- name: Ensure users are created
+  hosts: all
   tasks:
     - name: Ensure users are created
       when: arewefastyet_last_exec_is_same is undefined
-      include_role:
+      ansible.builtin.include_role:
         name: vitess_build
         tasks_from: create_users
 
@@ -22,10 +23,11 @@
   when: arewefastyet_last_exec_is_same is undefined
   import_playbook: create_cluster.yml
 
-- hosts: prometheus
+- name: Update Prometheus labels
+  hosts: prometheus
   tasks:
     - name: Update Prometheus labels
-      include_role:
+      ansible.builtin.include_role:
         name: prometheus
         tasks_from: update_uuid
 
@@ -35,19 +37,22 @@
   tasks:
     - name: Install sysbench
       when: arewefastyet_last_exec_is_same is undefined
-      include_role:
+      ansible.builtin.include_role:
         name: sysbench
         tasks_from: install
 
-- hosts: macrobench
+- name: Profile before macrobench
+  hosts: macrobench
   roles:
     - profile
 
-- hosts: macrobench
+- name: Run macrobench
+  hosts: macrobench
   roles:
     - macrobench
 
-- hosts: macrobench
+- name: Profile after macrobench
+  hosts: macrobench
   roles:
     - profile
 

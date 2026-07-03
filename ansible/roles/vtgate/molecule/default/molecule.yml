@@ -34,6 +34,6 @@ provisioner:
   inventory:
     host_vars:
       instance:
-        enable_vtgate: False
+        enable_vtgate: false
 verifier:
   name: ansible

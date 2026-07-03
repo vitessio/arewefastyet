@@ -11,11 +11,11 @@
 
 ---
 - name: Install Vitess
-  become: yes
+  become: true
   become_user: root
   block:
     - name: Fetch Updated Vitess
-      git:
+      ansible.builtin.git:
         repo: "{{ vitess_git_repo }}"
         dest: /go/src/vitess.io/vitess
         version: "{{ vitess_git_version }}"

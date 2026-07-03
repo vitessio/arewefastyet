@@ -10,47 +10,47 @@
 # limitations under the License.
 
 ---
-- name: make sure old vtgate are stopped
+- name: Make sure old vtgate are stopped
   when: clean_vtgate | bool
-  include_role:
+  ansible.builtin.include_role:
     name: "vtgate"
     tasks_from: clean
 
 - name: Create users
-  include_role:
+  ansible.builtin.include_role:
     name: "vitess_build"
     tasks_from: create_users
 
-- name: ensure vitess directories
-  become: yes
+- name: Ensure vitess directories
+  become: true
   become_user: root
   with_items:
-    - '{{ vitess_root }}'
-    - '{{ vitess_root }}/socket'
-    - '/etc/vitess/conf'
-  file:
+    - "{{ vitess_root }}"
+    - "{{ vitess_root }}/socket"
+    - "/etc/vitess/conf"
+  ansible.builtin.file:
     state: directory
-    path:   '{{ item }}'
-    owner:  '{{ vitess_user }}'
-    group:  '{{ vitess_group }}'
-    mode: 0755
+    path: "{{ item }}"
+    owner: "{{ vitess_user }}"
+    group: "{{ vitess_group }}"
+    mode: "0755"
 
-- name: install systemd unit
-  include_role:
+- name: Install systemd unit
+  ansible.builtin.include_role:
     name: "vtgate"
     tasks_from: systemd
 
-- name: install config files
-  include_tasks: vtgate.yml
-  loop: '{{ gateways }}'
+- name: Install config files
+  ansible.builtin.include_tasks: vtgate.yml
+  loop: "{{ gateways }}"
   loop_control:
     loop_var: gateway
 
 - name: Turn on loadbalancing
   vars:
-    - loadbalancing: True
+    loadbalancing: true
   when:
     - enable_vtgate | bool
-  include_role:
+  ansible.builtin.include_role:
     name: vtgate
     tasks_from: sysbench_loadbalance.yml

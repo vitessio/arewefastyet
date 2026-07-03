@@ -1,0 +1,19 @@
+---
+# ansible-lint configuration.
+#
+# Mechanical issues (fqcn, yaml formatting, task naming, jinja spacing, and the
+# list-vs-dict `vars:` blocks) are fixed directly in the playbooks. The rules
+# below are intentionally skipped because fixing them would require either
+# cross-role variable renames or behavioral changes to the production
+# benchmarking playbooks that cannot be validated in CI — or, in the case of
+# line-length, were already skipped historically (the old `-x 204`).
+skip_list:
+  - var-naming               # would rename vars referenced across roles/templates
+  - no-changed-when          # behavioral: needs per-command change detection
+  - ignore-errors            # behavioral: needs failed_when conditions
+  - command-instead-of-module
+  - command-instead-of-shell
+  - no-free-form
+  - risky-file-permissions
+  - risky-shell-pipe
+  - yaml[line-length]        # long template/URL lines; previously skipped via -x 204

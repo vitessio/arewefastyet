@@ -35,6 +35,6 @@ provisioner:
   inventory:
     host_vars:
       instance:
-        enable_vttablet: False
+        enable_vttablet: false
 verifier:
   name: ansible
