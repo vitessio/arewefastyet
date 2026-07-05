@@ -116,7 +116,7 @@ export function MacroQueriesCompareTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, rowIndex) => (
+              table.getRowModel().rows.map((row) => (
                 <Dialog key={row.id}>
                   <DialogTrigger asChild>
                     <TableRow
@@ -134,7 +134,7 @@ export function MacroQueriesCompareTable<TData, TValue>({
                     </TableRow>
                   </DialogTrigger>
                   <MacroQueriesCompareDialog
-                    data={data[rowIndex] as unknown as MacroQueriesPlan}
+                    data={row.original as unknown as MacroQueriesPlan}
                   />
                 </Dialog>
               ))
