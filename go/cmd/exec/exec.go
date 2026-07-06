@@ -50,7 +50,7 @@ It handles the creation, configuration, and cleanup of the infrastructure.`,
 			}
 
 			// execute
-			err = ex.Execute()
+			err = ex.Execute(cmd.Context())
 			return
 		},
 	}

@@ -19,6 +19,7 @@
 package exec
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -319,23 +320,33 @@ func (e Exec) ExecuteWithTimeout(timeout time.Duration) (err error) {
 	defer func() {
 		e.handleStepEnd(err)
 	}()
-	errs := make(chan error)
 
+	// Deriving the context from the timeout means that when the deadline is
+	// reached the ansible-playbook process is killed (go-ansible runs it via
+	// exec.CommandContext). Without this the process kept running against the
+	// benchmark machine after a timeout and could trample the next execution.
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	errs := make(chan error, 1)
 	go func() {
-		errs <- e.Execute()
+		errs <- e.Execute(ctx)
 	}()
 
 	select {
 	case err = <-errs:
 		return
-	case <-time.After(timeout):
+	case <-ctx.Done():
+		// Wait for Execute to unwind (the killed process makes it return) so we
+		// do not report a timeout while ansible is still tearing down.
+		<-errs
 		err = errors.New(ErrorExecutionTimeout)
 		return
 	}
 }
 
 // Execute will provision infra, configure Ansible files, and run the given Ansible config.
-func (e *Exec) Execute() (err error) {
+func (e *Exec) Execute(ctx context.Context) (err error) {
 	defer func() {
 		e.handleStepEnd(err)
 	}()
@@ -348,7 +359,7 @@ func (e *Exec) Execute() (err error) {
 	}
 
 	// Run the given config on Ansible
-	err = ansible.Run(&e.AnsibleConfig)
+	err = ansible.Run(ctx, &e.AnsibleConfig)
 	if err != nil {
 		return err
 	}
