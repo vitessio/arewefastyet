@@ -157,6 +157,21 @@ func (s *Server) addToQueue(element *executionQueueElement) {
 	if element.identifier.Workload == "micro" {
 		execElements = append(execElements, element)
 	} else {
+		// Stop re-queueing a configuration that keeps failing. Failed executions do
+		// not count towards MaximumBenchmarkWithSameConfig, so without this guard a
+		// permanently broken config (e.g. a workload that always times out) would be
+		// re-added at full multiplicity on every cron tick and monopolise the
+		// benchmark machine. A new git ref naturally resets this counter.
+		failed, err := exec.CountExecutionStatus(s.dbClient, element.identifier.GitRef, element.identifier.Source, element.identifier.Workload, exec.StatusFailed)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+		if failed >= exec.MaximumFailedBenchmarkWithSameConfig {
+			slog.Infof("not adding %+v to the queue, it has %d failed executions (max %d)", element.identifier, failed, exec.MaximumFailedBenchmarkWithSameConfig)
+			return
+		}
+
 		nb, err := s.getNumberOfBenchmarksInDB(element.identifier)
 		if err != nil {
 			slog.Error(err.Error())
