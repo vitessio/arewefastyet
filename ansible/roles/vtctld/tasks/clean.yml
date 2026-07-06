@@ -76,5 +76,7 @@
     daemon_reload: true
   failed_when: false
 
-- name: Remove binary
-  ansible.builtin.shell: rm -f $(which vtctld vtctl vtctlclient vtctldclient)
+# NOTE: the vt* binaries are intentionally left in place so they can be reused
+# across workloads of the same commit (see roles/vitess_build/tasks/main.yml,
+# which rebuilds only when the installed ref+Go version changes). A rebuild
+# overwrites them, so nothing accumulates.

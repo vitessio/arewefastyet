@@ -116,6 +116,12 @@ func Run(c *Config) error {
 			execute.WithShowDuration(),
 			execute.WithWrite(c.stdout),
 			execute.WithWriteError(c.stderr),
+			// ansible-playbook only discovers an ansible.cfg from the current
+			// working directory, which is the api process' cwd rather than the
+			// per-execution playbook directory. Point it explicitly at the
+			// ansible.cfg copied alongside the playbook so its callbacks (e.g.
+			// profile_tasks) are enabled.
+			execute.WithEnvVar("ANSIBLE_CONFIG", path.Join(c.RootDir, "ansible.cfg")),
 		),
 	}
 

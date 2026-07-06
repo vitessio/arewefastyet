@@ -16,33 +16,86 @@
   become: true
   become_user: root
   block:
-    - name: Fetch Updated Vitess
-      ansible.builtin.include_tasks: install_vitess.yml
-    - name: Tmp directory gopath
-      become: true
-      become_user: root
-      ansible.builtin.file:
-        state: directory
-        path: "{{ item }}"
-        mode: "0755"
-      with_items:
-        - /root/tmp
-
-    - name: Remove Vitess binaries
-      ansible.builtin.shell: |
-        rm -f /usr/local/bin/vt*
-    - name: Install Vitess Binaries
-      ansible.builtin.shell: |
-        export TMPDIR=/root/tmp
-        cd /go/src/vitess.io/vitess
-        NOVTADMINBUILD=1 make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
+    # Building Vitess from source is the single most expensive step of a
+    # benchmark run (several minutes). When the same commit is benchmarked
+    # across several workloads, the cluster is torn down and recreated between
+    # each workload even though the exact same binaries are needed. We record
+    # the ref+Go version that is currently installed in a marker file and skip
+    # the fetch/build when it already matches (and the binaries are still
+    # present). The teardown no longer removes the vt* binaries, so they survive
+    # between workloads of the same commit.
+    - name: Read the installed Vitess build marker
+      ansible.builtin.slurp:
+        src: /usr/local/vitess-build.ref
+      register: vitess_build_marker
+      failed_when: false
       changed_when: false
 
-    - name: Install Vitess Other Binaries
-      ansible.builtin.shell: |
-        cd /go/src/vitess.io/vitess
-        cp bin/vtctl /usr/local/bin/
-      changed_when: false
+    - name: Check whether the vtgate binary is present
+      ansible.builtin.stat:
+        path: /usr/local/bin/vtgate
+      register: vitess_vtgate_binary
+
+    - name: Determine whether the installed Vitess build can be reused
+      ansible.builtin.set_fact:
+        vitess_build_current: >-
+          {{
+            vitess_vtgate_binary.stat.exists
+            and vitess_build_marker.content is defined
+            and (vitess_build_marker.content | b64decode | trim)
+                == (vitess_git_version | default('') ~ '-' ~ golang_gover | default(''))
+          }}
+
+    - name: Report whether the Vitess build is reused
+      ansible.builtin.debug:
+        msg: >-
+          Vitess build {{ vitess_git_version | default('') }}-{{ golang_gover | default('') }}
+          reuse={{ vitess_build_current }}
+
+    - name: Build and install Vitess
+      when: not (vitess_build_current | bool)
+      block:
+        # Remove the marker first so an interrupted build cannot leave a stale
+        # marker that would make the next run wrongly skip the build.
+        - name: Invalidate the Vitess build marker before building
+          ansible.builtin.file:
+            path: /usr/local/vitess-build.ref
+            state: absent
+
+        - name: Fetch Updated Vitess
+          ansible.builtin.include_tasks: install_vitess.yml
+        - name: Tmp directory gopath
+          become: true
+          become_user: root
+          ansible.builtin.file:
+            state: directory
+            path: "{{ item }}"
+            mode: "0755"
+          with_items:
+            - /root/tmp
+
+        - name: Remove Vitess binaries
+          ansible.builtin.shell: |
+            rm -f /usr/local/bin/vt*
+        - name: Install Vitess Binaries
+          ansible.builtin.shell: |
+            export TMPDIR=/root/tmp
+            cd /go/src/vitess.io/vitess
+            NOVTADMINBUILD=1 make install PREFIX=/usr/local VTROOT=/go/src/vitess.io/vitess
+          changed_when: false
+
+        - name: Install Vitess Other Binaries
+          ansible.builtin.shell: |
+            cd /go/src/vitess.io/vitess
+            cp bin/vtctl /usr/local/bin/
+          changed_when: false
+
+        # Record the ref+Go version only after a fully successful install.
+        - name: Record the installed Vitess build marker
+          ansible.builtin.copy:
+            dest: /usr/local/vitess-build.ref
+            content: "{{ vitess_git_version | default('') }}-{{ golang_gover | default('') }}"
+            mode: "0644"
 
 - name: Disbale AppArmor
   block:
