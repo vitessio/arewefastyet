@@ -89,7 +89,7 @@ func applyRootToFiles(root string, file *string) {
 	}
 }
 
-func Run(c *Config) error {
+func Run(ctx context.Context, c *Config) error {
 	applyRootToFiles(c.RootDir, &c.PlaybookFile)
 	applyRootToFiles(c.RootDir, &c.InventoryFile)
 
@@ -119,7 +119,10 @@ func Run(c *Config) error {
 		),
 	}
 
-	err := plb.Run(context.TODO())
+	// go-ansible runs ansible-playbook through exec.CommandContext, so cancelling
+	// ctx (e.g. on an execution timeout) terminates the subprocess instead of
+	// leaving it running against the benchmark machine.
+	err := plb.Run(ctx)
 	if err != nil {
 		return err
 	}
