@@ -161,6 +161,15 @@ type ProfileInformation struct {
 const (
 	MaximumBenchmarkWithSameConfig = 10
 
+	// MaximumFailedBenchmarkWithSameConfig is the number of failed executions of a
+	// single configuration (git ref + source + workload) that we tolerate before we
+	// stop re-queueing it. Failed executions do not count towards
+	// MaximumBenchmarkWithSameConfig, so without this cap a configuration that always
+	// fails would be re-added at full multiplicity on every cron tick, burning the
+	// benchmark machine indefinitely. The value covers one full nightly cycle
+	// (MaximumBenchmarkWithSameConfig runs, each of which may be retried once).
+	MaximumFailedBenchmarkWithSameConfig = 20
+
 	SourceCron          = "cron"
 	SourcePullRequest   = "cron_pr"
 	SourceTag           = "cron_tags_"
@@ -619,6 +628,27 @@ func Exists(client storage.SQLClient, gitRef, source, workload, status string) (
 func CountMacroBenchmark(client storage.SQLClient, gitRef, source, workload, status, planner string) (int, error) {
 	query := "SELECT count(uuid) FROM execution e, macrobenchmark m WHERE e.profile_binary IS NULL AND e.status = ? AND e.git_ref = ? AND e.workload = ? AND e.source = ? AND m.vtgate_planner_version = ? AND e.uuid = m.exec_uuid"
 	result, err := client.Read(query, status, gitRef, workload, source, planner)
+	if err != nil {
+		return 0, err
+	}
+	defer func() { _ = result.Close() }()
+	var nb int
+	if result.Next() {
+		err = result.Scan(&nb)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return nb, nil
+}
+
+// CountExecutionStatus counts the executions matching the given configuration
+// (git ref + source + workload) that are in the given status. Unlike
+// CountMacroBenchmark it only reads the execution table, so it also works for
+// failed executions, which never get a row in the macrobenchmark table.
+func CountExecutionStatus(client storage.SQLClient, gitRef, source, workload, status string) (int, error) {
+	query := "SELECT count(uuid) FROM execution WHERE status = ? AND git_ref = ? AND workload = ? AND source = ?"
+	result, err := client.Read(query, status, gitRef, workload, source)
 	if err != nil {
 		return 0, err
 	}

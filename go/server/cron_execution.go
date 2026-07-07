@@ -99,44 +99,56 @@ func (s *Server) executeSingle(config benchmarkConfig, identifier executionIdent
 }
 
 func (s *Server) executeElement(element *executionQueueElement, nextIsSame bool, lastIsSame bool) {
-	if element.retry < 0 {
-		if _, found := queue[element.identifier]; found {
-			// removing the element from the queue since we are done with it
-			mtx.Lock()
-			delete(queue, element.identifier)
-			mtx.Unlock()
-		}
-		decrementNumberOfOnGoingExecution()
-		return
-	}
+	// The element is stored in the queue map under the identifier it had when it
+	// was inserted. The retry logic below mutates element.identifier.UUID to get a
+	// fresh execution UUID, so we must always remove the element using this original
+	// key. Otherwise the entry leaks in the queue forever with Executing=true, which
+	// eventually fills the queue, makes addToQueue report configs as "already full",
+	// and stalls all executions.
+	queueKey := element.identifier
 
-	// execute with the given configuration file and exec identifier
-	err := s.executeSingle(element.config, element.identifier, nextIsSame, lastIsSame)
-	if err != nil {
+	for {
+		// execute with the given configuration file and exec identifier
+		err := s.executeSingle(element.config, element.identifier, nextIsSame, lastIsSame)
+		if err == nil {
+			go func() {
+				// removing the element from the queue since we are done with it
+				removeFromQueue(queueKey)
+
+				// we will wait for the benchmarks we need to compare it against and notify users if needed
+				s.compareElement(element)
+			}()
+			decrementNumberOfOnGoingExecution()
+			return
+		}
+
 		slog.Error(err.Error())
 
-		// execution failed, we retry
+		if element.retry <= 0 {
+			// no retries left, we are done with this element
+			removeFromQueue(queueKey)
+			decrementNumberOfOnGoingExecution()
+			return
+		}
+
+		// execution failed, we retry with a fresh execution UUID
 		element.retry -= 1
 		element.identifier.UUID = uuid.NewString()
 
 		// Here we set lastIsSame as false since the previous benchmark has failed
 		// That allows us to avoid executing one more database request to check if
 		// the previous benchmark was successful or not.
-		s.executeElement(element, nextIsSame, false)
-		return
+		lastIsSame = false
 	}
+}
 
-	go func() {
-		// removing the element from the queue since we are done with it
-		mtx.Lock()
-		delete(queue, element.identifier)
-		mtx.Unlock()
-
-		// we will wait for the benchmarks we need to compare it against and notify users if needed
-		s.compareElement(element)
-	}()
-
-	decrementNumberOfOnGoingExecution()
+// removeFromQueue removes the queue entry stored under the given key, taking the
+// queue mutex. The key must be the identifier the element had when it was added to
+// the queue (see executeElement).
+func removeFromQueue(key executionIdentifier) {
+	mtx.Lock()
+	defer mtx.Unlock()
+	delete(queue, key)
 }
 
 func (s *Server) compareElement(element *executionQueueElement) {
@@ -268,6 +280,11 @@ func (s *Server) cronExecutionQueueWatcher() {
 
 	for {
 		queueWatch()
+
+		// Executions take minutes, so polling the queue once a second is more than
+		// responsive enough. Without this sleep the loop spins hot and pegs a CPU
+		// core on the (shared) web host.
+		time.Sleep(1 * time.Second)
 	}
 }
 
