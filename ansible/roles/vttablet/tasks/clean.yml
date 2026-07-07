@@ -35,5 +35,7 @@
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: Remove binary
-  ansible.builtin.shell: rm -f $(which vttablet mysqlctld mysqlctl)
+# NOTE: the vttablet/mysqlctl binaries are intentionally left in place so they
+# can be reused across workloads of the same commit (see
+# roles/vitess_build/tasks/main.yml, which rebuilds only when the installed
+# ref+Go version changes). A rebuild overwrites them, so nothing accumulates.
