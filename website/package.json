@@ -53,7 +53,7 @@
     "swiper": "^9.4.1",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
-    "uuid": "^9.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.51.15",
