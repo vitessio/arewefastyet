@@ -16,7 +16,6 @@ WorkingDirectory={{vitess_root}}
 User={{vitess_user}}
 ExecStartPre=/bin/bash -c "${TOPO_PREPARE_COMMAND}"
 ExecStart=/bin/bash -c 'vtctld \
-		--cell %i \
 		--service_map "grpc-vtctl" \
 		--log_dir ${VTROOT}/tmp \
 		--port ${VTCTLD_PORT} \
